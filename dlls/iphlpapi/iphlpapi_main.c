@@ -30,6 +30,9 @@
 #include <netioapi.h>
 #include <tcpestats.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_iptypes.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_iphlpapi.h"
@@ -605,6 +608,7 @@ struct qemu_GetAdaptersInfo
     struct qemu_syscall super;
     uint64_t pAdapterInfo;
     uint64_t pOutBufLen;
+    uint64_t size;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -615,6 +619,7 @@ WINBASEAPI DWORD WINAPI GetAdaptersInfo(PIP_ADAPTER_INFO pAdapterInfo, PULONG pO
     call.super.id = QEMU_SYSCALL_ID(CALL_GETADAPTERSINFO);
     call.pAdapterInfo = (ULONG_PTR)pAdapterInfo;
     call.pOutBufLen = (ULONG_PTR)pOutBufLen;
+    call.size = (ULONG_PTR)sizeof(*pAdapterInfo);
 
     qemu_syscall(&call.super);
 
@@ -626,8 +631,10 @@ WINBASEAPI DWORD WINAPI GetAdaptersInfo(PIP_ADAPTER_INFO pAdapterInfo, PULONG pO
 void qemu_GetAdaptersInfo(struct qemu_syscall *call)
 {
     struct qemu_GetAdaptersInfo *c = (struct qemu_GetAdaptersInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetAdaptersInfo(QEMU_G2H(c->pAdapterInfo), QEMU_G2H(c->pOutBufLen));
+    if (c->super.iret == NO_ERROR)
+        IP_ADAPTER_INFO_h2g(QEMU_G2H(c->pAdapterInfo), QEMU_G2H(c->pAdapterInfo));
 }
 
 #endif
