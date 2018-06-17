@@ -13036,12 +13036,15 @@ static void STDMETHODCALLTYPE d3d10_device_PSGetShader(ID3D10Device1 *iface, ID3
 {
     struct qemu_d3d10_device_PSGetShader call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_shader *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_PSGETSHADER);
     call.iface = (ULONG_PTR)device;
-    call.shader = (ULONG_PTR)shader;
 
     qemu_syscall(&call.super);
+
+    impl = (struct qemu_d3d11_shader *)(ULONG_PTR)call.shader;
+    *shader = impl ? &impl->ID3D10PixelShader_iface : NULL;
 }
 
 #else
@@ -13050,11 +13053,13 @@ void qemu_d3d10_device_PSGetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_PSGetShader *c = (struct qemu_d3d10_device_PSGetShader *)call;
     struct qemu_d3d11_device *device;
+    ID3D11PixelShader *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D10Device1_PSGetShader(device->host_d3d10, QEMU_G2H(c->shader));
+    ID3D11DeviceContext1_PSGetShader(device->immediate_context.host, &host, NULL, NULL);
+    c->shader = QEMU_H2G(shader_from_host((ID3D11DeviceChild *)host));
 }
 
 #endif
@@ -13144,12 +13149,15 @@ static void STDMETHODCALLTYPE d3d10_device_VSGetShader(ID3D10Device1 *iface, ID3
 {
     struct qemu_d3d10_device_VSGetShader call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_shader *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_VSGETSHADER);
     call.iface = (ULONG_PTR)device;
-    call.shader = (ULONG_PTR)shader;
 
     qemu_syscall(&call.super);
+
+    impl = (struct qemu_d3d11_shader *)(ULONG_PTR)call.shader;
+    *shader = impl ? &impl->ID3D10VertexShader_iface : NULL;
 }
 
 #else
@@ -13158,11 +13166,13 @@ void qemu_d3d10_device_VSGetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_VSGetShader *c = (struct qemu_d3d10_device_VSGetShader *)call;
     struct qemu_d3d11_device *device;
+    ID3D11VertexShader *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D10Device1_VSGetShader(device->host_d3d10, QEMU_G2H(c->shader));
+    ID3D11DeviceContext1_VSGetShader(device->immediate_context.host, &host, NULL, NULL);
+    c->shader = QEMU_H2G(shader_from_host((ID3D11DeviceChild *)host));
 }
 
 #endif
@@ -13449,12 +13459,15 @@ static void STDMETHODCALLTYPE d3d10_device_GSGetShader(ID3D10Device1 *iface, ID3
 {
     struct qemu_d3d10_device_GSGetShader call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_shader *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_GSGETSHADER);
     call.iface = (ULONG_PTR)device;
-    call.shader = (ULONG_PTR)shader;
 
     qemu_syscall(&call.super);
+
+    impl = (struct qemu_d3d11_shader *)(ULONG_PTR)call.shader;
+    *shader = impl ? &impl->ID3D10GeometryShader_iface : NULL;
 }
 
 #else
@@ -13463,11 +13476,13 @@ void qemu_d3d10_device_GSGetShader(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_GSGetShader *c = (struct qemu_d3d10_device_GSGetShader *)call;
     struct qemu_d3d11_device *device;
+    ID3D11GeometryShader *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D10Device1_GSGetShader(device->host_d3d10, QEMU_G2H(c->shader));
+    ID3D11DeviceContext1_GSGetShader(device->immediate_context.host, &host, NULL, NULL);
+    c->shader = QEMU_H2G(shader_from_host((ID3D11DeviceChild *)host));
 }
 
 #endif
