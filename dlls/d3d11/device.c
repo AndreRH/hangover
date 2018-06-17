@@ -8971,12 +8971,19 @@ void qemu_d3d11_device_CreateGeometryShaderWithStreamOutput(struct qemu_syscall 
     so_decl = QEMU_G2H(c->so_entries);
 #else
     so_decl32 = QEMU_G2H(c->so_entries);
-    so_decl = HeapAlloc(GetProcessHeap(), 0, sizeof(*so_decl) * c->entry_count);
-    if (!so_decl)
-        WINE_ERR("Out of memory\n");
+    if (so_decl32)
+    {
+        so_decl = HeapAlloc(GetProcessHeap(), 0, sizeof(*so_decl) * c->entry_count);
+        if (!so_decl)
+            WINE_ERR("Out of memory\n");
 
-    for (i = 0; i < c->entry_count; ++i)
-        D3D11_SO_DECLARATION_ENTRY_g2h(&so_decl[i], &so_decl32[i]);
+        for (i = 0; i < c->entry_count; ++i)
+            D3D11_SO_DECLARATION_ENTRY_g2h(&so_decl[i], &so_decl32[i]);
+    }
+    else
+    {
+        so_decl = NULL;
+    }
 #endif
 
     c->super.iret = ID3D11Device2_CreateGeometryShaderWithStreamOutput(device->host_d3d11, QEMU_G2H(c->byte_code),
