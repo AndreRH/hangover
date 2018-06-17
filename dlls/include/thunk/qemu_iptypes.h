@@ -71,4 +71,32 @@ static inline void IP_ADAPTER_INFO_h2g(struct qemu_IP_ADAPTER_INFO *guest, const
     guest->LeaseExpires = host->LeaseExpires;
 }
 
+struct qemu_FIXED_INFO
+{
+    char HostName[MAX_HOSTNAME_LEN + 4] ;
+    char DomainName[MAX_DOMAIN_NAME_LEN + 4];
+    qemu_ptr CurrentDnsServer; /* IP_ADDR_STRING * */
+    struct qemu_IP_ADDR_STRING DnsServerList;
+    UINT NodeType;
+    char ScopeId[MAX_SCOPE_ID_LEN + 4];
+    UINT EnableRouting;
+    UINT EnableProxy;
+    UINT EnableDns;
+};
+
+/* Note that this function only supports in-place conversion because it does not allocate new
+ * structs for the DNS list chain. */
+static inline void FIXED_INFO_h2g(struct qemu_FIXED_INFO *guest, const FIXED_INFO *host)
+{
+    memcpy(guest->HostName, host->HostName, sizeof(guest->HostName));
+    memcpy(guest->DomainName, host->DomainName, sizeof(guest->DomainName));
+    guest->CurrentDnsServer = (ULONG_PTR)host->CurrentDnsServer;
+    IP_ADDR_STRING_h2g(&guest->DnsServerList, &host->DnsServerList);
+    guest->NodeType = host->NodeType;
+    memcpy(guest->ScopeId, host->ScopeId, sizeof(guest->ScopeId));
+    guest->EnableRouting = host->EnableRouting;
+    guest->EnableProxy = host->EnableProxy;
+    guest->EnableDns = host->EnableDns;
+}
+
 #endif

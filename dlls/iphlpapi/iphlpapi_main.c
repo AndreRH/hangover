@@ -633,8 +633,11 @@ void qemu_GetAdaptersInfo(struct qemu_syscall *call)
     struct qemu_GetAdaptersInfo *c = (struct qemu_GetAdaptersInfo *)call;
     WINE_TRACE("\n");
     c->super.iret = GetAdaptersInfo(QEMU_G2H(c->pAdapterInfo), QEMU_G2H(c->pOutBufLen));
+
+#if GUEST_BIT != HOST_BIT
     if (c->super.iret == NO_ERROR)
         IP_ADAPTER_INFO_h2g(QEMU_G2H(c->pAdapterInfo), QEMU_G2H(c->pAdapterInfo));
+#endif
 }
 
 #endif
@@ -1108,6 +1111,7 @@ struct qemu_GetNetworkParams
     struct qemu_syscall super;
     uint64_t pFixedInfo;
     uint64_t pOutBufLen;
+    uint64_t size;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1118,6 +1122,7 @@ WINBASEAPI DWORD WINAPI GetNetworkParams(PFIXED_INFO pFixedInfo, PULONG pOutBufL
     call.super.id = QEMU_SYSCALL_ID(CALL_GETNETWORKPARAMS);
     call.pFixedInfo = (ULONG_PTR)pFixedInfo;
     call.pOutBufLen = (ULONG_PTR)pOutBufLen;
+    call.size = (ULONG_PTR)sizeof(*pFixedInfo);
 
     qemu_syscall(&call.super);
 
@@ -1129,8 +1134,13 @@ WINBASEAPI DWORD WINAPI GetNetworkParams(PFIXED_INFO pFixedInfo, PULONG pOutBufL
 void qemu_GetNetworkParams(struct qemu_syscall *call)
 {
     struct qemu_GetNetworkParams *c = (struct qemu_GetNetworkParams *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetNetworkParams(QEMU_G2H(c->pFixedInfo), QEMU_G2H(c->pOutBufLen));
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret == NO_ERROR)
+        FIXED_INFO_h2g(QEMU_G2H(c->pFixedInfo), QEMU_G2H(c->pFixedInfo));
+#endif
 }
 
 #endif
