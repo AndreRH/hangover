@@ -1329,7 +1329,8 @@ WINBASEAPI DWORD WINAPI GetUdpTable(PMIB_UDPTABLE pUdpTable, PDWORD pdwSize, BOO
 void qemu_GetUdpTable(struct qemu_syscall *call)
 {
     struct qemu_GetUdpTable *c = (struct qemu_GetUdpTable *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_UDPTABLE has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetUdpTable(QEMU_G2H(c->pUdpTable), QEMU_G2H(c->pdwSize), c->bOrder);
 }
 
