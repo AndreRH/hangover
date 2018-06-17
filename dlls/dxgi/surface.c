@@ -300,7 +300,6 @@ struct qemu_dxgi_surface_GetDevice
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t riid;
     uint64_t device;
 };
 
@@ -310,15 +309,15 @@ static HRESULT STDMETHODCALLTYPE dxgi_surface_GetDevice(IDXGISurface1 *iface, RE
 {
     struct qemu_dxgi_surface_GetDevice call;
     struct qemu_dxgi_surface *surface = impl_from_IDXGISurface1(iface);
+    struct qemu_dxgi_device *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SURFACE_GETDEVICE);
     call.iface = (ULONG_PTR)surface;
-    call.riid = (ULONG_PTR)riid;
-    call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    impl = (struct qemu_dxgi_device *)(ULONG_PTR)call.device;
+    return IDXGIDevice_QueryInterface(&impl->IDXGIDevice2_iface, riid, (void **)device);
 }
 
 #else
@@ -328,10 +327,10 @@ void qemu_dxgi_surface_GetDevice(struct qemu_syscall *call)
     struct qemu_dxgi_surface_GetDevice *c = (struct qemu_dxgi_surface_GetDevice *)call;
     struct qemu_dxgi_surface *surface;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     surface = QEMU_G2H(c->iface);
 
-    c->super.iret = IDXGISurface1_GetDevice(surface->host, QEMU_G2H(c->riid), QEMU_G2H(c->device));
+    c->device = QEMU_H2G(surface->device);
 }
 
 #endif
