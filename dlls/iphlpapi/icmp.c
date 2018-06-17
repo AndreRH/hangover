@@ -31,6 +31,7 @@
 #include <tcpestats.h>
 
 #include "thunk/qemu_windows.h"
+#include "thunk/qemu_winsock2.h"
 #include "thunk/qemu_iphlpapi.h"
 
 #include "windows-user-services.h"

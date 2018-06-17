@@ -31,6 +31,7 @@
 #include <tcpestats.h>
 
 #include "thunk/qemu_windows.h"
+#include "thunk/qemu_winsock2.h"
 #include "thunk/qemu_iptypes.h"
 
 #include "windows-user-services.h"
@@ -656,7 +657,8 @@ struct qemu_GetAdaptersAddresses
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI ULONG WINAPI GetAdaptersAddresses(ULONG family, ULONG flags, PVOID reserved, PIP_ADAPTER_ADDRESSES aa, PULONG buflen)
+WINBASEAPI ULONG WINAPI GetAdaptersAddresses(ULONG family, ULONG flags, PVOID reserved, PIP_ADAPTER_ADDRESSES aa,
+        PULONG buflen)
 {
     struct qemu_GetAdaptersAddresses call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETADAPTERSADDRESSES);
@@ -676,8 +678,14 @@ WINBASEAPI ULONG WINAPI GetAdaptersAddresses(ULONG family, ULONG flags, PVOID re
 void qemu_GetAdaptersAddresses(struct qemu_syscall *call)
 {
     struct qemu_GetAdaptersAddresses *c = (struct qemu_GetAdaptersAddresses *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetAdaptersAddresses(c->family, c->flags, QEMU_G2H(c->reserved), QEMU_G2H(c->aa), QEMU_G2H(c->buflen));
+    WINE_TRACE("\n");
+    c->super.iret = GetAdaptersAddresses(c->family, c->flags, QEMU_G2H(c->reserved),
+            QEMU_G2H(c->aa), QEMU_G2H(c->buflen));
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret == NO_ERROR)
+        IP_ADAPTER_ADDRESSES_h2g(QEMU_G2H(c->aa), QEMU_G2H(c->aa));
+#endif
 }
 
 #endif
