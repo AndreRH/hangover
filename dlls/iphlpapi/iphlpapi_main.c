@@ -1015,7 +1015,8 @@ WINBASEAPI DWORD WINAPI GetIpAddrTable(PMIB_IPADDRTABLE pIpAddrTable, PULONG pdw
 void qemu_GetIpAddrTable(struct qemu_syscall *call)
 {
     struct qemu_GetIpAddrTable *c = (struct qemu_GetIpAddrTable *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_IPADDRTABLE has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetIpAddrTable(QEMU_G2H(c->pIpAddrTable), QEMU_G2H(c->pdwSize), c->bOrder);
 }
 
