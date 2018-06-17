@@ -14096,7 +14096,8 @@ void qemu_d3d10_device_RSGetViewports(struct qemu_syscall *call)
     struct qemu_d3d10_device_RSGetViewports *c = (struct qemu_d3d10_device_RSGetViewports *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    /* D3D10_VIEWPORT has the same size in 32 and 64 bit and the input array is not an array of pointers. */
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     ID3D10Device1_RSGetViewports(device->host_d3d10, QEMU_G2H(c->viewport_count), QEMU_G2H(c->viewports));
