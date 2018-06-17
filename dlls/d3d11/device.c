@@ -12771,10 +12771,11 @@ static void STDMETHODCALLTYPE d3d10_device_ClearDepthStencilView(ID3D10Device1 *
 {
     struct qemu_d3d10_device_ClearDepthStencilView call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_view *view = unsafe_impl_from_ID3D10DepthStencilView(depth_stencil_view);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CLEARDEPTHSTENCILVIEW);
     call.iface = (ULONG_PTR)device;
-    call.depth_stencil_view = (ULONG_PTR)depth_stencil_view;
+    call.depth_stencil_view = (ULONG_PTR)view;
     call.flags = flags;
     call.depth = depth;
     call.stencil = stencil;
@@ -12788,11 +12789,14 @@ void qemu_d3d10_device_ClearDepthStencilView(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_ClearDepthStencilView *c = (struct qemu_d3d10_device_ClearDepthStencilView *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    view = QEMU_G2H(c->depth_stencil_view);
 
-    ID3D10Device1_ClearDepthStencilView(device->host_d3d10, QEMU_G2H(c->depth_stencil_view), c->flags, c->depth, c->stencil);
+    ID3D10Device1_ClearDepthStencilView(device->host_d3d10, view ? view->host_ds10 : NULL,
+            c->flags, c->depth, c->stencil);
 }
 
 #endif
