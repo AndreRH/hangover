@@ -13303,20 +13303,44 @@ struct qemu_d3d10_device_IAGetVertexBuffers
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_IAGetVertexBuffers(ID3D10Device1 *iface, UINT start_slot, UINT buffer_count, ID3D10Buffer **buffers, UINT *strides, UINT *offsets)
+static void STDMETHODCALLTYPE d3d10_device_IAGetVertexBuffers(ID3D10Device1 *iface, UINT start_slot, UINT buffer_count,
+        ID3D10Buffer **buffers, UINT *strides, UINT *offsets)
 {
     struct qemu_d3d10_device_IAGetVertexBuffers call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    uint64_t stack[16], *impl = stack;
+    UINT i;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_IAGETVERTEXBUFFERS);
     call.iface = (ULONG_PTR)device;
     call.start_slot = start_slot;
     call.buffer_count = buffer_count;
-    call.buffers = (ULONG_PTR)buffers;
     call.strides = (ULONG_PTR)strides;
     call.offsets = (ULONG_PTR)offsets;
 
+    if (buffer_count > (sizeof(stack) / sizeof(*stack)))
+        impl = HeapAlloc(GetProcessHeap(), 0, sizeof(*impl) * buffer_count);
+
+    call.buffers = (ULONG_PTR)impl;
+
     qemu_syscall(&call.super);
+
+    for (i = 0; i < buffer_count; ++i)
+    {
+        struct qemu_d3d11_buffer *buffer;
+
+        if (!impl[i])
+        {
+            buffers[i] = NULL;
+            continue;
+        }
+
+        buffer = (struct qemu_d3d11_buffer *)(ULONG_PTR)impl[i];
+        buffers[i] = &buffer->ID3D10Buffer_iface;
+    }
+
+    if (impl != stack)
+        HeapFree(GetProcessHeap(), 0, impl);
 }
 
 #else
@@ -13325,11 +13349,21 @@ void qemu_d3d10_device_IAGetVertexBuffers(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_IAGetVertexBuffers *c = (struct qemu_d3d10_device_IAGetVertexBuffers *)call;
     struct qemu_d3d11_device *device;
+    ID3D11Buffer **ifaces;
+    struct qemu_d3d11_buffer **impl;
+    UINT i, count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    ifaces = QEMU_G2H(c->buffers);
+    impl = QEMU_G2H(c->buffers);
+    count = c->buffer_count;
 
-    ID3D10Device1_IAGetVertexBuffers(device->host_d3d10, c->start_slot, c->buffer_count, QEMU_G2H(c->buffers), QEMU_G2H(c->strides), QEMU_G2H(c->offsets));
+    ID3D11DeviceContext1_IAGetVertexBuffers(device->immediate_context.host, c->start_slot, c->buffer_count, ifaces,
+            QEMU_G2H(c->strides), QEMU_G2H(c->offsets));
+
+    for (i = 0; i < count; ++i)
+        impl[i] = buffer_from_host(ifaces[i]);
 }
 
 #endif
