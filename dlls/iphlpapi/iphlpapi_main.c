@@ -821,7 +821,8 @@ WINBASEAPI DWORD WINAPI GetIfEntry(PMIB_IFROW pIfRow)
 void qemu_GetIfEntry(struct qemu_syscall *call)
 {
     struct qemu_GetIfEntry *c = (struct qemu_GetIfEntry *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_IFROW has the same size on 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetIfEntry(QEMU_G2H(c->pIfRow));
 }
 
