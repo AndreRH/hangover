@@ -2576,8 +2576,6 @@ WINBASEAPI IF_INDEX WINAPI IPHLP_if_nametoindex(const char *name)
 
 #else
 
-/* TODO: Add IPHLP_if_nametoindex to Wine headers? */
-extern IF_INDEX WINAPI IPHLP_if_nametoindex(const char *name);
 void qemu_IPHLP_if_nametoindex(struct qemu_syscall *call)
 {
     struct qemu_IPHLP_if_nametoindex *c = (struct qemu_IPHLP_if_nametoindex *)call;
@@ -2587,3 +2585,100 @@ void qemu_IPHLP_if_nametoindex(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_ConvertLengthToIpv4Mask
+{
+    struct qemu_syscall super;
+    uint64_t mask_len;
+    uint64_t mask;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI ConvertLengthToIpv4Mask(ULONG mask_len, ULONG *mask)
+{
+    struct qemu_ConvertLengthToIpv4Mask call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CONVERTLENGTHTOIPV4MASK);
+    call.mask_len = mask_len;
+    call.mask = (ULONG_PTR)mask;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_ConvertLengthToIpv4Mask(struct qemu_syscall *call)
+{
+    struct qemu_ConvertLengthToIpv4Mask *c = (struct qemu_ConvertLengthToIpv4Mask *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = ConvertLengthToIpv4Mask(c->mask_len, QEMU_G2H(c->mask));
+}
+
+#endif
+
+struct qemu_GetIpForwardTable2
+{
+    struct qemu_syscall super;
+    uint64_t family;
+    uint64_t table;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DWORD WINAPI GetIpForwardTable2(ADDRESS_FAMILY family, PMIB_IPFORWARD_TABLE2 *table)
+{
+    struct qemu_GetIpForwardTable2 call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETIPFORWARDTABLE2);
+    call.family = family;
+    call.table = (ULONG_PTR)table;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add GetIpForwardTable2 to Wine headers? */
+extern DWORD WINAPI GetIpForwardTable2(ADDRESS_FAMILY family, PMIB_IPFORWARD_TABLE2 *table);
+void qemu_GetIpForwardTable2(struct qemu_syscall *call)
+{
+    struct qemu_GetIpForwardTable2 *c = (struct qemu_GetIpForwardTable2 *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetIpForwardTable2(c->family, QEMU_G2H(c->table));
+}
+
+#endif
+
+struct qemu_IPHLP_if_indextoname
+{
+    struct qemu_syscall super;
+    uint64_t index;
+    uint64_t name;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI CHAR * WINAPI IPHLP_if_indextoname(NET_IFINDEX index, CHAR *name)
+{
+    struct qemu_IPHLP_if_indextoname call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_IPHLP_IF_INDEXTONAME);
+    call.index = index;
+    call.name = (ULONG_PTR)name;
+
+    qemu_syscall(&call.super);
+
+    return (CHAR *)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_IPHLP_if_indextoname(struct qemu_syscall *call)
+{
+    struct qemu_IPHLP_if_indextoname *c = (struct qemu_IPHLP_if_indextoname *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(p_if_indextoname(c->index, QEMU_G2H(c->name)));
+}
+
+#endif

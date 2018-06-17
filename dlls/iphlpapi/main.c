@@ -66,6 +66,7 @@ static const syscall_handler dll_functions[] =
     qemu_ConvertInterfaceLuidToNameW,
     qemu_ConvertInterfaceNameToLuidA,
     qemu_ConvertInterfaceNameToLuidW,
+    qemu_ConvertLengthToIpv4Mask,
     qemu_CreateIpForwardEntry,
     qemu_CreateIpNetEntry,
     qemu_CreateProxyArpEntry,
@@ -96,6 +97,7 @@ static const syscall_handler dll_functions[] =
     qemu_GetInterfaceInfo,
     qemu_GetIpAddrTable,
     qemu_GetIpForwardTable,
+    qemu_GetIpForwardTable2,
     qemu_GetIpNetTable,
     qemu_GetIpStatistics,
     qemu_GetIpStatisticsEx,
@@ -122,6 +124,7 @@ static const syscall_handler dll_functions[] =
     qemu_IcmpSendEcho,
     qemu_IcmpSendEcho2,
     qemu_IcmpSendEcho2Ex,
+    qemu_IPHLP_if_indextoname,
     qemu_IPHLP_if_nametoindex,
     qemu_IpReleaseAddress,
     qemu_IpRenewAddress,
@@ -157,6 +160,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         WINE_ERR("Cannot find iphlpapi.dll.\n");
 
     p_if_nametoindex = (void *)GetProcAddress(iphlpapi, "if_nametoindex");
+    p_if_indextoname = (void *)GetProcAddress(iphlpapi, "if_indextoname");
     p__PfCreateInterface = (void *)GetProcAddress(iphlpapi, "_PfCreateInterface");
     p__PfUnBindInterface = (void *)GetProcAddress(iphlpapi, "_PfUnBindInterface");
     p__PfDeleteInterface = (void *)GetProcAddress(iphlpapi, "_PfDeleteInterface");

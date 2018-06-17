@@ -23,7 +23,7 @@
 @ stdcall ConvertInterfaceNameToLuidW( wstr ptr )
 #@ stub ConvertInterfacePhysicalAddressToLuid
 #@ stub ConvertIpv4MaskToLength
-#@ stub ConvertLengthToIpv4Mask
+@ stdcall ConvertLengthToIpv4Mask( long ptr )
 #@ stub ConvertRemoteInterfaceAliasToLuid
 #@ stub ConvertRemoteInterfaceGuidToLuid
 #@ stub ConvertRemoteInterfaceIndexToLuid
@@ -102,7 +102,7 @@
 #@ stub GetIpErrorString
 #@ stub GetIpForwardEntry2
 @ stdcall GetIpForwardTable( ptr ptr long )
-#@ stub GetIpForwardTable2
+@ stdcall GetIpForwardTable2( long ptr )
 @ stub GetIpForwardTableFromStack
 #@ stub GetIpInterfaceEntry
 #@ stub GetIpInterfaceTable
@@ -159,7 +159,7 @@
 @ stdcall IcmpSendEcho2Ex(ptr ptr ptr ptr long long ptr long ptr ptr long long)
 @ stdcall IcmpSendEcho2(ptr ptr ptr ptr long ptr long ptr ptr long long)
 @ stdcall IcmpSendEcho(ptr long ptr long ptr ptr long long)
-#@ stub if_indextoname
+@ stdcall if_indextoname(long ptr) IPHLP_if_indextoname
 @ stdcall if_nametoindex(str) IPHLP_if_nametoindex
 #@ stub InitializeIpForwardEntry
 #@ stub InitializeIpInterfaceEntry

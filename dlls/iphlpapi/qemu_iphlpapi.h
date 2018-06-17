@@ -22,6 +22,7 @@ enum iphlpapi_calls
     CALL_CONVERTINTERFACELUIDTONAMEW,
     CALL_CONVERTINTERFACENAMETOLUIDA,
     CALL_CONVERTINTERFACENAMETOLUIDW,
+    CALL_CONVERTLENGTHTOIPV4MASK,
     CALL_CREATEIPFORWARDENTRY,
     CALL_CREATEIPNETENTRY,
     CALL_CREATEPROXYARPENTRY,
@@ -52,6 +53,7 @@ enum iphlpapi_calls
     CALL_GETINTERFACEINFO,
     CALL_GETIPADDRTABLE,
     CALL_GETIPFORWARDTABLE,
+    CALL_GETIPFORWARDTABLE2,
     CALL_GETIPNETTABLE,
     CALL_GETIPSTATISTICS,
     CALL_GETIPSTATISTICSEX,
@@ -78,6 +80,7 @@ enum iphlpapi_calls
     CALL_ICMPSENDECHO,
     CALL_ICMPSENDECHO2,
     CALL_ICMPSENDECHO2EX,
+    CALL_IPHLP_IF_INDEXTONAME,
     CALL_IPHLP_IF_NAMETOINDEX,
     CALL_IPRELEASEADDRESS,
     CALL_IPRENEWADDRESS,
@@ -123,6 +126,7 @@ void qemu_ConvertInterfaceLuidToNameA(struct qemu_syscall *call);
 void qemu_ConvertInterfaceLuidToNameW(struct qemu_syscall *call);
 void qemu_ConvertInterfaceNameToLuidA(struct qemu_syscall *call);
 void qemu_ConvertInterfaceNameToLuidW(struct qemu_syscall *call);
+void qemu_ConvertLengthToIpv4Mask(struct qemu_syscall *call);
 void qemu_CreateIpForwardEntry(struct qemu_syscall *call);
 void qemu_CreateIpNetEntry(struct qemu_syscall *call);
 void qemu_CreateProxyArpEntry(struct qemu_syscall *call);
@@ -153,6 +157,7 @@ void qemu_GetIfTable2Ex(struct qemu_syscall *call);
 void qemu_GetInterfaceInfo(struct qemu_syscall *call);
 void qemu_GetIpAddrTable(struct qemu_syscall *call);
 void qemu_GetIpForwardTable(struct qemu_syscall *call);
+void qemu_GetIpForwardTable2(struct qemu_syscall *call);
 void qemu_GetIpNetTable(struct qemu_syscall *call);
 void qemu_GetIpStatistics(struct qemu_syscall *call);
 void qemu_GetIpStatisticsEx(struct qemu_syscall *call);
@@ -179,6 +184,7 @@ void qemu_IcmpCreateFile(struct qemu_syscall *call);
 void qemu_IcmpSendEcho(struct qemu_syscall *call);
 void qemu_IcmpSendEcho2(struct qemu_syscall *call);
 void qemu_IcmpSendEcho2Ex(struct qemu_syscall *call);
+void qemu_IPHLP_if_indextoname(struct qemu_syscall *call);
 void qemu_IPHLP_if_nametoindex(struct qemu_syscall *call);
 void qemu_IpReleaseAddress(struct qemu_syscall *call);
 void qemu_IpRenewAddress(struct qemu_syscall *call);
@@ -200,6 +206,7 @@ void qemu_SetPerTcpConnectionEStats(struct qemu_syscall *call);
 void qemu_SetTcpEntry(struct qemu_syscall *call);
 void qemu_UnenableRouter(struct qemu_syscall *call);
 
+CHAR * (* WINAPI p_if_indextoname)(NET_IFINDEX index, CHAR *name);
 IF_INDEX (* WINAPI p_if_nametoindex)(const char *name);
 DWORD (* WINAPI p__PfCreateInterface)(DWORD dwName,PFFORWARD_ACTION inAction,PFFORWARD_ACTION outAction,BOOL bUseLog,BOOL bMustBeUnique,INTERFACE_HANDLE *ppInterface);
 DWORD (* WINAPI p__PfUnBindInterface)(INTERFACE_HANDLE interfaceXX);
