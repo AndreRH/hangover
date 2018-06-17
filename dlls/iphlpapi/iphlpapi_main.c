@@ -1145,7 +1145,7 @@ WINBASEAPI DWORD WINAPI GetNumberOfInterfaces(PDWORD pdwNumIf)
 void qemu_GetNumberOfInterfaces(struct qemu_syscall *call)
 {
     struct qemu_GetNumberOfInterfaces *c = (struct qemu_GetNumberOfInterfaces *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetNumberOfInterfaces(QEMU_G2H(c->pdwNumIf));
 }
 
