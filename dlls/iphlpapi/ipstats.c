@@ -61,7 +61,8 @@ WINBASEAPI DWORD WINAPI GetIcmpStatistics(PMIB_ICMP stats)
 void qemu_GetIcmpStatistics(struct qemu_syscall *call)
 {
     struct qemu_GetIcmpStatistics *c = (struct qemu_GetIcmpStatistics *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_ICM has the same size on 32 and 64 bit .*/
+    WINE_TRACE("\n");
     c->super.iret = GetIcmpStatistics(QEMU_G2H(c->stats));
 }
 
@@ -95,7 +96,8 @@ extern DWORD WINAPI GetIcmpStatisticsEx(PMIB_ICMP_EX stats, DWORD family);
 void qemu_GetIcmpStatisticsEx(struct qemu_syscall *call)
 {
     struct qemu_GetIcmpStatisticsEx *c = (struct qemu_GetIcmpStatisticsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_ICMP_EX has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetIcmpStatisticsEx(QEMU_G2H(c->stats), c->family);
 }
 
