@@ -11387,7 +11387,8 @@ struct qemu_d3d10_device_DrawIndexed
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_DrawIndexed(ID3D10Device1 *iface, UINT index_count, UINT start_index_location, INT base_vertex_location)
+static void STDMETHODCALLTYPE d3d10_device_DrawIndexed(ID3D10Device1 *iface, UINT index_count,
+        UINT start_index_location, INT base_vertex_location)
 {
     struct qemu_d3d10_device_DrawIndexed call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
@@ -11408,7 +11409,7 @@ void qemu_d3d10_device_DrawIndexed(struct qemu_syscall *call)
     struct qemu_d3d10_device_DrawIndexed *c = (struct qemu_d3d10_device_DrawIndexed *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     ID3D10Device1_DrawIndexed(device->host_d3d10, c->index_count, c->start_index_location, c->base_vertex_location);
@@ -11446,7 +11447,7 @@ void qemu_d3d10_device_Draw(struct qemu_syscall *call)
     struct qemu_d3d10_device_Draw *c = (struct qemu_d3d10_device_Draw *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     ID3D10Device1_Draw(device->host_d3d10, c->vertex_count, c->start_vertex_location);
@@ -11681,7 +11682,8 @@ struct qemu_d3d10_device_DrawIndexedInstanced
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_DrawIndexedInstanced(ID3D10Device1 *iface, UINT instance_index_count, UINT instance_count, UINT start_index_location, INT base_vertex_location, UINT start_instance_location)
+static void STDMETHODCALLTYPE d3d10_device_DrawIndexedInstanced(ID3D10Device1 *iface, UINT instance_index_count,
+        UINT instance_count, UINT start_index_location, INT base_vertex_location, UINT start_instance_location)
 {
     struct qemu_d3d10_device_DrawIndexedInstanced call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
@@ -11704,10 +11706,11 @@ void qemu_d3d10_device_DrawIndexedInstanced(struct qemu_syscall *call)
     struct qemu_d3d10_device_DrawIndexedInstanced *c = (struct qemu_d3d10_device_DrawIndexedInstanced *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D10Device1_DrawIndexedInstanced(device->host_d3d10, c->instance_index_count, c->instance_count, c->start_index_location, c->base_vertex_location, c->start_instance_location);
+    ID3D10Device1_DrawIndexedInstanced(device->host_d3d10, c->instance_index_count, c->instance_count,
+            c->start_index_location, c->base_vertex_location, c->start_instance_location);
 }
 
 #endif
@@ -11724,7 +11727,8 @@ struct qemu_d3d10_device_DrawInstanced
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_DrawInstanced(ID3D10Device1 *iface, UINT instance_vertex_count, UINT instance_count, UINT start_vertex_location, UINT start_instance_location)
+static void STDMETHODCALLTYPE d3d10_device_DrawInstanced(ID3D10Device1 *iface, UINT instance_vertex_count,
+        UINT instance_count, UINT start_vertex_location, UINT start_instance_location)
 {
     struct qemu_d3d10_device_DrawInstanced call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
@@ -11746,10 +11750,11 @@ void qemu_d3d10_device_DrawInstanced(struct qemu_syscall *call)
     struct qemu_d3d10_device_DrawInstanced *c = (struct qemu_d3d10_device_DrawInstanced *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D10Device1_DrawInstanced(device->host_d3d10, c->instance_vertex_count, c->instance_count, c->start_vertex_location, c->start_instance_location);
+    ID3D10Device1_DrawInstanced(device->host_d3d10, c->instance_vertex_count, c->instance_count,
+            c->start_vertex_location, c->start_instance_location);
 }
 
 #endif
@@ -14528,7 +14533,7 @@ void qemu_d3d10_device_GetDeviceRemovedReason(struct qemu_syscall *call)
     struct qemu_d3d10_device_GetDeviceRemovedReason *c = (struct qemu_d3d10_device_GetDeviceRemovedReason *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Device1_GetDeviceRemovedReason(device->host_d3d10);
@@ -14670,7 +14675,7 @@ void qemu_d3d10_device_ClearState(struct qemu_syscall *call)
     struct qemu_d3d10_device_ClearState *c = (struct qemu_d3d10_device_ClearState *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     ID3D10Device1_ClearState(device->host_d3d10);
@@ -14885,7 +14890,8 @@ struct qemu_d3d10_device_CheckFormatSupport
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_device_CheckFormatSupport(ID3D10Device1 *iface, DXGI_FORMAT format, UINT *format_support)
+static HRESULT STDMETHODCALLTYPE d3d10_device_CheckFormatSupport(ID3D10Device1 *iface, DXGI_FORMAT format,
+        UINT *format_support)
 {
     struct qemu_d3d10_device_CheckFormatSupport call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
@@ -14907,7 +14913,7 @@ void qemu_d3d10_device_CheckFormatSupport(struct qemu_syscall *call)
     struct qemu_d3d10_device_CheckFormatSupport *c = (struct qemu_d3d10_device_CheckFormatSupport *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Device1_CheckFormatSupport(device->host_d3d10, c->format, QEMU_G2H(c->format_support));
@@ -14926,7 +14932,8 @@ struct qemu_d3d10_device_CheckMultisampleQualityLevels
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_device_CheckMultisampleQualityLevels(ID3D10Device1 *iface, DXGI_FORMAT format, UINT sample_count, UINT *quality_level_count)
+static HRESULT STDMETHODCALLTYPE d3d10_device_CheckMultisampleQualityLevels(ID3D10Device1 *iface, DXGI_FORMAT format,
+        UINT sample_count, UINT *quality_level_count)
 {
     struct qemu_d3d10_device_CheckMultisampleQualityLevels call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
@@ -14946,13 +14953,15 @@ static HRESULT STDMETHODCALLTYPE d3d10_device_CheckMultisampleQualityLevels(ID3D
 
 void qemu_d3d10_device_CheckMultisampleQualityLevels(struct qemu_syscall *call)
 {
-    struct qemu_d3d10_device_CheckMultisampleQualityLevels *c = (struct qemu_d3d10_device_CheckMultisampleQualityLevels *)call;
+    struct qemu_d3d10_device_CheckMultisampleQualityLevels *c =
+            (struct qemu_d3d10_device_CheckMultisampleQualityLevels *)call;
     struct qemu_d3d11_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Device1_CheckMultisampleQualityLevels(device->host_d3d10, c->format, c->sample_count, QEMU_G2H(c->quality_level_count));
+    c->super.iret = ID3D10Device1_CheckMultisampleQualityLevels(device->host_d3d10, c->format, c->sample_count,
+            QEMU_G2H(c->quality_level_count));
 }
 
 #endif

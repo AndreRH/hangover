@@ -515,7 +515,7 @@ void qemu_d3d10_query_Begin(struct qemu_syscall *call)
     struct qemu_d3d10_query_Begin *c = (struct qemu_d3d10_query_Begin *)call;
     struct qemu_d3d11_query *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     query = QEMU_G2H(c->iface);
 
     ID3D10Query_Begin(query->host10);
@@ -549,7 +549,7 @@ void qemu_d3d10_query_End(struct qemu_syscall *call)
     struct qemu_d3d10_query_End *c = (struct qemu_d3d10_query_End *)call;
     struct qemu_d3d11_query *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     query = QEMU_G2H(c->iface);
 
     ID3D10Query_End(query->host10);
@@ -591,7 +591,7 @@ void qemu_d3d10_query_GetData(struct qemu_syscall *call)
     struct qemu_d3d10_query_GetData *c = (struct qemu_d3d10_query_GetData *)call;
     struct qemu_d3d11_query *query;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     query = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Query_GetData(query->host10, QEMU_G2H(c->data), c->data_size, c->flags);
