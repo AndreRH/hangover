@@ -13281,7 +13281,7 @@ void qemu_d3d10_device_IAGetInputLayout(struct qemu_syscall *call)
     struct qemu_d3d11_device *device;
     ID3D11InputLayout *host;
 
-    WINE_FIXME("untested\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     ID3D11DeviceContext1_IAGetInputLayout(device->immediate_context.host, &host);
