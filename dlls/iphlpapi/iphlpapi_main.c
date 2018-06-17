@@ -984,7 +984,8 @@ WINBASEAPI DWORD WINAPI GetInterfaceInfo(PIP_INTERFACE_INFO pIfTable, PULONG dwO
 void qemu_GetInterfaceInfo(struct qemu_syscall *call)
 {
     struct qemu_GetInterfaceInfo *c = (struct qemu_GetInterfaceInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    /* IP_INTERFACE_INFO has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetInterfaceInfo(QEMU_G2H(c->pIfTable), QEMU_G2H(c->dwOutBufLen));
 }
 
