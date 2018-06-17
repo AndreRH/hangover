@@ -193,7 +193,8 @@ WINBASEAPI DWORD WINAPI GetTcpStatisticsEx(PMIB_TCPSTATS stats, DWORD family)
 void qemu_GetTcpStatisticsEx(struct qemu_syscall *call)
 {
     struct qemu_GetTcpStatisticsEx *c = (struct qemu_GetTcpStatisticsEx *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_TCPSTATS has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetTcpStatisticsEx(QEMU_G2H(c->stats), c->family);
 }
 
@@ -223,7 +224,8 @@ WINBASEAPI DWORD WINAPI GetTcpStatistics(PMIB_TCPSTATS stats)
 void qemu_GetTcpStatistics(struct qemu_syscall *call)
 {
     struct qemu_GetTcpStatistics *c = (struct qemu_GetTcpStatistics *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_TCPSTATS has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetTcpStatistics(QEMU_G2H(c->stats));
 }
 
