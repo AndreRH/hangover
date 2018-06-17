@@ -71,6 +71,24 @@ static inline void IP_ADAPTER_INFO_h2g(struct qemu_IP_ADAPTER_INFO *guest, const
     guest->LeaseExpires = host->LeaseExpires;
 }
 
+struct qemu_IP_PER_ADAPTER_INFO
+{
+    UINT AutoconfigEnabled;
+    UINT AutoconfigActive;
+    qemu_ptr CurrentDnsServer; /* IP_ADDR_STRING * */
+    struct qemu_IP_ADDR_STRING DnsServerList;
+};
+
+/* Note that this function only supports in-place conversion because it does not allocate new
+ * structs for the DNS list chain. */
+static inline void IP_PER_ADAPTER_INFO_h2g(struct qemu_IP_PER_ADAPTER_INFO *guest, const IP_PER_ADAPTER_INFO *host)
+{
+    guest->AutoconfigEnabled = host->AutoconfigEnabled;
+    guest->AutoconfigActive = host->AutoconfigActive;
+    guest->CurrentDnsServer = (ULONG_PTR)host->CurrentDnsServer;
+    IP_ADDR_STRING_h2g(&guest->DnsServerList, &host->DnsServerList);
+}
+
 struct qemu_FIXED_INFO
 {
     char HostName[MAX_HOSTNAME_LEN + 4] ;

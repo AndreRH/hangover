@@ -1203,8 +1203,13 @@ WINBASEAPI DWORD WINAPI GetPerAdapterInfo(ULONG IfIndex, PIP_PER_ADAPTER_INFO pP
 void qemu_GetPerAdapterInfo(struct qemu_syscall *call)
 {
     struct qemu_GetPerAdapterInfo *c = (struct qemu_GetPerAdapterInfo *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetPerAdapterInfo(c->IfIndex, QEMU_G2H(c->pPerAdapterInfo), QEMU_G2H(c->pOutBufLen));
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret == NO_ERROR)
+        IP_PER_ADAPTER_INFO_h2g(QEMU_G2H(c->pPerAdapterInfo), QEMU_G2H(c->pPerAdapterInfo));
+#endif
 }
 
 #endif
