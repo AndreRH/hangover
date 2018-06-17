@@ -8882,6 +8882,73 @@ static HRESULT STDMETHODCALLTYPE d3d11_device_CreateGeometryShaderWithStreamOutp
     return call.super.iret;
 }
 
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateGeometryShaderWithStreamOutput(ID3D10Device1 *iface,
+        const void *byte_code, SIZE_T byte_code_length, const D3D10_SO_DECLARATION_ENTRY *output_stream_decls,
+        UINT output_stream_decl_count, UINT output_stream_stride, ID3D10GeometryShader **shader)
+{
+    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    D3D11_SO_DECLARATION_ENTRY *so_entries = NULL;
+    ID3D11GeometryShader *shader11;
+    unsigned int i, stride_count = 1;
+    HRESULT hr;
+
+    WINE_TRACE("iface %p, byte_code %p, byte_code_length %lu, output_stream_decls %p, "
+            "output_stream_decl_count %u, output_stream_stride %u, shader %p.\n",
+            iface, byte_code, byte_code_length, output_stream_decls,
+            output_stream_decl_count, output_stream_stride, shader);
+
+    if (!output_stream_decl_count && output_stream_stride)
+    {
+        WINE_WARN("Stride must be 0 when declaration entry count is 0.\n");
+        *shader = NULL;
+        return E_INVALIDARG;
+    }
+
+    if (output_stream_decl_count
+            && !(so_entries = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
+            output_stream_decl_count * sizeof(*so_entries))))
+    {
+        WINE_ERR("Failed to allocate D3D11 SO declaration array memory.\n");
+        *shader = NULL;
+        return E_OUTOFMEMORY;
+    }
+
+    for (i = 0; i < output_stream_decl_count; ++i)
+    {
+        so_entries[i].Stream = 0;
+        so_entries[i].SemanticName = output_stream_decls[i].SemanticName;
+        so_entries[i].SemanticIndex = output_stream_decls[i].SemanticIndex;
+        so_entries[i].StartComponent = output_stream_decls[i].StartComponent;
+        so_entries[i].ComponentCount = output_stream_decls[i].ComponentCount;
+        so_entries[i].OutputSlot = output_stream_decls[i].OutputSlot;
+
+        if (output_stream_decls[i].OutputSlot)
+        {
+            stride_count = 0;
+            if (output_stream_stride)
+            {
+                WINE_WARN("Stride must be 0 when multiple output slots are used.\n");
+                HeapFree(GetProcessHeap(), 0, so_entries);
+                *shader = NULL;
+                return E_INVALIDARG;
+            }
+        }
+    }
+
+    hr = d3d11_device_CreateGeometryShaderWithStreamOutput(&device->ID3D11Device2_iface, byte_code, byte_code_length,
+            so_entries, output_stream_decl_count, &output_stream_stride, stride_count, 0, NULL, &shader11);
+    HeapFree(GetProcessHeap(), 0, so_entries);
+    if (FAILED(hr))
+    {
+        *shader = NULL;
+        return hr;
+    }
+
+    hr = ID3D11GeometryShader_QueryInterface(shader11, &IID_ID3D10GeometryShader, (void **)shader);
+    ID3D11GeometryShader_Release(shader11);
+    return hr;
+}
+
 #else
 
 void qemu_d3d11_device_CreateGeometryShaderWithStreamOutput(struct qemu_syscall *call)
@@ -14678,54 +14745,6 @@ void qemu_d3d10_device_CreateInputLayout(struct qemu_syscall *call)
     device = QEMU_G2H(c->iface);
 
     c->super.iret = ID3D10Device1_CreateInputLayout(device->host_d3d10, QEMU_G2H(c->element_descs), c->element_count, QEMU_G2H(c->shader_byte_code), c->shader_byte_code_length, QEMU_G2H(c->input_layout));
-}
-
-#endif
-
-struct qemu_d3d10_device_CreateGeometryShaderWithStreamOutput
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t byte_code;
-    uint64_t byte_code_length;
-    uint64_t output_stream_decls;
-    uint64_t output_stream_decl_count;
-    uint64_t output_stream_stride;
-    uint64_t shader;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateGeometryShaderWithStreamOutput(ID3D10Device1 *iface, const void *byte_code, SIZE_T byte_code_length, const D3D10_SO_DECLARATION_ENTRY *output_stream_decls, UINT output_stream_decl_count, UINT output_stream_stride, ID3D10GeometryShader **shader)
-{
-    struct qemu_d3d10_device_CreateGeometryShaderWithStreamOutput call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATEGEOMETRYSHADERWITHSTREAMOUTPUT);
-    call.iface = (ULONG_PTR)device;
-    call.byte_code = (ULONG_PTR)byte_code;
-    call.byte_code_length = byte_code_length;
-    call.output_stream_decls = (ULONG_PTR)output_stream_decls;
-    call.output_stream_decl_count = output_stream_decl_count;
-    call.output_stream_stride = output_stream_stride;
-    call.shader = (ULONG_PTR)shader;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreateGeometryShaderWithStreamOutput(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateGeometryShaderWithStreamOutput *c = (struct qemu_d3d10_device_CreateGeometryShaderWithStreamOutput *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateGeometryShaderWithStreamOutput(device->host_d3d10, QEMU_G2H(c->byte_code), c->byte_code_length, QEMU_G2H(c->output_stream_decls), c->output_stream_decl_count, c->output_stream_stride, QEMU_G2H(c->shader));
 }
 
 #endif
