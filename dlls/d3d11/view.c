@@ -295,21 +295,60 @@ struct qemu_d3d11_depthstencil_view_GetResource
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t resource;
+    uint64_t texture;
+    uint64_t buffer;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_depthstencil_view_GetResource(ID3D11DepthStencilView *iface, ID3D11Resource **resource)
+static void STDMETHODCALLTYPE d3d11_depthstencil_view_GetResource(ID3D11DepthStencilView *iface,
+        ID3D11Resource **resource)
 {
     struct qemu_d3d11_depthstencil_view_GetResource call;
     struct qemu_d3d11_view *view = impl_from_ID3D11DepthStencilView(iface);
+    struct qemu_d3d11_texture *tex;
+    struct qemu_d3d11_buffer *buf;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEPTHSTENCIL_VIEW_GETRESOURCE);
     call.iface = (ULONG_PTR)view;
-    call.resource = (ULONG_PTR)resource;
 
     qemu_syscall(&call.super);
+
+    if (call.buffer)
+    {
+        buf = (struct qemu_d3d11_buffer *)(ULONG_PTR)call.buffer;
+        *resource = (ID3D11Resource *)&buf->ID3D11Buffer_iface;
+    }
+    else
+    {
+        tex = (struct qemu_d3d11_texture *)(ULONG_PTR)call.texture;
+        *resource = (ID3D11Resource *)&tex->ID3D11Texture1D_iface;
+    }
+}
+
+static void STDMETHODCALLTYPE d3d10_depthstencil_view_GetResource(ID3D10DepthStencilView *iface,
+        ID3D10Resource **resource)
+{
+    struct qemu_d3d11_depthstencil_view_GetResource call;
+    struct qemu_d3d11_view *view = impl_from_ID3D10DepthStencilView(iface);
+    struct qemu_d3d11_texture *tex;
+    struct qemu_d3d11_buffer *buf;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_DEPTHSTENCIL_VIEW_GETRESOURCE);
+    call.iface = (ULONG_PTR)view;
+
+    qemu_syscall(&call.super);
+
+    if (call.buffer)
+    {
+        buf = (struct qemu_d3d11_buffer *)(ULONG_PTR)call.buffer;
+        *resource = (ID3D10Resource *)&buf->ID3D10Buffer_iface;
+    }
+    else
+    {
+        tex = (struct qemu_d3d11_texture *)(ULONG_PTR)call.texture;
+        *resource = (ID3D10Resource *)&tex->ID3D10Texture1D_iface;
+    }
 }
 
 #else
@@ -318,11 +357,28 @@ void qemu_d3d11_depthstencil_view_GetResource(struct qemu_syscall *call)
 {
     struct qemu_d3d11_depthstencil_view_GetResource *c = (struct qemu_d3d11_depthstencil_view_GetResource *)call;
     struct qemu_d3d11_view *view;
+    ID3D11Resource *host;
+    D3D11_RESOURCE_DIMENSION dim;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
-    ID3D11DepthStencilView_GetResource(view->host_ds11, QEMU_G2H(c->resource));
+    ID3D11DepthStencilView_GetResource(view->host_ds11, &host);
+
+    ID3D11Resource_GetType(host, &dim);
+    switch(dim)
+    {
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+            c->texture = 0;
+            c->buffer = QEMU_H2G(buffer_from_host((ID3D11Buffer *)host));
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+        case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+        case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
+            c->texture = QEMU_H2G(texture_from_host((ID3D11DeviceChild *)host));
+            c->buffer = 0;
+    }
 }
 
 #endif
@@ -482,42 +538,6 @@ static HRESULT STDMETHODCALLTYPE d3d10_depthstencil_view_SetPrivateDataInterface
     WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
     return d3d_set_private_data_interface(&view->private_store, guid, data);
-}
-
-#endif
-
-struct qemu_d3d10_depthstencil_view_GetResource
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t resource;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static void STDMETHODCALLTYPE d3d10_depthstencil_view_GetResource(ID3D10DepthStencilView *iface, ID3D10Resource **resource)
-{
-    struct qemu_d3d10_depthstencil_view_GetResource call;
-    struct qemu_d3d11_view *view = impl_from_ID3D10DepthStencilView(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEPTHSTENCIL_VIEW_GETRESOURCE);
-    call.iface = (ULONG_PTR)view;
-    call.resource = (ULONG_PTR)resource;
-
-    qemu_syscall(&call.super);
-}
-
-#else
-
-void qemu_d3d10_depthstencil_view_GetResource(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_depthstencil_view_GetResource *c = (struct qemu_d3d10_depthstencil_view_GetResource *)call;
-    struct qemu_d3d11_view *view;
-
-    WINE_FIXME("Unverified!\n");
-    view = QEMU_G2H(c->iface);
-
-    ID3D10DepthStencilView_GetResource(view->host_ds10, QEMU_G2H(c->resource));
 }
 
 #endif
@@ -804,21 +824,60 @@ struct qemu_d3d11_rendertarget_view_GetResource
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t resource;
+    uint64_t texture;
+    uint64_t buffer;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_rendertarget_view_GetResource(ID3D11RenderTargetView *iface, ID3D11Resource **resource)
+static void STDMETHODCALLTYPE d3d11_rendertarget_view_GetResource(ID3D11RenderTargetView *iface,
+        ID3D11Resource **resource)
 {
     struct qemu_d3d11_rendertarget_view_GetResource call;
     struct qemu_d3d11_view *view = impl_from_ID3D11RenderTargetView(iface);
+    struct qemu_d3d11_texture *tex;
+    struct qemu_d3d11_buffer *buf;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_RENDERTARGET_VIEW_GETRESOURCE);
     call.iface = (ULONG_PTR)view;
-    call.resource = (ULONG_PTR)resource;
 
     qemu_syscall(&call.super);
+
+    if (call.buffer)
+    {
+        buf = (struct qemu_d3d11_buffer *)(ULONG_PTR)call.buffer;
+        *resource = (ID3D11Resource *)&buf->ID3D11Buffer_iface;
+    }
+    else
+    {
+        tex = (struct qemu_d3d11_texture *)(ULONG_PTR)call.texture;
+        *resource = (ID3D11Resource *)&tex->ID3D11Texture1D_iface;
+    }
+}
+
+static void STDMETHODCALLTYPE d3d10_rendertarget_view_GetResource(ID3D10RenderTargetView *iface,
+        ID3D10Resource **resource)
+{
+    struct qemu_d3d11_rendertarget_view_GetResource call;
+    struct qemu_d3d11_view *view = impl_from_ID3D10RenderTargetView(iface);
+    struct qemu_d3d11_texture *tex;
+    struct qemu_d3d11_buffer *buf;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_RENDERTARGET_VIEW_GETRESOURCE);
+    call.iface = (ULONG_PTR)view;
+
+    qemu_syscall(&call.super);
+
+    if (call.buffer)
+    {
+        buf = (struct qemu_d3d11_buffer *)(ULONG_PTR)call.buffer;
+        *resource = (ID3D10Resource *)&buf->ID3D10Buffer_iface;
+    }
+    else
+    {
+        tex = (struct qemu_d3d11_texture *)(ULONG_PTR)call.texture;
+        *resource = (ID3D10Resource *)&tex->ID3D10Texture1D_iface;
+    }
 }
 
 #else
@@ -827,11 +886,28 @@ void qemu_d3d11_rendertarget_view_GetResource(struct qemu_syscall *call)
 {
     struct qemu_d3d11_rendertarget_view_GetResource *c = (struct qemu_d3d11_rendertarget_view_GetResource *)call;
     struct qemu_d3d11_view *view;
+    ID3D11Resource *host;
+    D3D11_RESOURCE_DIMENSION dim;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
-    ID3D11RenderTargetView_GetResource(view->host_rt11, QEMU_G2H(c->resource));
+    ID3D11RenderTargetView_GetResource(view->host_rt11, &host);
+
+    ID3D11Resource_GetType(host, &dim);
+    switch(dim)
+    {
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+            c->texture = 0;
+            c->buffer = QEMU_H2G(buffer_from_host((ID3D11Buffer *)host));
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+        case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+        case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
+            c->texture = QEMU_H2G(texture_from_host((ID3D11DeviceChild *)host));
+            c->buffer = 0;
+    }
 }
 
 #endif
@@ -991,42 +1067,6 @@ static HRESULT STDMETHODCALLTYPE d3d10_rendertarget_view_SetPrivateDataInterface
     WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
     return d3d_set_private_data_interface(&view->private_store, guid, data);
-}
-
-#endif
-
-struct qemu_d3d10_rendertarget_view_GetResource
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t resource;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static void STDMETHODCALLTYPE d3d10_rendertarget_view_GetResource(ID3D10RenderTargetView *iface, ID3D10Resource **resource)
-{
-    struct qemu_d3d10_rendertarget_view_GetResource call;
-    struct qemu_d3d11_view *view = impl_from_ID3D10RenderTargetView(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_RENDERTARGET_VIEW_GETRESOURCE);
-    call.iface = (ULONG_PTR)view;
-    call.resource = (ULONG_PTR)resource;
-
-    qemu_syscall(&call.super);
-}
-
-#else
-
-void qemu_d3d10_rendertarget_view_GetResource(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_rendertarget_view_GetResource *c = (struct qemu_d3d10_rendertarget_view_GetResource *)call;
-    struct qemu_d3d11_view *view;
-
-    WINE_FIXME("Unverified!\n");
-    view = QEMU_G2H(c->iface);
-
-    ID3D10RenderTargetView_GetResource(view->host_rt10, QEMU_G2H(c->resource));
 }
 
 #endif
@@ -1315,21 +1355,60 @@ struct qemu_d3d11_shader_resource_view_GetResource
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t resource;
+    uint64_t texture;
+    uint64_t buffer;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d11_shader_resource_view_GetResource(ID3D11ShaderResourceView *iface, ID3D11Resource **resource)
+static void STDMETHODCALLTYPE d3d11_shader_resource_view_GetResource(ID3D11ShaderResourceView *iface,
+        ID3D11Resource **resource)
 {
     struct qemu_d3d11_shader_resource_view_GetResource call;
     struct qemu_d3d11_view *view = impl_from_ID3D11ShaderResourceView(iface);
+    struct qemu_d3d11_texture *tex;
+    struct qemu_d3d11_buffer *buf;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_SHADER_RESOURCE_VIEW_GETRESOURCE);
     call.iface = (ULONG_PTR)view;
-    call.resource = (ULONG_PTR)resource;
 
     qemu_syscall(&call.super);
+
+    if (call.buffer)
+    {
+        buf = (struct qemu_d3d11_buffer *)(ULONG_PTR)call.buffer;
+        *resource = (ID3D11Resource *)&buf->ID3D11Buffer_iface;
+    }
+    else
+    {
+        tex = (struct qemu_d3d11_texture *)(ULONG_PTR)call.texture;
+        *resource = (ID3D11Resource *)&tex->ID3D11Texture1D_iface;
+    }
+}
+
+static void STDMETHODCALLTYPE d3d10_shader_resource_view_GetResource(ID3D10ShaderResourceView1 *iface,
+        ID3D10Resource **resource)
+{
+    struct qemu_d3d11_shader_resource_view_GetResource call;
+    struct qemu_d3d11_view *view = impl_from_ID3D10ShaderResourceView1(iface);
+    struct qemu_d3d11_texture *tex;
+    struct qemu_d3d11_buffer *buf;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_SHADER_RESOURCE_VIEW_GETRESOURCE);
+    call.iface = (ULONG_PTR)view;
+
+    qemu_syscall(&call.super);
+
+    if (call.buffer)
+    {
+        buf = (struct qemu_d3d11_buffer *)(ULONG_PTR)call.buffer;
+        *resource = (ID3D10Resource *)&buf->ID3D10Buffer_iface;
+    }
+    else
+    {
+        tex = (struct qemu_d3d11_texture *)(ULONG_PTR)call.texture;
+        *resource = (ID3D10Resource *)&tex->ID3D10Texture1D_iface;
+    }
 }
 
 #else
@@ -1338,11 +1417,28 @@ void qemu_d3d11_shader_resource_view_GetResource(struct qemu_syscall *call)
 {
     struct qemu_d3d11_shader_resource_view_GetResource *c = (struct qemu_d3d11_shader_resource_view_GetResource *)call;
     struct qemu_d3d11_view *view;
+    ID3D11Resource *host;
+    D3D11_RESOURCE_DIMENSION dim;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
-    ID3D11ShaderResourceView_GetResource(view->host_sr11, QEMU_G2H(c->resource));
+    ID3D11ShaderResourceView_GetResource(view->host_sr11, &host);
+
+    ID3D11Resource_GetType(host, &dim);
+    switch(dim)
+    {
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+            c->texture = 0;
+            c->buffer = QEMU_H2G(buffer_from_host((ID3D11Buffer *)host));
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+        case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+        case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
+            c->texture = QEMU_H2G(texture_from_host((ID3D11DeviceChild *)host));
+            c->buffer = 0;
+    }
 }
 
 #endif
@@ -1502,42 +1598,6 @@ static HRESULT STDMETHODCALLTYPE d3d10_shader_resource_view_SetPrivateDataInterf
     WINE_TRACE("iface %p, guid %s, data %p.\n", iface, wine_dbgstr_guid(guid), data);
 
     return d3d_set_private_data_interface(&view->private_store, guid, data);
-}
-
-#endif
-
-struct qemu_d3d10_shader_resource_view_GetResource
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t resource;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static void STDMETHODCALLTYPE d3d10_shader_resource_view_GetResource(ID3D10ShaderResourceView1 *iface, ID3D10Resource **resource)
-{
-    struct qemu_d3d10_shader_resource_view_GetResource call;
-    struct qemu_d3d11_view *view = impl_from_ID3D10ShaderResourceView1(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_SHADER_RESOURCE_VIEW_GETRESOURCE);
-    call.iface = (ULONG_PTR)view;
-    call.resource = (ULONG_PTR)resource;
-
-    qemu_syscall(&call.super);
-}
-
-#else
-
-void qemu_d3d10_shader_resource_view_GetResource(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_shader_resource_view_GetResource *c = (struct qemu_d3d10_shader_resource_view_GetResource *)call;
-    struct qemu_d3d11_view *view;
-
-    WINE_FIXME("Unverified!\n");
-    view = QEMU_G2H(c->iface);
-
-    ID3D10ShaderResourceView1_GetResource(view->host_sr10, QEMU_G2H(c->resource));
 }
 
 #endif
@@ -1812,7 +1872,8 @@ struct qemu_d3d11_unordered_access_view_GetResource
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t resource;
+    uint64_t texture;
+    uint64_t buffer;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1821,12 +1882,24 @@ static void STDMETHODCALLTYPE d3d11_unordered_access_view_GetResource(ID3D11Unor
 {
     struct qemu_d3d11_unordered_access_view_GetResource call;
     struct qemu_d3d11_view *view = impl_from_ID3D11UnorderedAccessView(iface);
+    struct qemu_d3d11_texture *tex;
+    struct qemu_d3d11_buffer *buf;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D11_UNORDERED_ACCESS_VIEW_GETRESOURCE);
     call.iface = (ULONG_PTR)view;
-    call.resource = (ULONG_PTR)resource;
 
     qemu_syscall(&call.super);
+
+    if (call.buffer)
+    {
+        buf = (struct qemu_d3d11_buffer *)(ULONG_PTR)call.buffer;
+        *resource = (ID3D11Resource *)&buf->ID3D11Buffer_iface;
+    }
+    else
+    {
+        tex = (struct qemu_d3d11_texture *)(ULONG_PTR)call.texture;
+        *resource = (ID3D11Resource *)&tex->ID3D11Texture1D_iface;
+    }
 }
 
 #else
@@ -1835,11 +1908,28 @@ void qemu_d3d11_unordered_access_view_GetResource(struct qemu_syscall *call)
 {
     struct qemu_d3d11_unordered_access_view_GetResource *c = (struct qemu_d3d11_unordered_access_view_GetResource *)call;
     struct qemu_d3d11_view *view;
+    ID3D11Resource *host;
+    D3D11_RESOURCE_DIMENSION dim;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     view = QEMU_G2H(c->iface);
 
-    ID3D11UnorderedAccessView_GetResource(view->host_uav, QEMU_G2H(c->resource));
+    ID3D11UnorderedAccessView_GetResource(view->host_uav, &host);
+
+    ID3D11Resource_GetType(host, &dim);
+    switch(dim)
+    {
+        case D3D11_RESOURCE_DIMENSION_BUFFER:
+            c->texture = 0;
+            c->buffer = QEMU_H2G(buffer_from_host((ID3D11Buffer *)host));
+            break;
+
+        case D3D11_RESOURCE_DIMENSION_TEXTURE1D:
+        case D3D11_RESOURCE_DIMENSION_TEXTURE2D:
+        case D3D11_RESOURCE_DIMENSION_TEXTURE3D:
+            c->texture = QEMU_H2G(texture_from_host((ID3D11DeviceChild *)host));
+            c->buffer = 0;
+    }
 }
 
 #endif
