@@ -304,8 +304,10 @@ WINBASEAPI void WINAPI FreeLibraryAndExitThread(HINSTANCE hLibModule, DWORD dwEx
 void qemu_FreeLibraryAndExitThread(struct qemu_syscall *call)
 {
     struct qemu_FreeLibraryAndExitThread *c = (struct qemu_FreeLibraryAndExitThread *)call;
-    WINE_FIXME("Unverified!\n");
-    FreeLibraryAndExitThread(QEMU_G2H(c->hLibModule), c->dwExitCode);
+    /* I am not entirely sure if this is working as advertised. */
+    WINE_TRACE("\n");
+    qemu_ops->qemu_FreeLibrary(QEMU_G2H(c->hLibModule));
+    ExitThread(c->dwExitCode);
 }
 
 #endif
