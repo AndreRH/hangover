@@ -1886,7 +1886,8 @@ WINBASEAPI DWORD WINAPI SetTcpEntry(PMIB_TCPROW pTcpRow)
 void qemu_SetTcpEntry(struct qemu_syscall *call)
 {
     struct qemu_SetTcpEntry *c = (struct qemu_SetTcpEntry *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_TCPROW has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = SetTcpEntry(QEMU_G2H(c->pTcpRow));
 }
 
@@ -1928,6 +1929,7 @@ extern DWORD WINAPI SetPerTcpConnectionEStats(PMIB_TCPROW row, TCP_ESTATS_TYPE s
 void qemu_SetPerTcpConnectionEStats(struct qemu_syscall *call)
 {
     struct qemu_SetPerTcpConnectionEStats *c = (struct qemu_SetPerTcpConnectionEStats *)call;
+    /* MIB_TCPROW has the same size in 32 and 64 bit. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = SetPerTcpConnectionEStats(QEMU_G2H(c->row), c->state, QEMU_G2H(c->rw), c->version, c->size, c->offset);
 }
