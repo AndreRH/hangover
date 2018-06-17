@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 André Hentschel
+ * Copyright 2017-2018 Stefan Dösinger (for CodeWeavers)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +29,9 @@
 #include <fltdefs.h>
 #include <netioapi.h>
 #include <tcpestats.h>
+
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_iphlpapi.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -93,8 +97,8 @@ DWORD WINAPI iphlpapi_Icmp6SendEcho2(HANDLE IcmpHandle,HANDLE Event,FARPROC ApcR
 {
     struct qemu_Icmp6SendEcho2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ICMP6SENDECHO2);
-    call.IcmpHandle = (ULONG_PTR)IcmpHandle;
-    call.Event = (ULONG_PTR)Event;
+    call.IcmpHandle = guest_HANDLE_g2h(IcmpHandle);
+    call.Event = guest_HANDLE_g2h(Event);
     call.ApcRoutine = (ULONG_PTR)ApcRoutine;
     call.ApcContext = (ULONG_PTR)ApcContext;
     call.SourceAddress = (ULONG_PTR)SourceAddress;
@@ -146,7 +150,7 @@ WINBASEAPI HANDLE WINAPI IcmpCreateFile(VOID)
 void qemu_IcmpCreateFile(struct qemu_syscall *call)
 {
     struct qemu_IcmpCreateFile *c = (struct qemu_IcmpCreateFile *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)IcmpCreateFile();
 }
 
@@ -164,7 +168,7 @@ WINBASEAPI BOOL WINAPI IcmpCloseHandle(HANDLE IcmpHandle)
 {
     struct qemu_IcmpCloseHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ICMPCLOSEHANDLE);
-    call.IcmpHandle = (ULONG_PTR)IcmpHandle;
+    call.IcmpHandle = guest_HANDLE_g2h(IcmpHandle);
 
     qemu_syscall(&call.super);
 
@@ -197,11 +201,12 @@ struct qemu_IcmpSendEcho
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI IcmpSendEcho(HANDLE IcmpHandle, IPAddr DestinationAddress, LPVOID RequestData, WORD RequestSize, PIP_OPTION_INFORMATION RequestOptions, LPVOID ReplyBuffer, DWORD ReplySize, DWORD Timeout)
+WINBASEAPI DWORD WINAPI IcmpSendEcho(HANDLE IcmpHandle, IPAddr DestinationAddress, LPVOID RequestData,
+        WORD RequestSize, PIP_OPTION_INFORMATION RequestOptions, LPVOID ReplyBuffer, DWORD ReplySize, DWORD Timeout)
 {
     struct qemu_IcmpSendEcho call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ICMPSENDECHO);
-    call.IcmpHandle = (ULONG_PTR)IcmpHandle;
+    call.IcmpHandle = guest_HANDLE_g2h(IcmpHandle);
     call.DestinationAddress = (ULONG_PTR)DestinationAddress;
     call.RequestData = (ULONG_PTR)RequestData;
     call.RequestSize = (ULONG_PTR)RequestSize;
@@ -220,8 +225,27 @@ WINBASEAPI DWORD WINAPI IcmpSendEcho(HANDLE IcmpHandle, IPAddr DestinationAddres
 void qemu_IcmpSendEcho(struct qemu_syscall *call)
 {
     struct qemu_IcmpSendEcho *c = (struct qemu_IcmpSendEcho *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = IcmpSendEcho(QEMU_G2H(c->IcmpHandle), c->DestinationAddress, QEMU_G2H(c->RequestData), c->RequestSize, QEMU_G2H(c->RequestOptions), QEMU_G2H(c->ReplyBuffer), c->ReplySize, c->Timeout);
+    IP_OPTION_INFORMATION stack, *options = &stack;
+    struct qemu_IP_OPTION_INFORMATION *options32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    options = QEMU_G2H(c->RequestOptions);
+#else
+    options32 = QEMU_G2H(c->RequestOptions);
+    if (options32)
+    {
+        IP_OPTION_INFORMATION_g2h(options, options32);
+        if (options->OptionsData)
+            WINE_FIXME("Options data not handled yet.\n");
+    }
+    else
+    {
+        options = NULL;
+    }
+#endif
+    c->super.iret = IcmpSendEcho(QEMU_G2H(c->IcmpHandle), c->DestinationAddress, QEMU_G2H(c->RequestData),
+            c->RequestSize, options, QEMU_G2H(c->ReplyBuffer), c->ReplySize, c->Timeout);
 }
 
 #endif
@@ -248,7 +272,7 @@ WINBASEAPI DWORD WINAPI IcmpSendEcho2(HANDLE IcmpHandle, HANDLE Event, FARPROC A
 {
     struct qemu_IcmpSendEcho2 call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ICMPSENDECHO2);
-    call.IcmpHandle = (ULONG_PTR)IcmpHandle;
+    call.IcmpHandle = guest_HANDLE_g2h(IcmpHandle);
     call.Event = (ULONG_PTR)Event;
     call.ApcRoutine = (ULONG_PTR)ApcRoutine;
     call.ApcContext = (ULONG_PTR)ApcContext;
@@ -301,7 +325,7 @@ WINBASEAPI DWORD WINAPI IcmpSendEcho2Ex(HANDLE IcmpHandle, HANDLE Event, PIO_APC
 {
     struct qemu_IcmpSendEcho2Ex call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ICMPSENDECHO2EX);
-    call.IcmpHandle = (ULONG_PTR)IcmpHandle;
+    call.IcmpHandle = guest_HANDLE_g2h(IcmpHandle);
     call.Event = (ULONG_PTR)Event;
     call.ApcRoutine = (ULONG_PTR)ApcRoutine;
     call.ApcContext = (ULONG_PTR)ApcContext;
