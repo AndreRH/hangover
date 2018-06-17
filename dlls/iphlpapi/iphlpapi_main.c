@@ -886,7 +886,8 @@ WINBASEAPI DWORD WINAPI GetIfTable(PMIB_IFTABLE pIfTable, PULONG pdwSize, BOOL b
 void qemu_GetIfTable(struct qemu_syscall *call)
 {
     struct qemu_GetIfTable *c = (struct qemu_GetIfTable *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_IFTABLE has the same size on 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetIfTable(QEMU_G2H(c->pIfTable), QEMU_G2H(c->pdwSize), c->bOrder);
 }
 
