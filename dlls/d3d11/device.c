@@ -12958,10 +12958,11 @@ static void STDMETHODCALLTYPE d3d10_device_GenerateMips(ID3D10Device1 *iface, ID
 {
     struct qemu_d3d10_device_GenerateMips call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    struct qemu_d3d11_view *impl = unsafe_impl_from_ID3D10ShaderResourceView(view);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_GENERATEMIPS);
     call.iface = (ULONG_PTR)device;
-    call.view = (ULONG_PTR)view;
+    call.view = (ULONG_PTR)impl;
 
     qemu_syscall(&call.super);
 }
@@ -12972,11 +12973,13 @@ void qemu_d3d10_device_GenerateMips(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_GenerateMips *c = (struct qemu_d3d10_device_GenerateMips *)call;
     struct qemu_d3d11_device *device;
+    struct qemu_d3d11_view *view;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    view = QEMU_G2H(c->view);
 
-    ID3D10Device1_GenerateMips(device->host_d3d10, QEMU_G2H(c->view));
+    ID3D10Device1_GenerateMips(device->host_d3d10, view ? (ID3D10ShaderResourceView *)view->host_sr10 : NULL);
 }
 
 #endif
