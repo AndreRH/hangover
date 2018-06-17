@@ -33,6 +33,7 @@
 #include "thunk/qemu_windows.h"
 #include "thunk/qemu_winsock2.h"
 #include "thunk/qemu_iptypes.h"
+#include "thunk/qemu_ws2tcpip.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -330,19 +331,22 @@ struct qemu_CreateSortedAddressPairs
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI CreateSortedAddressPairs(const PSOCKADDR_IN6 src_list, DWORD src_count, const PSOCKADDR_IN6 dst_list, DWORD dst_count, DWORD options, PSOCKADDR_IN6_PAIR *pair_list, DWORD *pair_count)
+WINBASEAPI DWORD WINAPI CreateSortedAddressPairs(const PSOCKADDR_IN6 src_list, DWORD src_count,
+        const PSOCKADDR_IN6 dst_list, DWORD dst_count, DWORD options, PSOCKADDR_IN6_PAIR *pair_list, DWORD *pair_count)
 {
     struct qemu_CreateSortedAddressPairs call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESORTEDADDRESSPAIRS);
     call.src_list = (ULONG_PTR)src_list;
-    call.src_count = (ULONG_PTR)src_count;
+    call.src_count = src_count;
     call.dst_list = (ULONG_PTR)dst_list;
-    call.dst_count = (ULONG_PTR)dst_count;
+    call.dst_count = dst_count;
     call.options = (ULONG_PTR)options;
     call.pair_list = (ULONG_PTR)pair_list;
     call.pair_count = (ULONG_PTR)pair_count;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == NO_ERROR)
+        *pair_list = (SOCKADDR_IN6_PAIR *)(ULONG_PTR)call.pair_list;
 
     return call.super.iret;
 }
@@ -350,12 +354,31 @@ WINBASEAPI DWORD WINAPI CreateSortedAddressPairs(const PSOCKADDR_IN6 src_list, D
 #else
 
 /* TODO: Add CreateSortedAddressPairs to Wine headers? */
-extern DWORD WINAPI CreateSortedAddressPairs(const PSOCKADDR_IN6 src_list, DWORD src_count, const PSOCKADDR_IN6 dst_list, DWORD dst_count, DWORD options, PSOCKADDR_IN6_PAIR *pair_list, DWORD *pair_count);
+extern DWORD WINAPI CreateSortedAddressPairs(const PSOCKADDR_IN6 src_list, DWORD src_count,
+        const PSOCKADDR_IN6 dst_list, DWORD dst_count, DWORD options, SOCKADDR_IN6_PAIR **pair_list, DWORD *pair_count);
 void qemu_CreateSortedAddressPairs(struct qemu_syscall *call)
 {
     struct qemu_CreateSortedAddressPairs *c = (struct qemu_CreateSortedAddressPairs *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CreateSortedAddressPairs(QEMU_G2H(c->src_list), c->src_count, QEMU_G2H(c->dst_list), c->dst_count, c->options, QEMU_G2H(c->pair_list), QEMU_G2H(c->pair_count));
+    SOCKADDR_IN6_PAIR *pairs;
+    DWORD i;
+    DWORD *count;
+
+    /* SOCKADDR_IN6 has the same size in 32 and 64 bit but SOCKADDR_IN6_PAIR does not. */
+    WINE_TRACE("\n");
+    count = QEMU_G2H(c->pair_count);
+
+    c->super.iret = CreateSortedAddressPairs(QEMU_G2H(c->src_list), c->src_count, QEMU_G2H(c->dst_list), c->dst_count,
+            c->options, c->pair_list ? &pairs : NULL, count);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret == NO_ERROR)
+    {
+        struct qemu_SOCKADDR_IN6_PAIR *pairs32 = (struct qemu_SOCKADDR_IN6_PAIR *)pairs;
+        for (i = 0; i < *count; ++i)
+            SOCKADDR_IN6_PAIR_h2g(&pairs32[i], &pairs[i]);
+    }
+#endif
+    c->pair_list = QEMU_H2G(pairs);
 }
 
 #endif

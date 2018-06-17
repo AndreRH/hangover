@@ -1,6 +1,8 @@
 #ifndef HAVE_QEMU_WS2TCPIP_H
 #define HAVE_QEMU_WS2TCPIP_H
 
+#include "thunk/qemu_ws2ipdef.h"
+
 struct qemu_WS_addrinfo
 {
     int                 ai_flags;
