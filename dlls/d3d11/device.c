@@ -12469,33 +12469,84 @@ struct qemu_d3d10_device_CopySubresourceRegion
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t dst_resource;
+    uint64_t dst_texture;
+    uint64_t dst_buffer;
     uint64_t dst_subresource_idx;
     uint64_t dst_x;
     uint64_t dst_y;
     uint64_t dst_z;
-    uint64_t src_resource;
+    uint64_t src_texture;
+    uint64_t src_buffer;
     uint64_t src_subresource_idx;
     uint64_t src_box;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static void STDMETHODCALLTYPE d3d10_device_CopySubresourceRegion(ID3D10Device1 *iface, ID3D10Resource *dst_resource, UINT dst_subresource_idx, UINT dst_x, UINT dst_y, UINT dst_z, ID3D10Resource *src_resource, UINT src_subresource_idx, const D3D10_BOX *src_box)
+static void STDMETHODCALLTYPE d3d10_device_CopySubresourceRegion(ID3D10Device1 *iface, ID3D10Resource *dst_resource,
+        UINT dst_subresource_idx, UINT dst_x, UINT dst_y, UINT dst_z, ID3D10Resource *src_resource,
+        UINT src_subresource_idx, const D3D10_BOX *src_box)
 {
     struct qemu_d3d10_device_CopySubresourceRegion call;
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
+    D3D10_RESOURCE_DIMENSION dim;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_COPYSUBRESOURCEREGION);
     call.iface = (ULONG_PTR)device;
-    call.dst_resource = (ULONG_PTR)dst_resource;
     call.dst_subresource_idx = dst_subresource_idx;
     call.dst_x = dst_x;
     call.dst_y = dst_y;
     call.dst_z = dst_z;
-    call.src_resource = (ULONG_PTR)src_resource;
     call.src_subresource_idx = src_subresource_idx;
     call.src_box = (ULONG_PTR)src_box;
+
+    ID3D10Resource_GetType(dst_resource, &dim);
+    switch (dim)
+    {
+        case D3D10_RESOURCE_DIMENSION_TEXTURE1D:
+            call.dst_buffer = 0;
+            call.dst_texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture1D((ID3D10Texture1D *)dst_resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_TEXTURE2D:
+            call.dst_buffer = 0;
+            call.dst_texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture2D((ID3D10Texture2D *)dst_resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_TEXTURE3D:
+            call.dst_buffer = 0;
+            call.dst_texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture3D((ID3D10Texture3D *)dst_resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_BUFFER:
+            call.dst_buffer = (ULONG_PTR)unsafe_impl_from_ID3D10Buffer((ID3D10Buffer *)dst_resource);
+            call.dst_texture = 0;
+            break;
+    }
+
+    ID3D10Resource_GetType(src_resource, &dim);
+    switch (dim)
+    {
+        case D3D10_RESOURCE_DIMENSION_TEXTURE1D:
+            call.src_buffer = 0;
+            call.src_texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture1D((ID3D10Texture1D *)src_resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_TEXTURE2D:
+            call.src_buffer = 0;
+            call.src_texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture2D((ID3D10Texture2D *)src_resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_TEXTURE3D:
+            call.src_buffer = 0;
+            call.src_texture = (ULONG_PTR)unsafe_impl_from_ID3D10Texture3D((ID3D10Texture3D *)src_resource);
+            break;
+
+        case D3D10_RESOURCE_DIMENSION_BUFFER:
+            call.src_buffer = (ULONG_PTR)unsafe_impl_from_ID3D10Buffer((ID3D10Buffer *)src_resource);
+            call.src_texture = 0;
+            break;
+    }
 
     qemu_syscall(&call.super);
 }
@@ -12506,11 +12557,37 @@ void qemu_d3d10_device_CopySubresourceRegion(struct qemu_syscall *call)
 {
     struct qemu_d3d10_device_CopySubresourceRegion *c = (struct qemu_d3d10_device_CopySubresourceRegion *)call;
     struct qemu_d3d11_device *device;
+    ID3D10Resource *dst, *src;
+    struct qemu_d3d11_buffer *buf;
+    struct qemu_d3d11_texture *tex;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    ID3D10Device1_CopySubresourceRegion(device->host_d3d10, QEMU_G2H(c->dst_resource), c->dst_subresource_idx, c->dst_x, c->dst_y, c->dst_z, QEMU_G2H(c->src_resource), c->src_subresource_idx, QEMU_G2H(c->src_box));
+    if (c->src_buffer)
+    {
+        buf = QEMU_G2H(c->src_buffer);
+        src = (ID3D10Resource *)buf->host10;
+    }
+    else
+    {
+        tex = QEMU_G2H(c->src_texture);
+        src = (ID3D10Resource *)tex->host10_1d;
+    }
+
+    if (c->dst_buffer)
+    {
+        buf = QEMU_G2H(c->dst_buffer);
+        dst = (ID3D10Resource *)buf->host10;
+    }
+    else
+    {
+        tex = QEMU_G2H(c->dst_texture);
+        dst = (ID3D10Resource *)tex->host10_1d;
+    }
+
+    ID3D10Device1_CopySubresourceRegion(device->host_d3d10, dst, c->dst_subresource_idx, c->dst_x, c->dst_y, c->dst_z,
+            src, c->src_subresource_idx, QEMU_G2H(c->src_box));
 }
 
 #endif

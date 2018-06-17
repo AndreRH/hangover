@@ -688,9 +688,9 @@ static HRESULT STDMETHODCALLTYPE d3d10_buffer_Map(ID3D10Buffer *iface, D3D10_MAP
     call.iface = (ULONG_PTR)buffer;
     call.map_type = map_type;
     call.map_flags = map_flags;
-    call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
+    *data = (void *)(ULONG_PTR)call.data;
 
     return call.super.iret;
 }
@@ -701,11 +701,13 @@ void qemu_d3d10_buffer_Map(struct qemu_syscall *call)
 {
     struct qemu_d3d10_buffer_Map *c = (struct qemu_d3d10_buffer_Map *)call;
     struct qemu_d3d11_buffer *buffer;
+    void *data;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
-    c->super.iret = ID3D10Buffer_Map(buffer->host10, c->map_type, c->map_flags, QEMU_G2H(c->data));
+    c->super.iret = ID3D10Buffer_Map(buffer->host10, c->map_type, c->map_flags, &data);
+    c->data = QEMU_H2G(data);
 }
 
 #endif
@@ -736,7 +738,7 @@ void qemu_d3d10_buffer_Unmap(struct qemu_syscall *call)
     struct qemu_d3d10_buffer_Unmap *c = (struct qemu_d3d10_buffer_Unmap *)call;
     struct qemu_d3d11_buffer *buffer;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     buffer = QEMU_G2H(c->iface);
 
     ID3D10Buffer_Unmap(buffer->host10);
