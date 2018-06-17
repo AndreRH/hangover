@@ -181,8 +181,10 @@ WINBASEAPI BOOL WINAPI CancelIPChangeNotify(LPOVERLAPPED overlapped)
 void qemu_CancelIPChangeNotify(struct qemu_syscall *call)
 {
     struct qemu_CancelIPChangeNotify *c = (struct qemu_CancelIPChangeNotify *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CancelIPChangeNotify(QEMU_G2H(c->overlapped));
+    if (c->super.iret)
+        WINE_FIXME("Got an unexpected response from the host.\n");
 }
 
 #endif
