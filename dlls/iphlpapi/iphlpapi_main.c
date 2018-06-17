@@ -1308,7 +1308,8 @@ struct qemu_GetExtendedTcpTable
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI GetExtendedTcpTable(PVOID pTcpTable, PDWORD pdwSize, BOOL bOrder, ULONG ulAf, TCP_TABLE_CLASS TableClass, ULONG Reserved)
+WINBASEAPI DWORD WINAPI GetExtendedTcpTable(PVOID pTcpTable, PDWORD pdwSize, BOOL bOrder, ULONG ulAf,
+        TCP_TABLE_CLASS TableClass, ULONG Reserved)
 {
     struct qemu_GetExtendedTcpTable call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETEXTENDEDTCPTABLE);
@@ -1329,7 +1330,11 @@ WINBASEAPI DWORD WINAPI GetExtendedTcpTable(PVOID pTcpTable, PDWORD pdwSize, BOO
 void qemu_GetExtendedTcpTable(struct qemu_syscall *call)
 {
     struct qemu_GetExtendedTcpTable *c = (struct qemu_GetExtendedTcpTable *)call;
-    WINE_FIXME("Unverified!\n");
+
+    /* MIB_TCPTABLE, MIB_TCP6TABLE, MIB_TCP6TABLE2, MIB_TCPTABLE_OWNER_PID and MIB_TCPTABLE_OWNER_MODULE have the same
+     * size in 32 and 64 bit. MIB_TCPROW2 has no size specific members either, but Mingw's headers don't declare
+     * dwOwningPid. That can lead to issues, but is not specific to the wrapper. */
+    WINE_TRACE("\n");
     c->super.iret = GetExtendedTcpTable(QEMU_G2H(c->pTcpTable), QEMU_G2H(c->pdwSize), c->bOrder, c->ulAf, c->TableClass, c->Reserved);
 }
 
