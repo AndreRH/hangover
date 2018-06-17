@@ -1254,7 +1254,8 @@ WINBASEAPI DWORD WINAPI GetTcpTable(PMIB_TCPTABLE pTcpTable, PDWORD pdwSize, BOO
 void qemu_GetTcpTable(struct qemu_syscall *call)
 {
     struct qemu_GetTcpTable *c = (struct qemu_GetTcpTable *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_TCPTABLE has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetTcpTable(QEMU_G2H(c->pTcpTable), QEMU_G2H(c->pdwSize), c->bOrder);
 }
 
@@ -2128,6 +2129,7 @@ extern ULONG WINAPI GetTcpTable2(PMIB_TCPTABLE2 table, PULONG size, BOOL order);
 void qemu_GetTcpTable2(struct qemu_syscall *call)
 {
     struct qemu_GetTcpTable2 *c = (struct qemu_GetTcpTable2 *)call;
+    /* MIB_TCPTABLE has the same size in 32 and 64 bit. */
     WINE_FIXME("Unverified!\n");
     c->super.iret = GetTcpTable2(QEMU_G2H(c->table), QEMU_G2H(c->size), c->order);
 }
