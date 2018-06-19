@@ -2079,7 +2079,8 @@ struct qemu_RtlSleepConditionVariableCS
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI RtlSleepConditionVariableCS(RTL_CONDITION_VARIABLE *variable, RTL_CRITICAL_SECTION *crit, const LARGE_INTEGER *timeout)
+WINBASEAPI NTSTATUS WINAPI RtlSleepConditionVariableCS(RTL_CONDITION_VARIABLE *variable,
+        RTL_CRITICAL_SECTION *crit, const LARGE_INTEGER *timeout)
 {
     struct qemu_RtlSleepConditionVariableCS call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLSLEEPCONDITIONVARIABLECS);

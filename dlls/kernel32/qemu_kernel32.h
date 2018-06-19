@@ -872,7 +872,6 @@ enum kernel32_calls
     CALL_SIGNALOBJECTANDWAIT,
     CALL_SIZEOFRESOURCE,
     CALL_SLEEP,
-    CALL_SLEEPCONDITIONVARIABLECS,
     CALL_SLEEPCONDITIONVARIABLESRW,
     CALL_SLEEPEX,
     CALL_SUSPENDTHREAD,
@@ -1876,7 +1875,6 @@ void qemu_SetWaitableTimerEx(struct qemu_syscall *call);
 void qemu_SignalObjectAndWait(struct qemu_syscall *call);
 void qemu_SizeofResource(struct qemu_syscall *call);
 void qemu_Sleep(struct qemu_syscall *call);
-void qemu_SleepConditionVariableCS(struct qemu_syscall *call);
 void qemu_SleepConditionVariableSRW(struct qemu_syscall *call);
 void qemu_SleepEx(struct qemu_syscall *call);
 void qemu_SuspendThread(struct qemu_syscall *call);

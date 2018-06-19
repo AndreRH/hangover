@@ -1094,7 +1094,6 @@ static const syscall_handler dll_functions[] =
     qemu_SignalObjectAndWait,
     qemu_SizeofResource,
     qemu_Sleep,
-    qemu_SleepConditionVariableCS,
     qemu_SleepConditionVariableSRW,
     qemu_SleepEx,
     qemu_SuspendThread,

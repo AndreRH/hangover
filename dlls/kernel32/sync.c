@@ -34,6 +34,13 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
 #ifdef QEMU_DLL_GUEST
+static inline PLARGE_INTEGER get_nt_timeout( PLARGE_INTEGER pTime, DWORD timeout )
+{
+    if (timeout == INFINITE) return NULL;
+    pTime->QuadPart = (ULONGLONG)timeout * -10000;
+    return pTime;
+}
+
 /* For now the main purpose of this one is to force this library to import ntdll for the RVA Forwards. */
 extern NTSTATUS WINAPI RtlInitializeCriticalSectionEx(RTL_CRITICAL_SECTION *crit, ULONG spincount, ULONG flags);
 extern void WINAPI RtlRaiseStatus(NTSTATUS status);
@@ -3635,36 +3642,23 @@ void qemu_InitOnceExecuteOnce(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_SleepConditionVariableCS
-{
-    struct qemu_syscall super;
-    uint64_t variable;
-    uint64_t crit;
-    uint64_t timeout;
-};
-
 #ifdef QEMU_DLL_GUEST
 
+extern NTSTATUS WINAPI RtlSleepConditionVariableCS(RTL_CONDITION_VARIABLE *variable, RTL_CRITICAL_SECTION *crit,
+        const LARGE_INTEGER *timeout);
 WINBASEAPI BOOL WINAPI SleepConditionVariableCS(CONDITION_VARIABLE *variable, CRITICAL_SECTION *crit, DWORD timeout)
 {
-    struct qemu_SleepConditionVariableCS call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_SLEEPCONDITIONVARIABLECS);
-    call.variable = (ULONG_PTR)variable;
-    call.crit = (ULONG_PTR)crit;
-    call.timeout = (ULONG_PTR)timeout;
+    NTSTATUS status;
+    LARGE_INTEGER time;
 
-    qemu_syscall(&call.super);
+    status = RtlSleepConditionVariableCS( variable, crit, get_nt_timeout( &time, timeout ) );
 
-    return call.super.iret;
-}
-
-#else
-
-void qemu_SleepConditionVariableCS(struct qemu_syscall *call)
-{
-    struct qemu_SleepConditionVariableCS *c = (struct qemu_SleepConditionVariableCS *)call;
-    WINE_TRACE("\n");
-    c->super.iret = SleepConditionVariableCS(QEMU_G2H(c->variable), QEMU_G2H(c->crit), c->timeout);
+    if (status)
+    {
+        kernel32_SetLastError( RtlNtStatusToDosError(status) );
+        return FALSE;
+    }
+    return TRUE;
 }
 
 #endif
