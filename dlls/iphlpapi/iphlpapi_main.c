@@ -2619,7 +2619,7 @@ WINBASEAPI DWORD WINAPI ConvertLengthToIpv4Mask(ULONG mask_len, ULONG *mask)
 void qemu_ConvertLengthToIpv4Mask(struct qemu_syscall *call)
 {
     struct qemu_ConvertLengthToIpv4Mask *c = (struct qemu_ConvertLengthToIpv4Mask *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = ConvertLengthToIpv4Mask(c->mask_len, QEMU_G2H(c->mask));
 }
 
