@@ -1470,7 +1470,8 @@ WINBASEAPI DWORD WINAPI GetUnicastIpAddressEntry(MIB_UNICASTIPADDRESS_ROW *row)
 void qemu_GetUnicastIpAddressEntry(struct qemu_syscall *call)
 {
     struct qemu_GetUnicastIpAddressEntry *c = (struct qemu_GetUnicastIpAddressEntry *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_UNICASTIPADDRESS_ROW has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetUnicastIpAddressEntry(QEMU_G2H(c->row));
 }
 
