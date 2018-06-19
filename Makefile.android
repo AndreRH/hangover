@@ -4,9 +4,11 @@
 #export NDK_SYSROOT=/home/$USER/src/ndk/aarch64-linux-android/sysroot
 
 WINEDLLS = dbghelp ole32 oleaut32 propsys rpcrt4 urlmon windowscodecs netapi32 dnsapi msimg32 dwmapi uxtheme setupapi wintrust wtsapi32 pdh avrt cryptnet imagehlp cryptui sensapi msvcp80 msvcp100 lz32 msi dplay dplayx dpwsockx dpnet dpnaddr dpnhpast dpnlobby dpvoice mpr oledlg shdocvw msacm32 mlang gdiplus shell32 shlwapi wininet comctl32 comdlg32 d3d10core d3d10 d3d10_1 d3dcompiler_43 msxml msxml2 msxml3 msxml4 msxml6 shfolder d2d1 dwrite
+EXTDLLS  = libcharset-1 libiconv-2 libxml2-2 libxslt-1
 
 WINEDLL_TARGET32 = $(patsubst %,build.android/qemu/x86_64-windows-user/qemu_guest_dll32/%.dll,$(WINEDLLS))
 WINEDLL_TARGET64 = $(patsubst %,build.android/qemu/x86_64-windows-user/qemu_guest_dll64/%.dll,$(WINEDLLS))
+EXTDLL_TARGET32  = $(patsubst %,build.android/qemu/x86_64-windows-user/qemu_guest_dll32/%.dll,$(EXTDLLS))
 
 DLLS = $(strip $(subst include,,$(notdir $(shell find dlls/ -maxdepth 1 -type d | grep -v opengl32 | grep -v "\.drv"))))
 DRVS = $(strip $(subst include,,$(notdir $(shell find dlls/ -maxdepth 1 -type d | grep "\.drv"))))
@@ -64,7 +66,7 @@ build.android/freetype-2.9.1/objs/.libs/libfreetype.so: build.android/freetype-2
 
 
 glib/configure: glib/autogen.sh
-	cd $(@D) ; ./autogen.sh --help
+	cd $(@D) ; NOCONFIGURE=1 ./autogen.sh
 
 build.android/glib/Makefile: glib/configure
 	@mkdir -p $(@D)
@@ -72,6 +74,38 @@ build.android/glib/Makefile: glib/configure
 
 build.android/glib/glib/.libs/libglib-2.0.so: build.android/glib/Makefile
 	+$(MAKE) -C build.android/glib/ install
+
+
+build.android/libiconv/Makefile: libiconv/configure
+	@mkdir -p $(@D)
+	cd $(@D) ; ../../libiconv/configure --host=i686-w64-mingw32 --prefix=$(abspath build.android/i686-w64-mingw32)
+
+build.android/i686-w64-mingw32/bin/libcharset-1.dll: build.android/libiconv/Makefile
+	@mkdir -p $(@D)
+	+$(MAKE) -C build.android/libiconv/ install
+
+
+libxml2/configure: libxml2/autogen.sh
+	cd $(@D) ; NOCONFIGURE=1 ./autogen.sh
+
+build.android/libxml2/Makefile: libxml2/configure build.android/i686-w64-mingw32/bin/libcharset-1.dll
+	@mkdir -p $(@D)
+	cd $(@D) ; ../../libxml2/configure --host=i686-w64-mingw32 --enable-static=no --enable-shared=yes --without-python --without-zlib --without-lzma --with-iconv=$(abspath build.android/i686-w64-mingw32) --prefix=$(abspath build.android/i686-w64-mingw32)
+
+build.android/i686-w64-mingw32/bin/libxml2-2.dll: build.android/libxml2/Makefile
+	+$(MAKE) -C build.android/libxml2/ install
+
+
+libxslt/configure: libxslt/autogen.sh
+	cd $(@D) ; NOCONFIGURE=1 ./autogen.sh
+
+build.android/libxslt/Makefile: libxslt/configure build.android/i686-w64-mingw32/bin/libxml2-2.dll
+	@mkdir -p $(@D)
+	sed -i "s/WIN32_EXTRA_LDFLAGS/LIBXML_LIBS\) $$\(WIN32_EXTRA_LDFLAGS/" libxslt/libexslt/Makefile.am
+	cd $(@D) ; ../../libxslt/configure --host=i686-w64-mingw32 --enable-static=no --enable-shared=yes --without-python --without-plugins --without-crypto --prefix=$(abspath build.android/i686-w64-mingw32) PATH=$(abspath build.android/i686-w64-mingw32/bin):$(PATH) PKG_CONFIG_PATH=$(abspath build.android/i686-w64-mingw32/lib/pkgconfig)
+
+build.android/i686-w64-mingw32/bin/libxslt-1.dll: build.android/libxslt/Makefile
+	+$(MAKE) -C build.android/libxslt/ install
 
 
 # Build the wine tools for crosscompilation
@@ -105,9 +139,9 @@ wine-guest: build.android/wine-guest/Makefile
 	+$(MAKE) -C build.android/wine-guest $(patsubst %,dlls/%,$(WINEDLLS))
 
 # Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
-build.android/wine-guest32/Makefile: build.android/wine-tools/.built wine/configure
+build.android/wine-guest32/Makefile: build.android/wine-tools/.built wine/configure build.android/i686-w64-mingw32/bin/libxml2-2.dll build.android/i686-w64-mingw32/bin/libxslt-1.dll
 	@mkdir -p $(@D)
-	cd $(@D) ; ../../wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-tools --without-freetype --disable-tests
+	cd $(@D) ; ../../wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-tools --without-freetype --disable-tests --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build.android/i686-w64-mingw32/include/libxml2) -I$(abspath build.android/i686-w64-mingw32/include)" XML2_LIBS="-L$(abspath build.android/i686-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build.android/i686-w64-mingw32/include/libxml2) -I$(abspath build.android/i686-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build.android/i686-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
 
 wine-guest32: build.android/wine-guest32/Makefile
 	+$(MAKE) -C build.android/wine-guest32 $(patsubst %,dlls/%,$(WINEDLLS))
@@ -252,6 +286,14 @@ build.android/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll build.android/q
 endef
 $(foreach mod,$(WINEDLLS),$(eval $(call WINEDLLS_RULE,$(mod))))
 
+# Link external libraries.
+
+define EXTDLLS_RULE
+build.android/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll: wine-guest32 build.android/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+	cp -lf build.android/i686-w64-mingw32/bin/$(1).dll build.android/qemu/x86_64-windows-user/qemu_guest_dll32/
+endef
+$(foreach mod,$(EXTDLLS),$(eval $(call EXTDLLS_RULE,$(mod))))
+
 # Link libwine
 build.android/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll: wine-guest32 build.android/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	cp -lf build.android/wine-guest32/libs/wine/libwine.dll build.android/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll
@@ -259,7 +301,7 @@ build.android/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll: wine-guest 
 	cp -lf build.android/wine-guest/libs/wine/libwine.dll build.android/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
 
 # Resetup the apk with qemu
-build.android/wine-host/dlls/wineandroid.drv/hangover-debug.apk: build.android/wine-host/.built build.android/qemu/x86_64-windows-user/qemu-x86_64.exe.so wine-guest wine-guest32 $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) build.android/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll build.android/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
+build.android/wine-host/dlls/wineandroid.drv/hangover-debug.apk: build.android/wine-host/.built build.android/qemu/x86_64-windows-user/qemu-x86_64.exe.so wine-guest wine-guest32 $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32) build.android/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll build.android/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
 	+$(MAKE) -C build.android/libpng-1.5.30/ install
 	+$(MAKE) -C build.android/freetype-2.9.1/ install
 	+$(MAKE) -C build.android/glib/ install
