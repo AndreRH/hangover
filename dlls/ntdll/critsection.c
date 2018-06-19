@@ -600,3 +600,57 @@ void qemu_RtlLeaveCriticalSection(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_RtlSleepConditionVariableCS
+{
+    struct qemu_syscall super;
+    uint64_t variable;
+    uint64_t crit;
+    uint64_t timeout;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlSleepConditionVariableCS(RTL_CONDITION_VARIABLE *variable,
+        RTL_CRITICAL_SECTION *crit, const LARGE_INTEGER *timeout)
+{
+    struct qemu_RtlSleepConditionVariableCS call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLSLEEPCONDITIONVARIABLECS);
+    call.variable = (ULONG_PTR)variable;
+    call.crit = (ULONG_PTR)crit;
+    call.timeout = (ULONG_PTR)timeout;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlSleepConditionVariableCS(struct qemu_syscall *call)
+{
+    struct qemu_RtlSleepConditionVariableCS *c = (struct qemu_RtlSleepConditionVariableCS *)call;
+    struct qemu_RTL_CRITICAL_SECTION *crit32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+
+    c->super.iret = RtlSleepConditionVariableCS(QEMU_G2H(c->variable), QEMU_G2H(c->crit), QEMU_G2H(c->timeout));
+
+#else
+
+    crit32 = QEMU_G2H(c->crit);
+    if (!crit32->LockSemaphore)
+        init_cs32(crit32, 0);
+
+    /* Most of the time the pointer in RTL_CONDITION_VARIABLE is treated as an int, but not always. I don't
+     * think a temporary copy on the stack is working, and there's no free call, so we'll probably have to
+     * handle this call on the guest side. */
+    WINE_FIXME("RTL_CONDITION_VARIABLE probably needs some translation.\n");
+    c->super.iret = RtlSleepConditionVariableCS(QEMU_G2H(c->variable),
+            (RTL_CRITICAL_SECTION *)(ULONG_PTR)crit32->LockSemaphore, QEMU_G2H(c->timeout));
+
+#endif
+}
+
+#endif
+
