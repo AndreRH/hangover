@@ -43,10 +43,10 @@ build.android/libpng-1.5.30/configure: build.android/libpng-1.5.30.tar.gz
 	cd build.android ; rm -rf libpng-1.5.30 ; tar -xzf libpng-1.5.30.tar.gz ; cd .. ; touch $@
 
 build.android/libpng-1.5.30/Makefile: build.android/libpng-1.5.30/configure
-	@mkdir -p $(PREFIX)
-	cd $(@D) ; ./configure --host=aarch64-linux-android --prefix=$(PREFIX) CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang
+	cd $(@D) ; ./configure --host=aarch64-linux-android --prefix=$(abspath build.android/aarch64-linux-android) CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang
 
-build.android/libpng-1.5.30/.libs/libpng15.so: build.android/libpng-1.5.30/Makefile
+build.android/aarch64-linux-android/lib/libpng15.so: build.android/libpng-1.5.30/Makefile
+	@mkdir -p $(@D)
 	+$(MAKE) -C build.android/libpng-1.5.30/ install
 
 
@@ -57,11 +57,11 @@ build.android/freetype-2.9.1.tar.gz:
 build.android/freetype-2.9.1/configure: build.android/freetype-2.9.1.tar.gz
 	cd build.android ; rm -rf freetype-2.9.1 ; tar -xzf freetype-2.9.1.tar.gz ; cd .. ; touch $@
 
-build.android/freetype-2.9.1/config.mk: build.android/freetype-2.9.1/configure build.android/libpng-1.5.30/.libs/libpng15.so
-	@mkdir -p $(PREFIX)
-	cd $(@D) ; ./configure --host=aarch64-linux-android --prefix=$(PREFIX) LIBPNG_CFLAGS="-I$(PREFIX)/include/libpng15" LIBPNG_LIBS="-L$(PREFIX)/lib -lpng15" CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang
+build.android/freetype-2.9.1/config.mk: build.android/freetype-2.9.1/configure build.android/aarch64-linux-android/lib/libpng15.so
+	cd $(@D) ; ./configure --host=aarch64-linux-android --prefix=$(abspath build.android/aarch64-linux-android) LIBPNG_CFLAGS="-I$(abspath build.android/aarch64-linux-android)/include/libpng15" LIBPNG_LIBS="-L$(abspath build.android/aarch64-linux-android)/lib -lpng15" CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang
 
-build.android/freetype-2.9.1/objs/.libs/libfreetype.so: build.android/freetype-2.9.1/config.mk
+build.android/aarch64-linux-android/lib/libfreetype.so: build.android/freetype-2.9.1/config.mk
+	@mkdir -p $(@D)
 	+$(MAKE) -C build.android/freetype-2.9.1/ install
 
 
@@ -70,9 +70,9 @@ glib/configure: glib/autogen.sh
 
 build.android/glib/Makefile: glib/configure
 	@mkdir -p $(@D)
-	cd $(@D) ; ../../glib/configure --with-pcre=internal --host=aarch64-linux-android CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang --disable-libmount --prefix=$(PREFIX)
+	cd $(@D) ; ../../glib/configure --with-pcre=internal --host=aarch64-linux-android CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang --disable-libmount --prefix=$(abspath build.android/aarch64-linux-android)
 
-build.android/glib/glib/.libs/libglib-2.0.so: build.android/glib/Makefile
+build.android/aarch64-linux-android/lib/libglib-2.0.so: build.android/glib/Makefile
 	+$(MAKE) -C build.android/glib/ install
 
 
@@ -93,6 +93,7 @@ build.android/libxml2/Makefile: libxml2/configure build.android/i686-w64-mingw32
 	cd $(@D) ; ../../libxml2/configure --host=i686-w64-mingw32 --enable-static=no --enable-shared=yes --without-python --without-zlib --without-lzma --with-iconv=$(abspath build.android/i686-w64-mingw32) --prefix=$(abspath build.android/i686-w64-mingw32)
 
 build.android/i686-w64-mingw32/bin/libxml2-2.dll: build.android/libxml2/Makefile
+	@mkdir -p $(@D)
 	+$(MAKE) -C build.android/libxml2/ install
 
 
@@ -105,11 +106,12 @@ build.android/libxslt/Makefile: libxslt/configure build.android/i686-w64-mingw32
 	cd $(@D) ; ../../libxslt/configure --host=i686-w64-mingw32 --enable-static=no --enable-shared=yes --without-python --without-plugins --without-crypto --prefix=$(abspath build.android/i686-w64-mingw32) PATH=$(abspath build.android/i686-w64-mingw32/bin):$(PATH) PKG_CONFIG_PATH=$(abspath build.android/i686-w64-mingw32/lib/pkgconfig)
 
 build.android/i686-w64-mingw32/bin/libxslt-1.dll: build.android/libxslt/Makefile
+	@mkdir -p $(@D)
 	+$(MAKE) -C build.android/libxslt/ install
 
 
 # Build the wine tools for crosscompilation
-build.android/wine-tools/Makefile: wine/configure build.android/freetype-2.9.1/objs/.libs/libfreetype.so
+build.android/wine-tools/Makefile: wine/configure build.android/aarch64-linux-android/lib/libfreetype.so
 	@mkdir -p $(@D)
 	cd $(@D) ; ../../wine/configure --enable-win64 --with-freetype --with-gettext --disable-tests --disable-win16 --without-alsa --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-dbus --without-fontconfig --without-gphoto --without-glu --without-gnutls --without-gsm --without-gstreamer --without-hal --without-jpeg --without-krb5 --without-ldap --without-mpg123 --without-netapi --without-openal --without-opencl --without-opengl --without-osmesa --without-oss --without-pcap --without-pulse --without-png --without-sane --without-tiff --without-v4l --without-x --without-xcomposite --without-xcursor --without-xinerama --without-xinput --without-xinput2 --without-xml --without-xrandr --without-xrender --without-xshape --without-xshm --without-xslt --without-xxf86vm --without-zlib
 
@@ -124,7 +126,7 @@ build.android/wine-tools/.built: build.android/wine-tools/Makefile
 # Build the Host (e.g. arm64) wine
 build.android/wine-host/Makefile: build.android/wine-tools/.built wine/configure
 	@mkdir -p $(@D)
-	cd $(@D) ; ../../wine/configure --host=aarch64-linux-android --with-wine-tools=../wine-tools --prefix=$(PREFIX) --with-freetype --with-png --bindir=$(PREFIX)/bin --libdir=$(PREFIX)/lib CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang LIBPNG_CFLAGS="-I$(PREFIX)/include/libpng15" LIBPNG_LIBS="-L$(PREFIX)/lib -lpng15" FREETYPE_CFLAGS="-I$(PREFIX)/include/freetype2" FREETYPE_LIBS="-L$(PREFIX)/lib -lm -lz -lpng15 -lfreetype" --disable-tests
+	cd $(@D) ; ../../wine/configure --host=aarch64-linux-android --with-wine-tools=../wine-tools --prefix=$(PREFIX) --with-freetype --with-png --bindir=$(PREFIX)/bin --libdir=$(PREFIX)/lib CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang PNG_CFLAGS="-I$(abspath build.android/aarch64-linux-android)/include/libpng15" PNG_LIBS="-L$(abspath build.android/aarch64-linux-android)/lib -lpng15" FREETYPE_CFLAGS="-I$(abspath build.android/aarch64-linux-android)/include/freetype2" FREETYPE_LIBS="-L$(abspath build.android/aarch64-linux-android)/lib -lm -lz -lpng15 -lfreetype" --disable-tests
 
 wine-host build.android/wine-host/.built build.android/wine-host/dlls/wineandroid.drv/wine-debug.apk: build.android/wine-host/Makefile
 	+$(MAKE) -C build.android/wine-host
@@ -147,10 +149,10 @@ wine-guest32: build.android/wine-guest32/Makefile
 	+$(MAKE) -C build.android/wine-guest32 $(patsubst %,dlls/%,$(WINEDLLS))
 
 # Build qemu
-build.android/qemu/Makefile: build.android/glib/glib/.libs/libglib-2.0.so build.android/wine-tools/.built qemu/configure build.android/wine-host/.built
+build.android/qemu/Makefile: build.android/aarch64-linux-android/lib/libglib-2.0.so build.android/wine-tools/.built qemu/configure build.android/wine-host/.built
 	@mkdir -p $(@D)
 	+$(MAKE) -C build.android/glib/ install
-	cd $(@D) ; CC="$(WINE_HOST)/tools/winegcc/winegcc -D__ANDROID_API__=22 -I$(NDK_SYSROOT)/usr/include -L$(PREFIX)/lib --sysroot=$(WINE_HOST) -b aarch64-linux-android -B$(WINE_HOST)/tools/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include -DWINE_NOWINSOCK" CXX="$(WINE_HOST)/tools/winegcc/wineg++ -I$(NDK_SYSROOT)/usr/include -L$(PREFIX)/lib --sysroot=$(WINE_HOST) -b aarch64-linux-android -B$(WINE_HOST)/tools/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include  -DWINE_NOWINSOCK" ../../qemu/configure --disable-bzip2 --disable-libusb --disable-sdl --disable-snappy --disable-virtfs --disable-opengl --python=/usr/bin/python2.7 --disable-xen --disable-lzo --disable-qom-cast-debug --disable-vnc --disable-seccomp --disable-strip --disable-hax --disable-gnutls --disable-nettle --disable-replication --disable-tpm --disable-gtk --disable-gcrypt --disable-linux-aio --disable-system --disable-tools --disable-linux-user --disable-guest-agent --enable-windows-user --disable-fdt --disable-capstone ; cd ../.. ; touch $@
+	cd $(@D) ; CC="$(WINE_HOST)/tools/winegcc/winegcc -D__ANDROID_API__=22 -I$(NDK_SYSROOT)/usr/include -L$(abspath build.android/aarch64-linux-android)/lib --sysroot=$(WINE_HOST) -b aarch64-linux-android -B$(WINE_HOST)/tools/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include -DWINE_NOWINSOCK" CXX="$(WINE_HOST)/tools/winegcc/wineg++ -I$(NDK_SYSROOT)/usr/include -L$(abspath build.android/aarch64-linux-android)/lib --sysroot=$(WINE_HOST) -b aarch64-linux-android -B$(WINE_HOST)/tools/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include  -DWINE_NOWINSOCK" ../../qemu/configure --disable-bzip2 --disable-libusb --disable-sdl --disable-snappy --disable-virtfs --disable-opengl --python=/usr/bin/python2.7 --disable-xen --disable-lzo --disable-qom-cast-debug --disable-vnc --disable-seccomp --disable-strip --disable-hax --disable-gnutls --disable-nettle --disable-replication --disable-tpm --disable-gtk --disable-gcrypt --disable-linux-aio --disable-system --disable-tools --disable-linux-user --disable-guest-agent --enable-windows-user --disable-fdt --disable-capstone ; cd ../.. ; touch $@
 
 build.android/qemu/x86_64-windows-user/qemu-x86_64.exe.so: build.android/qemu/Makefile
 	+$(MAKE) -C build.android/qemu
@@ -302,9 +304,9 @@ build.android/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll: wine-guest 
 
 # Resetup the apk with qemu
 build.android/wine-host/dlls/wineandroid.drv/hangover-debug.apk: build.android/wine-host/.built build.android/qemu/x86_64-windows-user/qemu-x86_64.exe.so wine-guest wine-guest32 $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32) build.android/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll build.android/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
-	+$(MAKE) -C build.android/libpng-1.5.30/ install
-	+$(MAKE) -C build.android/freetype-2.9.1/ install
-	+$(MAKE) -C build.android/glib/ install
+	mkdir -p build.android/wine-host/dlls/wineandroid.drv/lib/arm64-v8a
+	cp -lf $(abspath build.android/aarch64-linux-android)/lib/lib*.so build.android/wine-host/dlls/wineandroid.drv/lib/arm64-v8a/
+	cp -lf $(abspath build.android/aarch64-linux-android)/lib/lib*.so build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib/
 	+$(MAKE) -C build.android/wine-host install
 	@mkdir -p build.android/npp
 	cd build.android/npp ; rm -rf * ; wget https://notepad-plus-plus.org/repository/7.x/7.5.1/npp.7.5.1.bin.x64.7z ; 7z x npp.7.5.1.bin.x64.7z ; rm -f npp.7.5.1.bin.x64.7z
@@ -314,10 +316,6 @@ build.android/wine-host/dlls/wineandroid.drv/hangover-debug.apk: build.android/w
 	cp -lf build.android/qemu/x86_64-windows-user/qemu-x86_64.exe.so build.android/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/x86/
 	cp -rf build.android/qemu/x86_64-windows-user/qemu_host* build.android/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/x86/
 	cp -rf build.android/qemu/x86_64-windows-user/qemu_guest* build.android/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/x86/
-	mkdir -p build.android/wine-host/dlls/wineandroid.drv/lib/arm64-v8a
-	rm -f $(PREFIX)/lib/libpng.so
-	cp -f $(PREFIX)/lib/libpng15.so $(PREFIX)/lib/libpng.so
-	cp -rf $(PREFIX)/lib/* build.android/wine-host/dlls/wineandroid.drv/lib/arm64-v8a/
 	rm -rf $(PREFIX)/include
 	rm -rf build.android/wine-host/dlls/wineandroid.drv/assets/include
 	rm -f build.android/wine-host/dlls/wineandroid.drv/wine-debug.apk
