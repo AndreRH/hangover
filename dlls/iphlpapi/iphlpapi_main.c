@@ -896,7 +896,8 @@ WINBASEAPI DWORD WINAPI GetIfEntry2(MIB_IF_ROW2 *row2)
 void qemu_GetIfEntry2(struct qemu_syscall *call)
 {
     struct qemu_GetIfEntry2 *c = (struct qemu_GetIfEntry2 *)call;
-    WINE_FIXME("Unverified!\n");
+    /* MIB_IF_ROW2 has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = GetIfEntry2(QEMU_G2H(c->row2));
 }
 
@@ -2659,7 +2660,6 @@ struct qemu_IPHLP_if_indextoname
 };
 
 #ifdef QEMU_DLL_GUEST
-
 WINBASEAPI CHAR * WINAPI IPHLP_if_indextoname(NET_IFINDEX index, CHAR *name)
 {
     struct qemu_IPHLP_if_indextoname call;
