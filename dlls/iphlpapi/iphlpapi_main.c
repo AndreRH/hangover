@@ -955,6 +955,8 @@ WINBASEAPI DWORD WINAPI GetIfTable2Ex(MIB_IF_TABLE_LEVEL level, MIB_IF_TABLE2 **
     call.table = (ULONG_PTR)table;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == NO_ERROR)
+        *table = (MIB_IF_TABLE2 *)(ULONG_PTR)call.table;
 
     return call.super.iret;
 }
@@ -966,8 +968,13 @@ extern DWORD WINAPI GetIfTable2Ex(MIB_IF_TABLE_LEVEL level, MIB_IF_TABLE2 **tabl
 void qemu_GetIfTable2Ex(struct qemu_syscall *call)
 {
     struct qemu_GetIfTable2Ex *c = (struct qemu_GetIfTable2Ex *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetIfTable2Ex(c->level, QEMU_G2H(c->table));
+    MIB_IF_TABLE2 *table;
+
+    /* MIB_IF_TABLE2 has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
+
+    c->super.iret = GetIfTable2Ex(c->level, c->table ? &table : NULL);
+    c->table = QEMU_H2G(table);
 }
 
 #endif
