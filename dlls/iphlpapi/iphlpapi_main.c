@@ -2579,7 +2579,7 @@ WINBASEAPI IF_INDEX WINAPI IPHLP_if_nametoindex(const char *name)
 void qemu_IPHLP_if_nametoindex(struct qemu_syscall *call)
 {
     struct qemu_IPHLP_if_nametoindex *c = (struct qemu_IPHLP_if_nametoindex *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_if_nametoindex(QEMU_G2H(c->name));
 }
 
@@ -2677,7 +2677,7 @@ WINBASEAPI CHAR * WINAPI IPHLP_if_indextoname(NET_IFINDEX index, CHAR *name)
 void qemu_IPHLP_if_indextoname(struct qemu_syscall *call)
 {
     struct qemu_IPHLP_if_indextoname *c = (struct qemu_IPHLP_if_indextoname *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_if_indextoname(c->index, QEMU_G2H(c->name)));
 }
 
