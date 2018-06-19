@@ -24,9 +24,9 @@ DRV_TARGET32 = $(join $(DRV___DIRS32), $(DRVS)) $(join $(DRV___DIRS32), $(DRV__H
 DRV___DIRS64 = $(patsubst %,build.android/dlls64/%/,$(DRVS))
 DRV_TARGET64 = $(join $(DRV___DIRS64), $(DRVS)) $(join $(DRV___DIRS64), $(DRV__HOST))
 
-PREFIX = $(realpath build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a)
-WINE_SRC = $(realpath wine)
-WINE_HOST = $(realpath build.android/wine-host)
+PREFIX = $(abspath build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a)
+WINE_SRC = $(abspath wine)
+WINE_HOST = $(abspath build.android/wine-host)
 TRIPLE = -b aarch64-linux-android
 
 all: build.android/wine-host/dlls/wineandroid.drv/hangover-debug.apk
