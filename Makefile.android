@@ -124,7 +124,7 @@ build.android/wine-tools/.built: build.android/wine-tools/Makefile
 # Build the Host (e.g. arm64) wine
 build.android/wine-host/Makefile: build.android/wine-tools/.built wine/configure
 	@mkdir -p $(@D)
-	cd $(@D) ; ../../wine/configure --host=aarch64-linux-android --with-wine-tools=../wine-tools --prefix=$(PREFIX) --bindir=$(PREFIX)/bin --libdir=$(PREFIX)/lib CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang LIBPNG_CFLAGS="-I$(PREFIX)/include/libpng15" LIBPNG_LIBS="-L$(PREFIX)/lib -lpng15" FREETYPE_CFLAGS="-I$(PREFIX)/include/freetype2" FREETYPE_LIBS="-L$(PREFIX)/lib -lm -lz -lpng15 -lfreetype" --disable-tests
+	cd $(@D) ; ../../wine/configure --host=aarch64-linux-android --with-wine-tools=../wine-tools --prefix=$(PREFIX) --with-freetype --with-png --bindir=$(PREFIX)/bin --libdir=$(PREFIX)/lib CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang LIBPNG_CFLAGS="-I$(PREFIX)/include/libpng15" LIBPNG_LIBS="-L$(PREFIX)/lib -lpng15" FREETYPE_CFLAGS="-I$(PREFIX)/include/freetype2" FREETYPE_LIBS="-L$(PREFIX)/lib -lm -lz -lpng15 -lfreetype" --disable-tests
 
 wine-host build.android/wine-host/.built build.android/wine-host/dlls/wineandroid.drv/wine-debug.apk: build.android/wine-host/Makefile
 	+$(MAKE) -C build.android/wine-host
