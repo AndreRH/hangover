@@ -174,4 +174,52 @@ static inline void TOKEN_MANDATORY_LABEL_h2g(struct qemu_TOKEN_MANDATORY_LABEL *
     SID_AND_ATTRIBUTES_h2g(&guest->Label, &host->Label);
 }
 
+struct qemu_JOBOBJECT_BASIC_LIMIT_INFORMATION
+{
+    LARGE_INTEGER PerProcessUserTimeLimit;
+    LARGE_INTEGER PerJobUserTimeLimit;
+    DWORD         LimitFlags;
+    qemu_ptr      MinimumWorkingSetSize;
+    qemu_ptr      MaximumWorkingSetSize;
+    DWORD         ActiveProcessLimit;
+    qemu_ptr      Affinity;
+    DWORD         PriorityClass;
+    DWORD         SchedulingClass;
+};
+
+static inline void JOBOBJECT_BASIC_LIMIT_INFORMATION_g2h(JOBOBJECT_BASIC_LIMIT_INFORMATION *host,
+        const struct qemu_JOBOBJECT_BASIC_LIMIT_INFORMATION *guest)
+{
+    host->PerProcessUserTimeLimit = guest->PerProcessUserTimeLimit;
+    host->PerJobUserTimeLimit = guest->PerJobUserTimeLimit;
+    host->LimitFlags = guest->LimitFlags;
+    host->MinimumWorkingSetSize = guest->MinimumWorkingSetSize;
+    host->MaximumWorkingSetSize = guest->MaximumWorkingSetSize;
+    host->ActiveProcessLimit = guest->ActiveProcessLimit;
+    host->Affinity = guest->Affinity;
+    host->PriorityClass = guest->PriorityClass;
+    host->SchedulingClass = guest->SchedulingClass;
+}
+
+struct qemu_JOBOBJECT_EXTENDED_LIMIT_INFORMATION
+{
+    struct qemu_JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
+    IO_COUNTERS                       IoInfo;
+    qemu_ptr                          ProcessMemoryLimit;
+    qemu_ptr                          JobMemoryLimit;
+    qemu_ptr                          PeakProcessMemoryUsed;
+    qemu_ptr                          PeakJobMemoryUsed;
+};
+
+static inline void JOBOBJECT_EXTENDED_LIMIT_INFORMATION_g2h(JOBOBJECT_EXTENDED_LIMIT_INFORMATION *host,
+        const struct qemu_JOBOBJECT_EXTENDED_LIMIT_INFORMATION *guest)
+{
+    JOBOBJECT_BASIC_LIMIT_INFORMATION_g2h(&host->BasicLimitInformation, &guest->BasicLimitInformation);
+    host->IoInfo = guest->IoInfo;
+    host->ProcessMemoryLimit = guest->ProcessMemoryLimit;
+    host->JobMemoryLimit = guest->JobMemoryLimit;
+    host->PeakProcessMemoryUsed = guest->PeakProcessMemoryUsed;
+    host->PeakJobMemoryUsed = guest->PeakJobMemoryUsed;
+}
+
 #endif

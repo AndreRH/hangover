@@ -316,6 +316,16 @@ static LRESULT CALLBACK qemu_GETMESSAGE_wrapper1(int code, WPARAM wp, LPARAM lp)
     return qemu_hook_wrapper(code, wp, lp, data);
 }
 
+static LRESULT CALLBACK qemu_GETMESSAGE_wrapper2(int code, WPARAM wp, LPARAM lp)
+{
+    struct qemu_hook_data *data = installed_hooks[WH_GETMESSAGE - WH_MIN][2];
+
+    if (!data || !data->hook_id)
+        WINE_ERR("GETMESSAGE hook callback called but no hook is installed.\n");
+
+    return qemu_hook_wrapper(code, wp, lp, data);
+}
+
 static LRESULT CALLBACK qemu_CALLWNDPROC_wrapper(int code, WPARAM wp, LPARAM lp)
 {
     struct qemu_hook_data *data = installed_hooks[WH_CALLWNDPROC - WH_MIN][0];
@@ -448,9 +458,14 @@ static HHOOK set_windows_hook(INT id, uint64_t proc, uint64_t inst, DWORD tid, B
                 real_proc = qemu_GETMESSAGE_wrapper1;
                 hook_no = 1;
             }
+            else if (!installed_hooks[WH_GETMESSAGE - WH_MIN][2])
+            {
+                real_proc = qemu_GETMESSAGE_wrapper2;
+                hook_no = 2;
+            }
             else
             {
-                WINE_FIXME("Two WH_GETMESSAGE hooks are already installed.\n");
+                WINE_FIXME("Three WH_GETMESSAGE hooks are already installed.\n");
                 LeaveCriticalSection(&hook_cs);
                 HeapFree(GetProcessHeap(), 0, hook_data);
                 return NULL;

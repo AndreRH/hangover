@@ -1499,7 +1499,7 @@ struct qemu_CreateJobObjectW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HANDLE WINAPI CreateJobObjectW(LPSECURITY_ATTRIBUTES sa, LPCWSTR name)
+WINBASEAPI HANDLE WINAPI CreateJobObjectW(SECURITY_ATTRIBUTES *sa, LPCWSTR name)
 {
     struct qemu_CreateJobObjectW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATEJOBOBJECTW);
@@ -1516,8 +1516,20 @@ WINBASEAPI HANDLE WINAPI CreateJobObjectW(LPSECURITY_ATTRIBUTES sa, LPCWSTR name
 void qemu_CreateJobObjectW(struct qemu_syscall *call)
 {
     struct qemu_CreateJobObjectW *c = (struct qemu_CreateJobObjectW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateJobObjectW(QEMU_G2H(c->sa), QEMU_G2H(c->name));
+    struct SA_conv_struct conv;
+    SECURITY_ATTRIBUTES *sa = &conv.sa;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    sa = QEMU_G2H(c->sa);
+#else
+    if (c->sa)
+        SECURITY_ATTRIBUTES_g2h(&conv, QEMU_G2H(c->sa));
+    else
+        sa = NULL;
+#endif
+
+    c->super.iret = (ULONG_PTR)CreateJobObjectW(sa, QEMU_G2H(c->name));
 }
 
 #endif
@@ -1722,8 +1734,70 @@ WINBASEAPI BOOL WINAPI SetInformationJobObject(HANDLE job, JOBOBJECTINFOCLASS cl
 void qemu_SetInformationJobObject(struct qemu_syscall *call)
 {
     struct qemu_SetInformationJobObject *c = (struct qemu_SetInformationJobObject *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetInformationJobObject(QEMU_G2H(c->job), c->class, QEMU_G2H(c->info), c->len);
+    HANDLE job;
+    JOBOBJECTINFOCLASS class;
+    DWORD len;
+
+    WINE_TRACE("\n");
+    job = QEMU_G2H(c->job);
+    class = c->class;
+    len = c->len;
+
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = SetInformationJobObject(job, class, QEMU_G2H(c->info), len);
+    return;
+#endif
+
+    if (!c->info)
+    {
+        c->super.iret = SetInformationJobObject(job, class, NULL, len);
+        return;
+    }
+
+    switch (c->class)
+    {
+        case JobObjectExtendedLimitInformation:
+        {
+            JOBOBJECT_EXTENDED_LIMIT_INFORMATION stack;
+
+            WINE_TRACE("Translating JOBOBJECT_EXTENDED_LIMIT_INFORMATION.\n");
+
+            if (len == sizeof(struct qemu_JOBOBJECT_EXTENDED_LIMIT_INFORMATION))
+            {
+                JOBOBJECT_EXTENDED_LIMIT_INFORMATION_g2h(&stack, QEMU_G2H(c->info));
+                len = sizeof(stack);
+            }
+            else
+            {
+                len = 0;
+            }
+
+            c->super.iret = SetInformationJobObject(job, class, &stack, len);
+            break;
+        }
+        case JobObjectBasicLimitInformation:
+        {
+            WINE_FIXME("Unhandled JobObjectBasicLimitInformation.\n");
+            c->super.iret = SetInformationJobObject(job, class, QEMU_G2H(c->info), len);
+            break;
+        }
+        case JobObjectAssociateCompletionPortInformation:
+        {
+            WINE_FIXME("Unhandled JobObjectAssociateCompletionPortInformation.\n");
+            c->super.iret = SetInformationJobObject(job, class, QEMU_G2H(c->info), len);
+            break;
+        }
+        case JobObjectBasicUIRestrictions:
+        {
+            WINE_FIXME("Unhandled JobObjectBasicUIRestrictions.\n");
+            c->super.iret = SetInformationJobObject(job, class, QEMU_G2H(c->info), len);
+            break;
+        }
+
+        default:
+            WINE_FIXME("Unknown job object class %lx\n", c->class);
+            c->super.iret = SetInformationJobObject(job, class, QEMU_G2H(c->info), len);
+    }
 }
 
 #endif
@@ -1788,7 +1862,7 @@ WINBASEAPI BOOL WINAPI IsProcessInJob(HANDLE process, HANDLE job, PBOOL result)
 void qemu_IsProcessInJob(struct qemu_syscall *call)
 {
     struct qemu_IsProcessInJob *c = (struct qemu_IsProcessInJob *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsProcessInJob(QEMU_G2H(c->process), QEMU_G2H(c->job), QEMU_G2H(c->result));
 }
 
