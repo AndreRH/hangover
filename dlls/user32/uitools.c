@@ -97,7 +97,7 @@ WINUSERAPI BOOL WINAPI DrawFrameControl(HDC hdc, LPRECT rc, UINT uType, UINT uSt
 void qemu_DrawFrameControl(struct qemu_syscall *call)
 {
     struct qemu_DrawFrameControl *c = (struct qemu_DrawFrameControl *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = DrawFrameControl(QEMU_G2H(c->hdc), QEMU_G2H(c->rc), c->uType, c->uState);
 }
 
