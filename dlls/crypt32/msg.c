@@ -222,7 +222,8 @@ struct qemu_CryptMsgGetParam
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptMsgGetParam(HCRYPTMSG hCryptMsg, DWORD dwParamType, DWORD dwIndex, void *pvData, DWORD *pcbData)
+WINBASEAPI BOOL WINAPI CryptMsgGetParam(HCRYPTMSG hCryptMsg, DWORD dwParamType, DWORD dwIndex, void *pvData,
+        DWORD *pcbData)
 {
     struct qemu_CryptMsgGetParam call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTMSGGETPARAM);
@@ -242,8 +243,26 @@ WINBASEAPI BOOL WINAPI CryptMsgGetParam(HCRYPTMSG hCryptMsg, DWORD dwParamType, 
 void qemu_CryptMsgGetParam(struct qemu_syscall *call)
 {
     struct qemu_CryptMsgGetParam *c = (struct qemu_CryptMsgGetParam *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptMsgGetParam(QEMU_G2H(c->hCryptMsg), c->dwParamType, c->dwIndex, QEMU_G2H(c->pvData), QEMU_G2H(c->pcbData));
+    DWORD param;
+    void *data;
+
+    WINE_FIXME("Hopelessly unfinished.\n");
+    param = c->dwParamType;
+    data = QEMU_G2H(c->pvData);
+
+    switch (param)
+    {
+        case CMSG_SIGNER_INFO_PARAM:
+            c->super.iret = CryptMsgGetParam(QEMU_G2H(c->hCryptMsg), param, c->dwIndex, data,
+                    QEMU_G2H(c->pcbData));
+            if (data && c->super.iret)
+                CMSG_SIGNER_INFO_h2g(data, data);
+            break;
+
+        default:
+            c->super.iret = CryptMsgGetParam(QEMU_G2H(c->hCryptMsg), param, c->dwIndex, data,
+                    QEMU_G2H(c->pcbData));
+    }
 }
 
 #endif

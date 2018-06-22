@@ -379,4 +379,27 @@ static inline void CERT_CHAIN_PARA_g2h(CERT_CHAIN_PARA *host, const struct qemu_
 }
 #endif
 
+struct qemu_CMSG_SIGNER_INFO
+{
+    DWORD                                   dwVersion;
+    struct qemu_CRYPT_DATA_BLOB             Issuer;
+    struct qemu_CRYPT_DATA_BLOB             SerialNumber;
+    struct qemu_CRYPT_ALGORITHM_IDENTIFIER  HashAlgorithm;
+    struct qemu_CRYPT_ALGORITHM_IDENTIFIER  HashEncryptionAlgorithm;
+    struct qemu_CRYPT_DATA_BLOB             EncryptedHash;
+    CRYPT_ATTRIBUTES                        AuthAttrs;
+    CRYPT_ATTRIBUTES                        UnauthAttrs;
+};
+
+static inline void CMSG_SIGNER_INFO_h2g(struct qemu_CMSG_SIGNER_INFO *guest, const CMSG_SIGNER_INFO *host)
+{
+    guest->dwVersion = host->dwVersion;
+    CRYPT_DATA_BLOB_h2g(&guest->Issuer, &host->Issuer);
+    CRYPT_DATA_BLOB_h2g(&guest->SerialNumber, &host->SerialNumber);
+    CRYPT_ALGORITHM_IDENTIFIER_h2g(&guest->HashAlgorithm, &host->HashAlgorithm);
+    CRYPT_ALGORITHM_IDENTIFIER_h2g(&guest->HashEncryptionAlgorithm, &host->HashEncryptionAlgorithm);
+    CRYPT_DATA_BLOB_h2g(&guest->EncryptedHash, &host->EncryptedHash);
+    /* FIXME Needs more complicated data */
+}
+
 #endif
