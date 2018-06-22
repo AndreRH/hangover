@@ -1052,8 +1052,8 @@ static const syscall_handler dll_functions[] =
     qemu_PFXVerifyPassword,
 };
 
-static HCERTSTORE empty_store;
-static uint64_t empty_store_replace;
+HCERTSTORE empty_store;
+uint64_t empty_store_replace;
 
 /* Taken from the tests */
 static const BYTE selfSignedCert[] =

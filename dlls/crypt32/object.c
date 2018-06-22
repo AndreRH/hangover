@@ -51,7 +51,9 @@ struct qemu_CryptQueryObject
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptQueryObject(DWORD dwObjectType, const void *pvObject, DWORD dwExpectedContentTypeFlags, DWORD dwExpectedFormatTypeFlags, DWORD dwFlags, DWORD *pdwMsgAndCertEncodingType, DWORD *pdwContentType, DWORD *pdwFormatType, HCERTSTORE *phCertStore, HCRYPTMSG *phMsg, const void **ppvContext)
+WINBASEAPI BOOL WINAPI CryptQueryObject(DWORD dwObjectType, const void *pvObject, DWORD dwExpectedContentTypeFlags,
+        DWORD dwExpectedFormatTypeFlags, DWORD dwFlags, DWORD *pdwMsgAndCertEncodingType, DWORD *pdwContentType,
+        DWORD *pdwFormatType, HCERTSTORE *phCertStore, HCRYPTMSG *phMsg, const void **ppvContext)
 {
     struct qemu_CryptQueryObject call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTQUERYOBJECT);
@@ -68,6 +70,10 @@ WINBASEAPI BOOL WINAPI CryptQueryObject(DWORD dwObjectType, const void *pvObject
     call.ppvContext = (ULONG_PTR)ppvContext;
 
     qemu_syscall(&call.super);
+    if (phCertStore)
+        *phCertStore = (HCERTSTORE)(ULONG_PTR)call.phCertStore;
+    if (phMsg)
+        *phMsg = (HCRYPTMSG)(ULONG_PTR)call.phMsg;
 
     return call.super.iret;
 }
@@ -77,8 +83,22 @@ WINBASEAPI BOOL WINAPI CryptQueryObject(DWORD dwObjectType, const void *pvObject
 void qemu_CryptQueryObject(struct qemu_syscall *call)
 {
     struct qemu_CryptQueryObject *c = (struct qemu_CryptQueryObject *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptQueryObject(c->dwObjectType, QEMU_G2H(c->pvObject), c->dwExpectedContentTypeFlags, c->dwExpectedFormatTypeFlags, c->dwFlags, QEMU_G2H(c->pdwMsgAndCertEncodingType), QEMU_G2H(c->pdwContentType), QEMU_G2H(c->pdwFormatType), QEMU_G2H(c->phCertStore), QEMU_G2H(c->phMsg), QEMU_G2H(c->ppvContext));
+    HCERTSTORE store = NULL;
+    HCRYPTMSG msg = NULL;
+
+    WINE_FIXME("This is probably not right yet.\n");
+
+    c->super.iret = CryptQueryObject(c->dwObjectType, QEMU_G2H(c->pvObject), c->dwExpectedContentTypeFlags,
+            c->dwExpectedFormatTypeFlags, c->dwFlags, QEMU_G2H(c->pdwMsgAndCertEncodingType),
+            QEMU_G2H(c->pdwContentType), QEMU_G2H(c->pdwFormatType), c->phCertStore ? &store : NULL,
+            c->phMsg ? &msg : NULL, QEMU_G2H(c->ppvContext));
+
+    if (store == empty_store)
+        c->phCertStore = empty_store_replace;
+    else
+        c->phCertStore = QEMU_H2G(store);
+
+    c->phMsg = QEMU_H2G(msg);
 }
 
 #endif
