@@ -168,7 +168,7 @@ WINBASEAPI BOOL WINAPI CryptMsgClose(HCRYPTMSG hCryptMsg)
 void qemu_CryptMsgClose(struct qemu_syscall *call)
 {
     struct qemu_CryptMsgClose *c = (struct qemu_CryptMsgClose *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = CryptMsgClose(QEMU_G2H(c->hCryptMsg));
 }
 
