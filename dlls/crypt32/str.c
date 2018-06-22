@@ -155,7 +155,8 @@ struct qemu_CertNameToStrW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI CertNameToStrW(DWORD dwCertEncodingType, PCERT_NAME_BLOB pName, DWORD dwStrType, LPWSTR psz, DWORD csz)
+WINBASEAPI DWORD WINAPI CertNameToStrW(DWORD dwCertEncodingType, PCERT_NAME_BLOB pName, DWORD dwStrType,
+        LPWSTR psz, DWORD csz)
 {
     struct qemu_CertNameToStrW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTNAMETOSTRW);
@@ -175,8 +176,19 @@ WINBASEAPI DWORD WINAPI CertNameToStrW(DWORD dwCertEncodingType, PCERT_NAME_BLOB
 void qemu_CertNameToStrW(struct qemu_syscall *call)
 {
     struct qemu_CertNameToStrW *c = (struct qemu_CertNameToStrW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertNameToStrW(c->dwCertEncodingType, QEMU_G2H(c->pName), c->dwStrType, QEMU_G2H(c->psz), c->csz);
+    CRYPT_DATA_BLOB stack, *blob = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    blob = QEMU_G2H(c->pName);
+#else
+    if (c->pName)
+        CRYPT_DATA_BLOB_g2h(blob, QEMU_G2H(c->pName));
+    else
+        blob = NULL;
+#endif
+
+    c->super.iret = CertNameToStrW(c->dwCertEncodingType, blob, c->dwStrType, QEMU_G2H(c->psz), c->csz);
 }
 
 #endif
