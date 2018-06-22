@@ -338,7 +338,8 @@ struct qemu_CertGetNameStringW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI CertGetNameStringW(PCCERT_CONTEXT pCertContext, DWORD dwType, DWORD dwFlags, void *pvTypePara, LPWSTR pszNameString, DWORD cchNameString)
+WINBASEAPI DWORD WINAPI CertGetNameStringW(PCCERT_CONTEXT pCertContext, DWORD dwType, DWORD dwFlags,
+        void *pvTypePara, LPWSTR pszNameString, DWORD cchNameString)
 {
     struct qemu_CertGetNameStringW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTGETNAMESTRINGW);
@@ -359,8 +360,20 @@ WINBASEAPI DWORD WINAPI CertGetNameStringW(PCCERT_CONTEXT pCertContext, DWORD dw
 void qemu_CertGetNameStringW(struct qemu_syscall *call)
 {
     struct qemu_CertGetNameStringW *c = (struct qemu_CertGetNameStringW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertGetNameStringW(QEMU_G2H(c->pCertContext), c->dwType, c->dwFlags, QEMU_G2H(c->pvTypePara), QEMU_G2H(c->pszNameString), c->cchNameString);
+    const CERT_CONTEXT *context;
+    struct qemu_cert_context *context32, *compare32;
+
+    /* pvTypePara appears to be either a DWORD * or a WCHAR * */
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    context = QEMU_G2H(c->pCertContext);
+#else
+    context32 = QEMU_G2H(c->pCertContext);
+    context = context32 ? context32->cert64 : NULL;
+#endif
+
+    c->super.iret = CertGetNameStringW(context, c->dwType, c->dwFlags, QEMU_G2H(c->pvTypePara),
+            QEMU_G2H(c->pszNameString), c->cchNameString);
 }
 
 #endif
