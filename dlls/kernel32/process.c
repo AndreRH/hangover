@@ -113,17 +113,9 @@ void qemu_CreateProcessA(struct qemu_syscall *call)
             c->inherit, c->flags, QEMU_G2H(c->env), QEMU_G2H(c->cur_dir), si, pi);
     if (!c->super.iret && GetLastError() == ERROR_BAD_EXE_FORMAT)
     {
-        /* Try to run via qemu. */
-        len = MAX_PATH;
-        do
-        {
-            HeapFree(GetProcessHeap(), 0, qemu);
-            len *= 2;
-            qemu = HeapAlloc(GetProcessHeap(), 0, (len + 3) * sizeof(*qemu));
-            SetLastError(0);
-            GetModuleFileNameA(NULL, qemu, len);
-        } while(GetLastError());
-
+        len = strlenW(qemu_ops->qemu_getpath()) + 1;
+        qemu = HeapAlloc(GetProcessHeap(), 0, (len + 3) * sizeof(*qemu));
+        WideCharToMultiByte(CP_ACP, 0, qemu_ops->qemu_getpath(), -1, qemu, len, NULL, NULL);
         strcat(qemu, ".so");
 
         if (app_name)
@@ -255,16 +247,9 @@ void qemu_CreateProcessW(struct qemu_syscall *call)
     if (!c->super.iret && GetLastError() == ERROR_BAD_EXE_FORMAT)
     {
         /* Try to run via qemu. */
-        len = MAX_PATH;
-        do
-        {
-            HeapFree(GetProcessHeap(), 0, qemu);
-            len *= 2;
-            qemu = HeapAlloc(GetProcessHeap(), 0, (len + 3) * sizeof(*qemu));
-            SetLastError(0);
-            GetModuleFileNameW(NULL, qemu, len);
-        } while(GetLastError());
-
+        len = strlenW(qemu_ops->qemu_getpath()) + 1;
+        qemu = HeapAlloc(GetProcessHeap(), 0, (len + 3) * sizeof(*qemu));
+        memcpy(qemu, qemu_ops->qemu_getpath(), len * sizeof(*qemu));
         lstrcatW(qemu, dotso);
 
         if (app_name)
