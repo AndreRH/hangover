@@ -2618,3 +2618,95 @@ void qemu_GetGestureInfo(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_GetDpiForWindow
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI UINT WINAPI GetDpiForWindow(HWND hwnd)
+{
+    struct qemu_GetDpiForWindow call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETDPIFORWINDOW);
+    call.hwnd = (ULONG_PTR)hwnd;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetDpiForWindow(struct qemu_syscall *call)
+{
+    struct qemu_GetDpiForWindow *c = (struct qemu_GetDpiForWindow *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetDpiForWindow(QEMU_G2H(c->hwnd));
+}
+
+#endif
+
+struct qemu_GetWindowDisplayAffinity
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t affinity;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetWindowDisplayAffinity(HWND hwnd, DWORD *affinity)
+{
+    struct qemu_GetWindowDisplayAffinity call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWDISPLAYAFFINITY);
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.affinity = (ULONG_PTR)affinity;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetWindowDisplayAffinity(struct qemu_syscall *call)
+{
+    struct qemu_GetWindowDisplayAffinity *c = (struct qemu_GetWindowDisplayAffinity *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetWindowDisplayAffinity(QEMU_G2H(c->hwnd), QEMU_G2H(c->affinity));
+}
+
+#endif
+
+struct qemu_GetWindowDpiAwarenessContext
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DPI_AWARENESS_CONTEXT WINAPI GetWindowDpiAwarenessContext(HWND hwnd)
+{
+    struct qemu_GetWindowDpiAwarenessContext call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWDPIAWARENESSCONTEXT);
+    call.hwnd = (ULONG_PTR)hwnd;
+    
+    qemu_syscall(&call.super);
+    
+    return (DPI_AWARENESS_CONTEXT)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_GetWindowDpiAwarenessContext(struct qemu_syscall *call)
+{
+    struct qemu_GetWindowDpiAwarenessContext *c = (struct qemu_GetWindowDpiAwarenessContext *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(GetWindowDpiAwarenessContext(QEMU_G2H(c->hwnd)));
+}
+
+#endif

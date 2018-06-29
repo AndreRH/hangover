@@ -253,3 +253,40 @@ void qemu_GetTitleBarInfo(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_AdjustWindowRectExForDpi
+{
+    struct qemu_syscall super;
+    uint64_t rect;
+    uint64_t style;
+    uint64_t menu;
+    uint64_t exStyle;
+    uint64_t dpi;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI AdjustWindowRectExForDpi(LPRECT rect, DWORD style, BOOL menu, DWORD exStyle, UINT dpi)
+{
+    struct qemu_AdjustWindowRectExForDpi call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ADJUSTWINDOWRECTEXFORDPI);
+    call.rect = (ULONG_PTR)rect;
+    call.style = style;
+    call.menu = menu;
+    call.exStyle = exStyle;
+    call.dpi = dpi;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_AdjustWindowRectExForDpi(struct qemu_syscall *call)
+{
+    struct qemu_AdjustWindowRectExForDpi *c = (struct qemu_AdjustWindowRectExForDpi *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = AdjustWindowRectExForDpi(QEMU_G2H(c->rect), c->style, c->menu, c->exStyle, c->dpi);
+}
+
+#endif

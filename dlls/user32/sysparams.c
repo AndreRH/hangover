@@ -25,11 +25,22 @@
 #include "dll_list.h"
 #include "qemu_user32.h"
 
-#ifndef QEMU_DLL_GUEST
+#ifdef QEMU_DLL_GUEST
+
+typedef enum DPI_AWARENESS
+{
+    DPI_AWARENESS_INVALID = -1,
+    DPI_AWARENESS_UNAWARE = 0,
+    DPI_AWARENESS_SYSTEM_AWARE,
+    DPI_AWARENESS_PER_MONITOR_AWARE
+} DPI_AWARENESS;
+
+#else
+
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
-#endif
 
+#endif
 
 struct qemu_SystemParametersInfo
 {
@@ -783,6 +794,320 @@ void qemu_GetDisplayAutoRotationPreferences(struct qemu_syscall *call)
     struct qemu_GetDisplayAutoRotationPreferences *c = (struct qemu_GetDisplayAutoRotationPreferences *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = GetDisplayAutoRotationPreferences(QEMU_G2H(c->orientation));
+}
+
+#endif
+
+struct qemu_AreDpiAwarenessContextsEqual
+{
+    struct qemu_syscall super;
+    uint64_t ctx1;
+    uint64_t ctx2;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI AreDpiAwarenessContextsEqual(DPI_AWARENESS_CONTEXT ctx1, DPI_AWARENESS_CONTEXT ctx2)
+{
+    struct qemu_AreDpiAwarenessContextsEqual call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_AREDPIAWARENESSCONTEXTSEQUAL);
+    call.ctx1 = (ULONG_PTR)ctx1;
+    call.ctx2 = (ULONG_PTR)ctx2;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_AreDpiAwarenessContextsEqual(struct qemu_syscall *call)
+{
+    struct qemu_AreDpiAwarenessContextsEqual *c = (struct qemu_AreDpiAwarenessContextsEqual *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = AreDpiAwarenessContextsEqual(QEMU_G2H(c->ctx1), QEMU_G2H(c->ctx2));
+}
+
+#endif
+
+struct qemu_GetAwarenessFromDpiAwarenessContext
+{
+    struct qemu_syscall super;
+    uint64_t context;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DPI_AWARENESS WINAPI GetAwarenessFromDpiAwarenessContext(DPI_AWARENESS_CONTEXT context)
+{
+    struct qemu_GetAwarenessFromDpiAwarenessContext call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETAWARENESSFROMDPIAWARENESSCONTEXT);
+    call.context = (ULONG_PTR)context;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetAwarenessFromDpiAwarenessContext(struct qemu_syscall *call)
+{
+    struct qemu_GetAwarenessFromDpiAwarenessContext *c = (struct qemu_GetAwarenessFromDpiAwarenessContext *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetAwarenessFromDpiAwarenessContext(QEMU_G2H(c->context));
+}
+
+#endif
+
+struct qemu_GetDpiForMonitorInternal
+{
+    struct qemu_syscall super;
+    uint64_t monitor;
+    uint64_t type;
+    uint64_t x;
+    uint64_t y;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetDpiForMonitorInternal(HMONITOR monitor, UINT type, UINT *x, UINT *y)
+{
+    struct qemu_GetDpiForMonitorInternal call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETDPIFORMONITORINTERNAL);
+    call.monitor = (ULONG_PTR)monitor;
+    call.type = type;
+    call.x = (ULONG_PTR)x;
+    call.y = (ULONG_PTR)y;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetDpiForMonitorInternal(struct qemu_syscall *call)
+{
+    struct qemu_GetDpiForMonitorInternal *c = (struct qemu_GetDpiForMonitorInternal *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetDpiForMonitorInternal(QEMU_G2H(c->monitor), c->type, QEMU_G2H(c->x), QEMU_G2H(c->y));
+}
+
+#endif
+
+struct qemu_GetDpiForSystem
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI UINT WINAPI GetDpiForSystem(void)
+{
+    struct qemu_GetDpiForSystem call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETDPIFORSYSTEM);
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetDpiForSystem(struct qemu_syscall *call)
+{
+    struct qemu_GetDpiForSystem *c = (struct qemu_GetDpiForSystem *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetDpiForSystem();
+}
+
+#endif
+
+struct qemu_GetProcessDpiAwarenessInternal
+{
+    struct qemu_syscall super;
+    uint64_t process;
+    uint64_t awareness;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetProcessDpiAwarenessInternal(HANDLE process, DPI_AWARENESS *awareness)
+{
+    struct qemu_GetProcessDpiAwarenessInternal call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSDPIAWARENESSINTERNAL);
+    call.process = (ULONG_PTR)process;
+    call.awareness = (ULONG_PTR)awareness;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetProcessDpiAwarenessInternal(struct qemu_syscall *call)
+{
+    struct qemu_GetProcessDpiAwarenessInternal *c = (struct qemu_GetProcessDpiAwarenessInternal *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetProcessDpiAwarenessInternal(QEMU_G2H(c->process), QEMU_G2H(c->awareness));
+}
+
+#endif
+
+struct qemu_GetSystemMetricsForDpi
+{
+    struct qemu_syscall super;
+    uint64_t index;
+    uint64_t dpi;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI INT WINAPI GetSystemMetricsForDpi(INT index, UINT dpi)
+{
+    struct qemu_GetSystemMetricsForDpi call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETSYSTEMMETRICSFORDPI);
+    call.index = index;
+    call.dpi = dpi;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetSystemMetricsForDpi(struct qemu_syscall *call)
+{
+    struct qemu_GetSystemMetricsForDpi *c = (struct qemu_GetSystemMetricsForDpi *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetSystemMetricsForDpi(c->index, c->dpi);
+}
+
+#endif
+
+struct qemu_GetThreadDpiAwarenessContext
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DPI_AWARENESS_CONTEXT WINAPI GetThreadDpiAwarenessContext(void)
+{
+    struct qemu_GetThreadDpiAwarenessContext call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETTHREADDPIAWARENESSCONTEXT);
+    
+    qemu_syscall(&call.super);
+    
+    return (DPI_AWARENESS_CONTEXT)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_GetThreadDpiAwarenessContext(struct qemu_syscall *call)
+{
+    struct qemu_GetThreadDpiAwarenessContext *c = (struct qemu_GetThreadDpiAwarenessContext *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(GetThreadDpiAwarenessContext());
+}
+
+#endif
+
+struct qemu_IsValidDpiAwarenessContext
+{
+    struct qemu_syscall super;
+    uint64_t context;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI IsValidDpiAwarenessContext(DPI_AWARENESS_CONTEXT context)
+{
+    struct qemu_IsValidDpiAwarenessContext call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ISVALIDDPIAWARENESSCONTEXT);
+    call.context = (ULONG_PTR)context;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_IsValidDpiAwarenessContext(struct qemu_syscall *call)
+{
+    struct qemu_IsValidDpiAwarenessContext *c = (struct qemu_IsValidDpiAwarenessContext *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IsValidDpiAwarenessContext(QEMU_G2H(c->context));
+}
+
+#endif
+
+struct qemu_SetThreadDpiAwarenessContext
+{
+    struct qemu_syscall super;
+    uint64_t context;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI DPI_AWARENESS_CONTEXT WINAPI SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT context)
+{
+    struct qemu_SetThreadDpiAwarenessContext call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADDPIAWARENESSCONTEXT);
+    call.context = (ULONG_PTR)context;
+    
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_SetThreadDpiAwarenessContext(struct qemu_syscall *call)
+{
+    struct qemu_SetThreadDpiAwarenessContext *c = (struct qemu_SetThreadDpiAwarenessContext *)call;
+    WINE_FIXME("Unverified!\n");
+    SetThreadDpiAwarenessContext(QEMU_G2H(c->context));
+}
+
+#endif
+
+struct qemu_SystemParametersInfoForDpi
+{
+    struct qemu_syscall super;
+    uint64_t action;
+    uint64_t val;
+    uint64_t ptr;
+    uint64_t winini;
+    uint64_t dpi;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI SystemParametersInfoForDpi(UINT action, UINT val, PVOID ptr, UINT winini, UINT dpi)
+{
+    struct qemu_SystemParametersInfoForDpi call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SYSTEMPARAMETERSINFOFORDPI);
+    call.action = action;
+    call.val = val;
+    call.ptr = (ULONG_PTR)ptr;
+    call.winini = winini;
+    call.dpi = dpi;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SystemParametersInfoForDpi(struct qemu_syscall *call)
+{
+    struct qemu_SystemParametersInfoForDpi *c = (struct qemu_SystemParametersInfoForDpi *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SystemParametersInfoForDpi(c->action, c->val, QEMU_G2H(c->ptr), c->winini, c->dpi);
 }
 
 #endif

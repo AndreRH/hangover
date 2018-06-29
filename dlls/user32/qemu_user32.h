@@ -9,12 +9,14 @@ enum user32_calls
     CALL_ADDCLIPBOARDFORMATLISTENER,
     CALL_ADJUSTWINDOWRECT,
     CALL_ADJUSTWINDOWRECTEX,
+    CALL_ADJUSTWINDOWRECTEXFORDPI,
     CALL_ALIGNRECTS,
     CALL_ALLOWSETFOREGROUNDWINDOW,
     CALL_ANIMATEWINDOW,
     CALL_ANYPOPUP,
     CALL_APPENDMENUA,
     CALL_APPENDMENUW,
+    CALL_AREDPIAWARENESSCONTEXTSEQUAL,
     CALL_ARRANGEICONICWINDOWS,
     CALL_ATTACHTHREADINPUT,
     CALL_BEGINDEFERWINDOWPOS,
@@ -194,6 +196,7 @@ enum user32_calls
     CALL_EDITWNDPROCA,
     CALL_EMPTYCLIPBOARD,
     CALL_ENABLEMENUITEM,
+    CALL_ENABLEMOUSEINPOINTER,
     CALL_ENABLESCROLLBAR,
     CALL_ENABLEWINDOW,
     CALL_ENDDEFERWINDOWPOS,
@@ -240,6 +243,7 @@ enum user32_calls
     CALL_GETAPPCOMPATFLAGS2,
     CALL_GETASYNCKEYSTATE,
     CALL_GETAUTOROTATIONSTATE,
+    CALL_GETAWARENESSFROMDPIAWARENESSCONTEXT,
     CALL_GETCAPTURE,
     CALL_GETCARETBLINKTIME,
     CALL_GETCARETPOS,
@@ -279,6 +283,9 @@ enum user32_calls
     CALL_GETDLGITEMTEXTA,
     CALL_GETDLGITEMTEXTW,
     CALL_GETDOUBLECLICKTIME,
+    CALL_GETDPIFORMONITORINTERNAL,
+    CALL_GETDPIFORSYSTEM,
+    CALL_GETDPIFORWINDOW,
     CALL_GETFOCUS,
     CALL_GETFOREGROUNDWINDOW,
     CALL_GETGESTURECONFIG,
@@ -331,8 +338,10 @@ enum user32_calls
     CALL_GETOPENCLIPBOARDWINDOW,
     CALL_GETPARENT,
     CALL_GETPHYSICALCURSORPOS,
+    CALL_GETPOINTERDEVICES,
     CALL_GETPRIORITYCLIPBOARDFORMAT,
     CALL_GETPROCESSDEFAULTLAYOUT,
+    CALL_GETPROCESSDPIAWARENESSINTERNAL,
     CALL_GETPROCESSWINDOWSTATION,
     CALL_GETPROGMANWINDOW,
     CALL_GETPROPA,
@@ -354,10 +363,12 @@ enum user32_calls
     CALL_GETSYSCOLORBRUSH,
     CALL_GETSYSTEMMENU,
     CALL_GETSYSTEMMETRICS,
+    CALL_GETSYSTEMMETRICSFORDPI,
     CALL_GETTABBEDTEXTEXTENTA,
     CALL_GETTABBEDTEXTEXTENTW,
     CALL_GETTASKMANWINDOW,
     CALL_GETTHREADDESKTOP,
+    CALL_GETTHREADDPIAWARENESSCONTEXT,
     CALL_GETTITLEBARINFO,
     CALL_GETTOPWINDOW,
     CALL_GETTOUCHINPUTINFO,
@@ -370,6 +381,8 @@ enum user32_calls
     CALL_GETWINDOW,
     CALL_GETWINDOWCONTEXTHELPID,
     CALL_GETWINDOWDC,
+    CALL_GETWINDOWDISPLAYAFFINITY,
+    CALL_GETWINDOWDPIAWARENESSCONTEXT,
     CALL_GETWINDOWINFO,
     CALL_GETWINDOWLONGA,
     CALL_GETWINDOWLONGPTRA,
@@ -424,6 +437,7 @@ enum user32_calls
     CALL_ISPROCESSDPIAWARE,
     CALL_ISRECTEMPTY,
     CALL_ISTOUCHWINDOW,
+    CALL_ISVALIDDPIAWARENESSCONTEXT,
     CALL_ISWINDOW,
     CALL_ISWINDOWENABLED,
     CALL_ISWINDOWREDIRECTEDFORPRINT,
@@ -624,6 +638,7 @@ enum user32_calls
     CALL_SETSYSTEMTIMER,
     CALL_SETTASKMANWINDOW,
     CALL_SETTHREADDESKTOP,
+    CALL_SETTHREADDPIAWARENESSCONTEXT,
     CALL_SETTIMER,
     CALL_SETUSEROBJECTINFORMATIONA,
     CALL_SETUSEROBJECTINFORMATIONW,
@@ -658,6 +673,7 @@ enum user32_calls
     CALL_SWITCHDESKTOP,
     CALL_SWITCHTOTHISWINDOW,
     CALL_SYSTEMPARAMETERSINFOA,
+    CALL_SYSTEMPARAMETERSINFOFORDPI,
     CALL_SYSTEMPARAMETERSINFOW,
     CALL_TABBEDTEXTOUTA,
     CALL_TABBEDTEXTOUTW,
@@ -730,6 +746,8 @@ LRESULT CALLBACK reverse_wndproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, 
 void __fastcall guest_win_event_wrapper(struct qemu_SetWinEventHook_cb *data);
 extern INT __fastcall LVM_SORTITEMS_guest_cb(void *data);
 
+DECLARE_HANDLE(DPI_AWARENESS_CONTEXT);
+
 #else
 
 #include <wine/rbtree.h>
@@ -740,6 +758,7 @@ void qemu_ActivateKeyboardLayout(struct qemu_syscall *call);
 void qemu_AddClipboardFormatListener(struct qemu_syscall *call);
 void qemu_AdjustWindowRect(struct qemu_syscall *call);
 void qemu_AdjustWindowRectEx(struct qemu_syscall *call);
+void qemu_AdjustWindowRectExForDpi(struct qemu_syscall *call);
 void qemu_AlignRects(struct qemu_syscall *call);
 void qemu_AllowSetForegroundWindow(struct qemu_syscall *call);
 void qemu_AnimateWindow(struct qemu_syscall *call);
@@ -916,6 +935,7 @@ void qemu_DrawTextExW(struct qemu_syscall *call);
 void qemu_DrawTextW(struct qemu_syscall *call);
 void qemu_EmptyClipboard(struct qemu_syscall *call);
 void qemu_EnableMenuItem(struct qemu_syscall *call);
+void qemu_EnableMouseInPointer(struct qemu_syscall *call);
 void qemu_EnableScrollBar(struct qemu_syscall *call);
 void qemu_EnableWindow(struct qemu_syscall *call);
 void qemu_EndDeferWindowPos(struct qemu_syscall *call);
@@ -999,6 +1019,7 @@ void qemu_GetDlgItemInt(struct qemu_syscall *call);
 void qemu_GetDlgItemTextA(struct qemu_syscall *call);
 void qemu_GetDlgItemTextW(struct qemu_syscall *call);
 void qemu_GetDoubleClickTime(struct qemu_syscall *call);
+void qemu_GetDpiForWindow(struct qemu_syscall *call);
 void qemu_GetFocus(struct qemu_syscall *call);
 void qemu_GetForegroundWindow(struct qemu_syscall *call);
 void qemu_GetGestureConfig(struct qemu_syscall *call);
@@ -1049,6 +1070,7 @@ void qemu_GetNextDlgTabItem(struct qemu_syscall *call);
 void qemu_GetOpenClipboardWindow(struct qemu_syscall *call);
 void qemu_GetParent(struct qemu_syscall *call);
 void qemu_GetPhysicalCursorPos(struct qemu_syscall *call);
+void qemu_GetPointerDevices(struct qemu_syscall *call);
 void qemu_GetPriorityClipboardFormat(struct qemu_syscall *call);
 void qemu_GetProcessDefaultLayout(struct qemu_syscall *call);
 void qemu_GetProcessWindowStation(struct qemu_syscall *call);
@@ -1087,6 +1109,7 @@ void qemu_GetUserObjectSecurity(struct qemu_syscall *call);
 void qemu_GetWindow(struct qemu_syscall *call);
 void qemu_GetWindowContextHelpId(struct qemu_syscall *call);
 void qemu_GetWindowDC(struct qemu_syscall *call);
+void qemu_GetWindowDisplayAffinity(struct qemu_syscall *call);
 void qemu_GetWindowInfo(struct qemu_syscall *call);
 void qemu_GetWindowLongA(struct qemu_syscall *call);
 void qemu_GetWindowLongPtrA(struct qemu_syscall *call);
@@ -1434,6 +1457,17 @@ void qemu_GetTouchInputInfo(struct qemu_syscall *call);
 void qemu_MenuItemFromPoint(struct qemu_syscall *call);
 void qemu_UnregisterTouchWindow(struct qemu_syscall *call);
 void qemu_UserRegisterWowHandlers(struct qemu_syscall *call);
+void qemu_AreDpiAwarenessContextsEqual(struct qemu_syscall *call);
+void qemu_GetAwarenessFromDpiAwarenessContext(struct qemu_syscall *call);
+void qemu_GetDpiForMonitorInternal(struct qemu_syscall *call);
+void qemu_GetDpiForSystem(struct qemu_syscall *call);
+void qemu_GetProcessDpiAwarenessInternal(struct qemu_syscall *call);
+void qemu_GetSystemMetricsForDpi(struct qemu_syscall *call);
+void qemu_GetThreadDpiAwarenessContext(struct qemu_syscall *call);
+void qemu_GetWindowDpiAwarenessContext(struct qemu_syscall *call);
+void qemu_IsValidDpiAwarenessContext(struct qemu_syscall *call);
+void qemu_SetThreadDpiAwarenessContext(struct qemu_syscall *call);
+void qemu_SystemParametersInfoForDpi(struct qemu_syscall *call);
 
 extern uint64_t reverse_wndproc_func;
 extern uint64_t LVM_SORTITEMS_guest_cb;

@@ -1529,3 +1529,35 @@ void qemu_GetDisplayConfigBufferSizes(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_GetPointerDevices
+{
+    struct qemu_syscall super;
+    uint64_t device_count;
+    uint64_t devices;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI GetPointerDevices(UINT32 *device_count, POINTER_DEVICE_INFO *devices)
+{
+    struct qemu_GetPointerDevices call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETPOINTERDEVICES);
+    call.device_count = (ULONG_PTR)device_count;
+    call.devices = (ULONG_PTR)devices;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_GetPointerDevices(struct qemu_syscall *call)
+{
+    struct qemu_GetPointerDevices *c = (struct qemu_GetPointerDevices *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetPointerDevices(QEMU_G2H(c->device_count), QEMU_G2H(c->devices));
+}
+
+#endif
+

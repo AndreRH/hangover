@@ -2013,3 +2013,34 @@ void qemu_GetMouseMovePointsEx(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_EnableMouseInPointer
+{
+    struct qemu_syscall super;
+    uint64_t enable;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI EnableMouseInPointer(BOOL enable)
+{
+    struct qemu_EnableMouseInPointer call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ENABLEMOUSEINPOINTER);
+    call.enable = enable;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EnableMouseInPointer(struct qemu_syscall *call)
+{
+    struct qemu_EnableMouseInPointer *c = (struct qemu_EnableMouseInPointer *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EnableMouseInPointer(c->enable);
+}
+
+#endif
+
