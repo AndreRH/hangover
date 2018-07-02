@@ -52,6 +52,7 @@ static const syscall_handler dll_functions[] =
     qemu_ImmDestroyIMCC,
     qemu_ImmDestroySoftKeyboard,
     qemu_ImmDisableIME,
+    qemu_ImmDisableLegacyIME,
     qemu_ImmDisableTextFrameService,
     qemu_ImmEnumInputContext,
     qemu_ImmEnumRegisterWordA,

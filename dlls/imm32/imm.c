@@ -2797,3 +2797,30 @@ void qemu_ImmGetHotKey(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_ImmDisableLegacyIME
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI ImmDisableLegacyIME(void)
+{
+    struct qemu_ImmDisableLegacyIME call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_IMMDISABLELEGACYIME);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_ImmDisableLegacyIME(struct qemu_syscall *call)
+{
+    struct qemu_ImmDisableLegacyIME *c = (struct qemu_ImmDisableLegacyIME *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = ImmDisableLegacyIME();
+}
+
+#endif

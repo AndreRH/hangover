@@ -5,7 +5,7 @@
 
 enum imm32_calls
 {
-    CALL_IMMASSOCIATECONTEXT,
+    CALL_IMMASSOCIATECONTEXT = 0,
     CALL_IMMASSOCIATECONTEXTEX,
     CALL_IMMCONFIGUREIMEA,
     CALL_IMMCONFIGUREIMEW,
@@ -16,6 +16,7 @@ enum imm32_calls
     CALL_IMMDESTROYIMCC,
     CALL_IMMDESTROYSOFTKEYBOARD,
     CALL_IMMDISABLEIME,
+    CALL_IMMDISABLELEGACYIME,
     CALL_IMMDISABLETEXTFRAMESERVICE,
     CALL_IMMENUMINPUTCONTEXT,
     CALL_IMMENUMREGISTERWORDA,
@@ -106,6 +107,7 @@ void qemu_ImmDestroyContext(struct qemu_syscall *call);
 void qemu_ImmDestroyIMCC(struct qemu_syscall *call);
 void qemu_ImmDestroySoftKeyboard(struct qemu_syscall *call);
 void qemu_ImmDisableIME(struct qemu_syscall *call);
+void qemu_ImmDisableLegacyIME(struct qemu_syscall *call);
 void qemu_ImmDisableTextFrameService(struct qemu_syscall *call);
 void qemu_ImmEnumInputContext(struct qemu_syscall *call);
 void qemu_ImmEnumRegisterWordA(struct qemu_syscall *call);
