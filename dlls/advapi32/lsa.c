@@ -1298,3 +1298,39 @@ void qemu_LsaLookupPrivilegeName(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_LsaLookupPrivilegeDisplayName
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t name;
+    uint64_t display_name;
+    uint64_t language;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI LsaLookupPrivilegeDisplayName(LSA_HANDLE handle, LSA_UNICODE_STRING *name, LSA_UNICODE_STRING **display_name, SHORT *language)
+{
+    struct qemu_LsaLookupPrivilegeDisplayName call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LSALOOKUPPRIVILEGEDISPLAYNAME);
+    call.handle = (ULONG_PTR)handle;
+    call.name = (ULONG_PTR)name;
+    call.display_name = (ULONG_PTR)display_name;
+    call.language = (ULONG_PTR)language;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+extern NTSTATUS WINAPI LsaLookupPrivilegeDisplayName(LSA_HANDLE handle, LSA_UNICODE_STRING *name, LSA_UNICODE_STRING **display_name, SHORT *language);
+void qemu_LsaLookupPrivilegeDisplayName(struct qemu_syscall *call)
+{
+    struct qemu_LsaLookupPrivilegeDisplayName *c = (struct qemu_LsaLookupPrivilegeDisplayName *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LsaLookupPrivilegeDisplayName(QEMU_G2H(c->handle), QEMU_G2H(c->name), QEMU_G2H(c->display_name), QEMU_G2H(c->language));
+}
+
+#endif

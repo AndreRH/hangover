@@ -300,6 +300,7 @@ static const syscall_handler dll_functions[] =
     qemu_LsaFreeMemory,
     qemu_LsaLookupNames,
     qemu_LsaLookupNames2,
+    qemu_LsaLookupPrivilegeDisplayName,
     qemu_LsaLookupPrivilegeName,
     qemu_LsaLookupSids,
     qemu_LsaNtStatusToWinError,
