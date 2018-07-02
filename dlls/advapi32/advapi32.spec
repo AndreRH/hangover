@@ -468,7 +468,7 @@
 # @ stub LsaICLookupSidsWithCreds
 @ stdcall LsaLookupNames(long long ptr ptr ptr)
 @ stdcall LsaLookupNames2(ptr long long ptr ptr ptr)
-@ stub LsaLookupPrivilegeDisplayName
+#@ stdcall LsaLookupPrivilegeDisplayName(long ptr ptr ptr)
 @ stdcall LsaLookupPrivilegeName(long ptr ptr)
 # @ stub LsaLookupPrivilegeValue
 @ stdcall LsaLookupSids(ptr long ptr ptr ptr)
@@ -553,11 +553,11 @@
 # @ stub OperationStart
 # @ stub PerfAddCounters
 # @ stub PerfCloseQueryHandle
-# @ stub PerfCreateInstance
+@ stdcall PerfCreateInstance(long ptr wstr long)
 # @ stub PerfDecrementULongCounterValue
 # @ stub PerfDecrementULongLongCounterValue
 # @ stub PerfDeleteCounters
-# @ stub PerfDeleteInstance
+@ stdcall PerfDeleteInstance(long ptr)
 # @ stub PerfEnumerateCounterSet
 # @ stub PerfEnumerateCounterSetInstances
 # @ stub PerfIncrementULongCounterValue
@@ -573,13 +573,13 @@
 # @ stub PerfRegQueryInfoKey
 # @ stub PerfRegQueryValue
 # @ stub PerfRegSetValue
-# @ stub PerfSetCounterRefValue
-# @ stub PerfSetCounterSetInfo
+@ stdcall PerfSetCounterRefValue(long ptr long ptr)
+@ stdcall PerfSetCounterSetInfo(long ptr long)
 # @ stub PerfSetULongCounterValue
 # @ stub PerfSetULongLongCounterValue
-# @ stub PerfStartProvider
-# @ stub PerfStartProviderEx
-# @ stub PerfStopProvider
+@ stdcall PerfStartProvider(ptr ptr ptr)
+@ stdcall PerfStartProviderEx(ptr ptr ptr)
+@ stdcall PerfStopProvider(long)
 @ stdcall PrivilegeCheck(ptr ptr ptr)
 @ stdcall PrivilegedServiceAuditAlarmA(str str long ptr long)
 @ stdcall PrivilegedServiceAuditAlarmW(wstr wstr long ptr long)

@@ -314,6 +314,13 @@ enum advapi32_calls
     CALL_OPENTHREADTOKEN,
     CALL_OPENTRACEA,
     CALL_OPENTRACEW,
+    CALL_PERFCREATEINSTANCE,
+    CALL_PERFDELETEINSTANCE,
+    CALL_PERFSETCOUNTERREFVALUE,
+    CALL_PERFSETCOUNTERSETINFO,
+    CALL_PERFSTARTPROVIDER,
+    CALL_PERFSTARTPROVIDEREX,
+    CALL_PERFSTOPPROVIDER,
     CALL_PRIVILEGECHECK,
     CALL_PRIVILEGEDSERVICEAUDITALARMA,
     CALL_PRIVILEGEDSERVICEAUDITALARMW,
@@ -793,6 +800,13 @@ void qemu_OpenServiceW(struct qemu_syscall *call);
 void qemu_OpenThreadToken(struct qemu_syscall *call);
 void qemu_OpenTraceA(struct qemu_syscall *call);
 void qemu_OpenTraceW(struct qemu_syscall *call);
+void qemu_PerfCreateInstance(struct qemu_syscall *call);
+void qemu_PerfDeleteInstance(struct qemu_syscall *call);
+void qemu_PerfSetCounterRefValue(struct qemu_syscall *call);
+void qemu_PerfSetCounterSetInfo(struct qemu_syscall *call);
+void qemu_PerfStartProvider(struct qemu_syscall *call);
+void qemu_PerfStartProviderEx(struct qemu_syscall *call);
+void qemu_PerfStopProvider(struct qemu_syscall *call);
 void qemu_PrivilegeCheck(struct qemu_syscall *call);
 void qemu_PrivilegedServiceAuditAlarmA(struct qemu_syscall *call);
 void qemu_PrivilegedServiceAuditAlarmW(struct qemu_syscall *call);
@@ -963,6 +977,13 @@ void qemu_WmiSetSingleInstanceW(struct qemu_syscall *call);
 void qemu_WmiSetSingleItemA(struct qemu_syscall *call);
 void qemu_WmiSetSingleItemW(struct qemu_syscall *call);
 void qemu_WriteEncryptedFileRaw(struct qemu_syscall *call);
+void qemu_PerfCreateInstance(struct qemu_syscall *call);
+void qemu_PerfDeleteInstance(struct qemu_syscall *call);
+void qemu_PerfSetCounterSetInfo(struct qemu_syscall *call);
+void qemu_PerfSetCounterRefValue(struct qemu_syscall *call);
+void qemu_PerfStartProvider(struct qemu_syscall *call);
+void qemu_PerfStartProviderEx(struct qemu_syscall *call);
+void qemu_PerfStopProvider(struct qemu_syscall *call);
 
 /* Not a public struct, so it is here instead of the thunk headers. */
 struct qemu_ustring
