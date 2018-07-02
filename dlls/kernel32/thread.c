@@ -1569,3 +1569,38 @@ void qemu_TrySubmitThreadpoolCallback(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_CreateThreadpoolIo
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t callback;
+    uint64_t userdata;
+    uint64_t environment;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI PTP_IO WINAPI CreateThreadpoolIo(HANDLE handle, PTP_WIN32_IO_CALLBACK callback, PVOID userdata, TP_CALLBACK_ENVIRON *environment)
+{
+    struct qemu_CreateThreadpoolIo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CREATETHREADPOOLIO);
+    call.handle = (ULONG_PTR)handle;
+    call.callback = (ULONG_PTR)callback;
+    call.userdata = (ULONG_PTR)userdata;
+    call.environment = (ULONG_PTR)environment;
+    
+    qemu_syscall(&call.super);
+    
+    return (PTP_IO)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_CreateThreadpoolIo(struct qemu_syscall *call)
+{
+    struct qemu_CreateThreadpoolIo *c = (struct qemu_CreateThreadpoolIo *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(CreateThreadpoolIo(QEMU_G2H(c->handle), QEMU_G2H(c->callback), QEMU_G2H(c->userdata), QEMU_G2H(c->environment)));
+}
+
+#endif

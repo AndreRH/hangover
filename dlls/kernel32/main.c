@@ -344,6 +344,7 @@ static const syscall_handler dll_functions[] =
     qemu_CreateThread,
     qemu_CreateThreadpool,
     qemu_CreateThreadpoolCleanupGroup,
+    qemu_CreateThreadpoolIo,
     qemu_CreateThreadpoolTimer,
     qemu_CreateThreadpoolWait,
     qemu_CreateThreadpoolWork,

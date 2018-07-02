@@ -122,6 +122,7 @@ enum kernel32_calls
     CALL_CREATETHREAD,
     CALL_CREATETHREADPOOL,
     CALL_CREATETHREADPOOLCLEANUPGROUP,
+    CALL_CREATETHREADPOOLIO,
     CALL_CREATETHREADPOOLTIMER,
     CALL_CREATETHREADPOOLWAIT,
     CALL_CREATETHREADPOOLWORK,
@@ -1130,6 +1131,7 @@ void qemu_CreateTapePartition(struct qemu_syscall *call);
 void qemu_CreateThread(struct qemu_syscall *call);
 void qemu_CreateThreadpool(struct qemu_syscall *call);
 void qemu_CreateThreadpoolCleanupGroup(struct qemu_syscall *call);
+void qemu_CreateThreadpoolIo(struct qemu_syscall *call);
 void qemu_CreateThreadpoolTimer(struct qemu_syscall *call);
 void qemu_CreateThreadpoolWait(struct qemu_syscall *call);
 void qemu_CreateThreadpoolWork(struct qemu_syscall *call);
