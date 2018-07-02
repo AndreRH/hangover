@@ -1795,7 +1795,7 @@ void qemu_SetInformationJobObject(struct qemu_syscall *call)
         }
 
         default:
-            WINE_FIXME("Unknown job object class %lx\n", c->class);
+            WINE_FIXME("Unknown job object class %x\n", (JOBOBJECTINFOCLASS)c->class);
             c->super.iret = SetInformationJobObject(job, class, QEMU_G2H(c->info), len);
     }
 }
