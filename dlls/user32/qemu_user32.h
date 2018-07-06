@@ -473,6 +473,7 @@ enum user32_calls
     CALL_LOCKWINDOWUPDATE,
     CALL_LOCKWORKSTATION,
     CALL_LOGICALTOPHYSICALPOINT,
+    CALL_LOGICALTOPHYSICALPOINTFORPERMONITORDPI,
     CALL_LOOKUPICONIDFROMDIRECTORY,
     CALL_LOOKUPICONIDFROMDIRECTORYEX,
     CALL_MAPDIALOGRECT,
@@ -519,6 +520,7 @@ enum user32_calls
     CALL_PEEKMESSAGEA,
     CALL_PEEKMESSAGEW,
     CALL_PHYSICALTOLOGICALPOINT,
+    CALL_PHYSICALTOLOGICALPOINTFORPERMONITORDPI,
     CALL_POSTMESSAGEA,
     CALL_POSTMESSAGEW,
     CALL_POSTQUITMESSAGE,
@@ -543,12 +545,14 @@ enum user32_calls
     CALL_REGISTERDEVICENOTIFICATIONW,
     CALL_REGISTERHOTKEY,
     CALL_REGISTERLOGONPROCESS,
+    CALL_REGISTERPOINTERDEVICENOTIFICATIONS,
     CALL_REGISTERPOWERSETTINGNOTIFICATION,
     CALL_REGISTERRAWINPUTDEVICES,
     CALL_REGISTERSERVICESPROCESS,
     CALL_REGISTERSHELLHOOKWINDOW,
     CALL_REGISTERSYSTEMTHREAD,
     CALL_REGISTERTASKLIST,
+    CALL_REGISTERTOUCHHITTESTINGWINDOW,
     CALL_REGISTERTOUCHWINDOW,
     CALL_REGISTERWINDOWMESSAGEA,
     CALL_REGISTERWINDOWMESSAGEW,
@@ -644,6 +648,7 @@ enum user32_calls
     CALL_SETUSEROBJECTINFORMATIONW,
     CALL_SETUSEROBJECTSECURITY,
     CALL_SETWINDOWCONTEXTHELPID,
+    CALL_SETWINDOWDISPLAYAFFINITY,
     CALL_SETWINDOWLONGA,
     CALL_SETWINDOWLONGPTRA,
     CALL_SETWINDOWLONGPTRW,
@@ -1468,6 +1473,11 @@ void qemu_GetWindowDpiAwarenessContext(struct qemu_syscall *call);
 void qemu_IsValidDpiAwarenessContext(struct qemu_syscall *call);
 void qemu_SetThreadDpiAwarenessContext(struct qemu_syscall *call);
 void qemu_SystemParametersInfoForDpi(struct qemu_syscall *call);
+void qemu_SetWindowDisplayAffinity(struct qemu_syscall *call);
+void qemu_PhysicalToLogicalPointForPerMonitorDPI(struct qemu_syscall *call);
+void qemu_LogicalToPhysicalPointForPerMonitorDPI(struct qemu_syscall *call);
+void qemu_RegisterTouchHitTestingWindow(struct qemu_syscall *call);
+void qemu_RegisterPointerDeviceNotifications(struct qemu_syscall *call);
 
 extern uint64_t reverse_wndproc_func;
 extern uint64_t LVM_SORTITEMS_guest_cb;

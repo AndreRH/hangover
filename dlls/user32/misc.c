@@ -1552,6 +1552,7 @@ WINBASEAPI BOOL WINAPI GetPointerDevices(UINT32 *device_count, POINTER_DEVICE_IN
 
 #else
 
+extern BOOL WINAPI GetPointerDevices(UINT32 *device_count, POINTER_DEVICE_INFO *devices);
 void qemu_GetPointerDevices(struct qemu_syscall *call)
 {
     struct qemu_GetPointerDevices *c = (struct qemu_GetPointerDevices *)call;
@@ -1561,3 +1562,67 @@ void qemu_GetPointerDevices(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_RegisterPointerDeviceNotifications
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t notifyrange;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI RegisterPointerDeviceNotifications(HWND hwnd, BOOL notifyrange)
+{
+    struct qemu_RegisterPointerDeviceNotifications call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERPOINTERDEVICENOTIFICATIONS);
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.notifyrange = notifyrange;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RegisterPointerDeviceNotifications(struct qemu_syscall *call)
+{
+    struct qemu_RegisterPointerDeviceNotifications *c = (struct qemu_RegisterPointerDeviceNotifications *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RegisterPointerDeviceNotifications(QEMU_G2H(c->hwnd), c->notifyrange);
+}
+
+#endif
+
+struct qemu_RegisterTouchHitTestingWindow
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t value;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI RegisterTouchHitTestingWindow(HWND hwnd, ULONG value)
+{
+    struct qemu_RegisterTouchHitTestingWindow call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_REGISTERTOUCHHITTESTINGWINDOW);
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.value = value;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+extern BOOL WINAPI RegisterTouchHitTestingWindow(HWND hwnd, ULONG value);
+void qemu_RegisterTouchHitTestingWindow(struct qemu_syscall *call)
+{
+    struct qemu_RegisterTouchHitTestingWindow *c = (struct qemu_RegisterTouchHitTestingWindow *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RegisterTouchHitTestingWindow(QEMU_G2H(c->hwnd), c->value);
+}
+
+#endif

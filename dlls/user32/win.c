@@ -2710,3 +2710,35 @@ void qemu_GetWindowDpiAwarenessContext(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_SetWindowDisplayAffinity
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t affinity;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI SetWindowDisplayAffinity(HWND hwnd, DWORD affinity)
+{
+    struct qemu_SetWindowDisplayAffinity call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETWINDOWDISPLAYAFFINITY);
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.affinity = affinity;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SetWindowDisplayAffinity(struct qemu_syscall *call)
+{
+    struct qemu_SetWindowDisplayAffinity *c = (struct qemu_SetWindowDisplayAffinity *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetWindowDisplayAffinity(QEMU_G2H(c->hwnd), c->affinity);
+}
+
+#endif

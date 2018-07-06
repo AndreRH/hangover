@@ -1111,3 +1111,67 @@ void qemu_SystemParametersInfoForDpi(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_LogicalToPhysicalPointForPerMonitorDPI
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t pt;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI LogicalToPhysicalPointForPerMonitorDPI(HWND hwnd, POINT *pt)
+{
+    struct qemu_LogicalToPhysicalPointForPerMonitorDPI call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LOGICALTOPHYSICALPOINTFORPERMONITORDPI);
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.pt = (ULONG_PTR)pt;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_LogicalToPhysicalPointForPerMonitorDPI(struct qemu_syscall *call)
+{
+    struct qemu_LogicalToPhysicalPointForPerMonitorDPI *c = (struct qemu_LogicalToPhysicalPointForPerMonitorDPI *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LogicalToPhysicalPointForPerMonitorDPI(QEMU_G2H(c->hwnd), QEMU_G2H(c->pt));
+}
+
+#endif
+
+struct qemu_PhysicalToLogicalPointForPerMonitorDPI
+{
+    struct qemu_syscall super;
+    uint64_t hwnd;
+    uint64_t pt;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI PhysicalToLogicalPointForPerMonitorDPI(HWND hwnd, POINT *pt)
+{
+    struct qemu_PhysicalToLogicalPointForPerMonitorDPI call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_PHYSICALTOLOGICALPOINTFORPERMONITORDPI);
+    call.hwnd = (ULONG_PTR)hwnd;
+    call.pt = (ULONG_PTR)pt;
+    
+    qemu_syscall(&call.super);
+    
+    return call.super.iret;
+}
+
+#else
+
+void qemu_PhysicalToLogicalPointForPerMonitorDPI(struct qemu_syscall *call)
+{
+    struct qemu_PhysicalToLogicalPointForPerMonitorDPI *c = (struct qemu_PhysicalToLogicalPointForPerMonitorDPI *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = PhysicalToLogicalPointForPerMonitorDPI(QEMU_G2H(c->hwnd), QEMU_G2H(c->pt));
+}
+
+#endif
