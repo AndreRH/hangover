@@ -29,6 +29,7 @@ enum mmdevapi_calls
     CALL_MMDEVCOL_QUERYINTERFACE,
     CALL_MMDEVCOL_RELEASE,
     CALL_MMDEVENUM_ADDREF,
+    CALL_MMDEVENUM_CREATE,
     CALL_MMDEVENUM_ENUMAUDIOENDPOINTS,
     CALL_MMDEVENUM_GETDEFAULTAUDIOENDPOINT,
     CALL_MMDEVENUM_GETDEVICE,
@@ -70,8 +71,11 @@ struct qemu_mmdevice
 
 #ifdef QEMU_DLL_GUEST
 
+HRESULT MMDevEnum_Create(const IID *iid, void **ppv);
+
 #else
 
+HMODULE mmdevapi_mod;
 extern const struct qemu_ops *qemu_ops;
 
 void qemu_MMDevCol_AddRef(struct qemu_syscall *call);
@@ -80,6 +84,7 @@ void qemu_MMDevCol_Item(struct qemu_syscall *call);
 void qemu_MMDevCol_QueryInterface(struct qemu_syscall *call);
 void qemu_MMDevCol_Release(struct qemu_syscall *call);
 void qemu_MMDevEnum_AddRef(struct qemu_syscall *call);
+void qemu_MMDevEnum_Create(struct qemu_syscall *call);
 void qemu_MMDevEnum_EnumAudioEndpoints(struct qemu_syscall *call);
 void qemu_MMDevEnum_GetDefaultAudioEndpoint(struct qemu_syscall *call);
 void qemu_MMDevEnum_GetDevice(struct qemu_syscall *call);

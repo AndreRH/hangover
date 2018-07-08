@@ -12,7 +12,7 @@ mmdevapi.dll: devenum_g.o main_g.o mmdevapi.spec
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/mmdevapi.spec *_g.o -o mmdevapi.dll -nodefaultlibs -nostdlib -lwine -lmsvcrt -luuid -L../../$(WINE_DIR)/libs/wine
 
 qemu_mmdevapi.dll.so: devenum_h.o main_h.o qemu_mmdevapi.spec
-	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_mmdevapi.spec *_h.o -o qemu_mmdevapi.dll.so
+	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_mmdevapi.spec *_h.o -o qemu_mmdevapi.dll.so -lole32
 
 %_g.o: %.c qemu_mmdevapi.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../../wine/include/wine -Wno-format

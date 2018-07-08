@@ -726,6 +726,8 @@ static HRESULT WINAPI MMDevEnum_QueryInterface(IMMDeviceEnumerator *iface, REFII
 
 #else
 
+static struct qemu_mmdevenum *MMDevEnumerator;
+
 void qemu_MMDevEnum_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_MMDevEnum_QueryInterface *c = (struct qemu_MMDevEnum_QueryInterface *)call;
@@ -803,10 +805,19 @@ void qemu_MMDevEnum_Release(struct qemu_syscall *call)
     struct qemu_MMDevEnum_Release *c = (struct qemu_MMDevEnum_Release *)call;
     struct qemu_mmdevenum *devenum;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     devenum = QEMU_G2H(c->iface);
 
     c->super.iret = IMMDeviceEnumerator_Release(devenum->host);
+
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying device enumerator proxy %p, host enum %p\n", devenum, devenum->host);
+        /* FIXME: Destroy device proxies. */
+
+        HeapFree(GetProcessHeap(), 0, devenum);
+        MMDevEnumerator = NULL;
+    }
 }
 
 #endif
@@ -1318,6 +1329,104 @@ void qemu_MMDevPropStore_Commit(struct qemu_syscall *call)
     store = QEMU_G2H(c->iface);
 
     c->super.iret = IPropertyStore_Commit(store->host);
+}
+
+#endif
+
+struct qemu_MMDevEnum_Create
+{
+    struct qemu_syscall super;
+    uint64_t new_object;
+    uint64_t object;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static const IMMDeviceEnumeratorVtbl MMDevEnumVtbl =
+{
+    MMDevEnum_QueryInterface,
+    MMDevEnum_AddRef,
+    MMDevEnum_Release,
+    MMDevEnum_EnumAudioEndpoints,
+    MMDevEnum_GetDefaultAudioEndpoint,
+    MMDevEnum_GetDevice,
+    MMDevEnum_RegisterEndpointNotificationCallback,
+    MMDevEnum_UnregisterEndpointNotificationCallback
+};
+
+HRESULT MMDevEnum_Create(const IID *iid, void **ppv)
+{
+    struct qemu_MMDevEnum_Create call;
+    struct qemu_mmdevenum *devenum;
+    HRESULT hr;
+
+    WINE_TRACE("\n");
+    call.super.id = QEMU_SYSCALL_ID(CALL_MMDEVENUM_CREATE);
+    qemu_syscall(&call.super);
+
+    devenum = (struct qemu_mmdevenum *)(ULONG_PTR)call.object;
+
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    if (call.new_object)
+        devenum->IMMDeviceEnumerator_iface.lpVtbl = &MMDevEnumVtbl;
+
+    hr = IMMDeviceEnumerator_QueryInterface(&devenum->IMMDeviceEnumerator_iface, iid, ppv);
+    IMMDeviceEnumerator_Release(&devenum->IMMDeviceEnumerator_iface);
+    return hr;
+}
+
+#else
+
+void qemu_MMDevEnum_Create(struct qemu_syscall *call)
+{
+    /* FIXME: Do I need any kind of lock for the globals? */
+    struct qemu_MMDevEnum_Create *c = (struct qemu_MMDevEnum_Create *)call;
+    struct qemu_mmdevenum *devenum = MMDevEnumerator;
+    HRESULT hr;
+    HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID riid, void **obj);
+    IClassFactory *factory;
+
+    c->new_object = FALSE;
+    if (devenum)
+    {
+        c->super.iret = S_OK;
+        c->object = QEMU_H2G(devenum);
+        return;
+    }
+
+    devenum = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*devenum));
+    if (!devenum)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    p_DllGetClassObject = (void *)GetProcAddress(mmdevapi_mod, "DllGetClassObject");
+    if (!p_DllGetClassObject)
+        WINE_ERR("Cannot get DllGetClassObject in mmdevapi.dll.\n");
+
+    hr = p_DllGetClassObject(&CLSID_MMDeviceEnumerator, &IID_IClassFactory, (void *)&factory);
+    if (FAILED(hr))
+        WINE_ERR("Cannot create class factory\n");
+
+    hr = IClassFactory_CreateInstance(factory, NULL, &IID_IMMDeviceEnumerator, (void **)&devenum->host);
+    IClassFactory_Release(factory);
+    if (FAILED(hr))
+    {
+        WINE_WARN("Failed to create an IIMMDeviceEnumerator object.\n");
+        HeapFree(GetProcessHeap(), 0, devenum);
+        c->super.iret = hr;
+        return;
+    }
+
+    c->super.iret = hr;
+    c->object = QEMU_H2G(devenum);
+    c->new_object = TRUE;
+    MMDevEnumerator = devenum;
+    WINE_TRACE("Created device enumerator %p, wrapper %p\n", devenum->host, devenum);
 }
 
 #endif

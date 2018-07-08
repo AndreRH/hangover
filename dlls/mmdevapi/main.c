@@ -21,9 +21,9 @@
 
 #define COBJMACROS
 
+#include <initguid.h>
 #include <windows.h>
 #include <stdio.h>
-#include <initguid.h>
 #include <mmdeviceapi.h>
 
 #include "thunk/qemu_windows.h"
@@ -144,12 +144,6 @@ static HRESULT WINAPI MMCF_LockServer(IClassFactory *iface, BOOL dolock)
     return S_OK;
 }
 
-static HRESULT MMDevEnum_Create(const IID *iid, void **ppv)
-{
-    WINE_FIXME("Stub!\n");
-    return E_FAIL;
-}
-
 static const IClassFactoryVtbl MMCF_Vtbl =
 {
     MMCF_QueryInterface,
@@ -238,6 +232,7 @@ static const syscall_handler dll_functions[] =
     qemu_MMDevCol_QueryInterface,
     qemu_MMDevCol_Release,
     qemu_MMDevEnum_AddRef,
+    qemu_MMDevEnum_Create,
     qemu_MMDevEnum_EnumAudioEndpoints,
     qemu_MMDevEnum_GetDefaultAudioEndpoint,
     qemu_MMDevEnum_GetDevice,
@@ -272,6 +267,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
+
+    mmdevapi_mod = LoadLibraryA("mmdevapi");
+    if (!mmdevapi_mod)
+        WINE_ERR("Failed to load mmdevapi.dll.\n");
 
     return dll_functions;
 }
