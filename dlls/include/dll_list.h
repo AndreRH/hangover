@@ -34,5 +34,6 @@
 #define DLL_CRYPT32     0x1fLL
 #define DLL_DXGI        0x20LL
 #define DLL_D3D11       0x21LL
+#define DLL_MMDEVAPI    0x22LL
 
 #endif
