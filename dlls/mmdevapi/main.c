@@ -24,6 +24,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <initguid.h>
+#include <mmdeviceapi.h>
 
 #include "thunk/qemu_windows.h"
 
@@ -75,9 +76,126 @@ HRESULT WINAPI DllCanUnloadNow(void)
     return S_FALSE;
 }
 
+
+typedef HRESULT (*FnCreateInstance)(REFIID riid, LPVOID *ppobj);
+
+typedef struct {
+    IClassFactory IClassFactory_iface;
+    REFCLSID rclsid;
+    FnCreateInstance pfnCreateInstance;
+} IClassFactoryImpl;
+
+static inline IClassFactoryImpl *impl_from_IClassFactory(IClassFactory *iface)
+{
+    return CONTAINING_RECORD(iface, IClassFactoryImpl, IClassFactory_iface);
+}
+
+static HRESULT WINAPI MMCF_QueryInterface(IClassFactory *iface, REFIID riid, void **ppobj)
+{
+    IClassFactoryImpl *This = impl_from_IClassFactory(iface);
+    WINE_TRACE("(%p, %s, %p)\n", This, wine_dbgstr_guid(riid), ppobj);
+
+    if (ppobj == NULL)
+        return E_POINTER;
+
+    if (IsEqualIID(riid, &IID_IUnknown) ||
+            IsEqualIID(riid, &IID_IClassFactory))
+    {
+        *ppobj = iface;
+        IClassFactory_AddRef(iface);
+        return S_OK;
+    }
+    *ppobj = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG WINAPI MMCF_AddRef(IClassFactory *iface)
+{
+    return 2;
+}
+
+static ULONG WINAPI MMCF_Release(IClassFactory *iface)
+{
+    /* static class, won't be freed */
+    return 1;
+}
+
+static HRESULT WINAPI MMCF_CreateInstance(IClassFactory *iface, IUnknown *pOuter, const IID *riid, void **ppobj)
+{
+    IClassFactoryImpl *This = impl_from_IClassFactory(iface);
+    WINE_TRACE("(%p, %p, %s, %p)\n", This, pOuter, wine_dbgstr_guid(riid), ppobj);
+
+    if (pOuter)
+        return CLASS_E_NOAGGREGATION;
+
+    if (ppobj == NULL)
+    {
+        WINE_WARN("invalid parameter\n");
+        return E_POINTER;
+    }
+    *ppobj = NULL;
+    return This->pfnCreateInstance(riid, ppobj);
+}
+
+static HRESULT WINAPI MMCF_LockServer(IClassFactory *iface, BOOL dolock)
+{
+    IClassFactoryImpl *This = impl_from_IClassFactory(iface);
+    WINE_FIXME("(%p, %d) stub!\n", This, dolock);
+    return S_OK;
+}
+
+static HRESULT MMDevEnum_Create(const IID *iid, void **ppv)
+{
+    WINE_FIXME("Stub!\n");
+    return E_FAIL;
+}
+
+static const IClassFactoryVtbl MMCF_Vtbl =
+{
+    MMCF_QueryInterface,
+    MMCF_AddRef,
+    MMCF_Release,
+    MMCF_CreateInstance,
+    MMCF_LockServer
+};
+
+static IClassFactoryImpl MMDEVAPI_CF[] =
+{
+    { { &MMCF_Vtbl }, &CLSID_MMDeviceEnumerator, (FnCreateInstance)MMDevEnum_Create }
+};
+
 HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppv)
 {
-    WINE_FIXME("Stub\n");
+    unsigned int i = 0;
+    WINE_TRACE("(%s, %s, %p)\n", wine_dbgstr_guid(rclsid), wine_dbgstr_guid(riid), ppv);
+
+    if (ppv == NULL)
+    {
+        WINE_WARN("invalid parameter\n");
+        return E_INVALIDARG;
+    }
+
+    *ppv = NULL;
+
+    if (!IsEqualIID(riid, &IID_IClassFactory)
+            && !IsEqualIID(riid, &IID_IUnknown))
+    {
+        WINE_WARN("no interface for %s\n", wine_dbgstr_guid(riid));
+        return E_NOINTERFACE;
+    }
+
+    for (i = 0; i < sizeof(MMDEVAPI_CF)/sizeof(MMDEVAPI_CF[0]); ++i)
+    {
+        if (IsEqualGUID(rclsid, MMDEVAPI_CF[i].rclsid))
+        {
+            IClassFactory_AddRef(&MMDEVAPI_CF[i].IClassFactory_iface);
+            *ppv = &MMDEVAPI_CF[i];
+            return S_OK;
+        }
+    }
+
+    WINE_WARN("(%s, %s, %p): no class found.\n", wine_dbgstr_guid(rclsid),
+            wine_dbgstr_guid(riid), ppv);
     return CLASS_E_CLASSNOTAVAILABLE;
 }
 
