@@ -67,6 +67,7 @@ struct qemu_mmdevice
     /* Host fields */
     IMMDevice *host_device;
     IMMEndpoint *host_endpoint;
+    struct list entry;
 };
 
 #ifdef QEMU_DLL_GUEST

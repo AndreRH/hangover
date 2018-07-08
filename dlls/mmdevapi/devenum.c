@@ -32,8 +32,10 @@
 
 #ifdef QEMU_DLL_GUEST
 #include <debug.h>
+#include <list.h>
 #else
 #include <wine/debug.h>
+#include <wine/list.h>
 #endif
 
 #include "qemu_mmdevapi.h"
@@ -104,6 +106,46 @@ static HRESULT WINAPI MMDevice_QueryInterface(IMMDevice *iface, REFIID riid, voi
 
 #else
 
+static struct list device_list = LIST_INIT(device_list);
+static CRITICAL_SECTION mmdevapi_cs = {0, -1, 0, 0, 0, 0};
+
+static struct qemu_mmdevice *device_from_host(IMMDevice *host, BOOL *new_dev)
+{
+    struct qemu_mmdevice *wrapper;
+
+    EnterCriticalSection(&mmdevapi_cs);
+
+    *new_dev = FALSE;
+    LIST_FOR_EACH_ENTRY(wrapper, &device_list, struct qemu_mmdevice, entry)
+    {
+        if (wrapper->host_device == host)
+        {
+            LeaveCriticalSection(&mmdevapi_cs);
+            WINE_TRACE("Returning existing wrapper %p for host device %p.\n", wrapper, host);
+            return wrapper;
+        }
+    }
+
+    wrapper = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*wrapper));
+    if (!wrapper)
+    {
+        WINE_WARN("Out of memory.\n");
+        LeaveCriticalSection(&mmdevapi_cs);
+        return NULL;
+    }
+    WINE_TRACE("Allocated wrapper %p for host device %p.\n", wrapper, host);
+
+    wrapper->host_device = host;
+    IMMDevice_QueryInterface(host, &IID_IMMEndpoint, (void **)&wrapper->host_endpoint);
+    IMMEndpoint_Release(wrapper->host_endpoint);
+
+    list_add_head(&device_list, &wrapper->entry);
+    *new_dev = TRUE;
+    LeaveCriticalSection(&mmdevapi_cs);
+
+    return wrapper;
+}
+
 void qemu_MMDevice_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_MMDevice_QueryInterface *c = (struct qemu_MMDevice_QueryInterface *)call;
@@ -145,7 +187,7 @@ void qemu_MMDevice_AddRef(struct qemu_syscall *call)
     struct qemu_MMDevice_AddRef *c = (struct qemu_MMDevice_AddRef *)call;
     struct qemu_mmdevice *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IMMDevice_AddRef(device->host_device);
@@ -181,7 +223,8 @@ void qemu_MMDevice_Release(struct qemu_syscall *call)
     struct qemu_MMDevice_Release *c = (struct qemu_MMDevice_Release *)call;
     struct qemu_mmdevice *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+    /* No need to release here, devices stay around until the enumerator is freed. */
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IMMDevice_Release(device->host_device);
@@ -334,6 +377,17 @@ static HRESULT WINAPI MMDevice_GetState(IMMDevice *iface, DWORD *state)
     return call.super.iret;
 }
 
+static const IMMDeviceVtbl MMDeviceVtbl =
+{
+    MMDevice_QueryInterface,
+    MMDevice_AddRef,
+    MMDevice_Release,
+    MMDevice_Activate,
+    MMDevice_OpenPropertyStore,
+    MMDevice_GetId,
+    MMDevice_GetState
+};
+
 #else
 
 void qemu_MMDevice_GetState(struct qemu_syscall *call)
@@ -483,6 +537,14 @@ static HRESULT WINAPI MMEndpoint_GetDataFlow(IMMEndpoint *iface, EDataFlow *flow
 
     return call.super.iret;
 }
+
+static const IMMEndpointVtbl MMEndpointVtbl =
+{
+    MMEndpoint_QueryInterface,
+    MMEndpoint_AddRef,
+    MMEndpoint_Release,
+    MMEndpoint_GetDataFlow
+};
 
 #else
 
@@ -824,6 +886,7 @@ void qemu_MMDevEnum_Release(struct qemu_syscall *call)
 {
     struct qemu_MMDevEnum_Release *c = (struct qemu_MMDevEnum_Release *)call;
     struct qemu_mmdevenum *devenum;
+    struct qemu_mmdevice *dev1, *dev2;
 
     WINE_TRACE("\n");
     devenum = QEMU_G2H(c->iface);
@@ -833,10 +896,19 @@ void qemu_MMDevEnum_Release(struct qemu_syscall *call)
     if (!c->super.iret)
     {
         WINE_TRACE("Destroying device enumerator proxy %p, host enum %p\n", devenum, devenum->host);
-        /* FIXME: Destroy device proxies. */
+        EnterCriticalSection(&mmdevapi_cs);
+
+        LIST_FOR_EACH_ENTRY_SAFE(dev1, dev2, &device_list, struct qemu_mmdevice, entry)
+        {
+            list_remove(&dev1->entry);
+            WINE_TRACE("Destroying device wrapper %p, host %p.\n", dev1, dev1->host_device);
+            HeapFree(GetProcessHeap(), 0, dev1);
+        }
 
         HeapFree(GetProcessHeap(), 0, devenum);
         MMDevEnumerator = NULL;
+
+        LeaveCriticalSection(&mmdevapi_cs);
     }
 }
 
@@ -891,14 +963,17 @@ struct qemu_MMDevEnum_GetDefaultAudioEndpoint
     uint64_t flow;
     uint64_t role;
     uint64_t device;
+    uint64_t new_dev;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI MMDevEnum_GetDefaultAudioEndpoint(IMMDeviceEnumerator *iface, EDataFlow flow, ERole role, IMMDevice **device)
+static HRESULT WINAPI MMDevEnum_GetDefaultAudioEndpoint(IMMDeviceEnumerator *iface, EDataFlow flow, ERole role,
+        IMMDevice **device)
 {
     struct qemu_MMDevEnum_GetDefaultAudioEndpoint call;
     struct qemu_mmdevenum *devenum = impl_from_IMMDeviceEnumerator(iface);
+    struct qemu_mmdevice *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_MMDEVENUM_GETDEFAULTAUDIOENDPOINT);
     call.iface = (ULONG_PTR)devenum;
@@ -907,6 +982,20 @@ static HRESULT WINAPI MMDevEnum_GetDefaultAudioEndpoint(IMMDeviceEnumerator *ifa
     call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        if (device)
+            *device = NULL;
+        return call.super.iret;
+    }
+
+    impl = (struct qemu_mmdevice *)(ULONG_PTR)call.device;
+    if (call.new_dev)
+    {
+        impl->IMMDevice_iface.lpVtbl = &MMDeviceVtbl;
+        impl->IMMEndpoint_iface.lpVtbl = &MMEndpointVtbl;
+    }
+    *device = &impl->IMMDevice_iface;
 
     return call.super.iret;
 }
@@ -917,11 +1006,28 @@ void qemu_MMDevEnum_GetDefaultAudioEndpoint(struct qemu_syscall *call)
 {
     struct qemu_MMDevEnum_GetDefaultAudioEndpoint *c = (struct qemu_MMDevEnum_GetDefaultAudioEndpoint *)call;
     struct qemu_mmdevenum *devenum;
+    struct qemu_mmdevice *device;
+    IMMDevice *host;
+    BOOL new_dev;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     devenum = QEMU_G2H(c->iface);
 
-    c->super.iret = IMMDeviceEnumerator_GetDefaultAudioEndpoint(devenum->host, c->flow, c->role, QEMU_G2H(c->device));
+    c->new_dev = FALSE;
+    c->super.iret = IMMDeviceEnumerator_GetDefaultAudioEndpoint(devenum->host, c->flow, c->role,
+            c->device ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    device = device_from_host(host, &new_dev);
+    if (!device)
+    {
+        IMMDevice_Release(host);
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    c->new_dev = new_dev;
+    c->device = QEMU_H2G(device);
 }
 
 #endif

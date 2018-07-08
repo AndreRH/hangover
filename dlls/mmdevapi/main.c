@@ -33,8 +33,10 @@
 
 #ifdef QEMU_DLL_GUEST
 #include <debug.h>
+#include <list.h>
 #else
 #include <wine/debug.h>
+#include <wine/list.h>
 #endif
 
 #include "qemu_mmdevapi.h"
