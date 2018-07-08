@@ -699,7 +699,6 @@ struct qemu_MMDevEnum_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t riid;
-    uint64_t ppv;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -714,14 +713,28 @@ static HRESULT WINAPI MMDevEnum_QueryInterface(IMMDeviceEnumerator *iface, REFII
     struct qemu_MMDevEnum_QueryInterface call;
     struct qemu_mmdevenum *devenum = impl_from_IMMDeviceEnumerator(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_MMDEVENUM_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)devenum;
-    call.riid = (ULONG_PTR)riid;
-    call.ppv = (ULONG_PTR)ppv;
+    if (!ppv)
+        return E_POINTER;
 
-    qemu_syscall(&call.super);
+    if (IsEqualIID(riid, &IID_IUnknown)
+            || IsEqualIID(riid, &IID_IMMDeviceEnumerator))
+        *ppv = &devenum->IMMDeviceEnumerator_iface;
+    else
+    {
+        *ppv = NULL;
 
-    return call.super.iret;
+        call.super.id = QEMU_SYSCALL_ID(CALL_MMDEVENUM_QUERYINTERFACE);
+        call.iface = (ULONG_PTR)devenum;
+        call.riid = (ULONG_PTR)riid;
+        qemu_syscall(&call.super);
+    }
+
+    if (!*ppv)
+        return E_NOINTERFACE;
+
+    IUnknown_AddRef((IUnknown*)*ppv);
+
+    return S_OK;
 }
 
 #else
@@ -732,11 +745,18 @@ void qemu_MMDevEnum_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_MMDevEnum_QueryInterface *c = (struct qemu_MMDevEnum_QueryInterface *)call;
     struct qemu_mmdevenum *devenum;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     devenum = QEMU_G2H(c->iface);
 
-    c->super.iret = IMMDeviceEnumerator_QueryInterface(devenum->host, QEMU_G2H(c->riid), QEMU_G2H(c->ppv));
+    c->super.iret = IMMDeviceEnumerator_QueryInterface(devenum->host, QEMU_G2H(c->riid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
@@ -769,7 +789,7 @@ void qemu_MMDevEnum_AddRef(struct qemu_syscall *call)
     struct qemu_MMDevEnum_AddRef *c = (struct qemu_MMDevEnum_AddRef *)call;
     struct qemu_mmdevenum *devenum;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     devenum = QEMU_G2H(c->iface);
 
     c->super.iret = IMMDeviceEnumerator_AddRef(devenum->host);
