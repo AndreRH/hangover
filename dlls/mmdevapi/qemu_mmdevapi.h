@@ -20,6 +20,10 @@
 #ifndef QEMU_MMDEVAPI_H
 #define QEMU_MMDEVAPI_H
 
+/* Mingw's strmif.h spams plenty of warnings about things in the header being incorrect, so just declare
+ * IID_IBaseFilter manually. */
+DEFINE_GUID(IID_IBaseFilter, 0x56a86895, 0x0ad4, 0x11ce, 0xb0,0x3a, 0x00,0x20,0xaf,0x0b,0xa7,0x70);
+
 enum mmdevapi_calls
 {
     CALL_INIT_DLL = 0,

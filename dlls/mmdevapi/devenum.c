@@ -22,8 +22,11 @@
 #define COBJMACROS
 
 #include <windows.h>
-#include <stdio.h>
 #include <mmdeviceapi.h>
+#include <audioclient.h>
+#include <endpointvolume.h>
+#include <audiopolicy.h>
+#include <dsound.h>
 
 #include "thunk/qemu_windows.h"
 
@@ -248,6 +251,47 @@ static HRESULT WINAPI MMDevice_Activate(IMMDevice *iface, REFIID riid, DWORD cls
 {
     struct qemu_MMDevice_Activate call;
     struct qemu_mmdevice *device = impl_from_IMMDevice(iface);
+
+    if (IsEqualIID(riid, &IID_IAudioClient))
+    {
+        /* Implemented in the drivers */
+        WINE_FIXME("IID_IAudioClient unsupported\n");
+    }
+    else if (IsEqualIID(riid, &IID_IAudioEndpointVolume) || IsEqualIID(riid, &IID_IAudioEndpointVolumeEx))
+    {
+        /* Implemented in mmdevapi */
+        WINE_FIXME("IID_IAudioEndpointVolume unsupported\n");
+    }
+    else if (IsEqualIID(riid, &IID_IAudioSessionManager) || IsEqualIID(riid, &IID_IAudioSessionManager2))
+    {
+        /* Implemented in the drivers */
+        WINE_FIXME("IID_IAudioSessionManager unsupported\n");
+    }
+    else if (IsEqualIID(riid, &IID_IBaseFilter))
+    {
+        /* CoCreateInstance + extras */
+        WINE_FIXME("IID_IBaseFilter unsupported\n");
+    }
+    else if (IsEqualIID(riid, &IID_IDeviceTopology))
+    {
+        /* Not handled in Wine either */
+        WINE_FIXME("IID_IDeviceTopology unsupported\n");
+    }
+    else if (IsEqualIID(riid, &IID_IDirectSound)
+            || IsEqualIID(riid, &IID_IDirectSound8))
+    {
+        /* CoCreateInstance */
+        WINE_FIXME("IID_IDirectSound unsupported\n");
+    }
+    else if (IsEqualIID(riid, &IID_IDirectSoundCapture))
+    {
+        /* CoCreateInstance */
+        WINE_FIXME("IID_IDirectSoundCapture unsupported\n");
+    }
+    else
+    {
+        WINE_ERR("Invalid/unknown iid %s\n", wine_dbgstr_guid(riid));
+    }
 
     call.super.id = QEMU_SYSCALL_ID(CALL_MMDEVICE_ACTIVATE);
     call.iface = (ULONG_PTR)device;

@@ -23,8 +23,11 @@
 
 #include <initguid.h>
 #include <windows.h>
-#include <stdio.h>
 #include <mmdeviceapi.h>
+#include <audioclient.h>
+#include <endpointvolume.h>
+#include <audiopolicy.h>
+#include <dsound.h>
 
 #include "thunk/qemu_windows.h"
 
