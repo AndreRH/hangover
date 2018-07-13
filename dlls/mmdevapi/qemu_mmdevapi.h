@@ -87,12 +87,10 @@ enum mmdevapi_calls
     CALL_AUDIOSTREAMVOLUME_QUERYINTERFACE,
     CALL_AUDIOSTREAMVOLUME_SETALLVOLUMES,
     CALL_AUDIOSTREAMVOLUME_SETCHANNELVOLUME,
-    CALL_CHANNELAUDIOVOLUME_ADDREF,
     CALL_CHANNELAUDIOVOLUME_GETALLVOLUMES,
     CALL_CHANNELAUDIOVOLUME_GETCHANNELCOUNT,
     CALL_CHANNELAUDIOVOLUME_GETCHANNELVOLUME,
     CALL_CHANNELAUDIOVOLUME_QUERYINTERFACE,
-    CALL_CHANNELAUDIOVOLUME_RELEASE,
     CALL_CHANNELAUDIOVOLUME_SETALLVOLUMES,
     CALL_CHANNELAUDIOVOLUME_SETCHANNELVOLUME,
     CALL_INIT_DLL,
@@ -129,11 +127,9 @@ enum mmdevapi_calls
     CALL_MMENDPOINT_GETDATAFLOW,
     CALL_MMENDPOINT_QUERYINTERFACE,
     CALL_MMENDPOINT_RELEASE,
-    CALL_SIMPLEAUDIOVOLUME_ADDREF,
     CALL_SIMPLEAUDIOVOLUME_GETMASTERVOLUME,
     CALL_SIMPLEAUDIOVOLUME_GETMUTE,
     CALL_SIMPLEAUDIOVOLUME_QUERYINTERFACE,
-    CALL_SIMPLEAUDIOVOLUME_RELEASE,
     CALL_SIMPLEAUDIOVOLUME_SETMASTERVOLUME,
     CALL_SIMPLEAUDIOVOLUME_SETMUTE,
 };
@@ -160,6 +156,8 @@ struct qemu_audioclient
     IAudioClock2 IAudioClock2_iface;
     IAudioStreamVolume IAudioStreamVolume_iface;
 
+    struct qemu_audiosession *session;
+
     /* Host fields */
     IAudioClient *host_client;
     IAudioRenderClient *host_render;
@@ -180,6 +178,8 @@ struct qemu_audiosession
     IAudioSessionControl2 *host_control;
     IChannelAudioVolume *host_chan_vol;
     ISimpleAudioVolume *host_simple_vol;
+
+    struct qemu_audioclient *client;
 };
 
 struct qemu_sessmgr
@@ -263,12 +263,10 @@ void qemu_AudioStreamVolume_GetChannelVolume(struct qemu_syscall *call);
 void qemu_AudioStreamVolume_QueryInterface(struct qemu_syscall *call);
 void qemu_AudioStreamVolume_SetAllVolumes(struct qemu_syscall *call);
 void qemu_AudioStreamVolume_SetChannelVolume(struct qemu_syscall *call);
-void qemu_ChannelAudioVolume_AddRef(struct qemu_syscall *call);
 void qemu_ChannelAudioVolume_GetAllVolumes(struct qemu_syscall *call);
 void qemu_ChannelAudioVolume_GetChannelCount(struct qemu_syscall *call);
 void qemu_ChannelAudioVolume_GetChannelVolume(struct qemu_syscall *call);
 void qemu_ChannelAudioVolume_QueryInterface(struct qemu_syscall *call);
-void qemu_ChannelAudioVolume_Release(struct qemu_syscall *call);
 void qemu_ChannelAudioVolume_SetAllVolumes(struct qemu_syscall *call);
 void qemu_ChannelAudioVolume_SetChannelVolume(struct qemu_syscall *call);
 void qemu_MMDevCol_AddRef(struct qemu_syscall *call);
@@ -304,11 +302,9 @@ void qemu_MMEndpoint_AddRef(struct qemu_syscall *call);
 void qemu_MMEndpoint_GetDataFlow(struct qemu_syscall *call);
 void qemu_MMEndpoint_QueryInterface(struct qemu_syscall *call);
 void qemu_MMEndpoint_Release(struct qemu_syscall *call);
-void qemu_SimpleAudioVolume_AddRef(struct qemu_syscall *call);
 void qemu_SimpleAudioVolume_GetMasterVolume(struct qemu_syscall *call);
 void qemu_SimpleAudioVolume_GetMute(struct qemu_syscall *call);
 void qemu_SimpleAudioVolume_QueryInterface(struct qemu_syscall *call);
-void qemu_SimpleAudioVolume_Release(struct qemu_syscall *call);
 void qemu_SimpleAudioVolume_SetMasterVolume(struct qemu_syscall *call);
 void qemu_SimpleAudioVolume_SetMute(struct qemu_syscall *call);
 

@@ -222,6 +222,22 @@ static ULONG WINAPI AudioClient_Release(IAudioClient *iface)
 
 #else
 
+static ULONG qemu_AudioClient_Release_internal(struct qemu_audioclient *client)
+{
+    ULONG ret;
+
+    ret = IAudioClient_Release(client->host_client);
+
+    if (!ret)
+    {
+        /* FIXME: Do I need to do something about the parent IMMDevice or IMMDeviceEnumerator? */
+        WINE_TRACE("Destroying audioclient wrapper %p, host %p\n", client, client->host_client);
+        HeapFree(GetProcessHeap(), 0, client);
+    }
+
+    return ret;
+}
+
 void qemu_AudioClient_Release(struct qemu_syscall *call)
 {
     struct qemu_AudioClient_Release *c = (struct qemu_AudioClient_Release *)call;
@@ -230,14 +246,7 @@ void qemu_AudioClient_Release(struct qemu_syscall *call)
     WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
-    c->super.iret = IAudioClient_Release(client->host_client);
-
-    if (!c->super.iret)
-    {
-        /* FIXME: Do I need to do something about the parent IMMDevice or IMMDeviceEnumerator? */
-        WINE_TRACE("Destroying audioclient wrapper %p, host %p\n", client, client->host_client);
-        HeapFree(GetProcessHeap(), 0, client);
-    }
+    c->super.iret = qemu_AudioClient_Release_internal(client);
 }
 
 #endif
@@ -694,9 +703,12 @@ struct qemu_AudioClient_GetService
     uint64_t iface;
     uint64_t riid;
     uint64_t ppv;
+    uint64_t session;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static void qemu_audiosession_guest_init(struct qemu_audiosession *client);
 
 static HRESULT WINAPI AudioClient_GetService(IAudioClient *iface, REFIID riid, void **ppv)
 {
@@ -707,6 +719,7 @@ static HRESULT WINAPI AudioClient_GetService(IAudioClient *iface, REFIID riid, v
     call.iface = (ULONG_PTR)client;
     call.riid = (ULONG_PTR)riid;
     call.ppv = (ULONG_PTR)ppv;
+    call.session = (ULONG_PTR)client->session;
 
     qemu_syscall(&call.super);
     if (FAILED(call.super.iret))
@@ -735,13 +748,31 @@ static HRESULT WINAPI AudioClient_GetService(IAudioClient *iface, REFIID riid, v
     else if (IsEqualIID(riid, &IID_IAudioSessionControl) || IsEqualIID(riid, &IID_IChannelAudioVolume)
             || IsEqualIID(riid, &IID_ISimpleAudioVolume))
     {
-        WINE_FIXME("Session etc not handled yet\n");
+        if (!client->session)
+        {
+            client->session = (struct qemu_audiosession *)(ULONG_PTR)call.session;
+            qemu_audiosession_guest_init(client->session);
+        }
+        else if (client->session != (struct qemu_audiosession *)(ULONG_PTR)call.session)
+        {
+            WINE_ERR("qemu_audiosession changed.\n");
+        }
+
+        if (IsEqualIID(riid, &IID_IAudioSessionControl))
+            *ppv = &client->session->IAudioSessionControl2_iface;
+        else if (IsEqualIID(riid, &IID_IChannelAudioVolume))
+            *ppv = &client->session->IChannelAudioVolume_iface;
+        else if (IsEqualIID(riid, &IID_ISimpleAudioVolume))
+            *ppv = &client->session->ISimpleAudioVolume_iface;
     }
 
     return call.super.iret;
 }
 
 #else
+
+static HRESULT qemu_audiosession_host_create(IAudioSessionControl *host, struct qemu_audioclient *client,
+        struct qemu_audiosession **session);
 
 void qemu_AudioClient_GetService(struct qemu_syscall *call)
 {
@@ -795,9 +826,26 @@ void qemu_AudioClient_GetService(struct qemu_syscall *call)
     else if (IsEqualIID(iid, &IID_IAudioSessionControl) || IsEqualIID(iid, &IID_IChannelAudioVolume)
             || IsEqualIID(iid, &IID_ISimpleAudioVolume))
     {
-        /* TODO. */
-    }
+        struct qemu_audiosession *session = QEMU_G2H(c->session);
+        IAudioSessionControl *host_ctrl;
 
+        if (!session)
+        {
+            c->super.iret = IAudioClient_GetService(client->host_client,
+                    &IID_IAudioSessionControl, (void **)&host_ctrl);
+            if (FAILED(c->super.iret))
+                WINE_ERR("Failed to get IAudioSessionControl.\n");
+
+            c->super.iret = qemu_audiosession_host_create(host_ctrl, client, &session);
+            c->session = QEMU_H2G(session);
+
+            IAudioSessionControl_Release(host_ctrl);
+
+            /* Usually out of memory. */
+            if (FAILED(c->super.iret))
+                IUnknown_Release(host);
+        }
+    }
 
     /* Don't release host, we pass the reference on to the application. */
 }
@@ -1708,7 +1756,7 @@ void qemu_AudioSessionControl_AddRef(struct qemu_syscall *call)
     struct qemu_AudioSessionControl_AddRef *c = (struct qemu_AudioSessionControl_AddRef *)call;
     struct qemu_audiosession *session;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioSessionControl2_AddRef(session->host_control);
@@ -1743,11 +1791,24 @@ void qemu_AudioSessionControl_Release(struct qemu_syscall *call)
 {
     struct qemu_AudioSessionControl_Release *c = (struct qemu_AudioSessionControl_Release *)call;
     struct qemu_audiosession *session;
+    struct qemu_audioclient *client = session->client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
+    client = session->client;
+
+    if (client)
+        IAudioClient_AddRef(client->host_client);
 
     c->super.iret = IAudioSessionControl2_Release(session->host_control);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying session control wrapper %p, host %p.\n", session, session->host_control);
+        HeapFree(GetProcessHeap(), 0, session);
+    }
+
+    if (client)
+        qemu_AudioClient_Release_internal(client);
 }
 
 #endif
@@ -2716,74 +2777,18 @@ void qemu_SimpleAudioVolume_QueryInterface(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_SimpleAudioVolume_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI SimpleAudioVolume_AddRef(ISimpleAudioVolume *iface)
 {
-    struct qemu_SimpleAudioVolume_AddRef call;
     struct qemu_audiosession *session = impl_from_ISimpleAudioVolume(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_SIMPLEAUDIOVOLUME_ADDREF);
-    call.iface = (ULONG_PTR)session;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return AudioSessionControl_AddRef(&session->IAudioSessionControl2_iface);
 }
-
-#else
-
-void qemu_SimpleAudioVolume_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_SimpleAudioVolume_AddRef *c = (struct qemu_SimpleAudioVolume_AddRef *)call;
-    struct qemu_audiosession *session;
-
-    WINE_FIXME("Unverified!\n");
-    session = QEMU_G2H(c->iface);
-
-    c->super.iret = ISimpleAudioVolume_AddRef(session->host_simple_vol);
-}
-
-#endif
-
-struct qemu_SimpleAudioVolume_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI SimpleAudioVolume_Release(ISimpleAudioVolume *iface)
 {
-    struct qemu_SimpleAudioVolume_Release call;
     struct qemu_audiosession *session = impl_from_ISimpleAudioVolume(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_SIMPLEAUDIOVOLUME_RELEASE);
-    call.iface = (ULONG_PTR)session;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_SimpleAudioVolume_Release(struct qemu_syscall *call)
-{
-    struct qemu_SimpleAudioVolume_Release *c = (struct qemu_SimpleAudioVolume_Release *)call;
-    struct qemu_audiosession *session;
-
-    WINE_FIXME("Unverified!\n");
-    session = QEMU_G2H(c->iface);
-
-    c->super.iret = ISimpleAudioVolume_Release(session->host_simple_vol);
+    return AudioSessionControl_Release(&session->IAudioSessionControl2_iface);
 }
 
 #endif
@@ -2984,74 +2989,18 @@ void qemu_ChannelAudioVolume_QueryInterface(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_ChannelAudioVolume_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI ChannelAudioVolume_AddRef(IChannelAudioVolume *iface)
 {
-    struct qemu_ChannelAudioVolume_AddRef call;
     struct qemu_audiosession *session = impl_from_IChannelAudioVolume(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_CHANNELAUDIOVOLUME_ADDREF);
-    call.iface = (ULONG_PTR)session;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return AudioSessionControl_AddRef(&session->IAudioSessionControl2_iface);
 }
-
-#else
-
-void qemu_ChannelAudioVolume_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_ChannelAudioVolume_AddRef *c = (struct qemu_ChannelAudioVolume_AddRef *)call;
-    struct qemu_audiosession *session;
-
-    WINE_FIXME("Unverified!\n");
-    session = QEMU_G2H(c->iface);
-
-    c->super.iret = IChannelAudioVolume_AddRef(session->host_chan_vol);
-}
-
-#endif
-
-struct qemu_ChannelAudioVolume_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI ChannelAudioVolume_Release(IChannelAudioVolume *iface)
 {
-    struct qemu_ChannelAudioVolume_Release call;
     struct qemu_audiosession *session = impl_from_IChannelAudioVolume(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_CHANNELAUDIOVOLUME_RELEASE);
-    call.iface = (ULONG_PTR)session;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ChannelAudioVolume_Release(struct qemu_syscall *call)
-{
-    struct qemu_ChannelAudioVolume_Release *c = (struct qemu_ChannelAudioVolume_Release *)call;
-    struct qemu_audiosession *session;
-
-    WINE_FIXME("Unverified!\n");
-    session = QEMU_G2H(c->iface);
-
-    c->super.iret = IChannelAudioVolume_Release(session->host_chan_vol);
+    return AudioSessionControl_Release(&session->IAudioSessionControl2_iface);
 }
 
 #endif
@@ -3328,6 +3277,50 @@ static const IAudioStreamVolumeVtbl AudioStreamVolume_Vtbl =
     AudioStreamVolume_GetAllVolumes
 };
 
+static const IAudioSessionControl2Vtbl AudioSessionControl2_Vtbl =
+{
+    AudioSessionControl_QueryInterface,
+    AudioSessionControl_AddRef,
+    AudioSessionControl_Release,
+    AudioSessionControl_GetState,
+    AudioSessionControl_GetDisplayName,
+    AudioSessionControl_SetDisplayName,
+    AudioSessionControl_GetIconPath,
+    AudioSessionControl_SetIconPath,
+    AudioSessionControl_GetGroupingParam,
+    AudioSessionControl_SetGroupingParam,
+    AudioSessionControl_RegisterAudioSessionNotification,
+    AudioSessionControl_UnregisterAudioSessionNotification,
+    AudioSessionControl_GetSessionIdentifier,
+    AudioSessionControl_GetSessionInstanceIdentifier,
+    AudioSessionControl_GetProcessId,
+    AudioSessionControl_IsSystemSoundsSession,
+    AudioSessionControl_SetDuckingPreference
+};
+
+static const IChannelAudioVolumeVtbl ChannelAudioVolume_Vtbl =
+{
+    ChannelAudioVolume_QueryInterface,
+    ChannelAudioVolume_AddRef,
+    ChannelAudioVolume_Release,
+    ChannelAudioVolume_GetChannelCount,
+    ChannelAudioVolume_SetChannelVolume,
+    ChannelAudioVolume_GetChannelVolume,
+    ChannelAudioVolume_SetAllVolumes,
+    ChannelAudioVolume_GetAllVolumes
+};
+
+static const ISimpleAudioVolumeVtbl SimpleAudioVolume_Vtbl  =
+{
+    SimpleAudioVolume_QueryInterface,
+    SimpleAudioVolume_AddRef,
+    SimpleAudioVolume_Release,
+    SimpleAudioVolume_SetMasterVolume,
+    SimpleAudioVolume_GetMasterVolume,
+    SimpleAudioVolume_SetMute,
+    SimpleAudioVolume_GetMute
+};
+
 void qemu_audioclient_guest_init(struct qemu_audioclient *client)
 {
     client->IAudioClient_iface.lpVtbl = &AudioClient_Vtbl;
@@ -3336,6 +3329,13 @@ void qemu_audioclient_guest_init(struct qemu_audioclient *client)
     client->IAudioClock_iface.lpVtbl = &AudioClock_Vtbl;
     client->IAudioClock2_iface.lpVtbl = &AudioClock2_Vtbl;
     client->IAudioStreamVolume_iface.lpVtbl = &AudioStreamVolume_Vtbl;
+}
+
+static void qemu_audiosession_guest_init(struct qemu_audiosession *client)
+{
+    client->IAudioSessionControl2_iface.lpVtbl = &AudioSessionControl2_Vtbl;
+    client->ISimpleAudioVolume_iface.lpVtbl = &SimpleAudioVolume_Vtbl;
+    client->IChannelAudioVolume_iface.lpVtbl = &ChannelAudioVolume_Vtbl;
 }
 
 #else
@@ -3359,6 +3359,44 @@ HRESULT qemu_audioclient_host_create(IAudioClient *host, struct qemu_audioclient
      * and success afterwards. So query them when the app queries them. */
 
     *client = obj;
+    return S_OK;
+}
+
+static HRESULT qemu_audiosession_host_create(IAudioSessionControl *host, struct qemu_audioclient *client,
+        struct qemu_audiosession **session)
+{
+    struct qemu_audiosession *obj;
+    HRESULT hr;
+
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory.\n");
+        return E_OUTOFMEMORY;
+    }
+
+    WINE_TRACE("Created IAudioSessionControl wrapper %p for host interface %p.\n", obj, host);
+
+    hr = IAudioSessionControl_QueryInterface(host, &IID_IAudioSessionControl2, (void **)&obj->host_control);
+    if (FAILED(hr))
+        WINE_ERR("Failed to get IAudioSessionControl2\n");
+    IAudioSessionControl2_Release(obj->host_control);
+
+    obj->client = client;
+    if (client)
+    {
+        hr = IAudioClient_GetService(client->host_client, &IID_IChannelAudioVolume, (void **)&obj->host_chan_vol);
+        if (FAILED(hr))
+            WINE_ERR("Failed to get IChannelAudioVolume\n");
+        IChannelAudioVolume_Release(obj->host_chan_vol);
+
+        hr = IAudioClient_GetService(client->host_client, &IID_ISimpleAudioVolume, (void **)&obj->host_simple_vol);
+        if (FAILED(hr))
+            WINE_ERR("Failed to get ISimpleAudioVolume\n");
+        ISimpleAudioVolume_Release(obj->host_simple_vol);
+    }
+
+    *session = obj;
     return S_OK;
 }
 
