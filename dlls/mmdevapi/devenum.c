@@ -893,7 +893,7 @@ void qemu_MMDevCol_GetCount(struct qemu_syscall *call)
     struct qemu_MMDevCol_GetCount *c = (struct qemu_MMDevCol_GetCount *)call;
     struct qemu_mmdevcol *col;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     col = QEMU_G2H(c->iface);
 
     c->super.iret = IMMDeviceCollection_GetCount(col->host, QEMU_G2H(c->numdevs));
