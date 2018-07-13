@@ -139,7 +139,7 @@ void qemu_bsearch(struct qemu_syscall *call)
 
     bsearch_guest_wrapper = c->wrapper;
     TlsSetValue(msvcrt_tls, &c->compare);
-    c->super.iret = QEMU_H2G(p_bsearch(QEMU_G2H(c->key), QEMU_G2H(c->base), c->nmemb, c->size, bsearch_wrapper));
+    c->super.iret = QEMU_H2G(p_bsearch(QEMU_G2H(c->key), QEMU_G2H(c->base), c->nmemb, c->size, c->compare ? bsearch_wrapper : NULL));
 
     TlsSetValue(msvcrt_tls, old);
 }
