@@ -1221,7 +1221,7 @@ void qemu_AudioCaptureClient_GetNextPacketSize(struct qemu_syscall *call)
     struct qemu_AudioCaptureClient_GetNextPacketSize *c = (struct qemu_AudioCaptureClient_GetNextPacketSize *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioCaptureClient_GetNextPacketSize(client->host_capture, QEMU_G2H(c->frames));
