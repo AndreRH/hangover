@@ -1786,11 +1786,13 @@ void qemu_AudioSessionControl_AddRef(struct qemu_syscall *call)
 {
     struct qemu_AudioSessionControl_AddRef *c = (struct qemu_AudioSessionControl_AddRef *)call;
     struct qemu_audiosession *session;
+    IUnknown *host;
 
     WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
 
-    c->super.iret = IAudioSessionControl2_AddRef(session->host_control);
+    host = session->host_control ? (IUnknown *)session->host_control : (IUnknown *)session->host_simple_vol;
+    c->super.iret = IUnknown_AddRef(host);
 }
 
 #endif
@@ -1823,6 +1825,7 @@ void qemu_AudioSessionControl_Release(struct qemu_syscall *call)
     struct qemu_AudioSessionControl_Release *c = (struct qemu_AudioSessionControl_Release *)call;
     struct qemu_audiosession *session;
     struct qemu_audioclient *client = session->client;
+    IUnknown *host;
 
     WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
@@ -1831,7 +1834,8 @@ void qemu_AudioSessionControl_Release(struct qemu_syscall *call)
     if (client)
         IAudioClient_AddRef(client->host_client);
 
-    c->super.iret = IAudioSessionControl2_Release(session->host_control);
+    host = session->host_control ? (IUnknown *)session->host_control : (IUnknown *)session->host_simple_vol;
+    c->super.iret = IUnknown_Release(host);
     if (!c->super.iret)
     {
         WINE_TRACE("Destroying session control wrapper %p, host %p.\n", session, session->host_control);
@@ -2551,10 +2555,12 @@ struct qemu_AudioSessionManager_GetSimpleAudioVolume
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI AudioSessionManager_GetSimpleAudioVolume(IAudioSessionManager2 *iface, const GUID *session_guid, DWORD flags, ISimpleAudioVolume **out)
+static HRESULT WINAPI AudioSessionManager_GetSimpleAudioVolume(IAudioSessionManager2 *iface, const GUID *session_guid,
+        DWORD flags, ISimpleAudioVolume **out)
 {
     struct qemu_AudioSessionManager_GetSimpleAudioVolume call;
     struct qemu_sessmgr *mgr = impl_from_IAudioSessionManager2(iface);
+    struct qemu_audiosession *session;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_AUDIOSESSIONMANAGER_GETSIMPLEAUDIOVOLUME);
     call.iface = (ULONG_PTR)mgr;
@@ -2563,6 +2569,14 @@ static HRESULT WINAPI AudioSessionManager_GetSimpleAudioVolume(IAudioSessionMana
     call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
+    if (call.super.iret)
+    {
+        return call.super.iret;
+    }
+
+    session = (struct qemu_audiosession *)(ULONG_PTR)call.out;
+    qemu_audiosession_guest_init(session);
+    *out = &session->ISimpleAudioVolume_iface;
 
     return call.super.iret;
 }
@@ -2571,13 +2585,35 @@ static HRESULT WINAPI AudioSessionManager_GetSimpleAudioVolume(IAudioSessionMana
 
 void qemu_AudioSessionManager_GetSimpleAudioVolume(struct qemu_syscall *call)
 {
-    struct qemu_AudioSessionManager_GetSimpleAudioVolume *c = (struct qemu_AudioSessionManager_GetSimpleAudioVolume *)call;
+    struct qemu_AudioSessionManager_GetSimpleAudioVolume *c =
+            (struct qemu_AudioSessionManager_GetSimpleAudioVolume *)call;
     struct qemu_sessmgr *mgr;
+    struct qemu_audiosession *obj;
+    ISimpleAudioVolume *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     mgr = QEMU_G2H(c->iface);
 
-    c->super.iret = IAudioSessionManager2_GetSimpleAudioVolume(mgr->host, QEMU_G2H(c->session_guid), c->flags, QEMU_G2H(c->out));
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory.\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->super.iret = IAudioSessionManager2_GetSimpleAudioVolume(mgr->host, QEMU_G2H(c->session_guid), c->flags,
+            c->out ? &host : NULL);
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, obj);
+        return;
+    }
+
+    WINE_TRACE("Created ISimpleVolumeControl wrapper %p for host interface %p.\n", obj, host);
+
+    obj->host_simple_vol = host;
+    c->out = QEMU_H2G(obj);
 }
 
 #endif
