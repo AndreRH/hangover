@@ -738,6 +738,22 @@ static HRESULT WINAPI MMDevCol_QueryInterface(IMMDeviceCollection *iface, REFIID
     struct qemu_MMDevCol_QueryInterface call;
     struct qemu_mmdevcol *col = impl_from_IMMDeviceCollection(iface);
 
+    WINE_TRACE("(%p)->(%s, %p)\n", col, wine_dbgstr_guid(riid), ppv);
+    
+    if (!ppv)
+        return E_POINTER;
+
+    if (IsEqualIID(riid, &IID_IUnknown) || IsEqualIID(riid, &IID_IMMDeviceCollection))
+        *ppv = &col->IMMDeviceCollection_iface;
+    else
+        *ppv = NULL;
+
+    if (*ppv)
+    {
+        IUnknown_AddRef((IUnknown*)*ppv);
+        return S_OK;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_MMDEVCOL_QUERYINTERFACE);
     call.iface = (ULONG_PTR)col;
     call.riid = (ULONG_PTR)riid;
@@ -745,7 +761,7 @@ static HRESULT WINAPI MMDevCol_QueryInterface(IMMDeviceCollection *iface, REFIID
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -754,11 +770,18 @@ void qemu_MMDevCol_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_MMDevCol_QueryInterface *c = (struct qemu_MMDevCol_QueryInterface *)call;
     struct qemu_mmdevcol *col;
-
-    WINE_FIXME("Unverified!\n");
+    IUnknown *obj;
+    
+    WINE_TRACE("\n");
     col = QEMU_G2H(c->iface);
-
-    c->super.iret = IMMDeviceCollection_QueryInterface(col->host, QEMU_G2H(c->riid), QEMU_G2H(c->ppv));
+    
+    c->super.iret = IMMDeviceCollection_QueryInterface(col->host, QEMU_G2H(c->riid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                   wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
