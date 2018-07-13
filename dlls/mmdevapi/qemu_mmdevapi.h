@@ -26,11 +26,9 @@ DEFINE_GUID(IID_IBaseFilter, 0x56a86895, 0x0ad4, 0x11ce, 0xb0,0x3a, 0x00,0x20,0x
 
 enum mmdevapi_calls
 {
-    CALL_AUDIOCAPTURECLIENT_ADDREF = 0,
-    CALL_AUDIOCAPTURECLIENT_GETBUFFER,
+    CALL_AUDIOCAPTURECLIENT_GETBUFFER = 0,
     CALL_AUDIOCAPTURECLIENT_GETNEXTPACKETSIZE,
     CALL_AUDIOCAPTURECLIENT_QUERYINTERFACE,
-    CALL_AUDIOCAPTURECLIENT_RELEASE,
     CALL_AUDIOCAPTURECLIENT_RELEASEBUFFER,
     CALL_AUDIOCLIENT_ADDREF,
     CALL_AUDIOCLIENT_GETBUFFERSIZE,
@@ -47,20 +45,14 @@ enum mmdevapi_calls
     CALL_AUDIOCLIENT_SETEVENTHANDLE,
     CALL_AUDIOCLIENT_START,
     CALL_AUDIOCLIENT_STOP,
-    CALL_AUDIOCLOCK2_ADDREF,
     CALL_AUDIOCLOCK2_GETDEVICEPOSITION,
     CALL_AUDIOCLOCK2_QUERYINTERFACE,
-    CALL_AUDIOCLOCK2_RELEASE,
-    CALL_AUDIOCLOCK_ADDREF,
     CALL_AUDIOCLOCK_GETCHARACTERISTICS,
     CALL_AUDIOCLOCK_GETFREQUENCY,
     CALL_AUDIOCLOCK_GETPOSITION,
     CALL_AUDIOCLOCK_QUERYINTERFACE,
-    CALL_AUDIOCLOCK_RELEASE,
-    CALL_AUDIORENDERCLIENT_ADDREF,
     CALL_AUDIORENDERCLIENT_GETBUFFER,
     CALL_AUDIORENDERCLIENT_QUERYINTERFACE,
-    CALL_AUDIORENDERCLIENT_RELEASE,
     CALL_AUDIORENDERCLIENT_RELEASEBUFFER,
     CALL_AUDIOSESSIONCONTROL_ADDREF,
     CALL_AUDIOSESSIONCONTROL_GETDISPLAYNAME,
@@ -89,12 +81,10 @@ enum mmdevapi_calls
     CALL_AUDIOSESSIONMANAGER_RELEASE,
     CALL_AUDIOSESSIONMANAGER_UNREGISTERDUCKNOTIFICATION,
     CALL_AUDIOSESSIONMANAGER_UNREGISTERSESSIONNOTIFICATION,
-    CALL_AUDIOSTREAMVOLUME_ADDREF,
     CALL_AUDIOSTREAMVOLUME_GETALLVOLUMES,
     CALL_AUDIOSTREAMVOLUME_GETCHANNELCOUNT,
     CALL_AUDIOSTREAMVOLUME_GETCHANNELVOLUME,
     CALL_AUDIOSTREAMVOLUME_QUERYINTERFACE,
-    CALL_AUDIOSTREAMVOLUME_RELEASE,
     CALL_AUDIOSTREAMVOLUME_SETALLVOLUMES,
     CALL_AUDIOSTREAMVOLUME_SETCHANNELVOLUME,
     CALL_CHANNELAUDIOVOLUME_ADDREF,
@@ -212,11 +202,9 @@ void qemu_audioclient_guest_init(struct qemu_audioclient *client);
 HMODULE mmdevapi_mod;
 extern const struct qemu_ops *qemu_ops;
 
-void qemu_AudioCaptureClient_AddRef(struct qemu_syscall *call);
 void qemu_AudioCaptureClient_GetBuffer(struct qemu_syscall *call);
 void qemu_AudioCaptureClient_GetNextPacketSize(struct qemu_syscall *call);
 void qemu_AudioCaptureClient_QueryInterface(struct qemu_syscall *call);
-void qemu_AudioCaptureClient_Release(struct qemu_syscall *call);
 void qemu_AudioCaptureClient_ReleaseBuffer(struct qemu_syscall *call);
 void qemu_AudioClient_AddRef(struct qemu_syscall *call);
 void qemu_AudioClient_GetBufferSize(struct qemu_syscall *call);
@@ -233,20 +221,14 @@ void qemu_AudioClient_Reset(struct qemu_syscall *call);
 void qemu_AudioClient_SetEventHandle(struct qemu_syscall *call);
 void qemu_AudioClient_Start(struct qemu_syscall *call);
 void qemu_AudioClient_Stop(struct qemu_syscall *call);
-void qemu_AudioClock2_AddRef(struct qemu_syscall *call);
 void qemu_AudioClock2_GetDevicePosition(struct qemu_syscall *call);
 void qemu_AudioClock2_QueryInterface(struct qemu_syscall *call);
-void qemu_AudioClock2_Release(struct qemu_syscall *call);
-void qemu_AudioClock_AddRef(struct qemu_syscall *call);
 void qemu_AudioClock_GetCharacteristics(struct qemu_syscall *call);
 void qemu_AudioClock_GetFrequency(struct qemu_syscall *call);
 void qemu_AudioClock_GetPosition(struct qemu_syscall *call);
 void qemu_AudioClock_QueryInterface(struct qemu_syscall *call);
-void qemu_AudioClock_Release(struct qemu_syscall *call);
-void qemu_AudioRenderClient_AddRef(struct qemu_syscall *call);
 void qemu_AudioRenderClient_GetBuffer(struct qemu_syscall *call);
 void qemu_AudioRenderClient_QueryInterface(struct qemu_syscall *call);
-void qemu_AudioRenderClient_Release(struct qemu_syscall *call);
 void qemu_AudioRenderClient_ReleaseBuffer(struct qemu_syscall *call);
 void qemu_AudioSessionControl_AddRef(struct qemu_syscall *call);
 void qemu_AudioSessionControl_GetDisplayName(struct qemu_syscall *call);
@@ -275,12 +257,10 @@ void qemu_AudioSessionManager_RegisterSessionNotification(struct qemu_syscall *c
 void qemu_AudioSessionManager_Release(struct qemu_syscall *call);
 void qemu_AudioSessionManager_UnregisterDuckNotification(struct qemu_syscall *call);
 void qemu_AudioSessionManager_UnregisterSessionNotification(struct qemu_syscall *call);
-void qemu_AudioStreamVolume_AddRef(struct qemu_syscall *call);
 void qemu_AudioStreamVolume_GetAllVolumes(struct qemu_syscall *call);
 void qemu_AudioStreamVolume_GetChannelCount(struct qemu_syscall *call);
 void qemu_AudioStreamVolume_GetChannelVolume(struct qemu_syscall *call);
 void qemu_AudioStreamVolume_QueryInterface(struct qemu_syscall *call);
-void qemu_AudioStreamVolume_Release(struct qemu_syscall *call);
 void qemu_AudioStreamVolume_SetAllVolumes(struct qemu_syscall *call);
 void qemu_AudioStreamVolume_SetChannelVolume(struct qemu_syscall *call);
 void qemu_ChannelAudioVolume_AddRef(struct qemu_syscall *call);

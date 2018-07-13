@@ -844,74 +844,18 @@ void qemu_AudioRenderClient_QueryInterface(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_AudioRenderClient_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI AudioRenderClient_AddRef(IAudioRenderClient *iface)
 {
-    struct qemu_AudioRenderClient_AddRef call;
     struct qemu_audioclient *client = impl_from_IAudioRenderClient(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_AUDIORENDERCLIENT_ADDREF);
-    call.iface = (ULONG_PTR)client;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return AudioClient_AddRef(&client->IAudioClient_iface);
 }
-
-#else
-
-void qemu_AudioRenderClient_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_AudioRenderClient_AddRef *c = (struct qemu_AudioRenderClient_AddRef *)call;
-    struct qemu_audioclient *client;
-
-    WINE_FIXME("Unverified!\n");
-    client = QEMU_G2H(c->iface);
-
-    c->super.iret = IAudioRenderClient_AddRef(client->host_render);
-}
-
-#endif
-
-struct qemu_AudioRenderClient_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI AudioRenderClient_Release(IAudioRenderClient *iface)
 {
-    struct qemu_AudioRenderClient_Release call;
     struct qemu_audioclient *client = impl_from_IAudioRenderClient(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_AUDIORENDERCLIENT_RELEASE);
-    call.iface = (ULONG_PTR)client;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_AudioRenderClient_Release(struct qemu_syscall *call)
-{
-    struct qemu_AudioRenderClient_Release *c = (struct qemu_AudioRenderClient_Release *)call;
-    struct qemu_audioclient *client;
-
-    WINE_FIXME("Unverified!\n");
-    client = QEMU_G2H(c->iface);
-
-    c->super.iret = IAudioRenderClient_Release(client->host_render);
+    return AudioClient_Release(&client->IAudioClient_iface);
 }
 
 #endif
@@ -1036,74 +980,18 @@ void qemu_AudioCaptureClient_QueryInterface(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_AudioCaptureClient_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI AudioCaptureClient_AddRef(IAudioCaptureClient *iface)
 {
-    struct qemu_AudioCaptureClient_AddRef call;
     struct qemu_audioclient *client = impl_from_IAudioCaptureClient(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_AUDIOCAPTURECLIENT_ADDREF);
-    call.iface = (ULONG_PTR)client;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IAudioClient_AddRef(&client->IAudioClient_iface);
 }
-
-#else
-
-void qemu_AudioCaptureClient_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_AudioCaptureClient_AddRef *c = (struct qemu_AudioCaptureClient_AddRef *)call;
-    struct qemu_audioclient *client;
-
-    WINE_FIXME("Unverified!\n");
-    client = QEMU_G2H(c->iface);
-
-    c->super.iret = IAudioCaptureClient_AddRef(client->host_capture);
-}
-
-#endif
-
-struct qemu_AudioCaptureClient_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI AudioCaptureClient_Release(IAudioCaptureClient *iface)
 {
-    struct qemu_AudioCaptureClient_Release call;
     struct qemu_audioclient *client = impl_from_IAudioCaptureClient(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_AUDIOCAPTURECLIENT_RELEASE);
-    call.iface = (ULONG_PTR)client;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_AudioCaptureClient_Release(struct qemu_syscall *call)
-{
-    struct qemu_AudioCaptureClient_Release *c = (struct qemu_AudioCaptureClient_Release *)call;
-    struct qemu_audioclient *client;
-
-    WINE_FIXME("Unverified!\n");
-    client = QEMU_G2H(c->iface);
-
-    c->super.iret = IAudioCaptureClient_Release(client->host_capture);
+    return IAudioClient_Release(&client->IAudioClient_iface);
 }
 
 #endif
@@ -1270,74 +1158,18 @@ void qemu_AudioClock_QueryInterface(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_AudioClock_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI AudioClock_AddRef(IAudioClock *iface)
 {
-    struct qemu_AudioClock_AddRef call;
     struct qemu_audioclient *client = impl_from_IAudioClock(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_AUDIOCLOCK_ADDREF);
-    call.iface = (ULONG_PTR)client;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IAudioClient_AddRef(&client->IAudioClient_iface);
 }
-
-#else
-
-void qemu_AudioClock_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_AudioClock_AddRef *c = (struct qemu_AudioClock_AddRef *)call;
-    struct qemu_audioclient *client;
-
-    WINE_FIXME("Unverified!\n");
-    client = QEMU_G2H(c->iface);
-
-    c->super.iret = IAudioClock_AddRef(client->host_clock);
-}
-
-#endif
-
-struct qemu_AudioClock_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI AudioClock_Release(IAudioClock *iface)
 {
-    struct qemu_AudioClock_Release call;
     struct qemu_audioclient *client = impl_from_IAudioClock(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_AUDIOCLOCK_RELEASE);
-    call.iface = (ULONG_PTR)client;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_AudioClock_Release(struct qemu_syscall *call)
-{
-    struct qemu_AudioClock_Release *c = (struct qemu_AudioClock_Release *)call;
-    struct qemu_audioclient *client;
-
-    WINE_FIXME("Unverified!\n");
-    client = QEMU_G2H(c->iface);
-
-    c->super.iret = IAudioClock_Release(client->host_clock);
+    return IAudioClient_Release(&client->IAudioClient_iface);
 }
 
 #endif
@@ -1498,74 +1330,18 @@ void qemu_AudioClock2_QueryInterface(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_AudioClock2_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI AudioClock2_AddRef(IAudioClock2 *iface)
 {
-    struct qemu_AudioClock2_AddRef call;
     struct qemu_audioclient *client = impl_from_IAudioClock2(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_AUDIOCLOCK2_ADDREF);
-    call.iface = (ULONG_PTR)client;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IAudioClient_AddRef(&client->IAudioClient_iface);
 }
-
-#else
-
-void qemu_AudioClock2_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_AudioClock2_AddRef *c = (struct qemu_AudioClock2_AddRef *)call;
-    struct qemu_audioclient *client;
-
-    WINE_FIXME("Unverified!\n");
-    client = QEMU_G2H(c->iface);
-
-    c->super.iret = IAudioClock2_AddRef(client->host_clock2);
-}
-
-#endif
-
-struct qemu_AudioClock2_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI AudioClock2_Release(IAudioClock2 *iface)
 {
-    struct qemu_AudioClock2_Release call;
     struct qemu_audioclient *client = impl_from_IAudioClock2(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_AUDIOCLOCK2_RELEASE);
-    call.iface = (ULONG_PTR)client;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_AudioClock2_Release(struct qemu_syscall *call)
-{
-    struct qemu_AudioClock2_Release *c = (struct qemu_AudioClock2_Release *)call;
-    struct qemu_audioclient *client;
-
-    WINE_FIXME("Unverified!\n");
-    client = QEMU_G2H(c->iface);
-
-    c->super.iret = IAudioClock2_Release(client->host_clock2);
+    return IAudioClient_Release(&client->IAudioClient_iface);
 }
 
 #endif
@@ -1650,74 +1426,18 @@ void qemu_AudioStreamVolume_QueryInterface(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_AudioStreamVolume_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI AudioStreamVolume_AddRef(IAudioStreamVolume *iface)
 {
-    struct qemu_AudioStreamVolume_AddRef call;
     struct qemu_audioclient *client = impl_from_IAudioStreamVolume(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_AUDIOSTREAMVOLUME_ADDREF);
-    call.iface = (ULONG_PTR)client;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IAudioClient_AddRef(&client->IAudioClient_iface);
 }
-
-#else
-
-void qemu_AudioStreamVolume_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_AudioStreamVolume_AddRef *c = (struct qemu_AudioStreamVolume_AddRef *)call;
-    struct qemu_audioclient *client;
-
-    WINE_FIXME("Unverified!\n");
-    client = QEMU_G2H(c->iface);
-
-    c->super.iret = IAudioStreamVolume_AddRef(client->host_volume);
-}
-
-#endif
-
-struct qemu_AudioStreamVolume_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI AudioStreamVolume_Release(IAudioStreamVolume *iface)
 {
-    struct qemu_AudioStreamVolume_Release call;
     struct qemu_audioclient *client = impl_from_IAudioStreamVolume(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_AUDIOSTREAMVOLUME_RELEASE);
-    call.iface = (ULONG_PTR)client;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_AudioStreamVolume_Release(struct qemu_syscall *call)
-{
-    struct qemu_AudioStreamVolume_Release *c = (struct qemu_AudioStreamVolume_Release *)call;
-    struct qemu_audioclient *client;
-
-    WINE_FIXME("Unverified!\n");
-    client = QEMU_G2H(c->iface);
-
-    c->super.iret = IAudioStreamVolume_Release(client->host_volume);
+    return IAudioClient_Release(&client->IAudioClient_iface);
 }
 
 #endif
