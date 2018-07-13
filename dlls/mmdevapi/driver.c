@@ -867,6 +867,25 @@ static HRESULT WINAPI AudioRenderClient_QueryInterface(IAudioRenderClient *iface
     struct qemu_AudioRenderClient_QueryInterface call;
     struct qemu_audioclient *client = impl_from_IAudioRenderClient(iface);
 
+    WINE_TRACE("(%p)->(%s, %p)\n", iface, wine_dbgstr_guid(riid), ppv);
+
+    if (!ppv)
+        return E_POINTER;
+
+    *ppv = NULL;
+
+    if (IsEqualIID(riid, &IID_IUnknown) || IsEqualIID(riid, &IID_IAudioRenderClient))
+        *ppv = iface;
+
+    if (*ppv)
+    {
+        IUnknown_AddRef((IUnknown*)*ppv);
+        return S_OK;
+    }
+
+    if (IsEqualIID(riid, &IID_IMarshal))
+        return IUnknown_QueryInterface(client->marshal, riid, ppv);
+
     call.super.id = QEMU_SYSCALL_ID(CALL_AUDIORENDERCLIENT_QUERYINTERFACE);
     call.iface = (ULONG_PTR)client;
     call.riid = (ULONG_PTR)riid;
@@ -874,7 +893,7 @@ static HRESULT WINAPI AudioRenderClient_QueryInterface(IAudioRenderClient *iface
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -884,10 +903,18 @@ void qemu_AudioRenderClient_QueryInterface(struct qemu_syscall *call)
     struct qemu_AudioRenderClient_QueryInterface *c = (struct qemu_AudioRenderClient_QueryInterface *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    IUnknown *obj;
+
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
-    c->super.iret = IAudioRenderClient_QueryInterface(client->host_render, QEMU_G2H(c->riid), QEMU_G2H(c->ppv));
+    c->super.iret = IAudioRenderClient_QueryInterface(client->host_render, QEMU_G2H(c->riid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
