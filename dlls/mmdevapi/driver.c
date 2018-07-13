@@ -256,7 +256,8 @@ struct qemu_AudioClient_Initialize
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI AudioClient_Initialize(IAudioClient *iface, AUDCLNT_SHAREMODE mode, DWORD flags, REFERENCE_TIME duration, REFERENCE_TIME period, const WAVEFORMATEX *fmt, const GUID *sessionguid)
+static HRESULT WINAPI AudioClient_Initialize(IAudioClient *iface, AUDCLNT_SHAREMODE mode, DWORD flags,
+        REFERENCE_TIME duration, REFERENCE_TIME period, const WAVEFORMATEX *fmt, const GUID *sessionguid)
 {
     struct qemu_AudioClient_Initialize call;
     struct qemu_audioclient *client = impl_from_IAudioClient(iface);
@@ -282,10 +283,12 @@ void qemu_AudioClient_Initialize(struct qemu_syscall *call)
     struct qemu_AudioClient_Initialize *c = (struct qemu_AudioClient_Initialize *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    /* WAVEFORMATEX has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
-    c->super.iret = IAudioClient_Initialize(client->host_client, c->mode, c->flags, c->duration, c->period, QEMU_G2H(c->fmt), QEMU_G2H(c->sessionguid));
+    c->super.iret = IAudioClient_Initialize(client->host_client, c->mode, c->flags, c->duration, c->period,
+            QEMU_G2H(c->fmt), QEMU_G2H(c->sessionguid));
 }
 
 #endif
@@ -320,7 +323,7 @@ void qemu_AudioClient_GetBufferSize(struct qemu_syscall *call)
     struct qemu_AudioClient_GetBufferSize *c = (struct qemu_AudioClient_GetBufferSize *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioClient_GetBufferSize(client->host_client, QEMU_G2H(c->out));
@@ -358,7 +361,8 @@ void qemu_AudioClient_GetStreamLatency(struct qemu_syscall *call)
     struct qemu_AudioClient_GetStreamLatency *c = (struct qemu_AudioClient_GetStreamLatency *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    /* REFERENCE_TIME has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioClient_GetStreamLatency(client->host_client, QEMU_G2H(c->latency));
@@ -396,7 +400,7 @@ void qemu_AudioClient_GetCurrentPadding(struct qemu_syscall *call)
     struct qemu_AudioClient_GetCurrentPadding *c = (struct qemu_AudioClient_GetCurrentPadding *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioClient_GetCurrentPadding(client->host_client, QEMU_G2H(c->out));
@@ -415,7 +419,8 @@ struct qemu_AudioClient_IsFormatSupported
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI AudioClient_IsFormatSupported(IAudioClient *iface, AUDCLNT_SHAREMODE mode, const WAVEFORMATEX *fmt, WAVEFORMATEX **out)
+static HRESULT WINAPI AudioClient_IsFormatSupported(IAudioClient *iface, AUDCLNT_SHAREMODE mode,
+        const WAVEFORMATEX *fmt, WAVEFORMATEX **out)
 {
     struct qemu_AudioClient_IsFormatSupported call;
     struct qemu_audioclient *client = impl_from_IAudioClient(iface);
@@ -427,6 +432,8 @@ static HRESULT WINAPI AudioClient_IsFormatSupported(IAudioClient *iface, AUDCLNT
     call.out = (ULONG_PTR)out;
 
     qemu_syscall(&call.super);
+    if (fmt && out)
+        *out = (WAVEFORMATEX *)(ULONG_PTR)call.out;
 
     return call.super.iret;
 }
@@ -437,11 +444,15 @@ void qemu_AudioClient_IsFormatSupported(struct qemu_syscall *call)
 {
     struct qemu_AudioClient_IsFormatSupported *c = (struct qemu_AudioClient_IsFormatSupported *)call;
     struct qemu_audioclient *client;
+    WAVEFORMATEX *out;
 
-    WINE_FIXME("Unverified!\n");
+    /* WAVEFORMATEX has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
-    c->super.iret = IAudioClient_IsFormatSupported(client->host_client, c->mode, QEMU_G2H(c->fmt), QEMU_G2H(c->out));
+    c->super.iret = IAudioClient_IsFormatSupported(client->host_client, c->mode,
+            QEMU_G2H(c->fmt), c->out ? &out : NULL);
+    c->out = QEMU_H2G(out);
 }
 
 #endif
@@ -465,6 +476,8 @@ static HRESULT WINAPI AudioClient_GetMixFormat(IAudioClient *iface, WAVEFORMATEX
     call.pwfx = (ULONG_PTR)pwfx;
 
     qemu_syscall(&call.super);
+    if (pwfx)
+        *pwfx = (WAVEFORMATEX *)(ULONG_PTR)call.pwfx;
 
     return call.super.iret;
 }
@@ -475,11 +488,14 @@ void qemu_AudioClient_GetMixFormat(struct qemu_syscall *call)
 {
     struct qemu_AudioClient_GetMixFormat *c = (struct qemu_AudioClient_GetMixFormat *)call;
     struct qemu_audioclient *client;
+    WAVEFORMATEX *fx;
 
-    WINE_FIXME("Unverified!\n");
+    /* WAVEFORMATEX has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
-    c->super.iret = IAudioClient_GetMixFormat(client->host_client, QEMU_G2H(c->pwfx));
+    c->super.iret = IAudioClient_GetMixFormat(client->host_client, c->pwfx ? &fx : NULL);
+    c->pwfx = QEMU_H2G(fx);
 }
 
 #endif
@@ -494,7 +510,8 @@ struct qemu_AudioClient_GetDevicePeriod
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI AudioClient_GetDevicePeriod(IAudioClient *iface, REFERENCE_TIME *defperiod, REFERENCE_TIME *minperiod)
+static HRESULT WINAPI AudioClient_GetDevicePeriod(IAudioClient *iface, REFERENCE_TIME *defperiod,
+        REFERENCE_TIME *minperiod)
 {
     struct qemu_AudioClient_GetDevicePeriod call;
     struct qemu_audioclient *client = impl_from_IAudioClient(iface);
@@ -516,7 +533,8 @@ void qemu_AudioClient_GetDevicePeriod(struct qemu_syscall *call)
     struct qemu_AudioClient_GetDevicePeriod *c = (struct qemu_AudioClient_GetDevicePeriod *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    /* REFERENCE_TIME has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioClient_GetDevicePeriod(client->host_client, QEMU_G2H(c->defperiod), QEMU_G2H(c->minperiod));
@@ -552,7 +570,7 @@ void qemu_AudioClient_Start(struct qemu_syscall *call)
     struct qemu_AudioClient_Start *c = (struct qemu_AudioClient_Start *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioClient_Start(client->host_client);
@@ -588,7 +606,7 @@ void qemu_AudioClient_Stop(struct qemu_syscall *call)
     struct qemu_AudioClient_Stop *c = (struct qemu_AudioClient_Stop *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioClient_Stop(client->host_client);
@@ -624,7 +642,7 @@ void qemu_AudioClient_Reset(struct qemu_syscall *call)
     struct qemu_AudioClient_Reset *c = (struct qemu_AudioClient_Reset *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioClient_Reset(client->host_client);
@@ -648,7 +666,7 @@ static HRESULT WINAPI AudioClient_SetEventHandle(IAudioClient *iface, HANDLE eve
 
     call.super.id = QEMU_SYSCALL_ID(CALL_AUDIOCLIENT_SETEVENTHANDLE);
     call.iface = (ULONG_PTR)client;
-    call.event = (ULONG_PTR)event;
+    call.event = guest_HANDLE_g2h(event);
 
     qemu_syscall(&call.super);
 
@@ -662,7 +680,7 @@ void qemu_AudioClient_SetEventHandle(struct qemu_syscall *call)
     struct qemu_AudioClient_SetEventHandle *c = (struct qemu_AudioClient_SetEventHandle *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioClient_SetEventHandle(client->host_client, QEMU_G2H(c->event));
