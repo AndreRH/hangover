@@ -313,7 +313,7 @@ void qemu_AEV_SetMasterVolumeLevel(struct qemu_syscall *call)
     struct qemu_AEV_SetMasterVolumeLevel *c = (struct qemu_AEV_SetMasterVolumeLevel *)call;
     struct qemu_volume *volume;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioEndpointVolumeEx_SetMasterVolumeLevel(volume->host, c->leveldb, QEMU_G2H(c->ctx));
@@ -391,7 +391,7 @@ void qemu_AEV_GetMasterVolumeLevel(struct qemu_syscall *call)
     struct qemu_AEV_GetMasterVolumeLevel *c = (struct qemu_AEV_GetMasterVolumeLevel *)call;
     struct qemu_volume *volume;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioEndpointVolumeEx_GetMasterVolumeLevel(volume->host, QEMU_G2H(c->leveldb));
@@ -633,7 +633,7 @@ void qemu_AEV_SetMute(struct qemu_syscall *call)
     struct qemu_AEV_SetMute *c = (struct qemu_AEV_SetMute *)call;
     struct qemu_volume *volume;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioEndpointVolumeEx_SetMute(volume->host, c->mute, QEMU_G2H(c->ctx));
@@ -671,7 +671,7 @@ void qemu_AEV_GetMute(struct qemu_syscall *call)
     struct qemu_AEV_GetMute *c = (struct qemu_AEV_GetMute *)call;
     struct qemu_volume *volume;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioEndpointVolumeEx_GetMute(volume->host, QEMU_G2H(c->mute));
@@ -867,7 +867,7 @@ void qemu_AEV_GetVolumeRange(struct qemu_syscall *call)
     struct qemu_AEV_GetVolumeRange *c = (struct qemu_AEV_GetVolumeRange *)call;
     struct qemu_volume *volume;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioEndpointVolumeEx_GetVolumeRange(volume->host, QEMU_G2H(c->mindb), QEMU_G2H(c->maxdb), QEMU_G2H(c->inc));
