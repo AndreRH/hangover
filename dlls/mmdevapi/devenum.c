@@ -1822,6 +1822,7 @@ void qemu_MMDevEnum_Create(struct qemu_syscall *call)
     {
         c->super.iret = S_OK;
         c->object = QEMU_H2G(devenum);
+        IMMDeviceEnumerator_AddRef(devenum->host);
         return;
     }
 
