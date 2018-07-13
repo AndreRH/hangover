@@ -709,6 +709,34 @@ static HRESULT WINAPI AudioClient_GetService(IAudioClient *iface, REFIID riid, v
     call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        if (ppv)
+            *ppv = NULL;
+        return call.super.iret;
+    }
+
+    if (IsEqualIID(riid, &IID_IAudioRenderClient))
+    {
+        *ppv = &client->IAudioRenderClient_iface;
+    }
+    else if (IsEqualIID(riid, &IID_IAudioCaptureClient))
+    {
+        *ppv = &client->IAudioCaptureClient_iface;
+    }
+    else if (IsEqualIID(riid, &IID_IAudioClock))
+    {
+        *ppv = &client->IAudioClock_iface;
+    }
+    else if (IsEqualIID(riid, &IID_IAudioStreamVolume))
+    {
+        *ppv = &client->IAudioStreamVolume_iface;
+    }
+    else if (IsEqualIID(riid, &IID_IAudioSessionControl) || IsEqualIID(riid, &IID_IChannelAudioVolume)
+            || IsEqualIID(riid, &IID_ISimpleAudioVolume))
+    {
+        WINE_FIXME("Session etc not handled yet\n");
+    }
 
     return call.super.iret;
 }
@@ -719,11 +747,59 @@ void qemu_AudioClient_GetService(struct qemu_syscall *call)
 {
     struct qemu_AudioClient_GetService *c = (struct qemu_AudioClient_GetService *)call;
     struct qemu_audioclient *client;
+    IUnknown *host;
+    const IID *iid;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
+    iid = QEMU_G2H(c->riid);
 
-    c->super.iret = IAudioClient_GetService(client->host_client, QEMU_G2H(c->riid), QEMU_G2H(c->ppv));
+    /* Which interface(s) are valid may change over the lifetime of the object. Query the host every time
+     * the app calls us. */
+    c->super.iret = IAudioClient_GetService(client->host_client, iid, c->ppv ? (void **)&host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    if (IsEqualIID(iid, &IID_IAudioRenderClient))
+    {
+        if (!client->host_render)
+            client->host_render = (IAudioRenderClient *)host;
+        else if (client->host_render != (IAudioRenderClient *)host)
+            WINE_ERR("IAudioRenderClient iface changed.\n");
+    }
+    else if (IsEqualIID(iid, &IID_IAudioCaptureClient))
+    {
+        if (!client->host_capture)
+            client->host_capture = (IAudioCaptureClient *)host;
+        else if (client->host_capture != (IAudioCaptureClient *)host)
+            WINE_ERR("IAudioCaptureClient iface changed.\n");
+    }
+    else if (IsEqualIID(iid, &IID_IAudioClock))
+    {
+        if (!client->host_clock)
+        {
+            client->host_clock = (IAudioClock *)host;
+            IAudioClock_QueryInterface(client->host_clock, &IID_IAudioClock2, (void **)&client->host_clock2);
+            IAudioClock2_Release(client->host_clock2);
+        }
+        else if (client->host_clock != (IAudioClock *)host)
+            WINE_ERR("IAudioClock iface changed.\n");
+    }
+    else if (IsEqualIID(iid, &IID_IAudioStreamVolume))
+    {
+        if (!client->host_volume)
+            client->host_volume = (IAudioStreamVolume *)host;
+        else if (client->host_volume != (IAudioStreamVolume *)host)
+            WINE_ERR("IAudioStreamVolume_iface iface changed.\n");
+    }
+    else if (IsEqualIID(iid, &IID_IAudioSessionControl) || IsEqualIID(iid, &IID_IChannelAudioVolume)
+            || IsEqualIID(iid, &IID_ISimpleAudioVolume))
+    {
+        /* TODO. */
+    }
+
+
+    /* Don't release host, we pass the reference on to the application. */
 }
 
 #endif
@@ -3558,7 +3634,9 @@ HRESULT qemu_audioclient_host_create(IAudioClient *host, struct qemu_audioclient
     WINE_TRACE("Created IAudioClient wrapper %p for host interface %p.\n", obj, host);
 
     obj->host_client = host;
-    /* FIXME: Fetch other intefaces via GetService */
+    /* The other interfaces are queried via GetService, which doesn't work quite like
+     * QueryInterface. In particular, it may return an error before the client is initialized,
+     * and success afterwards. So query them when the app queries them. */
 
     *client = obj;
     return S_OK;
