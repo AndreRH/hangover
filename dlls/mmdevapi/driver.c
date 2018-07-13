@@ -163,7 +163,7 @@ void qemu_AudioClient_AddRef(struct qemu_syscall *call)
     struct qemu_AudioClient_AddRef *c = (struct qemu_AudioClient_AddRef *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioClient_AddRef(client->host_client);
@@ -199,10 +199,17 @@ void qemu_AudioClient_Release(struct qemu_syscall *call)
     struct qemu_AudioClient_Release *c = (struct qemu_AudioClient_Release *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioClient_Release(client->host_client);
+
+    if (!c->super.iret)
+    {
+        /* FIXME: Do I need to do something about the parent IMMDevice or IMMDeviceEnumerator? */
+        WINE_TRACE("Destroying audioclient wrapper %p, host %p\n", client, client->host_client);
+        HeapFree(GetProcessHeap(), 0, client);
+    }
 }
 
 #endif
@@ -3405,6 +3412,110 @@ void qemu_ChannelAudioVolume_GetAllVolumes(struct qemu_syscall *call)
     session = QEMU_G2H(c->iface);
 
     c->super.iret = IChannelAudioVolume_GetAllVolumes(session->host_chan_vol, c->count, QEMU_G2H(c->levels));
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+static const IAudioClientVtbl AudioClient_Vtbl =
+{
+    AudioClient_QueryInterface,
+    AudioClient_AddRef,
+    AudioClient_Release,
+    AudioClient_Initialize,
+    AudioClient_GetBufferSize,
+    AudioClient_GetStreamLatency,
+    AudioClient_GetCurrentPadding,
+    AudioClient_IsFormatSupported,
+    AudioClient_GetMixFormat,
+    AudioClient_GetDevicePeriod,
+    AudioClient_Start,
+    AudioClient_Stop,
+    AudioClient_Reset,
+    AudioClient_SetEventHandle,
+    AudioClient_GetService
+};
+
+static const IAudioRenderClientVtbl AudioRenderClient_Vtbl =
+{
+    AudioRenderClient_QueryInterface,
+    AudioRenderClient_AddRef,
+    AudioRenderClient_Release,
+    AudioRenderClient_GetBuffer,
+    AudioRenderClient_ReleaseBuffer
+};
+
+static const IAudioCaptureClientVtbl AudioCaptureClient_Vtbl =
+{
+    AudioCaptureClient_QueryInterface,
+    AudioCaptureClient_AddRef,
+    AudioCaptureClient_Release,
+    AudioCaptureClient_GetBuffer,
+    AudioCaptureClient_ReleaseBuffer,
+    AudioCaptureClient_GetNextPacketSize
+};
+
+static const IAudioClockVtbl AudioClock_Vtbl =
+{
+    AudioClock_QueryInterface,
+    AudioClock_AddRef,
+    AudioClock_Release,
+    AudioClock_GetFrequency,
+    AudioClock_GetPosition,
+    AudioClock_GetCharacteristics
+};
+
+static const IAudioClock2Vtbl AudioClock2_Vtbl =
+{
+    AudioClock2_QueryInterface,
+    AudioClock2_AddRef,
+    AudioClock2_Release,
+    AudioClock2_GetDevicePosition
+};
+
+static const IAudioStreamVolumeVtbl AudioStreamVolume_Vtbl =
+{
+    AudioStreamVolume_QueryInterface,
+    AudioStreamVolume_AddRef,
+    AudioStreamVolume_Release,
+    AudioStreamVolume_GetChannelCount,
+    AudioStreamVolume_SetChannelVolume,
+    AudioStreamVolume_GetChannelVolume,
+    AudioStreamVolume_SetAllVolumes,
+    AudioStreamVolume_GetAllVolumes
+};
+
+void qemu_audioclient_guest_init(struct qemu_audioclient *client)
+{
+    client->IAudioClient_iface.lpVtbl = &AudioClient_Vtbl;
+    client->IAudioRenderClient_iface.lpVtbl = &AudioRenderClient_Vtbl;
+    client->IAudioCaptureClient_iface.lpVtbl = &AudioCaptureClient_Vtbl;
+    client->IAudioClock_iface.lpVtbl = &AudioClock_Vtbl;
+    client->IAudioClock2_iface.lpVtbl = &AudioClock2_Vtbl;
+    client->IAudioStreamVolume_iface.lpVtbl = &AudioStreamVolume_Vtbl;
+}
+
+#else
+
+HRESULT qemu_audioclient_host_create(IAudioClient *host, struct qemu_audioclient **client)
+{
+    struct qemu_audioclient *obj;
+
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+
+    WINE_TRACE("Created IAudioClient wrapper %p for host interface %p.\n", obj, host);
+
+    obj->host_client = host;
+    /* FIXME: Fetch other intefaces via GetService */
+
+    *client = obj;
+    return S_OK;
 }
 
 #endif

@@ -251,11 +251,33 @@ static HRESULT WINAPI MMDevice_Activate(IMMDevice *iface, REFIID riid, DWORD cls
 {
     struct qemu_MMDevice_Activate call;
     struct qemu_mmdevice *device = impl_from_IMMDevice(iface);
+    struct qemu_audioclient *client;
+    HRESULT hr = E_FAIL;
+
+    if (!ppv)
+    {
+        WINE_WARN("Output pointer is NULL.\n");
+        return E_POINTER;
+    }
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_MMDEVICE_ACTIVATE);
+    call.iface = (ULONG_PTR)device;
+    call.riid = (ULONG_PTR)riid;
+    call.clsctx = clsctx;
+    call.params = (ULONG_PTR)params;
+    call.ppv = (ULONG_PTR)ppv;
 
     if (IsEqualIID(riid, &IID_IAudioClient))
     {
-        /* Implemented in the drivers */
-        WINE_FIXME("IID_IAudioClient unsupported\n");
+        qemu_syscall(&call.super);
+        hr = call.super.iret;
+
+        if (SUCCEEDED(hr))
+        {
+            client = (struct qemu_audioclient *)(ULONG_PTR)call.ppv;
+            qemu_audioclient_guest_init(client);
+            *ppv = &client->IAudioClient_iface;
+        }
     }
     else if (IsEqualIID(riid, &IID_IAudioEndpointVolume) || IsEqualIID(riid, &IID_IAudioEndpointVolumeEx))
     {
@@ -293,16 +315,7 @@ static HRESULT WINAPI MMDevice_Activate(IMMDevice *iface, REFIID riid, DWORD cls
         WINE_ERR("Invalid/unknown iid %s\n", wine_dbgstr_guid(riid));
     }
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_MMDEVICE_ACTIVATE);
-    call.iface = (ULONG_PTR)device;
-    call.riid = (ULONG_PTR)riid;
-    call.clsctx = clsctx;
-    call.params = (ULONG_PTR)params;
-    call.ppv = (ULONG_PTR)ppv;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return hr;
 }
 
 #else
@@ -311,11 +324,36 @@ void qemu_MMDevice_Activate(struct qemu_syscall *call)
 {
     struct qemu_MMDevice_Activate *c = (struct qemu_MMDevice_Activate *)call;
     struct qemu_mmdevice *device;
+    const IID *iid;
+    HRESULT hr = E_FAIL;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+    iid = QEMU_G2H(c->riid);
+    if (c->params)
+        WINE_FIXME("Params not handled yet\n");
 
-    c->super.iret = IMMDevice_Activate(device->host_device, QEMU_G2H(c->riid), c->clsctx, QEMU_G2H(c->params), QEMU_G2H(c->ppv));
+    if (IsEqualIID(iid, &IID_IAudioClient))
+    {
+        IAudioClient *host;
+        struct qemu_audioclient *client;
+
+        hr = IMMDevice_Activate(device->host_device, iid, c->clsctx, QEMU_G2H(c->params), (void **)&host);
+        if (SUCCEEDED(hr))
+        {
+            hr = qemu_audioclient_host_create(host, &client);
+            if (SUCCEEDED(hr))
+                c->ppv = QEMU_H2G(client);
+            else
+                IAudioClient_Release(host);
+        }
+    }
+    else
+    {
+        WINE_ERR("Unexpected IID\n");
+    }
+
+    c->super.iret = hr;
 }
 
 #endif

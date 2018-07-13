@@ -205,6 +205,8 @@ struct qemu_sessmgr
 
 HRESULT MMDevEnum_Create(const IID *iid, void **ppv);
 
+void qemu_audioclient_guest_init(struct qemu_audioclient *client);
+
 #else
 
 HMODULE mmdevapi_mod;
@@ -329,6 +331,8 @@ void qemu_SimpleAudioVolume_QueryInterface(struct qemu_syscall *call);
 void qemu_SimpleAudioVolume_Release(struct qemu_syscall *call);
 void qemu_SimpleAudioVolume_SetMasterVolume(struct qemu_syscall *call);
 void qemu_SimpleAudioVolume_SetMute(struct qemu_syscall *call);
+
+HRESULT qemu_audioclient_host_create(IAudioClient *host, struct qemu_audioclient **client);
 
 #endif
 
