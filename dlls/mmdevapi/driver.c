@@ -956,6 +956,8 @@ static HRESULT WINAPI AudioRenderClient_GetBuffer(IAudioRenderClient *iface, UIN
     call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
+    if (data)
+        *data = (BYTE *)(ULONG_PTR)call.data;
 
     return call.super.iret;
 }
@@ -966,11 +968,13 @@ void qemu_AudioRenderClient_GetBuffer(struct qemu_syscall *call)
 {
     struct qemu_AudioRenderClient_GetBuffer *c = (struct qemu_AudioRenderClient_GetBuffer *)call;
     struct qemu_audioclient *client;
+    BYTE *data;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
-    c->super.iret = IAudioRenderClient_GetBuffer(client->host_render, c->frames, QEMU_G2H(c->data));
+    c->super.iret = IAudioRenderClient_GetBuffer(client->host_render, c->frames, c->data ? &data : NULL);
+    c->data = QEMU_H2G(data);
 }
 
 #endif
@@ -1007,7 +1011,7 @@ void qemu_AudioRenderClient_ReleaseBuffer(struct qemu_syscall *call)
     struct qemu_AudioRenderClient_ReleaseBuffer *c = (struct qemu_AudioRenderClient_ReleaseBuffer *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioRenderClient_ReleaseBuffer(client->host_render, c->written_frames, c->flags);
