@@ -907,6 +907,7 @@ struct qemu_MMDevCol_Item
     uint64_t iface;
     uint64_t n;
     uint64_t dev;
+    uint64_t new_dev;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -915,6 +916,7 @@ static HRESULT WINAPI MMDevCol_Item(IMMDeviceCollection *iface, UINT n, IMMDevic
 {
     struct qemu_MMDevCol_Item call;
     struct qemu_mmdevcol *col = impl_from_IMMDeviceCollection(iface);
+    struct qemu_mmdevice *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_MMDEVCOL_ITEM);
     call.iface = (ULONG_PTR)col;
@@ -922,7 +924,21 @@ static HRESULT WINAPI MMDevCol_Item(IMMDeviceCollection *iface, UINT n, IMMDevic
     call.dev = (ULONG_PTR)dev;
 
     qemu_syscall(&call.super);
-
+    if (FAILED(call.super.iret))
+    {
+        if (dev)
+            *dev = NULL;
+        return call.super.iret;
+    }
+    
+    impl = (struct qemu_mmdevice *)(ULONG_PTR)call.dev;
+    if (call.new_dev)
+    {
+        impl->IMMDevice_iface.lpVtbl = &MMDeviceVtbl;
+        impl->IMMEndpoint_iface.lpVtbl = &MMEndpointVtbl;
+    }
+    *dev = &impl->IMMDevice_iface;
+    
     return call.super.iret;
 }
 
@@ -932,11 +948,26 @@ void qemu_MMDevCol_Item(struct qemu_syscall *call)
 {
     struct qemu_MMDevCol_Item *c = (struct qemu_MMDevCol_Item *)call;
     struct qemu_mmdevcol *col;
+    struct qemu_mmdevice *device;
+    IMMDevice *host;
+    BOOL new_dev;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     col = QEMU_G2H(c->iface);
 
-    c->super.iret = IMMDeviceCollection_Item(col->host, c->n, QEMU_G2H(c->dev));
+    c->super.iret = IMMDeviceCollection_Item(col->host, c->n, c->dev ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+    
+    device = device_from_host(host, &new_dev);
+    if (!device)
+    {
+        IMMDevice_Release(host);
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    c->new_dev = new_dev;
+    c->dev = QEMU_H2G(device);
 }
 
 #endif
