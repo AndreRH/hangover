@@ -791,7 +791,7 @@ void qemu_MMDevCol_AddRef(struct qemu_syscall *call)
     struct qemu_MMDevCol_AddRef *c = (struct qemu_MMDevCol_AddRef *)call;
     struct qemu_mmdevcol *col;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     col = QEMU_G2H(c->iface);
 
     c->super.iret = IMMDeviceCollection_AddRef(col->host);
@@ -827,10 +827,15 @@ void qemu_MMDevCol_Release(struct qemu_syscall *call)
     struct qemu_MMDevCol_Release *c = (struct qemu_MMDevCol_Release *)call;
     struct qemu_mmdevcol *col;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     col = QEMU_G2H(c->iface);
 
     c->super.iret = IMMDeviceCollection_Release(col->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying device collection wrapper %p, host %p.\n", col, col->host);
+        HeapFree(GetProcessHeap(), 0, col);
+    }
 }
 
 #endif
@@ -1082,10 +1087,21 @@ struct qemu_MMDevEnum_EnumAudioEndpoints
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI MMDevEnum_EnumAudioEndpoints(IMMDeviceEnumerator *iface, EDataFlow flow, DWORD mask, IMMDeviceCollection **devices)
+static const IMMDeviceCollectionVtbl MMDevColVtbl =
+{
+    MMDevCol_QueryInterface,
+    MMDevCol_AddRef,
+    MMDevCol_Release,
+    MMDevCol_GetCount,
+    MMDevCol_Item
+};
+
+static HRESULT WINAPI MMDevEnum_EnumAudioEndpoints(IMMDeviceEnumerator *iface, EDataFlow flow, DWORD mask,
+        IMMDeviceCollection **devices)
 {
     struct qemu_MMDevEnum_EnumAudioEndpoints call;
     struct qemu_mmdevenum *devenum = impl_from_IMMDeviceEnumerator(iface);
+    struct qemu_mmdevcol *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_MMDEVENUM_ENUMAUDIOENDPOINTS);
     call.iface = (ULONG_PTR)devenum;
@@ -1094,6 +1110,16 @@ static HRESULT WINAPI MMDevEnum_EnumAudioEndpoints(IMMDeviceEnumerator *iface, E
     call.devices = (ULONG_PTR)devices;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        if (devices)
+            *devices = NULL;
+        return call.super.iret;
+    }
+
+    impl = (struct qemu_mmdevcol *)(ULONG_PTR)call.devices;
+    impl->IMMDeviceCollection_iface.lpVtbl = &MMDevColVtbl;
+    *devices = &impl->IMMDeviceCollection_iface;
 
     return call.super.iret;
 }
@@ -1104,11 +1130,28 @@ void qemu_MMDevEnum_EnumAudioEndpoints(struct qemu_syscall *call)
 {
     struct qemu_MMDevEnum_EnumAudioEndpoints *c = (struct qemu_MMDevEnum_EnumAudioEndpoints *)call;
     struct qemu_mmdevenum *devenum;
+    struct qemu_mmdevcol *col;
+    IMMDeviceCollection *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     devenum = QEMU_G2H(c->iface);
 
-    c->super.iret = IMMDeviceEnumerator_EnumAudioEndpoints(devenum->host, c->flow, c->mask, QEMU_G2H(c->devices));
+    c->super.iret = IMMDeviceEnumerator_EnumAudioEndpoints(devenum->host, c->flow, c->mask,
+            c->devices ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    col = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*col));
+    if (!col)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = E_OUTOFMEMORY;
+        IMMDeviceCollection_Release(host);
+        return;
+    }
+    WINE_TRACE("Created IMMDeviceCollection wrapper %p for host iface %p.\n", col, host);
+    col->host = host;
+    c->devices = QEMU_H2G(col);
 }
 
 #endif
