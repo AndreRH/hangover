@@ -1195,6 +1195,7 @@ struct qemu_MMDevEnum_GetDevice
     uint64_t iface;
     uint64_t name;
     uint64_t device;
+    uint64_t new_dev;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1203,6 +1204,7 @@ static HRESULT WINAPI MMDevEnum_GetDevice(IMMDeviceEnumerator *iface, const WCHA
 {
     struct qemu_MMDevEnum_GetDevice call;
     struct qemu_mmdevenum *devenum = impl_from_IMMDeviceEnumerator(iface);
+    struct qemu_mmdevice *impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_MMDEVENUM_GETDEVICE);
     call.iface = (ULONG_PTR)devenum;
@@ -1210,6 +1212,20 @@ static HRESULT WINAPI MMDevEnum_GetDevice(IMMDeviceEnumerator *iface, const WCHA
     call.device = (ULONG_PTR)device;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        if (device)
+            *device = NULL;
+        return call.super.iret;
+    }
+
+    impl = (struct qemu_mmdevice *)(ULONG_PTR)call.device;
+    if (call.new_dev)
+    {
+        impl->IMMDevice_iface.lpVtbl = &MMDeviceVtbl;
+        impl->IMMEndpoint_iface.lpVtbl = &MMEndpointVtbl;
+    }
+    *device = &impl->IMMDevice_iface;
 
     return call.super.iret;
 }
@@ -1220,11 +1236,27 @@ void qemu_MMDevEnum_GetDevice(struct qemu_syscall *call)
 {
     struct qemu_MMDevEnum_GetDevice *c = (struct qemu_MMDevEnum_GetDevice *)call;
     struct qemu_mmdevenum *devenum;
+    struct qemu_mmdevice *device;
+    IMMDevice *host;
+    BOOL new_dev;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     devenum = QEMU_G2H(c->iface);
 
-    c->super.iret = IMMDeviceEnumerator_GetDevice(devenum->host, QEMU_G2H(c->name), QEMU_G2H(c->device));
+    c->new_dev = FALSE;
+    c->super.iret = IMMDeviceEnumerator_GetDevice(devenum->host, QEMU_G2H(c->name), c->device ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+    
+    device = device_from_host(host, &new_dev);
+    if (!device)
+    {
+        IMMDevice_Release(host);
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    c->new_dev = new_dev;
+    c->device = QEMU_H2G(device);
 }
 
 #endif
