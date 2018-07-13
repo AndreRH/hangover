@@ -26,7 +26,29 @@ DEFINE_GUID(IID_IBaseFilter, 0x56a86895, 0x0ad4, 0x11ce, 0xb0,0x3a, 0x00,0x20,0x
 
 enum mmdevapi_calls
 {
-    CALL_AUDIOCAPTURECLIENT_GETBUFFER = 0,
+    CALL_AEV_ADDREF = 0,
+    CALL_AEV_GETCHANNELCOUNT,
+    CALL_AEV_GETCHANNELVOLUMELEVEL,
+    CALL_AEV_GETCHANNELVOLUMELEVELSCALAR,
+    CALL_AEV_GETMASTERVOLUMELEVEL,
+    CALL_AEV_GETMASTERVOLUMELEVELSCALAR,
+    CALL_AEV_GETMUTE,
+    CALL_AEV_GETVOLUMERANGE,
+    CALL_AEV_GETVOLUMERANGECHANNEL,
+    CALL_AEV_GETVOLUMESTEPINFO,
+    CALL_AEV_QUERYHARDWARESUPPORT,
+    CALL_AEV_QUERYINTERFACE,
+    CALL_AEV_REGISTERCONTROLCHANGENOTIFY,
+    CALL_AEV_RELEASE,
+    CALL_AEV_SETCHANNELVOLUMELEVEL,
+    CALL_AEV_SETCHANNELVOLUMELEVELSCALAR,
+    CALL_AEV_SETMASTERVOLUMELEVEL,
+    CALL_AEV_SETMASTERVOLUMELEVELSCALAR,
+    CALL_AEV_SETMUTE,
+    CALL_AEV_UNREGISTERCONTROLCHANGENOTIFY,
+    CALL_AEV_VOLUMESTEPDOWN,
+    CALL_AEV_VOLUMESTEPUP,
+    CALL_AUDIOCAPTURECLIENT_GETBUFFER,
     CALL_AUDIOCAPTURECLIENT_GETNEXTPACKETSIZE,
     CALL_AUDIOCAPTURECLIENT_QUERYINTERFACE,
     CALL_AUDIOCAPTURECLIENT_RELEASEBUFFER,
@@ -192,6 +214,15 @@ struct qemu_sessmgr
     IAudioSessionManager2 *host;
 };
 
+struct qemu_volume
+{
+    /* Guest fields */
+    IAudioEndpointVolumeEx IAudioEndpointVolumeEx_iface;
+
+    /* Host fields */
+    IAudioEndpointVolumeEx *host;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 HRESULT MMDevEnum_Create(const IID *iid, void **ppv);
@@ -204,6 +235,28 @@ void qemu_sessmgr_guest_init(struct qemu_sessmgr *client);
 HMODULE mmdevapi_mod;
 extern const struct qemu_ops *qemu_ops;
 
+void qemu_AEV_AddRef(struct qemu_syscall *call);
+void qemu_AEV_GetChannelCount(struct qemu_syscall *call);
+void qemu_AEV_GetChannelVolumeLevel(struct qemu_syscall *call);
+void qemu_AEV_GetChannelVolumeLevelScalar(struct qemu_syscall *call);
+void qemu_AEV_GetMasterVolumeLevel(struct qemu_syscall *call);
+void qemu_AEV_GetMasterVolumeLevelScalar(struct qemu_syscall *call);
+void qemu_AEV_GetMute(struct qemu_syscall *call);
+void qemu_AEV_GetVolumeRange(struct qemu_syscall *call);
+void qemu_AEV_GetVolumeRangeChannel(struct qemu_syscall *call);
+void qemu_AEV_GetVolumeStepInfo(struct qemu_syscall *call);
+void qemu_AEV_QueryHardwareSupport(struct qemu_syscall *call);
+void qemu_AEV_QueryInterface(struct qemu_syscall *call);
+void qemu_AEV_RegisterControlChangeNotify(struct qemu_syscall *call);
+void qemu_AEV_Release(struct qemu_syscall *call);
+void qemu_AEV_SetChannelVolumeLevel(struct qemu_syscall *call);
+void qemu_AEV_SetChannelVolumeLevelScalar(struct qemu_syscall *call);
+void qemu_AEV_SetMasterVolumeLevel(struct qemu_syscall *call);
+void qemu_AEV_SetMasterVolumeLevelScalar(struct qemu_syscall *call);
+void qemu_AEV_SetMute(struct qemu_syscall *call);
+void qemu_AEV_UnregisterControlChangeNotify(struct qemu_syscall *call);
+void qemu_AEV_VolumeStepDown(struct qemu_syscall *call);
+void qemu_AEV_VolumeStepUp(struct qemu_syscall *call);
 void qemu_AudioCaptureClient_GetBuffer(struct qemu_syscall *call);
 void qemu_AudioCaptureClient_GetNextPacketSize(struct qemu_syscall *call);
 void qemu_AudioCaptureClient_QueryInterface(struct qemu_syscall *call);
