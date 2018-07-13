@@ -252,6 +252,7 @@ static HRESULT WINAPI MMDevice_Activate(IMMDevice *iface, REFIID riid, DWORD cls
     struct qemu_MMDevice_Activate call;
     struct qemu_mmdevice *device = impl_from_IMMDevice(iface);
     struct qemu_audioclient *client;
+    struct qemu_sessmgr *sessmgr;
     HRESULT hr = E_FAIL;
 
     if (!ppv)
@@ -286,8 +287,15 @@ static HRESULT WINAPI MMDevice_Activate(IMMDevice *iface, REFIID riid, DWORD cls
     }
     else if (IsEqualIID(riid, &IID_IAudioSessionManager) || IsEqualIID(riid, &IID_IAudioSessionManager2))
     {
-        /* Implemented in the drivers */
-        WINE_FIXME("IID_IAudioSessionManager unsupported\n");
+        qemu_syscall(&call.super);
+        hr = call.super.iret;
+
+        if (SUCCEEDED(hr))
+        {
+            sessmgr = (struct qemu_sessmgr *)(ULONG_PTR)call.ppv;
+            qemu_sessmgr_guest_init(sessmgr);
+            *ppv = &sessmgr->IAudioSessionManager2_iface;
+        }
     }
     else if (IsEqualIID(riid, &IID_IBaseFilter))
     {
@@ -346,6 +354,22 @@ void qemu_MMDevice_Activate(struct qemu_syscall *call)
                 c->ppv = QEMU_H2G(client);
             else
                 IAudioClient_Release(host);
+        }
+    }
+    else if (IsEqualIID(iid, &IID_IAudioSessionManager) || IsEqualIID(iid, &IID_IAudioSessionManager2))
+    {
+        IAudioSessionManager2 *host;
+        struct qemu_sessmgr *mgr;
+
+        hr = IMMDevice_Activate(device->host_device, &IID_IAudioSessionManager2,
+                c->clsctx, QEMU_G2H(c->params), (void **)&host);
+        if (SUCCEEDED(hr))
+        {
+            hr = qemu_sessmgr_host_create(host, &mgr);
+            if (SUCCEEDED(hr))
+                c->ppv = QEMU_H2G(mgr);
+            else
+                IAudioSessionManager2_Release(host);
         }
     }
     else

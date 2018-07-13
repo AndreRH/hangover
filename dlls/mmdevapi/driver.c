@@ -2449,7 +2449,7 @@ void qemu_AudioSessionManager_AddRef(struct qemu_syscall *call)
     struct qemu_AudioSessionManager_AddRef *c = (struct qemu_AudioSessionManager_AddRef *)call;
     struct qemu_sessmgr *mgr;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     mgr = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioSessionManager2_AddRef(mgr->host);
@@ -2485,10 +2485,15 @@ void qemu_AudioSessionManager_Release(struct qemu_syscall *call)
     struct qemu_AudioSessionManager_Release *c = (struct qemu_AudioSessionManager_Release *)call;
     struct qemu_sessmgr *mgr;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     mgr = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioSessionManager2_Release(mgr->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying IAudioSessionManager2 wrapper %p, host %p.\n", mgr, mgr->host);
+        HeapFree(GetProcessHeap(), 0, mgr);
+    }
 }
 
 #endif
@@ -3374,11 +3379,30 @@ void qemu_audioclient_guest_init(struct qemu_audioclient *client)
 
 }
 
+static const IAudioSessionManager2Vtbl AudioSessionManager2_Vtbl =
+{
+    AudioSessionManager_QueryInterface,
+    AudioSessionManager_AddRef,
+    AudioSessionManager_Release,
+    AudioSessionManager_GetAudioSessionControl,
+    AudioSessionManager_GetSimpleAudioVolume,
+    AudioSessionManager_GetSessionEnumerator,
+    AudioSessionManager_RegisterSessionNotification,
+    AudioSessionManager_UnregisterSessionNotification,
+    AudioSessionManager_RegisterDuckNotification,
+    AudioSessionManager_UnregisterDuckNotification
+};
+
 static void qemu_audiosession_guest_init(struct qemu_audiosession *client)
 {
     client->IAudioSessionControl2_iface.lpVtbl = &AudioSessionControl2_Vtbl;
     client->ISimpleAudioVolume_iface.lpVtbl = &SimpleAudioVolume_Vtbl;
     client->IChannelAudioVolume_iface.lpVtbl = &ChannelAudioVolume_Vtbl;
+}
+
+void qemu_sessmgr_guest_init(struct qemu_sessmgr *sessmgr)
+{
+    sessmgr->IAudioSessionManager2_iface.lpVtbl = &AudioSessionManager2_Vtbl;
 }
 
 #else
@@ -3440,6 +3464,25 @@ static HRESULT qemu_audiosession_host_create(IAudioSessionControl *host, struct 
     }
 
     *session = obj;
+    return S_OK;
+}
+
+HRESULT qemu_sessmgr_host_create(IAudioSessionManager2 *host, struct qemu_sessmgr **mgr)
+{
+    struct qemu_sessmgr *obj;
+
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+
+    WINE_TRACE("Created IAudioSessionManager2 wrapper %p for host interface %p.\n", obj, host);
+
+    obj->host = host;
+
+    *mgr = obj;
     return S_OK;
 }
 
