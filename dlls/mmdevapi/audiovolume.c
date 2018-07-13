@@ -118,7 +118,7 @@ void qemu_AEV_AddRef(struct qemu_syscall *call)
     struct qemu_AEV_AddRef *c = (struct qemu_AEV_AddRef *)call;
     struct qemu_volume *volume;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioEndpointVolumeEx_AddRef(volume->host);
@@ -154,10 +154,15 @@ void qemu_AEV_Release(struct qemu_syscall *call)
     struct qemu_AEV_Release *c = (struct qemu_AEV_Release *)call;
     struct qemu_volume *volume;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioEndpointVolumeEx_Release(volume->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying IAudioEndpointVolumeEx wrapper %p, host %p.\n", volume, volume->host);
+        HeapFree(GetProcessHeap(), HEAP_ZERO_MEMORY, volume);
+    }
 }
 
 #endif
@@ -280,7 +285,7 @@ struct qemu_AEV_SetMasterVolumeLevel
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t leveldb;
+    double leveldb;
     uint64_t ctx;
 };
 
@@ -320,7 +325,7 @@ struct qemu_AEV_SetMasterVolumeLevelScalar
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t level;
+    double level;
     uint64_t ctx;
 };
 
@@ -437,7 +442,7 @@ struct qemu_AEV_SetChannelVolumeLevel
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t chan;
-    uint64_t leveldb;
+    double leveldb;
     uint64_t ctx;
 };
 
@@ -479,7 +484,7 @@ struct qemu_AEV_SetChannelVolumeLevelScalar
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t chan;
-    uint64_t level;
+    double level;
     uint64_t ctx;
 };
 
@@ -914,3 +919,59 @@ void qemu_AEV_GetVolumeRangeChannel(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+static const IAudioEndpointVolumeExVtbl AEVImpl_Vtbl =
+{
+    AEV_QueryInterface,
+    AEV_AddRef,
+    AEV_Release,
+    AEV_RegisterControlChangeNotify,
+    AEV_UnregisterControlChangeNotify,
+    AEV_GetChannelCount,
+    AEV_SetMasterVolumeLevel,
+    AEV_SetMasterVolumeLevelScalar,
+    AEV_GetMasterVolumeLevel,
+    AEV_GetMasterVolumeLevelScalar,
+    AEV_SetChannelVolumeLevel,
+    AEV_SetChannelVolumeLevelScalar,
+    AEV_GetChannelVolumeLevel,
+    AEV_GetChannelVolumeLevelScalar,
+    AEV_SetMute,
+    AEV_GetMute,
+    AEV_GetVolumeStepInfo,
+    AEV_VolumeStepUp,
+    AEV_VolumeStepDown,
+    AEV_QueryHardwareSupport,
+    AEV_GetVolumeRange,
+    AEV_GetVolumeRangeChannel
+};
+
+void qemu_volume_guest_init(struct qemu_volume *volume)
+{
+    volume->IAudioEndpointVolumeEx_iface.lpVtbl = &AEVImpl_Vtbl;
+}
+
+#else
+
+HRESULT qemu_volume_host_create(IAudioEndpointVolumeEx *host, struct qemu_volume **volume)
+{
+    struct qemu_volume *obj;
+    
+    obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
+    if (!obj)
+    {
+        WINE_WARN("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+    
+    WINE_TRACE("Created IAudioEndpointVolumeEx wrapper %p for host interface %p.\n", obj, host);
+    
+    obj->host = host;
+    
+    *volume = obj;
+    return S_OK;
+
+}
+
+#endif

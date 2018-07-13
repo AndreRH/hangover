@@ -253,6 +253,7 @@ static HRESULT WINAPI MMDevice_Activate(IMMDevice *iface, REFIID riid, DWORD cls
     struct qemu_mmdevice *device = impl_from_IMMDevice(iface);
     struct qemu_audioclient *client;
     struct qemu_sessmgr *sessmgr;
+    struct qemu_volume *volume;
     HRESULT hr = E_FAIL;
 
     if (!ppv)
@@ -282,8 +283,15 @@ static HRESULT WINAPI MMDevice_Activate(IMMDevice *iface, REFIID riid, DWORD cls
     }
     else if (IsEqualIID(riid, &IID_IAudioEndpointVolume) || IsEqualIID(riid, &IID_IAudioEndpointVolumeEx))
     {
-        /* Implemented in mmdevapi */
-        WINE_FIXME("IID_IAudioEndpointVolume unsupported\n");
+        qemu_syscall(&call.super);
+        hr = call.super.iret;
+        
+        if (SUCCEEDED(hr))
+        {
+            volume = (struct qemu_volume *)(ULONG_PTR)call.ppv;
+            qemu_volume_guest_init(volume);
+            *ppv = &volume->IAudioEndpointVolumeEx_iface;
+        }
     }
     else if (IsEqualIID(riid, &IID_IAudioSessionManager) || IsEqualIID(riid, &IID_IAudioSessionManager2))
     {
@@ -360,9 +368,9 @@ void qemu_MMDevice_Activate(struct qemu_syscall *call)
     {
         IAudioSessionManager2 *host;
         struct qemu_sessmgr *mgr;
-
+        
         hr = IMMDevice_Activate(device->host_device, &IID_IAudioSessionManager2,
-                c->clsctx, QEMU_G2H(c->params), (void **)&host);
+                                c->clsctx, QEMU_G2H(c->params), (void **)&host);
         if (SUCCEEDED(hr))
         {
             hr = qemu_sessmgr_host_create(host, &mgr);
@@ -370,6 +378,22 @@ void qemu_MMDevice_Activate(struct qemu_syscall *call)
                 c->ppv = QEMU_H2G(mgr);
             else
                 IAudioSessionManager2_Release(host);
+        }
+    }
+    else if (IsEqualIID(iid, &IID_IAudioEndpointVolume) || IsEqualIID(iid, &IID_IAudioEndpointVolumeEx))
+    {
+        IAudioEndpointVolumeEx *host;
+        struct qemu_volume *volume;
+
+        hr = IMMDevice_Activate(device->host_device, &IID_IAudioEndpointVolumeEx,
+                c->clsctx, QEMU_G2H(c->params), (void **)&host);
+        if (SUCCEEDED(hr))
+        {
+            hr = qemu_volume_host_create(host, &volume);
+            if (SUCCEEDED(hr))
+                c->ppv = QEMU_H2G(volume);
+            else
+                IAudioEndpointVolumeEx_Release(host);
         }
     }
     else
