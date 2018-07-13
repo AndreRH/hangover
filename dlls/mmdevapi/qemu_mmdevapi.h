@@ -157,6 +157,7 @@ struct qemu_audioclient
     IAudioStreamVolume IAudioStreamVolume_iface;
 
     struct qemu_audiosession *session;
+    IUnknown *marshal;
 
     /* Host fields */
     IAudioClient *host_client;

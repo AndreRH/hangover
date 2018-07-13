@@ -127,10 +127,7 @@ static HRESULT WINAPI AudioClient_QueryInterface(IAudioClient *iface, REFIID rii
     }
 
     if (IsEqualIID(riid, &IID_IMarshal))
-    {
-        WINE_FIXME("Marshal interface not supported yet.\n");
-        return E_NOINTERFACE;
-    }
+        return IUnknown_QueryInterface(client->marshal, riid, ppv);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_AUDIOCLIENT_QUERYINTERFACE);
     call.iface = (ULONG_PTR)client;
@@ -211,11 +208,14 @@ static ULONG WINAPI AudioClient_Release(IAudioClient *iface)
 {
     struct qemu_AudioClient_Release call;
     struct qemu_audioclient *client = impl_from_IAudioClient(iface);
+    IUnknown *marshal = client->marshal;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_AUDIOCLIENT_RELEASE);
     call.iface = (ULONG_PTR)client;
 
     qemu_syscall(&call.super);
+    if (!call.super.iret)
+        IUnknown_Release(marshal);
 
     return call.super.iret;
 }
@@ -3323,12 +3323,19 @@ static const ISimpleAudioVolumeVtbl SimpleAudioVolume_Vtbl  =
 
 void qemu_audioclient_guest_init(struct qemu_audioclient *client)
 {
+    HRESULT hr;
+
     client->IAudioClient_iface.lpVtbl = &AudioClient_Vtbl;
     client->IAudioRenderClient_iface.lpVtbl = &AudioRenderClient_Vtbl;
     client->IAudioCaptureClient_iface.lpVtbl = &AudioCaptureClient_Vtbl;
     client->IAudioClock_iface.lpVtbl = &AudioClock_Vtbl;
     client->IAudioClock2_iface.lpVtbl = &AudioClock2_Vtbl;
     client->IAudioStreamVolume_iface.lpVtbl = &AudioStreamVolume_Vtbl;
+
+    hr = CoCreateFreeThreadedMarshaler((IUnknown *)&client->IAudioClient_iface, &client->marshal);
+    if (hr)
+        WINE_ERR("CoCreateFreeThreadedMarshaler failed.\n");
+
 }
 
 static void qemu_audiosession_guest_init(struct qemu_audiosession *client)
