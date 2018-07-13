@@ -1283,7 +1283,7 @@ void qemu_AudioClock_GetFrequency(struct qemu_syscall *call)
     struct qemu_AudioClock_GetFrequency *c = (struct qemu_AudioClock_GetFrequency *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioClock_GetFrequency(client->host_clock, QEMU_G2H(c->freq));
@@ -1323,7 +1323,7 @@ void qemu_AudioClock_GetPosition(struct qemu_syscall *call)
     struct qemu_AudioClock_GetPosition *c = (struct qemu_AudioClock_GetPosition *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioClock_GetPosition(client->host_clock, QEMU_G2H(c->pos), QEMU_G2H(c->qpctime));
@@ -1551,7 +1551,7 @@ void qemu_AudioStreamVolume_GetChannelCount(struct qemu_syscall *call)
     struct qemu_AudioStreamVolume_GetChannelCount *c = (struct qemu_AudioStreamVolume_GetChannelCount *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioStreamVolume_GetChannelCount(client->host_volume, QEMU_G2H(c->out));
@@ -1591,7 +1591,7 @@ void qemu_AudioStreamVolume_SetAllVolumes(struct qemu_syscall *call)
     struct qemu_AudioStreamVolume_SetAllVolumes *c = (struct qemu_AudioStreamVolume_SetAllVolumes *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioStreamVolume_SetAllVolumes(client->host_volume, c->count, QEMU_G2H(c->levels));
@@ -1631,7 +1631,7 @@ void qemu_AudioStreamVolume_GetAllVolumes(struct qemu_syscall *call)
     struct qemu_AudioStreamVolume_GetAllVolumes *c = (struct qemu_AudioStreamVolume_GetAllVolumes *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioStreamVolume_GetAllVolumes(client->host_volume, c->count, QEMU_G2H(c->levels));
@@ -1671,7 +1671,7 @@ void qemu_AudioStreamVolume_SetChannelVolume(struct qemu_syscall *call)
     struct qemu_AudioStreamVolume_SetChannelVolume *c = (struct qemu_AudioStreamVolume_SetChannelVolume *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioStreamVolume_SetChannelVolume(client->host_volume, c->index, c->level);
@@ -1711,7 +1711,7 @@ void qemu_AudioStreamVolume_GetChannelVolume(struct qemu_syscall *call)
     struct qemu_AudioStreamVolume_GetChannelVolume *c = (struct qemu_AudioStreamVolume_GetChannelVolume *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioStreamVolume_GetChannelVolume(client->host_volume, c->index, QEMU_G2H(c->level));
@@ -1874,7 +1874,8 @@ void qemu_AudioSessionControl_GetState(struct qemu_syscall *call)
     struct qemu_AudioSessionControl_GetState *c = (struct qemu_AudioSessionControl_GetState *)call;
     struct qemu_audiosession *session;
 
-    WINE_FIXME("Unverified!\n");
+    /* AudioSessionState is a 4 byte enum on 32 and 64 bit. */
+    WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioSessionControl2_GetState(session->host_control, QEMU_G2H(c->state));
@@ -2856,7 +2857,7 @@ void qemu_SimpleAudioVolume_SetMasterVolume(struct qemu_syscall *call)
     struct qemu_SimpleAudioVolume_SetMasterVolume *c = (struct qemu_SimpleAudioVolume_SetMasterVolume *)call;
     struct qemu_audiosession *session;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
 
     c->super.iret = ISimpleAudioVolume_SetMasterVolume(session->host_simple_vol, c->level, QEMU_G2H(c->context));
@@ -2894,7 +2895,7 @@ void qemu_SimpleAudioVolume_GetMasterVolume(struct qemu_syscall *call)
     struct qemu_SimpleAudioVolume_GetMasterVolume *c = (struct qemu_SimpleAudioVolume_GetMasterVolume *)call;
     struct qemu_audiosession *session;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
 
     c->super.iret = ISimpleAudioVolume_GetMasterVolume(session->host_simple_vol, QEMU_G2H(c->level));
@@ -2934,7 +2935,7 @@ void qemu_SimpleAudioVolume_SetMute(struct qemu_syscall *call)
     struct qemu_SimpleAudioVolume_SetMute *c = (struct qemu_SimpleAudioVolume_SetMute *)call;
     struct qemu_audiosession *session;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
 
     c->super.iret = ISimpleAudioVolume_SetMute(session->host_simple_vol, c->mute, QEMU_G2H(c->context));
@@ -2972,7 +2973,7 @@ void qemu_SimpleAudioVolume_GetMute(struct qemu_syscall *call)
     struct qemu_SimpleAudioVolume_GetMute *c = (struct qemu_SimpleAudioVolume_GetMute *)call;
     struct qemu_audiosession *session;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
 
     c->super.iret = ISimpleAudioVolume_GetMute(session->host_simple_vol, QEMU_G2H(c->mute));
@@ -3066,7 +3067,7 @@ void qemu_ChannelAudioVolume_GetChannelCount(struct qemu_syscall *call)
     struct qemu_ChannelAudioVolume_GetChannelCount *c = (struct qemu_ChannelAudioVolume_GetChannelCount *)call;
     struct qemu_audiosession *session;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
 
     c->super.iret = IChannelAudioVolume_GetChannelCount(session->host_chan_vol, QEMU_G2H(c->out));
@@ -3085,7 +3086,8 @@ struct qemu_ChannelAudioVolume_SetChannelVolume
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ChannelAudioVolume_SetChannelVolume(IChannelAudioVolume *iface, UINT32 index, float level, const GUID *context)
+static HRESULT WINAPI ChannelAudioVolume_SetChannelVolume(IChannelAudioVolume *iface, UINT32 index, float level,
+        const GUID *context)
 {
     struct qemu_ChannelAudioVolume_SetChannelVolume call;
     struct qemu_audiosession *session = impl_from_IChannelAudioVolume(iface);
@@ -3108,10 +3110,11 @@ void qemu_ChannelAudioVolume_SetChannelVolume(struct qemu_syscall *call)
     struct qemu_ChannelAudioVolume_SetChannelVolume *c = (struct qemu_ChannelAudioVolume_SetChannelVolume *)call;
     struct qemu_audiosession *session;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
 
-    c->super.iret = IChannelAudioVolume_SetChannelVolume(session->host_chan_vol, c->index, c->level, QEMU_G2H(c->context));
+    c->super.iret = IChannelAudioVolume_SetChannelVolume(session->host_chan_vol, c->index, c->level,
+            QEMU_G2H(c->context));
 }
 
 #endif
@@ -3148,7 +3151,7 @@ void qemu_ChannelAudioVolume_GetChannelVolume(struct qemu_syscall *call)
     struct qemu_ChannelAudioVolume_GetChannelVolume *c = (struct qemu_ChannelAudioVolume_GetChannelVolume *)call;
     struct qemu_audiosession *session;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
 
     c->super.iret = IChannelAudioVolume_GetChannelVolume(session->host_chan_vol, c->index, QEMU_G2H(c->level));
@@ -3167,7 +3170,8 @@ struct qemu_ChannelAudioVolume_SetAllVolumes
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ChannelAudioVolume_SetAllVolumes(IChannelAudioVolume *iface, UINT32 count, const float *levels, const GUID *context)
+static HRESULT WINAPI ChannelAudioVolume_SetAllVolumes(IChannelAudioVolume *iface, UINT32 count, const float *levels,
+        const GUID *context)
 {
     struct qemu_ChannelAudioVolume_SetAllVolumes call;
     struct qemu_audiosession *session = impl_from_IChannelAudioVolume(iface);
@@ -3190,10 +3194,11 @@ void qemu_ChannelAudioVolume_SetAllVolumes(struct qemu_syscall *call)
     struct qemu_ChannelAudioVolume_SetAllVolumes *c = (struct qemu_ChannelAudioVolume_SetAllVolumes *)call;
     struct qemu_audiosession *session;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
 
-    c->super.iret = IChannelAudioVolume_SetAllVolumes(session->host_chan_vol, c->count, QEMU_G2H(c->levels), QEMU_G2H(c->context));
+    c->super.iret = IChannelAudioVolume_SetAllVolumes(session->host_chan_vol, c->count, QEMU_G2H(c->levels),
+            QEMU_G2H(c->context));
 }
 
 #endif
@@ -3230,7 +3235,7 @@ void qemu_ChannelAudioVolume_GetAllVolumes(struct qemu_syscall *call)
     struct qemu_ChannelAudioVolume_GetAllVolumes *c = (struct qemu_ChannelAudioVolume_GetAllVolumes *)call;
     struct qemu_audiosession *session;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     session = QEMU_G2H(c->iface);
 
     c->super.iret = IChannelAudioVolume_GetAllVolumes(session->host_chan_vol, c->count, QEMU_G2H(c->levels));
