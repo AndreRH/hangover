@@ -416,10 +416,12 @@ struct qemu_MMDevice_OpenPropertyStore
 
 #ifdef QEMU_DLL_GUEST
 
+static const IPropertyStoreVtbl MMDevPropVtbl;
 static HRESULT WINAPI MMDevice_OpenPropertyStore(IMMDevice *iface, DWORD access, IPropertyStore **ppv)
 {
     struct qemu_MMDevice_OpenPropertyStore call;
     struct qemu_mmdevice *device = impl_from_IMMDevice(iface);
+    struct qemu_mmpropstore *store;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_MMDEVICE_OPENPROPERTYSTORE);
     call.iface = (ULONG_PTR)device;
@@ -427,7 +429,17 @@ static HRESULT WINAPI MMDevice_OpenPropertyStore(IMMDevice *iface, DWORD access,
     call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        if (ppv)
+            *ppv = NULL;
+        return call.super.iret;
+    }
 
+    store = (struct qemu_mmpropstore *)(ULONG_PTR)call.ppv;
+    store->IPropertyStore_iface.lpVtbl = &MMDevPropVtbl;
+    *ppv = &store->IPropertyStore_iface;
+    
     return call.super.iret;
 }
 
@@ -437,11 +449,26 @@ void qemu_MMDevice_OpenPropertyStore(struct qemu_syscall *call)
 {
     struct qemu_MMDevice_OpenPropertyStore *c = (struct qemu_MMDevice_OpenPropertyStore *)call;
     struct qemu_mmdevice *device;
+    struct qemu_mmpropstore *store;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IMMDevice_OpenPropertyStore(device->host_device, c->access, QEMU_G2H(c->ppv));
+    store = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*store));
+    if (!store)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    
+    c->super.iret = IMMDevice_OpenPropertyStore(device->host_device, c->access, c->ppv ? &store->host : NULL);
+    if (FAILED(c->super.iret))
+    {
+        HeapFree(GetProcessHeap(), 0, store);
+        return;
+    }
+    c->ppv = QEMU_H2G(store);
 }
 
 #endif
@@ -1351,7 +1378,7 @@ void qemu_MMDevPropStore_AddRef(struct qemu_syscall *call)
     struct qemu_MMDevPropStore_AddRef *c = (struct qemu_MMDevPropStore_AddRef *)call;
     struct qemu_mmpropstore *store;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     store = QEMU_G2H(c->iface);
 
     c->super.iret = IPropertyStore_AddRef(store->host);
@@ -1387,10 +1414,15 @@ void qemu_MMDevPropStore_Release(struct qemu_syscall *call)
     struct qemu_MMDevPropStore_Release *c = (struct qemu_MMDevPropStore_Release *)call;
     struct qemu_mmpropstore *store;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     store = QEMU_G2H(c->iface);
 
     c->super.iret = IPropertyStore_Release(store->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying IPropertyStore wrapper %p, host %p.\n", store, store->host);
+        HeapFree(GetProcessHeap(), 0, store);
+    }
 }
 
 #endif
@@ -1573,6 +1605,18 @@ static HRESULT WINAPI MMDevPropStore_Commit(IPropertyStore *iface)
 
     return call.super.iret;
 }
+
+static const IPropertyStoreVtbl MMDevPropVtbl =
+{
+    MMDevPropStore_QueryInterface,
+    MMDevPropStore_AddRef,
+    MMDevPropStore_Release,
+    MMDevPropStore_GetCount,
+    MMDevPropStore_GetAt,
+    MMDevPropStore_GetValue,
+    MMDevPropStore_SetValue,
+    MMDevPropStore_Commit
+};
 
 #else
 
