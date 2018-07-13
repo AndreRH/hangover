@@ -1114,7 +1114,8 @@ struct qemu_AudioCaptureClient_GetBuffer
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI AudioCaptureClient_GetBuffer(IAudioCaptureClient *iface, BYTE **data, UINT32 *frames, DWORD *flags, UINT64 *devpos, UINT64 *qpcpos)
+static HRESULT WINAPI AudioCaptureClient_GetBuffer(IAudioCaptureClient *iface, BYTE **data, UINT32 *frames,
+        DWORD *flags, UINT64 *devpos, UINT64 *qpcpos)
 {
     struct qemu_AudioCaptureClient_GetBuffer call;
     struct qemu_audioclient *client = impl_from_IAudioCaptureClient(iface);
@@ -1128,6 +1129,8 @@ static HRESULT WINAPI AudioCaptureClient_GetBuffer(IAudioCaptureClient *iface, B
     call.qpcpos = (ULONG_PTR)qpcpos;
 
     qemu_syscall(&call.super);
+    if (data)
+        *data = (BYTE *)(ULONG_PTR)call.data;
 
     return call.super.iret;
 }
@@ -1138,11 +1141,14 @@ void qemu_AudioCaptureClient_GetBuffer(struct qemu_syscall *call)
 {
     struct qemu_AudioCaptureClient_GetBuffer *c = (struct qemu_AudioCaptureClient_GetBuffer *)call;
     struct qemu_audioclient *client;
+    BYTE *data;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
-    c->super.iret = IAudioCaptureClient_GetBuffer(client->host_capture, QEMU_G2H(c->data), QEMU_G2H(c->frames), QEMU_G2H(c->flags), QEMU_G2H(c->devpos), QEMU_G2H(c->qpcpos));
+    c->super.iret = IAudioCaptureClient_GetBuffer(client->host_capture, c->data ? &data : NULL, QEMU_G2H(c->frames),
+            QEMU_G2H(c->flags), QEMU_G2H(c->devpos), QEMU_G2H(c->qpcpos));
+    c->data = QEMU_H2G(data);
 }
 
 #endif
@@ -1177,7 +1183,7 @@ void qemu_AudioCaptureClient_ReleaseBuffer(struct qemu_syscall *call)
     struct qemu_AudioCaptureClient_ReleaseBuffer *c = (struct qemu_AudioCaptureClient_ReleaseBuffer *)call;
     struct qemu_audioclient *client;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     client = QEMU_G2H(c->iface);
 
     c->super.iret = IAudioCaptureClient_ReleaseBuffer(client->host_capture, c->done);
