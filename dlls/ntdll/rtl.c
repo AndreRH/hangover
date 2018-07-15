@@ -25,6 +25,8 @@
 #include <winternl.h>
 #include <ntdef.h>
 
+#include "thunk/qemu_winternl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ntdll.h"
@@ -43,7 +45,6 @@ typedef void RTL_USER_PROCESS_INFORMATION, *PRTL_AVL_FREE_ROUTINE;
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ntdll);
 
 #endif
-
 
 struct qemu_RtlInitializeResource
 {
@@ -67,8 +68,28 @@ WINBASEAPI void WINAPI RtlInitializeResource(LPRTL_RWLOCK rwl)
 void qemu_RtlInitializeResource(struct qemu_syscall *call)
 {
     struct qemu_RtlInitializeResource *c = (struct qemu_RtlInitializeResource *)call;
-    WINE_FIXME("Unverified!\n");
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     RtlInitializeResource(QEMU_G2H(c->rwl));
+#else
+    struct qemu_RTL_RWLOCK *guest = QEMU_G2H(c->rwl);
+    RTL_RWLOCK *host;
+
+    if (!guest)
+    {
+        RtlInitializeResource(NULL);
+        return;
+    }
+
+    host = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(RTL_RWLOCK));
+    if (!host)
+        WINE_ERR("Out of memory\n");
+
+    RtlInitializeResource(host);
+    memset(guest, 0, sizeof(*guest));
+    guest->hSharedReleaseSemaphore = QEMU_H2G(host);
+#endif
 }
 
 #endif
@@ -95,8 +116,23 @@ WINBASEAPI void WINAPI RtlDeleteResource(LPRTL_RWLOCK rwl)
 void qemu_RtlDeleteResource(struct qemu_syscall *call)
 {
     struct qemu_RtlDeleteResource *c = (struct qemu_RtlDeleteResource *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     RtlDeleteResource(QEMU_G2H(c->rwl));
+#else
+    struct qemu_RTL_RWLOCK *guest = QEMU_G2H(c->rwl);
+    RTL_RWLOCK *host;
+
+    if (!guest)
+    {
+        RtlInitializeResource(NULL);
+        return;
+    }
+    host = QEMU_G2H((ULONG_PTR)guest->hSharedReleaseSemaphore);
+    RtlDeleteResource(host);
+    HeapFree(GetProcessHeap(), 0, host);
+#endif
 }
 
 #endif
@@ -127,8 +163,23 @@ WINBASEAPI BYTE WINAPI RtlAcquireResourceExclusive(LPRTL_RWLOCK rwl, BYTE fWait)
 void qemu_RtlAcquireResourceExclusive(struct qemu_syscall *call)
 {
     struct qemu_RtlAcquireResourceExclusive *c = (struct qemu_RtlAcquireResourceExclusive *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     c->super.iret = RtlAcquireResourceExclusive(QEMU_G2H(c->rwl), c->fWait);
+#else
+    struct qemu_RTL_RWLOCK *guest = QEMU_G2H(c->rwl);
+    RTL_RWLOCK *host;
+
+    if (!guest)
+    {
+        RtlAcquireResourceExclusive(NULL, c->fWait);
+        return;
+    }
+
+    host = QEMU_G2H((ULONG_PTR)guest->hSharedReleaseSemaphore);
+    RtlAcquireResourceExclusive(host, c->fWait);
+#endif
 }
 
 #endif
@@ -159,8 +210,23 @@ WINBASEAPI BYTE WINAPI RtlAcquireResourceShared(LPRTL_RWLOCK rwl, BYTE fWait)
 void qemu_RtlAcquireResourceShared(struct qemu_syscall *call)
 {
     struct qemu_RtlAcquireResourceShared *c = (struct qemu_RtlAcquireResourceShared *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     c->super.iret = RtlAcquireResourceShared(QEMU_G2H(c->rwl), c->fWait);
+#else
+    struct qemu_RTL_RWLOCK *guest = QEMU_G2H(c->rwl);
+    RTL_RWLOCK *host;
+
+    if (!guest)
+    {
+        c->super.iret = RtlAcquireResourceShared(NULL, c->fWait);
+        return;
+    }
+
+    host = QEMU_G2H((ULONG_PTR)guest->hSharedReleaseSemaphore);
+    c->super.iret = RtlAcquireResourceShared(host, c->fWait);
+#endif
 }
 
 #endif
@@ -187,8 +253,23 @@ WINBASEAPI void WINAPI RtlReleaseResource(LPRTL_RWLOCK rwl)
 void qemu_RtlReleaseResource(struct qemu_syscall *call)
 {
     struct qemu_RtlReleaseResource *c = (struct qemu_RtlReleaseResource *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     RtlReleaseResource(QEMU_G2H(c->rwl));
+#else
+    struct qemu_RTL_RWLOCK *guest = QEMU_G2H(c->rwl);
+    RTL_RWLOCK *host;
+
+    if (!guest)
+    {
+        RtlReleaseResource(NULL);
+        return;
+    }
+
+    host = QEMU_G2H((ULONG_PTR)guest->hSharedReleaseSemaphore);
+    RtlReleaseResource(host);
+#endif
 }
 
 #endif

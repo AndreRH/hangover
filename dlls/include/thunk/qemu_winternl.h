@@ -121,4 +121,20 @@ static inline void OBJECT_ATTRIBUTES_h2g(struct qemu_OBJECT_ATTRIBUTES *guest, c
     guest->SecurityQualityOfService = (ULONG_PTR)host->SecurityQualityOfService;
 }
 
+struct qemu_RTL_RWLOCK
+{
+    struct qemu_RTL_CRITICAL_SECTION rtlCS;
+
+    qemu_handle hSharedReleaseSemaphore;
+    UINT        uSharedWaiters;
+
+    qemu_handle hExclusiveReleaseSemaphore;
+    UINT        uExclusiveWaiters;
+
+    INT         iNumberActive;
+    qemu_handle hOwningThreadId;
+    DWORD       dwTimeoutBoost;
+    qemu_ptr    pDebugInfo;
+};
+
 #endif
