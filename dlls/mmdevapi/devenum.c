@@ -243,6 +243,8 @@ struct qemu_MMDevice_Activate
     uint64_t clsctx;
     uint64_t params;
     uint64_t ppv;
+    uint64_t guid;
+    uint64_t flow;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -254,7 +256,8 @@ static HRESULT WINAPI MMDevice_Activate(IMMDevice *iface, REFIID riid, DWORD cls
     struct qemu_audioclient *client;
     struct qemu_sessmgr *sessmgr;
     struct qemu_volume *volume;
-    HRESULT hr = E_FAIL;
+    HRESULT hr = E_NOINTERFACE;
+    GUID guid;
 
     if (!ppv)
     {
@@ -315,15 +318,22 @@ static HRESULT WINAPI MMDevice_Activate(IMMDevice *iface, REFIID riid, DWORD cls
         /* Not handled in Wine either */
         WINE_FIXME("IID_IDeviceTopology unsupported\n");
     }
-    else if (IsEqualIID(riid, &IID_IDirectSound)
-            || IsEqualIID(riid, &IID_IDirectSound8))
+    else if (IsEqualIID(riid, &IID_IDirectSound) || IsEqualIID(riid, &IID_IDirectSound8))
     {
-        /* CoCreateInstance */
-        WINE_FIXME("IID_IDirectSound unsupported\n");
+        call.guid = (ULONG_PTR)&guid;
+        qemu_syscall(&call.super);
+
+        if (call.flow == eRender)
+            hr = CoCreateInstance(&CLSID_DirectSound8, NULL, clsctx, riid, ppv);
+        if (SUCCEEDED(hr))
+        {
+            hr = IDirectSound_Initialize((IDirectSound*)*ppv, &guid);
+            if (FAILED(hr))
+                IDirectSound_Release((IDirectSound*)*ppv);
+        }
     }
     else if (IsEqualIID(riid, &IID_IDirectSoundCapture))
     {
-        /* CoCreateInstance */
         WINE_FIXME("IID_IDirectSoundCapture unsupported\n");
     }
     else
@@ -395,6 +405,26 @@ void qemu_MMDevice_Activate(struct qemu_syscall *call)
             else
                 IAudioEndpointVolumeEx_Release(host);
         }
+    }
+    else if (IsEqualIID(iid, &IID_IDirectSound) || IsEqualIID(iid, &IID_IDirectSound8))
+    {
+        static const WCHAR formatW[] = { '{','0','.','0','.','%','u','.','0','0','0','0','0','0','0','0','}','.',
+                '{','%','0','8','X','-','%','0','4','X','-',
+                '%','0','4','X','-','%','0','2','X','%','0','2','X','-',
+                '%','0','2','X','%','0','2','X','%','0','2','X','%','0','2','X',
+                '%','0','2','X','%','0','2','X','}',0 };
+        GUID *id = QEMU_G2H(c->guid);
+        WCHAR *str;
+        EDataFlow flow;
+
+        IMMDevice_GetId(device->host_device, &str);
+        
+        p_swscanf(str, formatW, &flow, &id->Data1, &id->Data2, &id->Data3,
+                 &id->Data4[0], &id->Data4[1], &id->Data4[2], &id->Data4[3],
+                 &id->Data4[4], &id->Data4[5], &id->Data4[6], &id->Data4[7]);
+        c->flow = flow;
+
+        CoTaskMemFree(str);
     }
     else
     {
@@ -492,6 +522,8 @@ static HRESULT WINAPI MMDevice_GetId(IMMDevice *iface, WCHAR **itemid)
     call.itemid = (ULONG_PTR)itemid;
 
     qemu_syscall(&call.super);
+    if (itemid)
+        *itemid = (WCHAR *)(ULONG_PTR)call.itemid;
 
     return call.super.iret;
 }
@@ -502,11 +534,13 @@ void qemu_MMDevice_GetId(struct qemu_syscall *call)
 {
     struct qemu_MMDevice_GetId *c = (struct qemu_MMDevice_GetId *)call;
     struct qemu_mmdevice *device;
+    WCHAR *ret = NULL;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
-    c->super.iret = IMMDevice_GetId(device->host_device, QEMU_G2H(c->itemid));
+    c->super.iret = IMMDevice_GetId(device->host_device, c->itemid ? &ret : NULL);
+    c->itemid = QEMU_H2G(ret);
 }
 
 #endif

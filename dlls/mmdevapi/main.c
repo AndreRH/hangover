@@ -215,13 +215,30 @@ HRESULT WINAPI DllUnregisterServer(void)
 static void qemu_init_dll(struct qemu_syscall *call)
 {
     struct qemu_dll_init *c = (struct qemu_dll_init *)call;
+    static HMODULE msvcrt;
 
     switch (c->reason)
     {
         case DLL_PROCESS_ATTACH:
+            if (msvcrt)
+                WINE_ERR("msvcrt already loaded.\n");
+
+            msvcrt = LoadLibraryA("msvcrt");
+            if (!msvcrt)
+                WINE_ERR("Cannot get msvcrt module handle.\n");
+
+            p_swscanf = (void *)GetProcAddress(msvcrt, "swscanf");
+            if (!p_swscanf)
+                WINE_ERR("Cannot find swscanf in msvcrt.dll.\n");
+
             break;
 
         case DLL_PROCESS_DETACH:
+            if (!msvcrt)
+                WINE_ERR("msvcrt not loaded.\n");
+
+            FreeLibrary(msvcrt);
+            msvcrt = NULL;
             break;
     }
 }
@@ -359,6 +376,8 @@ static const syscall_handler dll_functions[] =
     qemu_SimpleAudioVolume_SetMasterVolume,
     qemu_SimpleAudioVolume_SetMute,
 };
+
+int (*WINAPIV p_swscanf)(const WCHAR *str, const WCHAR *format, ...);
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {

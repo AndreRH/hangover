@@ -368,6 +368,8 @@ HRESULT qemu_audioclient_host_create(IAudioClient *host, struct qemu_audioclient
 HRESULT qemu_sessmgr_host_create(IAudioSessionManager2 *host, struct qemu_sessmgr **mgr);
 HRESULT qemu_volume_host_create(IAudioEndpointVolumeEx *host, struct qemu_volume **volume);
 
+extern int (*WINAPIV p_swscanf)(const WCHAR *str, const WCHAR *format, ...);
+
 #endif
 
 #endif
