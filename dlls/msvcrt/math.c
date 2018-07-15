@@ -1374,7 +1374,7 @@ WINBASEAPI double CDECL MSVCRT_log10(double x)
 void qemu_log10(struct qemu_syscall *call)
 {
     struct qemu_log10 *c = (struct qemu_log10 *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.dret = p_log10(c->x);
 }
 
