@@ -6,6 +6,7 @@ EXTDLLS  = libcharset-1 libiconv-2 libxml2-2
 WINEDLL_TARGET32 = $(patsubst %,build/qemu/x86_64-windows-user/qemu_guest_dll32/%.dll,$(WINEDLLS))
 WINEDLL_TARGET64 = $(patsubst %,build/qemu/x86_64-windows-user/qemu_guest_dll64/%.dll,$(WINEDLLS))
 EXTDLL_TARGET32  = $(patsubst %,build/qemu/x86_64-windows-user/qemu_guest_dll32/%.dll,$(EXTDLLS))
+EXTDLL_TARGET64  = $(patsubst %,build/qemu/x86_64-windows-user/qemu_guest_dll64/%.dll,$(EXTDLLS))
 
 DLLS = $(strip $(subst include,,$(notdir $(shell find dlls/ -maxdepth 1 -type d | grep -v "\.drv"))))
 DRVS = $(strip $(subst include,,$(notdir $(shell find dlls/ -maxdepth 1 -type d | grep "\.drv"))))
@@ -26,39 +27,62 @@ DRV_TARGET64 = $(join $(DRV___DIRS64), $(DRVS)) $(join $(DRV___DIRS64), $(DRV__H
 WINE_SRC = $(abspath wine)
 WINE_HOST = $(abspath build/wine-host)
 
-all: build/wine-host/.built wine-guest wine-guest32 qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) build/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
+all: build/wine-host/.built wine-guest wine-guest32 qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32) $(EXTDLL_TARGET64) build/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
 .PHONY: all
 
-build/libiconv/Makefile: libiconv/configure
+build/libiconv32/Makefile: libiconv/configure
 	@mkdir -p $(@D)
 	cd $(@D) ; ../../libiconv/configure --host=i686-w64-mingw32 --prefix=$(abspath build/i686-w64-mingw32)
 
-build/i686-w64-mingw32/bin/libcharset-1.dll: build/libiconv/Makefile
+build/libiconv64/Makefile: libiconv/configure
 	@mkdir -p $(@D)
-	+$(MAKE) -C build/libiconv/ install
+	cd $(@D) ; ../../libiconv/configure --host=x86_64-w64-mingw32 --prefix=$(abspath build/x86_64-w64-mingw32)
+
+build/i686-w64-mingw32/bin/libcharset-1.dll: build/libiconv32/Makefile
+	@mkdir -p $(@D)
+	+$(MAKE) -C build/libiconv32/ install
+
+build/x86_64-w64-mingw32/bin/libcharset-1.dll: build/libiconv64/Makefile
+	@mkdir -p $(@D)
+	+$(MAKE) -C build/libiconv64/ install
 
 libxml2/configure: libxml2/autogen.sh
 	cd $(@D) ; NOCONFIGURE=1 ./autogen.sh
 
-build/libxml2/Makefile: libxml2/configure build/i686-w64-mingw32/bin/libcharset-1.dll
+build/libxml2_32/Makefile: libxml2/configure build/i686-w64-mingw32/bin/libcharset-1.dll
 	@mkdir -p $(@D)
 	cd $(@D) ; ../../libxml2/configure --host=i686-w64-mingw32 --enable-static=no --enable-shared=yes --without-python --without-zlib --without-lzma --with-iconv=$(abspath build/i686-w64-mingw32) --prefix=$(abspath build/i686-w64-mingw32)
 
-build/i686-w64-mingw32/bin/libxml2-2.dll: build/libxml2/Makefile
+build/libxml2_64/Makefile: libxml2/configure build/x86_64-w64-mingw32/bin/libcharset-1.dll
 	@mkdir -p $(@D)
-	+$(MAKE) -C build/libxml2/ install
+	cd $(@D) ; ../../libxml2/configure --host=x86_64-w64-mingw32 --enable-static=no --enable-shared=yes --without-python --without-zlib --without-lzma --with-iconv=$(abspath build/x86_64-w64-mingw32) --prefix=$(abspath build/x86_64-w64-mingw32)
+
+build/i686-w64-mingw32/bin/libxml2-2.dll: build/libxml2_32/Makefile
+	@mkdir -p $(@D)
+	+$(MAKE) -C build/libxml2_32/ install
+
+build/x86_64-w64-mingw32/bin/libxml2-2.dll: build/libxml2_64/Makefile
+	@mkdir -p $(@D)
+	+$(MAKE) -C build/libxml2_64/ install
 
 libxslt/configure: libxslt/autogen.sh
 	cd $(@D) ; NOCONFIGURE=1 ./autogen.sh
 
-build/libxslt/Makefile: libxslt/configure build/i686-w64-mingw32/bin/libxml2-2.dll
+build/libxslt32/Makefile: libxslt/configure build/i686-w64-mingw32/bin/libxml2-2.dll
 	@mkdir -p $(@D)
-	sed -i.bak "s/WIN32_EXTRA_LDFLAGS/LIBXML_LIBS\) $$\(WIN32_EXTRA_LDFLAGS/" libxslt/libexslt/Makefile.am
 	cd $(@D) ; ../../libxslt/configure --host=i686-w64-mingw32 --enable-static=no --enable-shared=yes --without-python --without-plugins --without-crypto --prefix=$(abspath build/i686-w64-mingw32) PATH=$(abspath build/i686-w64-mingw32/bin):$(PATH) PKG_CONFIG_PATH=$(abspath build/i686-w64-mingw32/lib/pkgconfig)
 
-build/i686-w64-mingw32/bin/libxslt-1.dll: build/libxslt/Makefile
+build/libxslt64/Makefile: libxslt/configure build/x86_64-w64-mingw32/bin/libxml2-2.dll
 	@mkdir -p $(@D)
-	+$(MAKE) -C build/libxslt/ install
+	cd $(@D) ; ../../libxslt/configure --host=x86_64-w64-mingw32 --enable-static=no --enable-shared=yes --without-python --without-plugins --without-crypto --prefix=$(abspath build/x86_64-w64-mingw32) PATH=$(abspath build/x86_64-w64-mingw32/bin):$(PATH) PKG_CONFIG_PATH=$(abspath build/x86_64-w64-mingw32/lib/pkgconfig)
+
+build/i686-w64-mingw32/bin/libxslt-1.dll: build/libxslt32/Makefile
+	@mkdir -p $(@D)
+	+$(MAKE) -C build/libxslt32/ install
+
+build/x86_64-w64-mingw32/bin/libxslt-1.dll: build/libxslt64/Makefile
+	@mkdir -p $(@D)
+	+$(MAKE) -C build/libxslt64/ install
 
 # Build the Host (e.g. arm64) wine
 build/wine-host/Makefile: wine/configure
@@ -70,9 +94,9 @@ wine-host build/wine-host/.built: build/wine-host/Makefile
 	@touch build/wine-host/.built
 
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
-build/wine-guest/Makefile: build/wine-host/.built wine/configure
+build/wine-guest/Makefile: build/wine-host/.built wine/configure build/x86_64-w64-mingw32/bin/libxml2-2.dll build/x86_64-w64-mingw32/bin/libxslt-1.dll
 	@mkdir -p $(@D)
-	cd build/wine-guest ; ../../wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype $(TESTS)
+	cd build/wine-guest ; ../../wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype $(TESTS) --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
 
 wine-guest: build/wine-guest/Makefile
 	+$(MAKE) -C build/wine-guest $(if $(NOTESTS),$(patsubst %,dlls/%,$(WINEDLLS)),)
@@ -227,8 +251,9 @@ $(foreach mod,$(WINEDLLS),$(eval $(call WINEDLLS_RULE,$(mod))))
 # Link external libs
 
 define EXTDLLS_RULE
-build/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll: wine-guest32 wine-guest build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+build/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/$(1).dll: wine-guest32 wine-guest build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	ln -sf build/i686-w64-mingw32/bin/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll32/
+	ln -sf build/x86_64-w64-mingw32/bin/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/
 endef
 $(foreach mod,$(EXTDLLS),$(eval $(call EXTDLLS_RULE,$(mod))))
 
