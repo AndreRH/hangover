@@ -249,6 +249,74 @@ struct qemu_MMDevice_Activate
 
 #ifdef QEMU_DLL_GUEST
 
+/* Property bag wrapper for DMusic creation copypasted from Wine.
+ *
+ * Note that I did not test this code against native quartz.dll, and it does not do much with
+ * Wine's builtin quartz.
+ */
+struct IPropertyBagImpl
+{
+    IPropertyBag IPropertyBag_iface;
+    GUID devguid;
+};
+
+static inline struct IPropertyBagImpl *impl_from_IPropertyBag(IPropertyBag *iface)
+{
+    return CONTAINING_RECORD(iface, struct IPropertyBagImpl, IPropertyBag_iface);
+}
+
+/* Property bag for IBaseFilter activation */
+static HRESULT WINAPI PB_QueryInterface(IPropertyBag *iface, REFIID riid, void **ppv)
+{
+    WINE_ERR("Should not be called\n");
+    *ppv = NULL;
+    return E_NOINTERFACE;
+}
+
+static ULONG WINAPI PB_AddRef(IPropertyBag *iface)
+{
+    WINE_ERR("Should not be called\n");
+    return 2;
+}
+
+static ULONG WINAPI PB_Release(IPropertyBag *iface)
+{
+    WINE_ERR("Should not be called\n");
+    return 1;
+}
+
+static HRESULT WINAPI PB_Read(IPropertyBag *iface, LPCOLESTR name, VARIANT *var, IErrorLog *log)
+{
+    static const WCHAR dsguid[] = { 'D','S','G','u','i','d', 0 };
+    struct IPropertyBagImpl *This = impl_from_IPropertyBag(iface);
+    WINE_TRACE("Trying to read %s, type %u\n", wine_dbgstr_w(name), var->vt);
+    if (!lstrcmpW(name, dsguid))
+    {
+        WCHAR guidstr[39];
+        StringFromGUID2(&This->devguid, guidstr,sizeof(guidstr)/sizeof(*guidstr));
+        var->vt = VT_BSTR;
+        var->bstrVal = SysAllocString(guidstr);
+        return S_OK;
+    }
+    WINE_ERR("Unknown property '%s' queried\n", wine_dbgstr_w(name));
+    return E_FAIL;
+}
+
+static HRESULT WINAPI PB_Write(IPropertyBag *iface, LPCOLESTR name, VARIANT *var)
+{
+    WINE_ERR("Should not be called\n");
+    return E_FAIL;
+}
+
+static const IPropertyBagVtbl PB_Vtbl =
+{
+    PB_QueryInterface,
+    PB_AddRef,
+    PB_Release,
+    PB_Read,
+    PB_Write
+};
+
 static HRESULT WINAPI MMDevice_Activate(IMMDevice *iface, REFIID riid, DWORD clsctx, PROPVARIANT *params, void **ppv)
 {
     struct qemu_MMDevice_Activate call;
@@ -310,8 +378,35 @@ static HRESULT WINAPI MMDevice_Activate(IMMDevice *iface, REFIID riid, DWORD cls
     }
     else if (IsEqualIID(riid, &IID_IBaseFilter))
     {
-        /* CoCreateInstance + extras */
-        WINE_FIXME("IID_IBaseFilter unsupported\n");
+        call.guid = (ULONG_PTR)&guid;
+        qemu_syscall(&call.super);
+
+        /* The rest is copypasted from Wine. */
+        if (call.flow == eRender)
+            hr = CoCreateInstance(&CLSID_DSoundRender, NULL, clsctx, riid, ppv);
+        else
+            WINE_ERR("Not supported for recording?\n");
+        if (SUCCEEDED(hr))
+        {
+            IPersistPropertyBag *ppb;
+            hr = IUnknown_QueryInterface((IUnknown*)*ppv, &IID_IPersistPropertyBag, (void **)&ppb);
+            if (SUCCEEDED(hr))
+            {
+                /* ::Load cannot assume the interface stays alive after the function returns,
+                 * so just create the interface on the stack, saves a lot of complicated code */
+                struct IPropertyBagImpl bag = { { &PB_Vtbl } };
+                bag.devguid = guid;
+                hr = IPersistPropertyBag_Load(ppb, &bag.IPropertyBag_iface, NULL);
+                IPersistPropertyBag_Release(ppb);
+                if (FAILED(hr))
+                    IUnknown_Release((IUnknown *)*ppv);
+            }
+            else
+            {
+                WINE_FIXME("Wine doesn't support IPersistPropertyBag on DSoundRender yet, ignoring..\n");
+                hr = S_OK;
+            }
+        }
     }
     else if (IsEqualIID(riid, &IID_IDeviceTopology))
     {
@@ -416,7 +511,8 @@ void qemu_MMDevice_Activate(struct qemu_syscall *call)
                 IAudioEndpointVolumeEx_Release(host);
         }
     }
-    else if (IsEqualIID(iid, &IID_IDirectSound) || IsEqualIID(iid, &IID_IDirectSound8))
+    else if (IsEqualIID(iid, &IID_IDirectSound) || IsEqualIID(iid, &IID_IDirectSound8)
+             || IsEqualIID(iid, &IID_IDirectSoundCapture) || IsEqualIID(iid, &IID_IBaseFilter))
     {
         static const WCHAR formatW[] = { '{','0','.','0','.','%','u','.','0','0','0','0','0','0','0','0','}','.',
                 '{','%','0','8','X','-','%','0','4','X','-',

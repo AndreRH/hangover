@@ -23,6 +23,8 @@
 /* Mingw's strmif.h spams plenty of warnings about things in the header being incorrect, so just declare
  * IID_IBaseFilter manually. */
 DEFINE_GUID(IID_IBaseFilter, 0x56a86895, 0x0ad4, 0x11ce, 0xb0,0x3a, 0x00,0x20,0xaf,0x0b,0xa7,0x70);
+/* IID_IKsControl is defined in 2 header files, so I can't include uuids.h for DSoundRender. */
+DEFINE_GUID(CLSID_DSoundRender, 0x79376820, 0x07d0, 0x11cf, 0xa2, 0x4d, 0x00, 0x20, 0xaf, 0xd7, 0x97, 0x67);
 
 enum mmdevapi_calls
 {
