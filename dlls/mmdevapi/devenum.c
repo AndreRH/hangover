@@ -334,7 +334,17 @@ static HRESULT WINAPI MMDevice_Activate(IMMDevice *iface, REFIID riid, DWORD cls
     }
     else if (IsEqualIID(riid, &IID_IDirectSoundCapture))
     {
-        WINE_FIXME("IID_IDirectSoundCapture unsupported\n");
+        call.guid = (ULONG_PTR)&guid;
+        qemu_syscall(&call.super);
+
+        if (call.flow == eCapture)
+            hr = CoCreateInstance(&CLSID_DirectSoundCapture8, NULL, clsctx, riid, ppv);
+        if (SUCCEEDED(hr))
+        {
+            hr = IDirectSoundCapture_Initialize((IDirectSoundCapture*)*ppv, &guid);
+            if (FAILED(hr))
+                IDirectSoundCapture_Release((IDirectSoundCapture*)*ppv);
+        }
     }
     else
     {
