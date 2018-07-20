@@ -255,8 +255,8 @@ $(foreach mod,$(WINEDLLS),$(eval $(call WINEDLLS_RULE,$(mod))))
 
 define EXTDLLS_RULE
 build/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/$(1).dll: wine-guest32 wine-guest build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	ln -sf build/i686-w64-mingw32/bin/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll32/
-	ln -sf build/x86_64-w64-mingw32/bin/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/
+	ln -sf ../../../i686-w64-mingw32/bin/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll32/
+	ln -sf ../../../x86_64-w64-mingw32/bin/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/
 endef
 $(foreach mod,$(EXTDLLS),$(eval $(call EXTDLLS_RULE,$(mod))))
 
