@@ -7455,187 +7455,62 @@ void qemu_ddraw_surface1_BltFast(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_ddraw_surface7_GetClipper
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t Clipper;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface7_GetClipper(IDirectDrawSurface7 *iface, IDirectDrawClipper **Clipper)
 {
-    struct qemu_ddraw_surface7_GetClipper call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE7_GETCLIPPER);
-    call.iface = (ULONG_PTR)surface;
-    call.Clipper = (ULONG_PTR)Clipper;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, clipper %p.\n", iface, Clipper);
 
-    return call.super.iret;
+    if (!Clipper)
+        return DDERR_INVALIDPARAMS;
+
+    if (!surface->clipper)
+    {
+        return DDERR_NOCLIPPERATTACHED;
+    }
+
+    *Clipper = &surface->clipper->IDirectDrawClipper_iface;
+    IDirectDrawClipper_AddRef(*Clipper);
+
+    return DD_OK;
 }
-
-#else
-
-void qemu_ddraw_surface7_GetClipper(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface7_GetClipper *c = (struct qemu_ddraw_surface7_GetClipper *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface7_GetClipper(surface->host_surface7, QEMU_G2H(c->Clipper));
-}
-
-#endif
-
-struct qemu_ddraw_surface4_GetClipper
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t clipper;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface4_GetClipper(IDirectDrawSurface4 *iface, IDirectDrawClipper **clipper)
 {
-    struct qemu_ddraw_surface4_GetClipper call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE4_GETCLIPPER);
-    call.iface = (ULONG_PTR)surface;
-    call.clipper = (ULONG_PTR)clipper;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, clipper %p.\n", iface, clipper);
 
-    return call.super.iret;
+    return ddraw_surface7_GetClipper(&surface->IDirectDrawSurface7_iface, clipper);
 }
-
-#else
-
-void qemu_ddraw_surface4_GetClipper(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface4_GetClipper *c = (struct qemu_ddraw_surface4_GetClipper *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface4_GetClipper(surface->host_surface4, QEMU_G2H(c->clipper));
-}
-
-#endif
-
-struct qemu_ddraw_surface3_GetClipper
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t clipper;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface3_GetClipper(IDirectDrawSurface3 *iface, IDirectDrawClipper **clipper)
 {
-    struct qemu_ddraw_surface3_GetClipper call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE3_GETCLIPPER);
-    call.iface = (ULONG_PTR)surface;
-    call.clipper = (ULONG_PTR)clipper;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, clipper %p.\n", iface, clipper);
 
-    return call.super.iret;
+    return ddraw_surface7_GetClipper(&surface->IDirectDrawSurface7_iface, clipper);
 }
-
-#else
-
-void qemu_ddraw_surface3_GetClipper(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface3_GetClipper *c = (struct qemu_ddraw_surface3_GetClipper *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface3_GetClipper(surface->host_surface3, QEMU_G2H(c->clipper));
-}
-
-#endif
-
-struct qemu_ddraw_surface2_GetClipper
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t clipper;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface2_GetClipper(IDirectDrawSurface2 *iface, IDirectDrawClipper **clipper)
 {
-    struct qemu_ddraw_surface2_GetClipper call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE2_GETCLIPPER);
-    call.iface = (ULONG_PTR)surface;
-    call.clipper = (ULONG_PTR)clipper;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, clipper %p.\n", iface, clipper);
 
-    return call.super.iret;
+    return ddraw_surface7_GetClipper(&surface->IDirectDrawSurface7_iface, clipper);
 }
-
-#else
-
-void qemu_ddraw_surface2_GetClipper(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface2_GetClipper *c = (struct qemu_ddraw_surface2_GetClipper *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface2_GetClipper(surface->host_surface2, QEMU_G2H(c->clipper));
-}
-
-#endif
-
-struct qemu_ddraw_surface1_GetClipper
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t clipper;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI ddraw_surface1_GetClipper(IDirectDrawSurface *iface, IDirectDrawClipper **clipper)
 {
-    struct qemu_ddraw_surface1_GetClipper call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
-    call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_SURFACE1_GETCLIPPER);
-    call.iface = (ULONG_PTR)surface;
-    call.clipper = (ULONG_PTR)clipper;
 
-    qemu_syscall(&call.super);
+    WINE_TRACE("iface %p, clipper %p.\n", iface, clipper);
 
-    return call.super.iret;
-}
-
-#else
-
-void qemu_ddraw_surface1_GetClipper(struct qemu_syscall *call)
-{
-    struct qemu_ddraw_surface1_GetClipper *c = (struct qemu_ddraw_surface1_GetClipper *)call;
-    struct qemu_surface *surface;
-
-    WINE_FIXME("Unverified!\n");
-    surface = QEMU_G2H(c->iface);
-
-    c->super.iret = IDirectDrawSurface_GetClipper(surface->host_surface1, QEMU_G2H(c->clipper));
+    return ddraw_surface7_GetClipper(&surface->IDirectDrawSurface7_iface, clipper);
 }
 
 #endif
