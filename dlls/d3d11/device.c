@@ -14717,52 +14717,10 @@ void qemu_d3d10_device_Flush(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_d3d10_device_CreateShaderResourceView1
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t resource;
-    uint64_t desc;
-    uint64_t view;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateShaderResourceView1(ID3D10Device1 *iface, ID3D10Resource *resource, const D3D10_SHADER_RESOURCE_VIEW_DESC1 *desc, ID3D10ShaderResourceView1 **view)
-{
-    struct qemu_d3d10_device_CreateShaderResourceView1 call;
-    struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_D3D10_DEVICE_CREATESHADERRESOURCEVIEW1);
-    call.iface = (ULONG_PTR)device;
-    call.resource = (ULONG_PTR)resource;
-    call.desc = (ULONG_PTR)desc;
-    call.view = (ULONG_PTR)view;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_d3d10_device_CreateShaderResourceView1(struct qemu_syscall *call)
-{
-    struct qemu_d3d10_device_CreateShaderResourceView1 *c = (struct qemu_d3d10_device_CreateShaderResourceView1 *)call;
-    struct qemu_d3d11_device *device;
-
-    WINE_FIXME("Unverified!\n");
-    device = QEMU_G2H(c->iface);
-
-    c->super.iret = ID3D10Device1_CreateShaderResourceView1(device->host_d3d10, QEMU_G2H(c->resource), QEMU_G2H(c->desc), QEMU_G2H(c->view));
-}
-
-#endif
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT STDMETHODCALLTYPE d3d10_device_CreateShaderResourceView(ID3D10Device1 *iface,
-        ID3D10Resource *resource, const D3D10_SHADER_RESOURCE_VIEW_DESC *desc, ID3D10ShaderResourceView **view)
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateShaderResourceView1(ID3D10Device1 *iface, ID3D10Resource *resource,
+        const D3D10_SHADER_RESOURCE_VIEW_DESC1 *desc, ID3D10ShaderResourceView1 **view)
 {
     struct qemu_d3d11_device *device = impl_from_ID3D10Device(iface);
     struct d3d_shader_resource_view *object;
@@ -14787,9 +14745,18 @@ static HRESULT STDMETHODCALLTYPE d3d10_device_CreateShaderResourceView(ID3D10Dev
     if (FAILED(hr))
         return hr;
 
-    hr = ID3D11ShaderResourceView_QueryInterface(view11, &IID_ID3D10ShaderResourceView, (void **)view);
+    hr = ID3D11ShaderResourceView_QueryInterface(view11, &IID_ID3D10ShaderResourceView1, (void **)view);
     ID3D11ShaderResourceView_Release(view11);
     return hr;
+}
+
+static HRESULT STDMETHODCALLTYPE d3d10_device_CreateShaderResourceView(ID3D10Device1 *iface,
+        ID3D10Resource *resource, const D3D10_SHADER_RESOURCE_VIEW_DESC *desc, ID3D10ShaderResourceView **view)
+{
+    WINE_TRACE("iface %p, resource %p, desc %p, view %p.\n", iface, resource, desc, view);
+
+    return d3d10_device_CreateShaderResourceView1(iface, resource,
+            (const D3D10_SHADER_RESOURCE_VIEW_DESC1 *)desc, (ID3D10ShaderResourceView1 **)view);
 }
 
 #endif
