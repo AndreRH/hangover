@@ -27,12 +27,15 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_bcrypt.h"
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <wine/exception.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_bcrypt);
 #endif
 
@@ -1079,8 +1082,49 @@ WINBASEAPI NTSTATUS WINAPI BCryptEncrypt(BCRYPT_KEY_HANDLE handle, UCHAR *input,
 static void qemu_BCryptEncrypt(struct qemu_syscall *call)
 {
     struct qemu_BCryptEncrypt *c = (struct qemu_BCryptEncrypt *)call;
+    BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO stack, *auth = &stack;
+    struct qemu_BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO *auth32;
+    BCRYPT_KEY_HANDLE *key;
+
     WINE_TRACE("\n");
-    c->super.iret = BCryptEncrypt(QEMU_G2H(c->handle), QEMU_G2H(c->input), c->input_len, QEMU_G2H(c->padding),
+    key = QEMU_G2H(c->handle);
+#if GUEST_BIT == HOST_BIT
+    auth = QEMU_G2H(c->padding);
+#else
+    auth32 = QEMU_G2H(c->padding);
+
+    /* We don't know when 'padding' points to a valid BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO
+     * struct. It depends on a key property we cannot read from the key handle, at least
+     * not with what Wine gives us.
+     *
+     * The good thing is that apparently 'padding' is only used for this purpose, despite the
+     * name. */
+    if (auth32)
+    {
+        __TRY
+        {
+            if (auth32->cbSize == sizeof(*auth32))
+                BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO_g2h(auth, auth32);
+            else
+            {
+                WINE_FIXME("Got a 'padding' parameter with a size of %u.\n", auth32->cbSize);
+                auth = (BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO *)auth32;
+            }
+        }
+        __EXCEPT_PAGE_FAULT
+        {
+            WINE_WARN("Page fault trying to convert BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO.\n");
+            auth = (BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO *)auth32;
+        }
+        __ENDTRY
+    }
+    else
+    {
+        auth = NULL;
+    }
+#endif
+
+    c->super.iret = BCryptEncrypt(key, QEMU_G2H(c->input), c->input_len, auth,
             QEMU_G2H(c->iv), c->iv_len, QEMU_G2H(c->output), c->output_len, QEMU_G2H(c->ret_len), c->flags);
 }
 
@@ -1129,8 +1173,49 @@ WINBASEAPI NTSTATUS WINAPI BCryptDecrypt(BCRYPT_KEY_HANDLE handle, UCHAR *input,
 static void qemu_BCryptDecrypt(struct qemu_syscall *call)
 {
     struct qemu_BCryptDecrypt *c = (struct qemu_BCryptDecrypt *)call;
+    BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO stack, *auth = &stack;
+    struct qemu_BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO *auth32;
+    BCRYPT_KEY_HANDLE *key;
+
     WINE_TRACE("\n");
-    c->super.iret = BCryptDecrypt(QEMU_G2H(c->handle), QEMU_G2H(c->input), c->input_len, QEMU_G2H(c->padding),
+    key = QEMU_G2H(c->handle);
+#if GUEST_BIT == HOST_BIT
+    auth = QEMU_G2H(c->padding);
+#else
+    auth32 = QEMU_G2H(c->padding);
+
+    /* We don't know when 'padding' points to a valid BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO
+     * struct. It depends on a key property we cannot read from the key handle, at least
+     * not with what Wine gives us.
+     *
+     * The good thing is that apparently 'padding' is only used for this purpose, despite the
+     * name. */
+    if (auth32)
+    {
+        __TRY
+        {
+            if (auth32->cbSize == sizeof(*auth32))
+                BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO_g2h(auth, auth32);
+            else
+            {
+                WINE_FIXME("Got a 'padding' parameter with a size of %u.\n", auth32->cbSize);
+                auth = (BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO *)auth32;
+            }
+        }
+        __EXCEPT_PAGE_FAULT
+        {
+            WINE_WARN("Page fault trying to convert BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO.\n");
+            auth = (BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO *)auth32;
+        }
+        __ENDTRY
+    }
+    else
+    {
+        auth = NULL;
+    }
+#endif
+
+    c->super.iret = BCryptDecrypt(key, QEMU_G2H(c->input), c->input_len, auth,
             QEMU_G2H(c->iv), c->iv_len, QEMU_G2H(c->output), c->output_len, QEMU_G2H(c->ret_len), c->flags);
 }
 

@@ -1,6 +1,8 @@
 #ifndef HAVE_QEMU_THUNK_WINCRYPT_H
 #define HAVE_QEMU_THUNK_WINCRYPT_H
 
+#include "thunk/qemu_bcrypt.h"
+
 struct qemu_CERT_CONTEXT
 {
     DWORD      dwCertEncodingType;
