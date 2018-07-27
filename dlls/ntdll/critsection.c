@@ -96,9 +96,13 @@ void qemu_RtlInitializeCriticalSection(struct qemu_syscall *call)
     {
         struct qemu_RTL_CRITICAL_SECTION *crit32;
         crit32 = QEMU_G2H(c->crit);
+        crit32->LockCount = -1;
+        crit32->RecursionCount = 0;
+        crit32->OwningThread = 0;
         crit32->LockSemaphore = 0;
         crit32->SpinCount = 0;
         crit32->DebugInfo = alloc_cs32_dbginfo(crit32);
+
         c->super.iret = STATUS_SUCCESS;
     }
 #endif
@@ -139,9 +143,13 @@ void qemu_RtlInitializeCriticalSectionAndSpinCount(struct qemu_syscall *call)
     {
         struct qemu_RTL_CRITICAL_SECTION *crit32;
         crit32 = QEMU_G2H(c->crit);
+        crit32->LockCount = -1;
+        crit32->RecursionCount = 0;
+        crit32->OwningThread = 0;
         crit32->LockSemaphore = 0;
         crit32->SpinCount = c->spincount;
         crit32->DebugInfo = alloc_cs32_dbginfo(crit32);
+
         c->super.iret = STATUS_SUCCESS;
     }
 #endif
@@ -188,7 +196,7 @@ static NTSTATUS init_cs32(struct qemu_RTL_CRITICAL_SECTION *crit32, DWORD flags)
     crit = HeapAlloc(GetProcessHeap(), 0, sizeof(RTL_CRITICAL_SECTION));
     ret = RtlInitializeCriticalSectionEx(crit, crit32->SpinCount, flags);
 
-    old = InterlockedCompareExchange(&crit32->LockSemaphore, (ULONG_PTR)crit, 0);
+    old = InterlockedCompareExchange(&crit32->LockSemaphore, QEMU_H2G(crit), 0);
     if (old)
     {
         /* Someone else initialized this CS in the meantime. */
@@ -205,12 +213,15 @@ static NTSTATUS init_cs32(struct qemu_RTL_CRITICAL_SECTION *crit32, DWORD flags)
 void qemu_RtlInitializeCriticalSectionEx(struct qemu_syscall *call)
 {
     struct qemu_RtlInitializeCriticalSectionEx *c = (struct qemu_RtlInitializeCriticalSectionEx *)call;
+
     WINE_TRACE("\n");
 #if GUEST_BIT == HOST_BIT
     c->super.iret = RtlInitializeCriticalSectionEx(QEMU_G2H(c->crit), c->spincount, c->flags);
 #else
     {
+        RTL_CRITICAL_SECTION *crit;
         struct qemu_RTL_CRITICAL_SECTION *crit32;
+
         crit32 = QEMU_G2H(c->crit);
         crit32->LockSemaphore = 0;
         crit32->SpinCount = c->spincount;
@@ -219,6 +230,15 @@ void qemu_RtlInitializeCriticalSectionEx(struct qemu_syscall *call)
         else
             crit32->DebugInfo = 0;
         c->super.iret = init_cs32(crit32, c->flags);
+
+        if (c->super.iret == STATUS_SUCCESS)
+        {
+            crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+            crit32->LockCount = crit->LockCount;
+            crit32->RecursionCount = crit->LockCount;
+            crit32->OwningThread = crit->LockCount;
+            crit32->SpinCount = crit->SpinCount;
+        }
     }
 #endif
 }
@@ -258,14 +278,15 @@ void qemu_RtlSetCriticalSectionSpinCount(struct qemu_syscall *call)
     {
         struct qemu_RTL_CRITICAL_SECTION *crit32;
         crit32 = QEMU_G2H(c->crit);
-        crit32->SpinCount = c->spincount;
         if (crit32->LockSemaphore)
         {
-            c->super.iret = RtlSetCriticalSectionSpinCount(
-                    (RTL_CRITICAL_SECTION *)(ULONG_PTR)crit32->LockSemaphore, c->spincount);
+            RTL_CRITICAL_SECTION *crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+            c->super.iret = RtlSetCriticalSectionSpinCount(crit, c->spincount);
+            crit32->SpinCount = crit->SpinCount;
         }
         else
         {
+            crit32->SpinCount = c->spincount;
             c->super.iret = STATUS_SUCCESS;
         }
     }
@@ -307,8 +328,9 @@ void qemu_RtlDeleteCriticalSection(struct qemu_syscall *call)
         crit32 = QEMU_G2H(c->crit);
         if (crit32->LockSemaphore)
         {
-            c->super.iret = RtlDeleteCriticalSection((RTL_CRITICAL_SECTION *)(ULONG_PTR)crit32->LockSemaphore);
-            HeapFree(GetProcessHeap(), 0, (RTL_CRITICAL_SECTION *)(ULONG_PTR)crit32->LockSemaphore);
+            RTL_CRITICAL_SECTION *crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+            c->super.iret = RtlDeleteCriticalSection(crit);
+            HeapFree(GetProcessHeap(), 0, crit);
         }
         else
         {
@@ -349,11 +371,16 @@ void qemu_RtlpWaitForCriticalSection(struct qemu_syscall *call)
     c->super.iret = RtlpWaitForCriticalSection(QEMU_G2H(c->crit));
 #else
     {
-        struct qemu_RTL_CRITICAL_SECTION *crit32;
-        crit32 = QEMU_G2H(c->crit);
-        if (!crit32->LockSemaphore)
+        struct qemu_RTL_CRITICAL_SECTION *crit32 = QEMU_G2H(c->crit);
+        RTL_CRITICAL_SECTION *crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+
+        if (!crit)
+        {
             init_cs32(crit32, 0);
-        c->super.iret = RtlpWaitForCriticalSection((RTL_CRITICAL_SECTION *)(ULONG_PTR)crit32->LockSemaphore);
+            crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+        }
+
+        c->super.iret = RtlpWaitForCriticalSection(crit);
     }
 #endif
 }
@@ -389,11 +416,16 @@ void qemu_RtlpUnWaitCriticalSection(struct qemu_syscall *call)
     c->super.iret = RtlpUnWaitCriticalSection(QEMU_G2H(c->crit));
 #else
     {
-        struct qemu_RTL_CRITICAL_SECTION *crit32;
-        crit32 = QEMU_G2H(c->crit);
-        if (!crit32->LockSemaphore)
+        struct qemu_RTL_CRITICAL_SECTION *crit32 = QEMU_G2H(c->crit);
+        RTL_CRITICAL_SECTION *crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+
+        if (!crit)
+        {
             init_cs32(crit32, 0);
-        c->super.iret = RtlpUnWaitCriticalSection((RTL_CRITICAL_SECTION *)(ULONG_PTR)crit32->LockSemaphore);
+            crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+        }
+
+        c->super.iret = RtlpUnWaitCriticalSection(crit);
     }
 #endif
 }
@@ -429,11 +461,20 @@ void qemu_RtlEnterCriticalSection(struct qemu_syscall *call)
     c->super.iret = RtlEnterCriticalSection(QEMU_G2H(c->crit));
 #else
     {
-        struct qemu_RTL_CRITICAL_SECTION *crit32;
-        crit32 = QEMU_G2H(c->crit);
-        if (!crit32->LockSemaphore)
+        struct qemu_RTL_CRITICAL_SECTION *crit32 = QEMU_G2H(c->crit);
+        RTL_CRITICAL_SECTION *crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+
+        if (!crit)
+        {
             init_cs32(crit32, 0);
-        c->super.iret = RtlEnterCriticalSection((RTL_CRITICAL_SECTION *)(ULONG_PTR)crit32->LockSemaphore);
+            crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+        }
+
+        c->super.iret = RtlEnterCriticalSection(crit);
+
+        crit32->LockCount = crit->LockCount;
+        crit32->OwningThread = QEMU_H2G(crit->OwningThread);
+        crit32->RecursionCount = crit->RecursionCount;
     }
 #endif
 }
@@ -469,11 +510,20 @@ void qemu_RtlTryEnterCriticalSection(struct qemu_syscall *call)
     c->super.iret = RtlTryEnterCriticalSection(QEMU_G2H(c->crit));
 #else
     {
-        struct qemu_RTL_CRITICAL_SECTION *crit32;
-        crit32 = QEMU_G2H(c->crit);
-        if (!crit32->LockSemaphore)
+        struct qemu_RTL_CRITICAL_SECTION *crit32 = QEMU_G2H(c->crit);
+        RTL_CRITICAL_SECTION *crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+
+        if (!crit)
+        {
             init_cs32(crit32, 0);
-        c->super.iret = RtlTryEnterCriticalSection((RTL_CRITICAL_SECTION *)(ULONG_PTR)crit32->LockSemaphore);
+            crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+        }
+
+        c->super.iret = RtlTryEnterCriticalSection(crit);
+
+        crit32->LockCount = crit->LockCount;
+        crit32->OwningThread = QEMU_H2G(crit->OwningThread);
+        crit32->RecursionCount = crit->RecursionCount;
     }
 #endif
 }
@@ -509,11 +559,16 @@ void qemu_RtlIsCriticalSectionLocked(struct qemu_syscall *call)
     c->super.iret = RtlIsCriticalSectionLocked(QEMU_G2H(c->crit));
 #else
     {
-        struct qemu_RTL_CRITICAL_SECTION *crit32;
-        crit32 = QEMU_G2H(c->crit);
-        if (!crit32->LockSemaphore)
+        struct qemu_RTL_CRITICAL_SECTION *crit32 = QEMU_G2H(c->crit);
+        RTL_CRITICAL_SECTION *crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+
+        if (!crit)
+        {
             init_cs32(crit32, 0);
-        c->super.iret = RtlIsCriticalSectionLocked((RTL_CRITICAL_SECTION *)(ULONG_PTR)crit32->LockSemaphore);
+            crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+        }
+
+        c->super.iret = RtlIsCriticalSectionLocked(crit);
     }
 #endif
 }
@@ -549,11 +604,16 @@ void qemu_RtlIsCriticalSectionLockedByThread(struct qemu_syscall *call)
     c->super.iret = RtlIsCriticalSectionLockedByThread(QEMU_G2H(c->crit));
 #else
     {
-        struct qemu_RTL_CRITICAL_SECTION *crit32;
-        crit32 = QEMU_G2H(c->crit);
-        if (!crit32->LockSemaphore)
+        struct qemu_RTL_CRITICAL_SECTION *crit32 = QEMU_G2H(c->crit);
+        RTL_CRITICAL_SECTION *crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+
+        if (!crit)
+        {
             init_cs32(crit32, 0);
-        c->super.iret = RtlIsCriticalSectionLockedByThread((RTL_CRITICAL_SECTION *)(ULONG_PTR)crit32->LockSemaphore);
+            crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+        }
+
+        c->super.iret = RtlIsCriticalSectionLockedByThread(crit);
     }
 #endif
 }
@@ -589,11 +649,31 @@ void qemu_RtlLeaveCriticalSection(struct qemu_syscall *call)
     c->super.iret = RtlLeaveCriticalSection(QEMU_G2H(c->crit));
 #else
     {
-        struct qemu_RTL_CRITICAL_SECTION *crit32;
-        crit32 = QEMU_G2H(c->crit);
-        if (!crit32->LockSemaphore)
+        struct qemu_RTL_CRITICAL_SECTION *crit32 = QEMU_G2H(c->crit);
+        RTL_CRITICAL_SECTION *crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+
+        if (!crit)
+        {
             init_cs32(crit32, 0);
-        c->super.iret = RtlLeaveCriticalSection((RTL_CRITICAL_SECTION *)(ULONG_PTR)crit32->LockSemaphore);
+            crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+        }
+
+        /* Updating the members here is slightly tricky. If we do it after
+         * RtlLeaveCriticalSection returns we don't have exclusive control,
+         * so we might overwrite data that a different thread wrote there
+         * in RtlEnterCriticalSection already. So try to do it before
+         * unlocking.
+         *
+         * If I understand things right we don't own LockCount anyway, it
+         * counts the number of contentious lock attempts. Just copy it for
+         * now and see what explodes. */
+        crit32->RecursionCount = crit->RecursionCount - 1;
+        if (!crit32->RecursionCount)
+            crit32->OwningThread = 0;
+
+        c->super.iret = RtlLeaveCriticalSection(crit);
+
+        crit32->LockCount = crit->LockCount;
     }
 #endif
 }
@@ -630,6 +710,7 @@ void qemu_RtlSleepConditionVariableCS(struct qemu_syscall *call)
 {
     struct qemu_RtlSleepConditionVariableCS *c = (struct qemu_RtlSleepConditionVariableCS *)call;
     struct qemu_RTL_CRITICAL_SECTION *crit32;
+    RTL_CRITICAL_SECTION *crit;
 
     WINE_TRACE("\n");
 #if GUEST_BIT == HOST_BIT
@@ -639,8 +720,12 @@ void qemu_RtlSleepConditionVariableCS(struct qemu_syscall *call)
 #else
 
     crit32 = QEMU_G2H(c->crit);
-    if (!crit32->LockSemaphore)
+    crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+    if (!crit)
+    {
         init_cs32(crit32, 0);
+        crit = QEMU_G2H((ULONG_PTR)crit32->LockSemaphore);
+    }
 
     /* Most of the time the pointer in RTL_CONDITION_VARIABLE is treated as an int, but not always. I don't
      * think a temporary copy on the stack is working, and there's no free call, so we'll probably have to
