@@ -256,9 +256,9 @@ static HRESULT WINAPI ddraw_clipper_GetHWnd(IDirectDrawClipper *iface, HWND *win
     struct qemu_clipper *clipper = impl_from_IDirectDrawClipper(iface);
     call.super.id = QEMU_SYSCALL_ID(CALL_DDRAW_CLIPPER_GETHWND);
     call.iface = (ULONG_PTR)clipper;
-    call.window = (ULONG_PTR)window;
 
     qemu_syscall(&call.super);
+    *window = (HWND)(ULONG_PTR)call.window;
 
     return call.super.iret;
 }
@@ -269,11 +269,13 @@ void qemu_ddraw_clipper_GetHWnd(struct qemu_syscall *call)
 {
     struct qemu_ddraw_clipper_GetHWnd *c = (struct qemu_ddraw_clipper_GetHWnd *)call;
     struct qemu_clipper *clipper;
+    HWND wnd;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     clipper = QEMU_G2H(c->iface);
 
-    c->super.iret = IDirectDrawClipper_GetHWnd(clipper->host, QEMU_G2H(c->window));
+    c->super.iret = IDirectDrawClipper_GetHWnd(clipper->host, &wnd);
+    c->window = QEMU_H2G(wnd);
 }
 
 #endif
