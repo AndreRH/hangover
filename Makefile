@@ -1,6 +1,6 @@
 TESTS := $(if $(NOTESTS),--disable-tests,)
 
-WINEDLLS = dbghelp ole32 oleaut32 propsys rpcrt4 urlmon windowscodecs netapi32 dnsapi msimg32 dwmapi uxtheme setupapi wintrust wtsapi32 pdh avrt cryptnet imagehlp cryptui sensapi msvcp80 msvcp100 lz32 msi dplay dplayx dpwsockx dpnet dpnaddr dpnhpast dpnlobby dpvoice mpr oledlg shdocvw msacm32 mlang gdiplus shell32 shlwapi wininet comctl32 comdlg32 d3d10core d3d10 d3d10_1 d3dcompiler_43 msxml msxml2 msxml3 msxml4 msxml6 shfolder d2d1 dwrite sspicli quartz msvfw32 adsldp amstream apphelp atl ieframe
+WINEDLLS = dbghelp ole32 oleaut32 propsys rpcrt4 urlmon windowscodecs netapi32 dnsapi msimg32 dwmapi uxtheme setupapi wintrust wtsapi32 pdh avrt cryptnet imagehlp cryptui sensapi msvcp80 msvcp100 lz32 msi dplay dplayx dpwsockx dpnet dpnaddr dpnhpast dpnlobby dpvoice mpr oledlg shdocvw msacm32 mlang gdiplus shell32 shlwapi wininet comctl32 comdlg32 d3d10core d3d10 d3d10_1 d3dcompiler_43 msxml msxml2 msxml3 msxml4 msxml6 shfolder d2d1 dwrite sspicli quartz msvfw32 adsldp amstream apphelp atl ieframe atl100 atl80 scrrun msthml inetcomm avifil32 browseui combase explorerframe credui
 EXTDLLS  = libcharset-1 libiconv-2 libxml2-2 libxslt-1 libexslt-0
 
 WINEDLL_TARGET32 = $(patsubst %,build/qemu/x86_64-windows-user/qemu_guest_dll32/%.dll,$(WINEDLLS))
