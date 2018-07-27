@@ -1797,7 +1797,7 @@ void qemu_EnumPrinters(struct qemu_syscall *call)
     }
     else
     {
-        c->super.iret = EnumPrintersW(c->dwType, QEMU_G2H(c->lpszName), c->dwLevel, data,
+        c->super.iret = EnumPrintersA(c->dwType, QEMU_G2H(c->lpszName), c->dwLevel, data,
                 c->cbBuf, QEMU_G2H(c->lpdwNeeded), &returned);
     }
 
