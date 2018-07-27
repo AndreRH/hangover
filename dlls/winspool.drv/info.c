@@ -1623,7 +1623,6 @@ struct qemu_GetPrinter
     uint64_t pPrinter;
     uint64_t cbBuf;
     uint64_t pcbNeeded;
-    uint64_t size;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1637,7 +1636,6 @@ WINBASEAPI BOOL WINAPI GetPrinterW(HANDLE hPrinter, DWORD Level, LPBYTE pPrinter
     call.pPrinter = (ULONG_PTR)pPrinter;
     call.cbBuf = cbBuf;
     call.pcbNeeded = (ULONG_PTR)pcbNeeded;
-    call.size = sizeof(PRINTER_INFO_9W);
 
     qemu_syscall(&call.super);
 
@@ -1669,7 +1667,17 @@ void qemu_GetPrinter(struct qemu_syscall *call)
     /* The pPrinter buffer is a struct header + strings that the struct header points to. The application has to deal
      * with different sizes due to the strings. This code here hopes that they don't notice the size difference of
      * the 32 vs 64 bit struct headers and the gap between the 32 bit struct header and first string. */
-    c->super.iret = GetPrinterW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pPrinter), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_GETPRINTERW))
+    {
+        c->super.iret = GetPrinterW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pPrinter),
+                c->cbBuf, QEMU_G2H(c->pcbNeeded));
+    }
+    else
+    {
+        c->super.iret = GetPrinterA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pPrinter),
+                c->cbBuf, QEMU_G2H(c->pcbNeeded));
+    }
+
 #if HOST_BIT == GUEST_BIT
     return;
 #endif
