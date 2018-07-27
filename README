@@ -75,3 +75,6 @@ Worms Armageddon: Works with the right Wine settings. Despite having the same gr
 Known not to work:
 StarCraft: Breaks because 2GB address space limit is not respected.
 Age of Empires 2: Extended exception information missing.
+
+11) Running "make test" in Wine
+To run Wine's tests inside hangover you can use scripts/hangover-test.sh as $WINETEST_WRAPPER. You also have to create an empty file server/wineserver (just touch it, it doesn't need anything special) to make Wine's tools/runtest happy. See comments in scripts/hangover-test.sh for more details
