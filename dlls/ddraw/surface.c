@@ -756,7 +756,8 @@ struct qemu_ddraw_surface_GetAttachedSurface
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ddraw_surface7_GetAttachedSurface(IDirectDrawSurface7 *iface, DDSCAPS2 *caps, IDirectDrawSurface7 **Surface)
+static HRESULT WINAPI ddraw_surface7_GetAttachedSurface(IDirectDrawSurface7 *iface, DDSCAPS2 *caps,
+        IDirectDrawSurface7 **Surface)
 {
     struct qemu_ddraw_surface_GetAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface7(iface);
@@ -771,11 +772,16 @@ static HRESULT WINAPI ddraw_surface7_GetAttachedSurface(IDirectDrawSurface7 *ifa
         *Surface = &attach->IDirectDrawSurface7_iface;
         IDirectDrawSurface7_AddRef(*Surface);
     }
+    else
+    {
+        *Surface = NULL;
+    }
 
     return call.super.iret;
 }
 
-static HRESULT WINAPI ddraw_surface4_GetAttachedSurface(IDirectDrawSurface4 *iface, DDSCAPS2 *caps, IDirectDrawSurface4 **attachment)
+static HRESULT WINAPI ddraw_surface4_GetAttachedSurface(IDirectDrawSurface4 *iface, DDSCAPS2 *caps,
+        IDirectDrawSurface4 **attachment)
 {
     struct qemu_ddraw_surface_GetAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface4(iface);
@@ -791,11 +797,16 @@ static HRESULT WINAPI ddraw_surface4_GetAttachedSurface(IDirectDrawSurface4 *ifa
         *attachment = &attach->IDirectDrawSurface4_iface;
         IDirectDrawSurface4_AddRef(*attachment);
     }
+    else
+    {
+        *attachment = NULL;
+    }
 
     return call.super.iret;
 }
 
-static HRESULT WINAPI ddraw_surface3_GetAttachedSurface(IDirectDrawSurface3 *iface, DDSCAPS *caps, IDirectDrawSurface3 **attachment)
+static HRESULT WINAPI ddraw_surface3_GetAttachedSurface(IDirectDrawSurface3 *iface, DDSCAPS *caps,
+        IDirectDrawSurface3 **attachment)
 {
     struct qemu_ddraw_surface_GetAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface3(iface);
@@ -811,11 +822,16 @@ static HRESULT WINAPI ddraw_surface3_GetAttachedSurface(IDirectDrawSurface3 *ifa
         *attachment = &attach->IDirectDrawSurface3_iface;
         IDirectDrawSurface3_AddRef(*attachment);
     }
+    else
+    {
+        *attachment = NULL;
+    }
 
     return call.super.iret;
 }
 
-static HRESULT WINAPI ddraw_surface2_GetAttachedSurface(IDirectDrawSurface2 *iface, DDSCAPS *caps, IDirectDrawSurface2 **attachment)
+static HRESULT WINAPI ddraw_surface2_GetAttachedSurface(IDirectDrawSurface2 *iface, DDSCAPS *caps,
+        IDirectDrawSurface2 **attachment)
 {
     struct qemu_ddraw_surface_GetAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface2(iface);
@@ -831,11 +847,16 @@ static HRESULT WINAPI ddraw_surface2_GetAttachedSurface(IDirectDrawSurface2 *ifa
         *attachment = &attach->IDirectDrawSurface2_iface;
         IDirectDrawSurface2_AddRef(*attachment);
     }
+    else
+    {
+        *attachment = NULL;
+    }
 
     return call.super.iret;
 }
 
-static HRESULT WINAPI ddraw_surface1_GetAttachedSurface(IDirectDrawSurface *iface, DDSCAPS *caps, IDirectDrawSurface **attachment)
+static HRESULT WINAPI ddraw_surface1_GetAttachedSurface(IDirectDrawSurface *iface, DDSCAPS *caps,
+        IDirectDrawSurface **attachment)
 {
     struct qemu_ddraw_surface_GetAttachedSurface call;
     struct qemu_surface *surface = impl_from_IDirectDrawSurface(iface);
@@ -850,6 +871,10 @@ static HRESULT WINAPI ddraw_surface1_GetAttachedSurface(IDirectDrawSurface *ifac
         struct qemu_surface *attach = (struct qemu_surface *)(ULONG_PTR)call.attachment;
         *attachment = &attach->IDirectDrawSurface_iface;
         IDirectDrawSurface_AddRef(*attachment);
+    }
+    else
+    {
+        *attachment = NULL;
     }
 
     return call.super.iret;
