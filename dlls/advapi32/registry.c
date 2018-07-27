@@ -21,6 +21,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_advapi32.h"
@@ -2232,8 +2234,28 @@ WINBASEAPI LSTATUS WINAPI RegSetKeySecurity(HKEY hkey, SECURITY_INFORMATION Secu
 void qemu_RegSetKeySecurity(struct qemu_syscall *call)
 {
     struct qemu_RegSetKeySecurity *c = (struct qemu_RegSetKeySecurity *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RegSetKeySecurity(QEMU_G2H(c->hkey), c->SecurityInfo, QEMU_G2H(c->pSecurityDesc));
+    SECURITY_DESCRIPTOR stack, *desc = &stack;
+    struct qemu_SECURITY_DESCRIPTOR *sd32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    desc = QEMU_G2H(c->pSecurityDesc);
+#else
+    sd32 = QEMU_G2H(c->pSecurityDesc);
+    if (sd32)
+    {
+        if (sd32->Control & SE_SELF_RELATIVE)
+            desc = (SECURITY_DESCRIPTOR *)sd32;
+        else
+            SECURITY_DESCRIPTOR_g2h(desc, sd32);
+    }
+    else
+    {
+        desc = NULL;
+    }
+#endif
+
+    c->super.iret = RegSetKeySecurity(QEMU_G2H(c->hkey), c->SecurityInfo, desc);
 }
 
 #endif
