@@ -58,9 +58,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptAddContextFunction(ULONG table, LPCWSTR context
     call.iface = iface;
     call.function = (ULONG_PTR)function;
     call.pos = pos;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -100,9 +100,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptAddContextFunctionProvider(ULONG table, LPCWSTR
     call.function = (ULONG_PTR)function;
     call.provider = (ULONG_PTR)provider;
     call.pos = pos;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -139,9 +139,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptRemoveContextFunction(ULONG table, LPCWSTR cont
     call.context = (ULONG_PTR)context;
     call.iface = iface;
     call.function = (ULONG_PTR)function;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -179,9 +179,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptRemoveContextFunctionProvider(ULONG table, LPCW
     call.iface = iface;
     call.function = (ULONG_PTR)function;
     call.provider = (ULONG_PTR)provider;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -216,9 +216,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptRegisterProvider(LPCWSTR provider, ULONG flags,
     call.provider = (ULONG_PTR)provider;
     call.flags = flags;
     call.reg = (ULONG_PTR)reg;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -247,9 +247,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptUnregisterProvider(LPCWSTR provider)
     struct qemu_BCryptUnregisterProvider call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTUNREGISTERPROVIDER);
     call.provider = (ULONG_PTR)provider;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -285,9 +285,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptEnumAlgorithms(ULONG dwAlgOperations, ULONG *pA
     call.pAlgCount = (ULONG_PTR)pAlgCount;
     call.ppAlgList = (ULONG_PTR)ppAlgList;
     call.dwFlags = dwFlags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -322,9 +322,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptGenRandom(BCRYPT_ALG_HANDLE handle, UCHAR *buff
     call.buffer = (ULONG_PTR)buffer;
     call.count = count;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -359,11 +359,11 @@ WINBASEAPI NTSTATUS WINAPI BCryptOpenAlgorithmProvider(BCRYPT_ALG_HANDLE *handle
     call.id = (ULONG_PTR)id;
     call.implementation = (ULONG_PTR)implementation;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
     if (call.super.iret == STATUS_SUCCESS)
         *handle = (BCRYPT_ALG_HANDLE)(ULONG_PTR)call.handle;
-    
+
     return call.super.iret;
 }
 
@@ -397,9 +397,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptCloseAlgorithmProvider(BCRYPT_ALG_HANDLE handle
     call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTCLOSEALGORITHMPROVIDER);
     call.handle = (ULONG_PTR)handle;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -427,9 +427,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptGetFipsAlgorithmMode(BOOLEAN *enabled)
     struct qemu_BCryptGetFipsAlgorithmMode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTGETFIPSALGORITHMMODE);
     call.enabled = (ULONG_PTR)enabled;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -468,9 +468,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptGetProperty(BCRYPT_HANDLE handle, LPCWSTR prop,
     call.count = count;
     call.res = (ULONG_PTR)res;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -511,12 +511,12 @@ WINBASEAPI NTSTATUS WINAPI BCryptCreateHash(BCRYPT_ALG_HANDLE algorithm, BCRYPT_
     call.secret = (ULONG_PTR)secret;
     call.secretlen = secretlen;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
     if (call.super.iret == STATUS_SUCCESS)
         *handle = (BCRYPT_HASH_HANDLE)(ULONG_PTR)call.handle;
-        
     
+
     return call.super.iret;
 }
 
@@ -557,9 +557,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptDuplicateHash(BCRYPT_HASH_HANDLE handle, BCRYPT
     call.object = (ULONG_PTR)object;
     call.objectlen = objectlen;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -588,9 +588,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptDestroyHash(BCRYPT_HASH_HANDLE handle)
     struct qemu_BCryptDestroyHash call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTDESTROYHASH);
     call.handle = (ULONG_PTR)handle;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -624,9 +624,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptHashData(BCRYPT_HASH_HANDLE handle, UCHAR *inpu
     call.input = (ULONG_PTR)input;
     call.size = size;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -660,9 +660,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptFinishHash(BCRYPT_HASH_HANDLE handle, UCHAR *ou
     call.output = (ULONG_PTR)output;
     call.size = size;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -703,9 +703,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptHash(BCRYPT_ALG_HANDLE algorithm, UCHAR *secret
     call.inputlen = inputlen;
     call.output = (ULONG_PTR)output;
     call.outputlen = outputlen;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -746,11 +746,11 @@ WINBASEAPI NTSTATUS WINAPI BCryptGenerateSymmetricKey(BCRYPT_ALG_HANDLE algorith
     call.secret = (ULONG_PTR)secret;
     call.secret_len = secret_len;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
     if (call.super.iret == ERROR_SUCCESS)
         *handle = (BCRYPT_KEY_HANDLE)(ULONG_PTR)call.handle;
-    
+
     return call.super.iret;
 }
 
@@ -800,11 +800,11 @@ WINBASEAPI NTSTATUS WINAPI BCryptImportKey(BCRYPT_ALG_HANDLE algorithm, BCRYPT_K
     call.input = (ULONG_PTR)input;
     call.input_len = input_len;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
     if (call.super.iret == ERROR_SUCCESS)
         *key = (BCRYPT_KEY_HANDLE)(ULONG_PTR)call.key;
-    
+
     return call.super.iret;
 }
 
@@ -851,9 +851,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptExportKey(BCRYPT_KEY_HANDLE export_key, BCRYPT_
     call.output_len = output_len;
     call.size = (ULONG_PTR)size;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -893,11 +893,11 @@ WINBASEAPI NTSTATUS WINAPI BCryptDuplicateKey(BCRYPT_KEY_HANDLE handle, BCRYPT_K
     call.object = (ULONG_PTR)object;
     call.object_len = object_len;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
     if (call.super.iret == ERROR_SUCCESS)
         *handle_copy = (BCRYPT_KEY_HANDLE)(ULONG_PTR)call.handle_copy;
-    
+
     return call.super.iret;
 }
 
@@ -944,9 +944,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptImportKeyPair(BCRYPT_ALG_HANDLE algorithm, BCRY
     call.input = (ULONG_PTR)input;
     call.input_len = input_len;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -988,9 +988,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptVerifySignature(BCRYPT_KEY_HANDLE handle, void 
     call.signature = (ULONG_PTR)signature;
     call.signature_len = signature_len;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -1019,9 +1019,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptDestroyKey(BCRYPT_KEY_HANDLE handle)
     struct qemu_BCryptDestroyKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTDESTROYKEY);
     call.handle = (ULONG_PTR)handle;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -1068,9 +1068,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptEncrypt(BCRYPT_KEY_HANDLE handle, UCHAR *input,
     call.output_len = output_len;
     call.ret_len = (ULONG_PTR)ret_len;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -1118,9 +1118,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptDecrypt(BCRYPT_KEY_HANDLE handle, UCHAR *input,
     call.output_len = output_len;
     call.ret_len = (ULONG_PTR)ret_len;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
@@ -1158,9 +1158,9 @@ WINBASEAPI NTSTATUS WINAPI BCryptSetProperty(BCRYPT_HANDLE handle, const WCHAR *
     call.value = (ULONG_PTR)value;
     call.size = size;
     call.flags = flags;
-    
+
     qemu_syscall(&call.super);
-    
+
     return call.super.iret;
 }
 
