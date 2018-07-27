@@ -36,4 +36,15 @@ static inline void BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO_g2h(BCRYPT_AUTHENTICATE
     host->dwFlags = guest->dwFlags;
 }
 
+struct qemu_BCRYPT_PKCS1_PADDING_INFO
+{
+    qemu_ptr pszAlgId;
+};
+
+static inline void BCRYPT_PKCS1_PADDING_INFO_g2h(BCRYPT_PKCS1_PADDING_INFO *host,
+        const struct qemu_BCRYPT_PKCS1_PADDING_INFO *guest)
+{
+    host->pszAlgId = (WCHAR *)(ULONG_PTR)guest->pszAlgId;
+}
+
 #endif

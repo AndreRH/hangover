@@ -1002,8 +1002,21 @@ WINBASEAPI NTSTATUS WINAPI BCryptVerifySignature(BCRYPT_KEY_HANDLE handle, void 
 static void qemu_BCryptVerifySignature(struct qemu_syscall *call)
 {
     struct qemu_BCryptVerifySignature *c = (struct qemu_BCryptVerifySignature *)call;
+    BCRYPT_PKCS1_PADDING_INFO stack, *pad = &stack;
+    struct qemu_BCRYPT_PKCS1_PADDING_INFO *pad32;
+
     WINE_TRACE("\n");
-    c->super.iret = BCryptVerifySignature(QEMU_G2H(c->handle), QEMU_G2H(c->padding), QEMU_G2H(c->hash),
+#if GUEST_BIT == HOST_BIT
+    pad = QEMU_G2H(c->padding);
+#else
+    pad32 = QEMU_G2H(c->padding);
+    if (!pad32)
+        pad = NULL;
+    else
+        BCRYPT_PKCS1_PADDING_INFO_g2h(pad, pad32);
+#endif
+
+    c->super.iret = BCryptVerifySignature(QEMU_G2H(c->handle), pad, QEMU_G2H(c->hash),
             c->hash_len, QEMU_G2H(c->signature), c->signature_len, c->flags);
 }
 
