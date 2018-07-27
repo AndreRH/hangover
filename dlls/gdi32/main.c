@@ -25,19 +25,60 @@
 #include "dll_list.h"
 #include "qemu_gdi32.h"
 
+struct qemu_abort_proc
+{
+    uint64_t guest_proc;
+    uint64_t hdc;
+    uint64_t error;
+};
+
+struct qemu_init_dll
+{
+    struct qemu_syscall super;
+    uint64_t abort_proc_guest_wrapper;
+};
+
 #ifdef QEMU_DLL_GUEST
+
+static BOOL __fastcall abort_proc_guest_wrapper(struct qemu_abort_proc *data)
+{
+    ABORTPROC proc = (ABORTPROC)(ULONG_PTR)data->guest_proc;
+    return proc((HDC)(ULONG_PTR)data->hdc, data->error);
+}
 
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
+    if (reason == DLL_PROCESS_ATTACH)
+    {
+        struct qemu_init_dll call;
+        call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
+        call.abort_proc_guest_wrapper = (ULONG_PTR)abort_proc_guest_wrapper;
+        qemu_syscall(&call.super);
+    }
+
     return TRUE;
 }
 
 #else
 
 #include <wine/debug.h>
+#include <assert.h>
+
+#include "callback_helper_impl.h"
+
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_gdi32);
 
 const struct qemu_ops *qemu_ops;
+
+static struct callback_entry_table *abort_proc_wrappers;
+static unsigned int abort_proc_wrapper_count;
+static uint64_t abort_proc_guest_wrapper;
+
+static void qemu_init_dll(struct qemu_syscall *call)
+{
+    struct qemu_init_dll *c = (struct qemu_init_dll *)call;
+    abort_proc_guest_wrapper = c->abort_proc_guest_wrapper;
+}
 
 static const syscall_handler dll_functions[] =
 {
@@ -284,6 +325,7 @@ static const syscall_handler dll_functions[] =
     qemu_GetWindowOrgEx,
     qemu_GetWinMetaFileBits,
     qemu_GetWorldTransform,
+    qemu_init_dll,
     qemu_IntersectClipRect,
     qemu_InvertRgn,
     qemu_LineDDA,
@@ -409,9 +451,55 @@ static const syscall_handler dll_functions[] =
     qemu_WidenPath,
 };
 
+static BOOL abort_proc_host_wrapper(HDC hdc, int error, struct callback_entry *wrapper)
+{
+    struct qemu_abort_proc call;
+    BOOL ret;
+
+    call.guest_proc = wrapper->guest_proc;
+    call.hdc = QEMU_H2G(hdc);
+    call.error = error;
+
+    WINE_TRACE("Calling guest abort proc 0x%lx(%p, %d).\n", (unsigned long)wrapper->guest_proc, hdc, error);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(abort_proc_guest_wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest returned %x.\n", ret);
+
+    return ret;
+}
+
+ABORTPROC abort_proc_guest_to_host(uint64_t guest_proc)
+{
+    struct callback_entry *entry;
+    BOOL is_new;
+
+    if (!guest_proc)
+        return NULL;
+
+    entry = callback_get(abort_proc_wrappers, guest_proc, &is_new);
+    if (!entry)
+    {
+        WINE_FIXME("Out of guest -> host abort proc wrappers.\n");
+        assert(0);
+    }
+    if (is_new)
+    {
+        WINE_TRACE("Creating host ABORTPROC %p for guest func 0x%lx.\n",
+                entry, (unsigned long)guest_proc);
+    }
+    return (ABORTPROC)entry;
+}
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     WINE_TRACE("Loading host-side gdi32 wrapper.\n");
+
+    abort_proc_wrapper_count = 16;
+    if (!callback_alloc_table(&abort_proc_wrappers, abort_proc_wrapper_count, sizeof(struct callback_entry),
+            abort_proc_host_wrapper, 2))
+    {
+        WINE_ERR("Failed to allocate memory for abort proc wrappers.\n");
+        return NULL;
+    }
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;

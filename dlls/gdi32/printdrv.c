@@ -326,8 +326,12 @@ WINGDIAPI INT WINAPI SetAbortProc(HDC hdc, ABORTPROC abrtprc)
 void qemu_SetAbortProc(struct qemu_syscall *call)
 {
     struct qemu_SetAbortProc *c = (struct qemu_SetAbortProc *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = SetAbortProc(QEMU_G2H(c->hdc), QEMU_G2H(c->abrtprc));
+    ABORTPROC host;
+
+    WINE_TRACE("\n");
+    host = abort_proc_guest_to_host(c->abrtprc);
+
+    c->super.iret = SetAbortProc(QEMU_G2H(c->hdc), host);
 }
 
 #endif

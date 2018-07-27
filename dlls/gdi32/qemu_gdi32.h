@@ -248,6 +248,7 @@ enum gdi32_calls
     CALL_GETWINDOWORGEX,
     CALL_GETWINMETAFILEBITS,
     CALL_GETWORLDTRANSFORM,
+    CALL_INIT_DLL,
     CALL_INTERSECTCLIPRECT,
     CALL_INVERTRGN,
     CALL_LINEDDA,
@@ -742,6 +743,8 @@ void qemu_UpdateColors(struct qemu_syscall *call);
 void qemu_UpdateICMRegKeyA(struct qemu_syscall *call);
 void qemu_UpdateICMRegKeyW(struct qemu_syscall *call);
 void qemu_WidenPath(struct qemu_syscall *call);
+
+ABORTPROC abort_proc_guest_to_host(uint64_t guest_proc);
 
 #endif
 
