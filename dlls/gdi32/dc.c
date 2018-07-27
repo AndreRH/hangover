@@ -231,7 +231,7 @@ WINGDIAPI HDC WINAPI CreateICW(LPCWSTR driver, LPCWSTR device, LPCWSTR output, c
 void qemu_CreateICW(struct qemu_syscall *call)
 {
     struct qemu_CreateICW *c = (struct qemu_CreateICW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)CreateICW(QEMU_G2H(c->driver), QEMU_G2H(c->device), QEMU_G2H(c->output), QEMU_G2H(c->initData));
 }
 
