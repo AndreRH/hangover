@@ -1130,7 +1130,7 @@ void qemu_IDirectInput8AImpl_GetDeviceStatus(struct qemu_syscall *call)
     struct qemu_IDirectInput8AImpl_GetDeviceStatus *c = (struct qemu_IDirectInput8AImpl_GetDeviceStatus *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     c->super.iret = IDirectInput8_GetDeviceStatus(dinput->host_8a, QEMU_G2H(c->rguid));
 }
@@ -1167,7 +1167,7 @@ void qemu_IDirectInput8WImpl_GetDeviceStatus(struct qemu_syscall *call)
     struct qemu_IDirectInput8WImpl_GetDeviceStatus *c = (struct qemu_IDirectInput8WImpl_GetDeviceStatus *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
     c->super.iret = IDirectInput8_GetDeviceStatus(dinput->host_8w, QEMU_G2H(c->rguid));
 }
