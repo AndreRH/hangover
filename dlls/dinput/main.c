@@ -132,6 +132,22 @@ static HRESULT WINAPI IDirectInputWImpl_EnumDevices(IDirectInput7W *iface, DWORD
     return call.super.iret;
 }
 
+static HRESULT WINAPI IDirectInput8AImpl_EnumDevices(IDirectInput8A *iface, DWORD dwDevType,
+        LPDIENUMDEVICESCALLBACKA lpCallback, LPVOID pvRef, DWORD dwFlags)
+{
+    struct qemu_dinput *dinput = impl_from_IDirectInput8A(iface);
+
+    return IDirectInputAImpl_EnumDevices(&dinput->IDirectInput7A_iface, dwDevType, lpCallback, pvRef, dwFlags);
+}
+
+static HRESULT WINAPI IDirectInput8WImpl_EnumDevices(IDirectInput8W *iface, DWORD dwDevType,
+        LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef, DWORD dwFlags)
+{
+    struct qemu_dinput *dinput = impl_from_IDirectInput8W(iface);
+
+    return IDirectInputWImpl_EnumDevices(&dinput->IDirectInput7W_iface, dwDevType, lpCallback, pvRef, dwFlags);
+}
+
 #else
 
 struct EnumDevices_host_ctx
@@ -1080,94 +1096,6 @@ void qemu_IDirectInput8WImpl_AddRef(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
 
     c->super.iret = IDirectInput8_AddRef(dinput->host_8w);
-}
-
-#endif
-
-struct qemu_IDirectInput8AImpl_EnumDevices
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t dwDevType;
-    uint64_t lpCallback;
-    uint64_t pvRef;
-    uint64_t dwFlags;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI IDirectInput8AImpl_EnumDevices(IDirectInput8A *iface, DWORD dwDevType,
-        LPDIENUMDEVICESCALLBACKA lpCallback, LPVOID pvRef, DWORD dwFlags)
-{
-    struct qemu_IDirectInput8AImpl_EnumDevices call;
-    struct qemu_dinput *dinput = impl_from_IDirectInput8A(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUT8AIMPL_ENUMDEVICES);
-    call.iface = (ULONG_PTR)dinput;
-    call.dwDevType = dwDevType;
-    call.lpCallback = (ULONG_PTR)lpCallback;
-    call.pvRef = (ULONG_PTR)pvRef;
-    call.dwFlags = dwFlags;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_IDirectInput8AImpl_EnumDevices(struct qemu_syscall *call)
-{
-    struct qemu_IDirectInput8AImpl_EnumDevices *c = (struct qemu_IDirectInput8AImpl_EnumDevices *)call;
-    struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-
-    WINE_FIXME("Unverified!\n");
-
-    c->super.iret = IDirectInput8_EnumDevices(dinput->host_8a, c->dwDevType, QEMU_G2H(c->lpCallback), QEMU_G2H(c->pvRef), c->dwFlags);
-}
-
-#endif
-
-struct qemu_IDirectInput8WImpl_EnumDevices
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t dwDevType;
-    uint64_t lpCallback;
-    uint64_t pvRef;
-    uint64_t dwFlags;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI IDirectInput8WImpl_EnumDevices(IDirectInput8W *iface, DWORD dwDevType,
-        LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef, DWORD dwFlags)
-{
-    struct qemu_IDirectInput8WImpl_EnumDevices call;
-    struct qemu_dinput *dinput = impl_from_IDirectInput8W(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUT8WIMPL_ENUMDEVICES);
-    call.iface = (ULONG_PTR)dinput;
-    call.dwDevType = dwDevType;
-    call.lpCallback = (ULONG_PTR)lpCallback;
-    call.pvRef = (ULONG_PTR)pvRef;
-    call.dwFlags = dwFlags;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_IDirectInput8WImpl_EnumDevices(struct qemu_syscall *call)
-{
-    struct qemu_IDirectInput8WImpl_EnumDevices *c = (struct qemu_IDirectInput8WImpl_EnumDevices *)call;
-    struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-
-    WINE_FIXME("Unverified!\n");
-
-    c->super.iret = IDirectInput8_EnumDevices(dinput->host_8w, c->dwDevType, QEMU_G2H(c->lpCallback), QEMU_G2H(c->pvRef), c->dwFlags);
 }
 
 #endif
@@ -2865,7 +2793,6 @@ static const syscall_handler dll_functions[] =
     qemu_IDirectInput8AImpl_AddRef,
     qemu_IDirectInput8AImpl_ConfigureDevices,
     qemu_IDirectInputImpl_CreateDevice,
-    qemu_IDirectInput8AImpl_EnumDevices,
     qemu_IDirectInput8AImpl_EnumDevicesBySemantics,
     qemu_IDirectInput8AImpl_FindDevice,
     qemu_IDirectInput8AImpl_GetDeviceStatus,
@@ -2875,7 +2802,6 @@ static const syscall_handler dll_functions[] =
     qemu_IDirectInput8WImpl_AddRef,
     qemu_IDirectInput8WImpl_ConfigureDevices,
     qemu_IDirectInputImpl_CreateDevice,
-    qemu_IDirectInput8WImpl_EnumDevices,
     qemu_IDirectInput8WImpl_EnumDevicesBySemantics,
     qemu_IDirectInput8WImpl_FindDevice,
     qemu_IDirectInput8WImpl_GetDeviceStatus,
