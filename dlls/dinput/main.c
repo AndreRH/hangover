@@ -27,6 +27,9 @@
 #include <dinput.h>
 #include "dinputd.h"
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_dinput.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_dinput.h"
@@ -1023,7 +1026,8 @@ struct qemu_IDirectInput8AImpl_CreateDevice
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInput8AImpl_CreateDevice(IDirectInput8A *iface, REFGUID rguid, LPDIRECTINPUTDEVICE8A* pdev, LPUNKNOWN punk)
+static HRESULT WINAPI IDirectInput8AImpl_CreateDevice(IDirectInput8A *iface, REFGUID rguid,
+        IDirectInputDevice8A **pdev, IUnknown *punk)
 {
     struct qemu_IDirectInput8AImpl_CreateDevice call;
     struct qemu_dinput *dinput = impl_from_IDirectInput8A(iface);
@@ -1064,7 +1068,8 @@ struct qemu_IDirectInput8WImpl_CreateDevice
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInput8WImpl_CreateDevice(IDirectInput8W *iface, REFGUID rguid, LPDIRECTINPUTDEVICE8W* pdev, LPUNKNOWN punk)
+static HRESULT WINAPI IDirectInput8WImpl_CreateDevice(IDirectInput8W *iface, REFGUID rguid,
+        IDirectInputDevice8W **pdev, IUnknown *punk)
 {
     struct qemu_IDirectInput8WImpl_CreateDevice call;
     struct qemu_dinput *dinput = impl_from_IDirectInput8W(iface);
@@ -1106,7 +1111,8 @@ struct qemu_IDirectInput8AImpl_EnumDevices
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInput8AImpl_EnumDevices(IDirectInput8A *iface, DWORD dwDevType, LPDIENUMDEVICESCALLBACKA lpCallback, LPVOID pvRef, DWORD dwFlags)
+static HRESULT WINAPI IDirectInput8AImpl_EnumDevices(IDirectInput8A *iface, DWORD dwDevType,
+        LPDIENUMDEVICESCALLBACKA lpCallback, LPVOID pvRef, DWORD dwFlags)
 {
     struct qemu_IDirectInput8AImpl_EnumDevices call;
     struct qemu_dinput *dinput = impl_from_IDirectInput8A(iface);
@@ -1149,7 +1155,8 @@ struct qemu_IDirectInput8WImpl_EnumDevices
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInput8WImpl_EnumDevices(IDirectInput8W *iface, DWORD dwDevType, LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef, DWORD dwFlags)
+static HRESULT WINAPI IDirectInput8WImpl_EnumDevices(IDirectInput8W *iface, DWORD dwDevType,
+        LPDIENUMDEVICESCALLBACKW lpCallback, LPVOID pvRef, DWORD dwFlags)
 {
     struct qemu_IDirectInput8WImpl_EnumDevices call;
     struct qemu_dinput *dinput = impl_from_IDirectInput8W(iface);
@@ -1364,7 +1371,8 @@ void qemu_IDirectInput8AImpl_Initialize(struct qemu_syscall *call)
     struct qemu_IDirectInput8AImpl_Initialize *c = (struct qemu_IDirectInput8AImpl_Initialize *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
 
-    WINE_FIXME("Unverified!\n");
+    /* hinst needs to be non-NULL, but is not otherwise used by Wine. */
+    WINE_TRACE("\n");
 
     c->super.iret = IDirectInput8_Initialize(dinput->host_8a, QEMU_G2H(c->hinst), c->version);
 }
@@ -1403,7 +1411,8 @@ void qemu_IDirectInput8WImpl_Initialize(struct qemu_syscall *call)
     struct qemu_IDirectInput8WImpl_Initialize *c = (struct qemu_IDirectInput8WImpl_Initialize *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
 
-    WINE_FIXME("Unverified!\n");
+    /* hinst needs to be non-NULL, but is not otherwise used by Wine. */
+    WINE_TRACE("\n");
 
     c->super.iret = IDirectInput8_Initialize(dinput->host_8w, QEMU_G2H(c->hinst), c->version);
 }
@@ -1501,11 +1510,36 @@ struct qemu_IDirectInput8AImpl_EnumDevicesBySemantics
     uint64_t lpCallback;
     uint64_t pvRef;
     uint64_t dwFlags;
+    uint64_t wrapper;
+};
+
+struct qemu_IDirectInput8Impl_EnumDevicesBySemantics_cb
+{
+    uint64_t cb;
+    uint64_t instance;
+    uint64_t dev;
+    uint64_t flags;
+    uint64_t remain;
+    uint64_t ctx;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInput8AImpl_EnumDevicesBySemantics(IDirectInput8A *iface, LPCSTR ptszUserName, LPDIACTIONFORMATA lpdiActionFormat, LPDIENUMDEVICESBYSEMANTICSCBA lpCallback, LPVOID pvRef, DWORD dwFlags)
+static BOOL __fastcall EnumDevicesBySemanticsA_guest_cb(
+        const struct qemu_IDirectInput8Impl_EnumDevicesBySemantics_cb *data)
+{
+    LPDIENUMDEVICESBYSEMANTICSCBA cb = (LPDIENUMDEVICESBYSEMANTICSCBA)(ULONG_PTR)data->cb;
+    struct qemu_dinput_device *device;
+
+    device = (struct qemu_dinput_device *)(ULONG_PTR)data->dev;
+    qemu_dinput_device_guest_init(device);
+
+    return cb((const DIDEVICEINSTANCEA *)(ULONG_PTR)data->instance, &device->IDirectInputDevice8A_iface,
+            data->flags, data->remain, (void *)(ULONG_PTR)data->ctx);
+}
+
+static HRESULT WINAPI IDirectInput8AImpl_EnumDevicesBySemantics(IDirectInput8A *iface, LPCSTR ptszUserName,
+        LPDIACTIONFORMATA lpdiActionFormat, LPDIENUMDEVICESBYSEMANTICSCBA lpCallback, LPVOID pvRef, DWORD dwFlags)
 {
     struct qemu_IDirectInput8AImpl_EnumDevicesBySemantics call;
     struct qemu_dinput *dinput = impl_from_IDirectInput8A(iface);
@@ -1517,6 +1551,7 @@ static HRESULT WINAPI IDirectInput8AImpl_EnumDevicesBySemantics(IDirectInput8A *
     call.lpCallback = (ULONG_PTR)lpCallback;
     call.pvRef = (ULONG_PTR)pvRef;
     call.dwFlags = dwFlags;
+    call.wrapper = (ULONG_PTR)EnumDevicesBySemanticsA_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -1525,14 +1560,69 @@ static HRESULT WINAPI IDirectInput8AImpl_EnumDevicesBySemantics(IDirectInput8A *
 
 #else
 
+struct EnumDevicesBySemantics_cb_data
+{
+    uint64_t guest_func, wrapper, guest_ctx;
+    struct qemu_dinput *dinput;
+};
+
+static BOOL CALLBACK EnumDevicesBySemanticsA_host_cb(const DIDEVICEINSTANCEA *inst, IDirectInputDevice8A *dev,
+        DWORD flags, DWORD remain, void *context)
+{
+    struct EnumDevicesBySemantics_cb_data *data = context;
+    struct qemu_IDirectInput8Impl_EnumDevicesBySemantics_cb call;
+    BOOL ret;
+    struct qemu_dinput_device *device;
+
+    device = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*device));
+    if (!device)
+        WINE_ERR("Out of memory\n");
+    device->parent = data->dinput;
+    device->host_a = dev;
+    IDirectInputDevice8_QueryInterface(dev, &IID_IDirectInputDevice8W, (void **)&device->host_w);
+    IDirectInputDevice8_Release(device->host_w);
+
+    call.cb = data->guest_func;
+    call.instance = QEMU_H2G(inst); /* DIDEVICEINSTANCEA has the same size in 32 and 64 bit. */
+    call.dev = QEMU_H2G(device);
+    call.flags = flags;
+    call.remain = remain;
+    call.ctx = data->guest_ctx;
+
+    WINE_TRACE("Calling guest callback.\n");
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest wrapper returned %x.\n", ret);
+
+    return ret;
+}
+
 void qemu_IDirectInput8AImpl_EnumDevicesBySemantics(struct qemu_syscall *call)
 {
     struct qemu_IDirectInput8AImpl_EnumDevicesBySemantics *c = (struct qemu_IDirectInput8AImpl_EnumDevicesBySemantics *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
+    struct qemu_DIACTIONFORMATA_conv conv;
+    DIACTIONFORMATA *fmt = &conv.format;
+    struct EnumDevicesBySemantics_cb_data data;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 
-    c->super.iret = IDirectInput8_EnumDevicesBySemantics(dinput->host_8a, QEMU_G2H(c->ptszUserName), QEMU_G2H(c->lpdiActionFormat), QEMU_G2H(c->lpCallback), QEMU_G2H(c->pvRef), c->dwFlags);
+#if GUEST_BIT == HOST_BIT
+    fmt = QEMU_G2H(c->lpdiActionFormat);
+#else
+    /* Wine does not care about dwSize. */
+    if (!c->lpdiActionFormat)
+        fmt = NULL;
+    else
+        DIACTIONFORMATA_g2h(&conv, QEMU_G2H(c->lpdiActionFormat));
+#endif
+
+    data.guest_func = c->lpCallback;
+    data.guest_ctx = c->pvRef;
+    data.wrapper = c->wrapper;
+    data.dinput = dinput;
+
+    c->super.iret = IDirectInput8_EnumDevicesBySemantics(dinput->host_8a, QEMU_G2H(c->ptszUserName),
+            fmt, c->lpCallback ? EnumDevicesBySemanticsA_host_cb : NULL, &data, c->dwFlags);
 }
 
 #endif
@@ -1546,11 +1636,27 @@ struct qemu_IDirectInput8WImpl_EnumDevicesBySemantics
     uint64_t lpCallback;
     uint64_t pvRef;
     uint64_t dwFlags;
+    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInput8WImpl_EnumDevicesBySemantics(IDirectInput8W *iface, LPCWSTR ptszUserName, LPDIACTIONFORMATW lpdiActionFormat, LPDIENUMDEVICESBYSEMANTICSCBW lpCallback, LPVOID pvRef, DWORD dwFlags)
+static BOOL __fastcall EnumDevicesBySemanticsW_guest_cb(
+        const struct qemu_IDirectInput8Impl_EnumDevicesBySemantics_cb *data)
+{
+    LPDIENUMDEVICESBYSEMANTICSCBW cb = (LPDIENUMDEVICESBYSEMANTICSCBW)(ULONG_PTR)data->cb;
+    struct qemu_dinput_device *device;
+
+    device = (struct qemu_dinput_device *)(ULONG_PTR)data->dev;
+    qemu_dinput_device_guest_init(device);
+
+    return cb((const DIDEVICEINSTANCEW *)(ULONG_PTR)data->instance, &device->IDirectInputDevice8W_iface,
+            data->flags, data->remain, (void *)(ULONG_PTR)data->ctx);
+}
+
+
+static HRESULT WINAPI IDirectInput8WImpl_EnumDevicesBySemantics(IDirectInput8W *iface, LPCWSTR ptszUserName,
+        LPDIACTIONFORMATW lpdiActionFormat, LPDIENUMDEVICESBYSEMANTICSCBW lpCallback, LPVOID pvRef, DWORD dwFlags)
 {
     struct qemu_IDirectInput8WImpl_EnumDevicesBySemantics call;
     struct qemu_dinput *dinput = impl_from_IDirectInput8W(iface);
@@ -1562,6 +1668,7 @@ static HRESULT WINAPI IDirectInput8WImpl_EnumDevicesBySemantics(IDirectInput8W *
     call.lpCallback = (ULONG_PTR)lpCallback;
     call.pvRef = (ULONG_PTR)pvRef;
     call.dwFlags = dwFlags;
+    call.wrapper = (ULONG_PTR)EnumDevicesBySemanticsW_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -1570,14 +1677,63 @@ static HRESULT WINAPI IDirectInput8WImpl_EnumDevicesBySemantics(IDirectInput8W *
 
 #else
 
+static BOOL CALLBACK EnumDevicesBySemanticsW_host_cb(const DIDEVICEINSTANCEW *inst, IDirectInputDevice8W *dev,
+        DWORD flags, DWORD remain, void *context)
+{
+    struct EnumDevicesBySemantics_cb_data *data = context;
+    struct qemu_IDirectInput8Impl_EnumDevicesBySemantics_cb call;
+    BOOL ret;
+    struct qemu_dinput_device *device;
+
+    device = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*device));
+    if (!device)
+        WINE_ERR("Out of memory\n");
+    device->parent = data->dinput;
+    device->host_w = dev;
+    IDirectInputDevice8_QueryInterface(dev, &IID_IDirectInputDevice8A, (void **)&device->host_a);
+    IDirectInputDevice8_Release(device->host_a);
+
+    call.cb = data->guest_func;
+    call.instance = QEMU_H2G(inst); /* DIDEVICEINSTANCEW has the same size in 32 and 64 bit. */
+    call.dev = QEMU_H2G(device);
+    call.flags = flags;
+    call.remain = remain;
+    call.ctx = data->guest_ctx;
+
+    WINE_TRACE("Calling guest callback.\n");
+    ret = qemu_ops->qemu_execute(QEMU_G2H(data->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest wrapper returned %x.\n", ret);
+
+    return ret;
+}
+
 void qemu_IDirectInput8WImpl_EnumDevicesBySemantics(struct qemu_syscall *call)
 {
     struct qemu_IDirectInput8WImpl_EnumDevicesBySemantics *c = (struct qemu_IDirectInput8WImpl_EnumDevicesBySemantics *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
+    struct qemu_DIACTIONFORMATW_conv conv;
+    DIACTIONFORMATW *fmt = &conv.format;
+    struct EnumDevicesBySemantics_cb_data data;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_FIXME("Untested\n"); /* Just copypasted from A, but not tested by tests. */
 
-    c->super.iret = IDirectInput8_EnumDevicesBySemantics(dinput->host_8w, QEMU_G2H(c->ptszUserName), QEMU_G2H(c->lpdiActionFormat), QEMU_G2H(c->lpCallback), QEMU_G2H(c->pvRef), c->dwFlags);
+#if GUEST_BIT == HOST_BIT
+    fmt = QEMU_G2H(c->lpdiActionFormat);
+#else
+    /* Wine does not care about dwSize. */
+    if (!c->lpdiActionFormat)
+        fmt = NULL;
+    else
+        DIACTIONFORMATW_g2h(&conv, QEMU_G2H(c->lpdiActionFormat));
+#endif
+
+    data.guest_func = c->lpCallback;
+    data.guest_ctx = c->pvRef;
+    data.wrapper = c->wrapper;
+    data.dinput = dinput;
+
+    c->super.iret = IDirectInput8_EnumDevicesBySemantics(dinput->host_8w, QEMU_G2H(c->ptszUserName),
+            fmt, c->lpCallback ? EnumDevicesBySemanticsW_host_cb : NULL, &data, c->dwFlags);
 }
 
 #endif
