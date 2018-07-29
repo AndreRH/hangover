@@ -110,6 +110,17 @@ static inline void DIACTION_g2h(DIACTIONW *host, const struct qemu_DIACTION *gue
     host->dwHow = guest->dwHow;
 }
 
+static inline void DIACTION_h2g(struct qemu_DIACTION *guest, const DIACTIONW *host)
+{
+    guest->uAppData = host->uAppData;
+    guest->dwSemantic = host->dwSemantic;
+    guest->dwFlags = host->dwFlags;
+    guest->u1.lptszActionName = (ULONG_PTR)host->lptszActionName;
+    guest->guidInstance = host->guidInstance;
+    guest->dwObjID = host->dwObjID;
+    guest->dwHow = host->dwHow;
+}
+
 struct qemu_DIACTIONFORMATA
 {
     DWORD               dwSize;
@@ -128,30 +139,48 @@ struct qemu_DIACTIONFORMATA
     CHAR                tszActionMap[MAX_PATH];
 };
 
-struct qemu_DIACTIONFORMATA_conv
+static inline void DIACTIONFORMATA_g2h(DIACTIONFORMATA *host, const struct qemu_DIACTIONFORMATA *guest,
+        DIACTIONA *actions)
 {
-    DIACTIONFORMATA format;
-    DIACTIONA action;
-};
-
-static inline void DIACTIONFORMATA_g2h(struct qemu_DIACTIONFORMATA_conv *out, const struct qemu_DIACTIONFORMATA *guest)
-{
-    DIACTIONFORMATA *host = &out->format;
-    host->rgoAction = &out->action;
+    unsigned int i;
 
     host->dwSize = sizeof(*host);
     host->dwActionSize = guest->dwActionSize;
     host->dwDataSize = guest->dwDataSize;
     host->dwNumActions = guest->dwNumActions;
-    DIACTION_g2h((DIACTIONW *)host->rgoAction, (struct qemu_DIACTION *)(ULONG_PTR)guest->rgoAction);
+    host->rgoAction = actions;
+    for (i = 0; i < host->dwNumActions; ++i)
+        DIACTION_g2h((DIACTIONW *)&actions[i], &((struct qemu_DIACTION *)(ULONG_PTR)guest->rgoAction)[i]);
     host->guidActionMap = guest->guidActionMap;
     host->dwGenre = guest->dwGenre;
+    host->dwBufferSize = guest->dwBufferSize;
     host->lAxisMin = guest->lAxisMin;
     host->lAxisMax = guest->lAxisMax;
     host->hInstString = (HINSTANCE)(ULONG_PTR)guest->hInstString;
     host->ftTimeStamp = guest->ftTimeStamp;
     host->dwCRC = guest->dwCRC;
     memcpy(host->tszActionMap, guest->tszActionMap, sizeof(host->tszActionMap));
+}
+
+/* This call assumes that the guest already has an appropriately sized action array allocated. */
+static inline void DIACTIONFORMATA_h2g(struct qemu_DIACTIONFORMATA *guest, const DIACTIONFORMATA *host)
+{
+    unsigned int i;
+
+    guest->dwActionSize = host->dwActionSize;
+    guest->dwDataSize = host->dwDataSize;
+    guest->dwNumActions = host->dwNumActions;
+    for (i = 0; i < guest->dwNumActions; ++i)
+        DIACTION_h2g(&((struct qemu_DIACTION *)(ULONG_PTR)guest->rgoAction)[i], (DIACTIONW *)&host->rgoAction[i]);
+    guest->guidActionMap = host->guidActionMap;
+    guest->dwGenre = host->dwGenre;
+    guest->dwBufferSize = host->dwBufferSize;
+    guest->lAxisMin = host->lAxisMin;
+    guest->lAxisMax = host->lAxisMax;
+    guest->hInstString = (ULONG_PTR)host->hInstString;
+    guest->ftTimeStamp = host->ftTimeStamp;
+    guest->dwCRC = host->dwCRC;
+    memcpy(guest->tszActionMap, host->tszActionMap, sizeof(guest->tszActionMap));
 }
 
 struct qemu_DIACTIONFORMATW
@@ -172,30 +201,48 @@ struct qemu_DIACTIONFORMATW
     WCHAR               tszActionMap[MAX_PATH];
 };
 
-struct qemu_DIACTIONFORMATW_conv
+static inline void DIACTIONFORMATW_g2h(DIACTIONFORMATW *host, const struct qemu_DIACTIONFORMATW *guest,
+        DIACTIONW *actions)
 {
-    DIACTIONFORMATW format;
-    DIACTIONW action;
-};
-
-static inline void DIACTIONFORMATW_g2h(struct qemu_DIACTIONFORMATW_conv *out, const struct qemu_DIACTIONFORMATW *guest)
-{
-    DIACTIONFORMATW *host = &out->format;
-    host->rgoAction = &out->action;
+    unsigned int i;
 
     host->dwSize = sizeof(*host);
     host->dwActionSize = guest->dwActionSize;
     host->dwDataSize = guest->dwDataSize;
     host->dwNumActions = guest->dwNumActions;
-    DIACTION_g2h(host->rgoAction, (struct qemu_DIACTION *)(ULONG_PTR)guest->rgoAction);
+    host->rgoAction = actions;
+    for (i = 0; i < host->dwNumActions; ++i)
+        DIACTION_g2h(&actions[i], &((struct qemu_DIACTION *)(ULONG_PTR)guest->rgoAction)[i]);
     host->guidActionMap = guest->guidActionMap;
     host->dwGenre = guest->dwGenre;
+    host->dwBufferSize = guest->dwBufferSize;
     host->lAxisMin = guest->lAxisMin;
     host->lAxisMax = guest->lAxisMax;
     host->hInstString = (HINSTANCE)(ULONG_PTR)guest->hInstString;
     host->ftTimeStamp = guest->ftTimeStamp;
     host->dwCRC = guest->dwCRC;
     memcpy(host->tszActionMap, guest->tszActionMap, sizeof(host->tszActionMap));
+}
+
+/* This call assumes that the guest already has an appropriately sized action array allocated. */
+static inline void DIACTIONFORMATW_h2g(struct qemu_DIACTIONFORMATW *guest, const DIACTIONFORMATW *host)
+{
+    unsigned int i;
+
+    guest->dwActionSize = host->dwActionSize;
+    guest->dwDataSize = host->dwDataSize;
+    guest->dwNumActions = host->dwNumActions;
+    for (i = 0; i < guest->dwNumActions; ++i)
+        DIACTION_h2g(&((struct qemu_DIACTION *)(ULONG_PTR)guest->rgoAction)[i], &host->rgoAction[i]);
+    guest->guidActionMap = host->guidActionMap;
+    guest->dwGenre = host->dwGenre;
+    guest->dwBufferSize = host->dwBufferSize;
+    guest->lAxisMin = host->lAxisMin;
+    guest->lAxisMax = host->lAxisMax;
+    guest->hInstString = (ULONG_PTR)host->hInstString;
+    guest->ftTimeStamp = host->ftTimeStamp;
+    guest->dwCRC = host->dwCRC;
+    memcpy(guest->tszActionMap, host->tszActionMap, sizeof(guest->tszActionMap));
 }
 
 #endif

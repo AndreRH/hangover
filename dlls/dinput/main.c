@@ -1585,8 +1585,9 @@ void qemu_IDirectInput8AImpl_EnumDevicesBySemantics(struct qemu_syscall *call)
 {
     struct qemu_IDirectInput8AImpl_EnumDevicesBySemantics *c = (struct qemu_IDirectInput8AImpl_EnumDevicesBySemantics *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-    struct qemu_DIACTIONFORMATA_conv conv;
-    DIACTIONFORMATA *fmt = &conv.format;
+    DIACTIONFORMATA stack, *fmt = &stack;
+    struct qemu_DIACTIONFORMATA *fmt32;
+    DIACTIONA *actions = NULL;
     struct EnumDevicesBySemantics_cb_data data;
 
     WINE_TRACE("\n");
@@ -1595,10 +1596,16 @@ void qemu_IDirectInput8AImpl_EnumDevicesBySemantics(struct qemu_syscall *call)
     fmt = QEMU_G2H(c->lpdiActionFormat);
 #else
     /* Wine does not care about dwSize. */
-    if (!c->lpdiActionFormat)
+    fmt32 = QEMU_G2H(c->lpdiActionFormat);
+    if (!fmt32)
         fmt = NULL;
     else
-        DIACTIONFORMATA_g2h(&conv, QEMU_G2H(c->lpdiActionFormat));
+    {
+        actions = HeapAlloc(GetProcessHeap(), 0, sizeof(*actions) * fmt32->dwNumActions);
+        if (!actions)
+            WINE_ERR("Out of memory\n");
+        DIACTIONFORMATA_g2h(fmt, fmt32, actions);
+    }
 #endif
 
     data.guest_func = c->lpCallback;
@@ -1608,6 +1615,10 @@ void qemu_IDirectInput8AImpl_EnumDevicesBySemantics(struct qemu_syscall *call)
 
     c->super.iret = IDirectInput8_EnumDevicesBySemantics(dinput->host_8a, QEMU_G2H(c->ptszUserName),
             fmt, c->lpCallback ? EnumDevicesBySemanticsA_host_cb : NULL, &data, c->dwFlags);
+
+#if GUEST_BIT != HOST_BIT
+    HeapFree(GetProcessHeap(), 0, actions);
+#endif
 }
 
 #endif
@@ -1696,8 +1707,9 @@ void qemu_IDirectInput8WImpl_EnumDevicesBySemantics(struct qemu_syscall *call)
 {
     struct qemu_IDirectInput8WImpl_EnumDevicesBySemantics *c = (struct qemu_IDirectInput8WImpl_EnumDevicesBySemantics *)call;
     struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-    struct qemu_DIACTIONFORMATW_conv conv;
-    DIACTIONFORMATW *fmt = &conv.format;
+    struct qemu_DIACTIONFORMATW *fmt32;
+    DIACTIONW *actions = NULL;
+    DIACTIONFORMATW stack, *fmt = &stack;
     struct EnumDevicesBySemantics_cb_data data;
 
     WINE_FIXME("Untested\n"); /* Just copypasted from A, but not tested by tests. */
@@ -1706,10 +1718,16 @@ void qemu_IDirectInput8WImpl_EnumDevicesBySemantics(struct qemu_syscall *call)
     fmt = QEMU_G2H(c->lpdiActionFormat);
 #else
     /* Wine does not care about dwSize. */
-    if (!c->lpdiActionFormat)
+    fmt32 = QEMU_G2H(c->lpdiActionFormat);
+    if (!fmt32)
         fmt = NULL;
     else
-        DIACTIONFORMATW_g2h(&conv, QEMU_G2H(c->lpdiActionFormat));
+    {
+        actions = HeapAlloc(GetProcessHeap(), 0, sizeof(*actions) * fmt32->dwNumActions);
+        if (!actions)
+            WINE_ERR("Out of memory\n");
+        DIACTIONFORMATW_g2h(fmt, fmt32, actions);
+    }
 #endif
 
     data.guest_func = c->lpCallback;
@@ -1719,6 +1737,10 @@ void qemu_IDirectInput8WImpl_EnumDevicesBySemantics(struct qemu_syscall *call)
 
     c->super.iret = IDirectInput8_EnumDevicesBySemantics(dinput->host_8w, QEMU_G2H(c->ptszUserName),
             fmt, c->lpCallback ? EnumDevicesBySemanticsW_host_cb : NULL, &data, c->dwFlags);
+
+#if GUEST_BIT != HOST_BIT
+    HeapFree(GetProcessHeap(), 0, actions);
+#endif
 }
 
 #endif
