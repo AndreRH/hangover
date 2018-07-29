@@ -703,9 +703,23 @@ struct qemu_DrawStateW
     uint64_t flags;
 };
 
+struct qemu_DrawStateW_cb
+{
+    uint64_t func;
+    uint64_t hdc, lp, wp, cx, cy;
+};
+
 #ifdef QEMU_DLL_GUEST
 
-WINUSERAPI BOOL WINAPI DrawStateW(HDC hdc, HBRUSH hbr, DRAWSTATEPROC func, LPARAM ldata, WPARAM wdata, INT x, INT y, INT cx, INT cy, UINT flags)
+BOOL __fastcall DrawStateW_guest_cb(void *data)
+{
+    struct qemu_DrawStateW_cb *d = data;
+    DRAWSTATEPROC func = (DRAWSTATEPROC)(ULONG_PTR)d->func;
+    return func((HDC)(ULONG_PTR)d->hdc, d->lp, d->wp, d->cx, d->cy);
+}
+
+WINUSERAPI BOOL WINAPI DrawStateW(HDC hdc, HBRUSH hbr, DRAWSTATEPROC func, LPARAM ldata, WPARAM wdata,
+        INT x, INT y, INT cx, INT cy, UINT flags)
 {
     struct qemu_DrawStateW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DRAWSTATEW);
@@ -727,11 +741,37 @@ WINUSERAPI BOOL WINAPI DrawStateW(HDC hdc, HBRUSH hbr, DRAWSTATEPROC func, LPARA
 
 #else
 
+uint64_t DrawStateW_guest_cb;
+
+static BOOL CALLBACK qemu_DrawStateW_host_cb(HDC hdc, LPARAM lp, WPARAM wp, int cx, int cy)
+{
+    struct qemu_DrawStateW_cb call;
+    BOOL ret;
+
+    call.func = user32_tls;
+    call.hdc = QEMU_H2G(hdc);
+    call.lp = lp;
+    call.wp = wp;
+    call.cx = cx;
+    call.cy = cy;
+
+    WINE_TRACE("Calling guest callback.\n");
+    ret = qemu_ops->qemu_execute(QEMU_G2H(DrawStateW_guest_cb), QEMU_H2G(&call));
+    WINE_TRACE("Guest callback returned %x.\n", ret);
+
+    return ret;
+}
+
 void qemu_DrawStateW(struct qemu_syscall *call)
 {
     struct qemu_DrawStateW *c = (struct qemu_DrawStateW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DrawStateW(QEMU_G2H(c->hdc), QEMU_G2H(c->hbr), QEMU_G2H(c->func), c->ldata, c->wdata, c->x, c->y, c->cx, c->cy, c->flags);
+    uint64_t old_tls = user32_tls;
+
+    WINE_TRACE("\n");
+    user32_tls = c->func;
+    c->super.iret = DrawStateW(QEMU_G2H(c->hdc), QEMU_G2H(c->hbr), c->func ? qemu_DrawStateW_host_cb : NULL,
+            c->ldata, c->wdata, c->x, c->y, c->cx, c->cy, c->flags);
+    user32_tls = old_tls;
 }
 
 #endif

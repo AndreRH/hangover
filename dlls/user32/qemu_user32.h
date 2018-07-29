@@ -750,6 +750,7 @@ static inline BOOL wndproc_is_handle(ULONG_PTR proc)
 LRESULT CALLBACK reverse_wndproc_func(HWND win, UINT msg, WPARAM wp, LPARAM lp, void *data);
 void __fastcall guest_win_event_wrapper(struct qemu_SetWinEventHook_cb *data);
 extern INT __fastcall LVM_SORTITEMS_guest_cb(void *data);
+BOOL __fastcall DrawStateW_guest_cb(void *data);
 
 DECLARE_HANDLE(DPI_AWARENESS_CONTEXT);
 
@@ -1481,6 +1482,7 @@ void qemu_RegisterPointerDeviceNotifications(struct qemu_syscall *call);
 
 extern uint64_t reverse_wndproc_func;
 extern uint64_t LVM_SORTITEMS_guest_cb;
+extern uint64_t DrawStateW_guest_cb;
 
 extern unsigned int wndproc_wrapper_count;
 
@@ -1500,8 +1502,7 @@ struct reverse_wndproc_wrapper
 
 WNDPROC wndproc_guest_to_host(uint64_t guest_func);
 uint64_t wndproc_host_to_guest(WNDPROC host_func);
-
-DWORD user32_tls;
+extern __thread uint64_t user32_tls;
 
 HMODULE wrapper_mod, host_mod, guest_mod;
 

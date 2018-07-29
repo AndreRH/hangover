@@ -38,6 +38,7 @@ struct qemu_set_callbacks
     uint64_t guest_mod;
     uint64_t guest_win_event_wrapper;
     uint64_t LVM_SORTITEMS_guest_cb;
+    uint64_t DrawStateW_guest_cb;
 };
 
 struct wndproc_call
@@ -145,6 +146,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
             call.guest_mod = (ULONG_PTR)mod;
             call.guest_win_event_wrapper = (ULONG_PTR)guest_win_event_wrapper;
             call.LVM_SORTITEMS_guest_cb = (ULONG_PTR)LVM_SORTITEMS_guest_cb;
+            call.DrawStateW_guest_cb = (ULONG_PTR)DrawStateW_guest_cb;
             qemu_syscall(&call.super);
             break;
     }
@@ -162,6 +164,8 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 
 uint64_t reverse_wndproc_func;
+
+__thread uint64_t user32_tls;
 
 #define REVERSE_WNDPROC_WRAPPER_COUNT 1024
 static struct reverse_wndproc_wrapper *reverse_wndproc_wrappers;
@@ -240,6 +244,7 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
     guest_mod = (HMODULE)c->guest_mod;
     guest_win_event_wrapper = c->guest_win_event_wrapper;
     LVM_SORTITEMS_guest_cb = c->LVM_SORTITEMS_guest_cb;
+    DrawStateW_guest_cb = c->DrawStateW_guest_cb;
 
     /* This needs to be guest accessible, so delay allocation until the address space
      * is set up. */
@@ -1051,10 +1056,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         return NULL;
     }
 
-    user32_tls = TlsAlloc();
-    if (user32_tls == TLS_OUT_OF_INDEXES)
-        WINE_ERR("Out of TLS indices\n");
-
     return dll_functions;
 }
 
@@ -1131,10 +1132,10 @@ uint64_t LVM_SORTITEMS_guest_cb;
 static INT CALLBACK LVM_SORTITEMS_host_cb(LPARAM first, LPARAM second, LPARAM lParam)
 {
     struct LVM_SORTITEMS_cb_data call;
-    uint64_t *guest_func = TlsGetValue(user32_tls);
+    uint64_t guest_func = user32_tls;
     INT ret;
 
-    call.func = *guest_func;
+    call.func = guest_func;
     call.p1 = first;
     call.p2 = second;
     call.param = lParam;
@@ -1170,7 +1171,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
         case LVM_SORTITEMSEX:
         {
             WINE_TRACE("Wrapping callback of LVM_SORTITEMS.\n");
-            LVM_SORTITEMS_old_tls = TlsGetValue(user32_tls);
+            LVM_SORTITEMS_old_tls = user32_tls;
 #if HOST_BIT == GUEST_BIT
             if (msg_in->lParam == (uint64_t)LVM_SORTITEMS_host_cb)
 #else
@@ -1179,7 +1180,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             {
                 WINE_ERR("Found my own callback. Subclassing gone bad?\n");
             }
-            TlsSetValue(user32_tls, (uint64_t *)&msg_in->lParam);
+            user32_tls = msg_in->lParam;
             msg_out->lParam = (LPARAM)LVM_SORTITEMS_host_cb;
             break;
         }
@@ -1585,7 +1586,7 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
 #if 0
         case LVM_SORTITEMS:
         case LVM_SORTITEMSEX:
-            TlsSetValue(user32_tls, LVM_SORTITEMS_old_tls);
+            user32_tls = LVM_SORTITEMS_old_tls;
             break;
 #endif
 
@@ -1853,10 +1854,10 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             }
             else
             {
-                uint64_t *guest_cb = TlsGetValue(user32_tls);
+                uint64_t guest_cb = user32_tls;
                 if (!guest_cb)
                     WINE_ERR("Converting a LVM_SORTITEMS back, but user32_tls is NULL?\n");
-                msg_out->lParam = *guest_cb;
+                msg_out->lParam = guest_cb;
             }
             break;
 #endif
