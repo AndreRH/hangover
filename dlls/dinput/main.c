@@ -843,7 +843,8 @@ struct qemu_IDirectInputImpl_CreateDevice
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInputAImpl_CreateDevice(IDirectInput7A *iface, const GUID *rguid, IDirectInputDeviceA **pdev, LPUNKNOWN punk)
+static HRESULT WINAPI IDirectInputAImpl_CreateDevice(IDirectInput7A *iface, const GUID *rguid,
+        IDirectInputDeviceA **pdev, IUnknown *punk)
 {
     struct qemu_IDirectInputImpl_CreateDevice call;
     struct qemu_dinput *dinput = impl_from_IDirectInput7A(iface);
@@ -870,7 +871,8 @@ static HRESULT WINAPI IDirectInputAImpl_CreateDevice(IDirectInput7A *iface, cons
     return call.super.iret;
 }
 
-static HRESULT WINAPI IDirectInputWImpl_CreateDevice(IDirectInput7W *iface, const GUID *rguid, IDirectInputDeviceW **pdev, LPUNKNOWN punk)
+static HRESULT WINAPI IDirectInputWImpl_CreateDevice(IDirectInput7W *iface, const GUID *rguid,
+        IDirectInputDeviceW **pdev, IUnknown *punk)
 {
     struct qemu_IDirectInputImpl_CreateDevice call;
     struct qemu_dinput *dinput = impl_from_IDirectInput7W(iface);
@@ -897,6 +899,62 @@ static HRESULT WINAPI IDirectInputWImpl_CreateDevice(IDirectInput7W *iface, cons
     return call.super.iret;
 }
 
+static HRESULT WINAPI IDirectInput8AImpl_CreateDevice(IDirectInput8A *iface, REFGUID rguid,
+        IDirectInputDevice8A **pdev, IUnknown *punk)
+{
+    struct qemu_IDirectInputImpl_CreateDevice call;
+    struct qemu_dinput *dinput = impl_from_IDirectInput8A(iface);
+    struct qemu_dinput_device *device;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUT8AIMPL_CREATEDEVICE);
+    call.iface = (ULONG_PTR)dinput;
+    call.rguid = (ULONG_PTR)rguid;
+    call.punk = (ULONG_PTR)punk;
+    call.pdev = (ULONG_PTR)pdev;
+
+    if (pdev)
+        *pdev = NULL;
+
+    qemu_syscall(&call.super);
+    device = (struct qemu_dinput_device *)(ULONG_PTR)call.pdev;
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        qemu_dinput_device_guest_init(device);
+        *pdev = &device->IDirectInputDevice8A_iface;
+    }
+
+    return call.super.iret;
+}
+
+static HRESULT WINAPI IDirectInput8WImpl_CreateDevice(IDirectInput8W *iface, REFGUID rguid,
+        IDirectInputDevice8W **pdev, IUnknown *punk)
+{
+    struct qemu_IDirectInputImpl_CreateDevice call;
+    struct qemu_dinput *dinput = impl_from_IDirectInput8W(iface);
+    struct qemu_dinput_device *device;
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUT8WIMPL_CREATEDEVICE);
+    call.iface = (ULONG_PTR)dinput;
+    call.rguid = (ULONG_PTR)rguid;
+    call.punk = (ULONG_PTR)punk;
+    call.pdev = (ULONG_PTR)pdev;
+
+    if (pdev)
+        *pdev = NULL;
+
+    qemu_syscall(&call.super);
+    device = (struct qemu_dinput_device *)(ULONG_PTR)call.pdev;
+
+    if (SUCCEEDED(call.super.iret))
+    {
+        qemu_dinput_device_guest_init(device);
+        *pdev = &device->IDirectInputDevice8W_iface;
+    }
+
+    return call.super.iret;
+}
+
 #else
 
 void qemu_IDirectInputImpl_CreateDevice(struct qemu_syscall *call)
@@ -915,7 +973,17 @@ void qemu_IDirectInputImpl_CreateDevice(struct qemu_syscall *call)
     }
     device->parent = dinput;
 
-    if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUTWIMPL_CREATEDEVICE))
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUT8WIMPL_CREATEDEVICE))
+    {
+        c->super.iret = IDirectInput8_CreateDevice(dinput->host_8w, QEMU_G2H(c->rguid),
+                c->pdev ? &device->host_w : NULL, QEMU_G2H(c->punk));
+    }
+    else if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUT8AIMPL_CREATEDEVICE))
+    {
+        c->super.iret = IDirectInput8_CreateDevice(dinput->host_8a, QEMU_G2H(c->rguid),
+                c->pdev ? &device->host_a : NULL, QEMU_G2H(c->punk));
+    }
+    else if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUTWIMPL_CREATEDEVICE))
     {
         c->super.iret = IDirectInput_CreateDevice(dinput->host_7w, QEMU_G2H(c->rguid),
                 c->pdev ? (IDirectInputDeviceW **)&device->host_w : NULL, QEMU_G2H(c->punk));
@@ -932,7 +1000,8 @@ void qemu_IDirectInputImpl_CreateDevice(struct qemu_syscall *call)
         return;
     }
 
-    if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUTWIMPL_CREATEDEVICE))
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUTWIMPL_CREATEDEVICE)
+            || c->super.id == QEMU_SYSCALL_ID(CALL_IDIRECTINPUT8WIMPL_CREATEDEVICE))
         IDirectInputDevice8_QueryInterface(device->host_w, &IID_IDirectInputDevice8A, (void **)&device->host_a);
     else
         IDirectInputDevice8_QueryInterface(device->host_a, &IID_IDirectInputDevice8W, (void **)&device->host_w);
@@ -1011,90 +1080,6 @@ void qemu_IDirectInput8WImpl_AddRef(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
 
     c->super.iret = IDirectInput8_AddRef(dinput->host_8w);
-}
-
-#endif
-
-struct qemu_IDirectInput8AImpl_CreateDevice
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t rguid;
-    uint64_t pdev;
-    uint64_t punk;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI IDirectInput8AImpl_CreateDevice(IDirectInput8A *iface, REFGUID rguid,
-        IDirectInputDevice8A **pdev, IUnknown *punk)
-{
-    struct qemu_IDirectInput8AImpl_CreateDevice call;
-    struct qemu_dinput *dinput = impl_from_IDirectInput8A(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUT8AIMPL_CREATEDEVICE);
-    call.iface = (ULONG_PTR)dinput;
-    call.rguid = (ULONG_PTR)rguid;
-    call.pdev = (ULONG_PTR)pdev;
-    call.punk = (ULONG_PTR)punk;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_IDirectInput8AImpl_CreateDevice(struct qemu_syscall *call)
-{
-    struct qemu_IDirectInput8AImpl_CreateDevice *c = (struct qemu_IDirectInput8AImpl_CreateDevice *)call;
-    struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-
-    WINE_FIXME("Unverified!\n");
-
-    c->super.iret = IDirectInput8_CreateDevice(dinput->host_8a, QEMU_G2H(c->rguid), QEMU_G2H(c->pdev), QEMU_G2H(c->punk));
-}
-
-#endif
-
-struct qemu_IDirectInput8WImpl_CreateDevice
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t rguid;
-    uint64_t pdev;
-    uint64_t punk;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-static HRESULT WINAPI IDirectInput8WImpl_CreateDevice(IDirectInput8W *iface, REFGUID rguid,
-        IDirectInputDevice8W **pdev, IUnknown *punk)
-{
-    struct qemu_IDirectInput8WImpl_CreateDevice call;
-    struct qemu_dinput *dinput = impl_from_IDirectInput8W(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IDIRECTINPUT8WIMPL_CREATEDEVICE);
-    call.iface = (ULONG_PTR)dinput;
-    call.rguid = (ULONG_PTR)rguid;
-    call.pdev = (ULONG_PTR)pdev;
-    call.punk = (ULONG_PTR)punk;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_IDirectInput8WImpl_CreateDevice(struct qemu_syscall *call)
-{
-    struct qemu_IDirectInput8WImpl_CreateDevice *c = (struct qemu_IDirectInput8WImpl_CreateDevice *)call;
-    struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-
-    WINE_FIXME("Unverified!\n");
-
-    c->super.iret = IDirectInput8_CreateDevice(dinput->host_8w, QEMU_G2H(c->rguid), QEMU_G2H(c->pdev), QEMU_G2H(c->punk));
 }
 
 #endif
@@ -2941,7 +2926,7 @@ static const syscall_handler dll_functions[] =
     qemu_IDirectInput7WImpl_CreateDeviceEx,
     qemu_IDirectInput8AImpl_AddRef,
     qemu_IDirectInput8AImpl_ConfigureDevices,
-    qemu_IDirectInput8AImpl_CreateDevice,
+    qemu_IDirectInputImpl_CreateDevice,
     qemu_IDirectInput8AImpl_EnumDevices,
     qemu_IDirectInput8AImpl_EnumDevicesBySemantics,
     qemu_IDirectInput8AImpl_FindDevice,
@@ -2951,7 +2936,7 @@ static const syscall_handler dll_functions[] =
     qemu_IDirectInput8AImpl_RunControlPanel,
     qemu_IDirectInput8WImpl_AddRef,
     qemu_IDirectInput8WImpl_ConfigureDevices,
-    qemu_IDirectInput8WImpl_CreateDevice,
+    qemu_IDirectInputImpl_CreateDevice,
     qemu_IDirectInput8WImpl_EnumDevices,
     qemu_IDirectInput8WImpl_EnumDevicesBySemantics,
     qemu_IDirectInput8WImpl_FindDevice,
