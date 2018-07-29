@@ -1831,111 +1831,27 @@ void qemu_IDirectInput8AImpl_ConfigureDevices(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_JoyConfig8Impl_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t riid;
-    uint64_t ppobj;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static HRESULT WINAPI JoyConfig8Impl_QueryInterface(IDirectInputJoyConfig8 *iface, REFIID riid, void** ppobj)
 {
-    struct qemu_JoyConfig8Impl_QueryInterface call;
     struct qemu_dinput *dinput = impl_from_IDirectInputJoyConfig8(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_JOYCONFIG8IMPL_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)dinput;
-    call.riid = (ULONG_PTR)riid;
-    call.ppobj = (ULONG_PTR)ppobj;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IDirectInputAImpl_QueryInterface(&dinput->IDirectInput7A_iface, riid, ppobj);
 }
-
-#else
-
-void qemu_JoyConfig8Impl_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_JoyConfig8Impl_QueryInterface *c = (struct qemu_JoyConfig8Impl_QueryInterface *)call;
-    struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-
-    WINE_FIXME("Unverified!\n");
-
-    c->super.iret = IDirectInputJoyConfig8_QueryInterface(dinput->host_joy_config, QEMU_G2H(c->riid), QEMU_G2H(c->ppobj));
-}
-
-#endif
-
-struct qemu_JoyConfig8Impl_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI JoyConfig8Impl_AddRef(IDirectInputJoyConfig8 *iface)
 {
-    struct qemu_JoyConfig8Impl_AddRef call;
     struct qemu_dinput *dinput = impl_from_IDirectInputJoyConfig8(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_JOYCONFIG8IMPL_ADDREF);
-    call.iface = (ULONG_PTR)dinput;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IDirectInputAImpl_AddRef( &dinput->IDirectInput7A_iface );
 }
-
-#else
-
-void qemu_JoyConfig8Impl_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_JoyConfig8Impl_AddRef *c = (struct qemu_JoyConfig8Impl_AddRef *)call;
-    struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-
-    WINE_FIXME("Unverified!\n");
-
-    c->super.iret = IDirectInputJoyConfig8_AddRef(dinput->host_joy_config);
-}
-
-#endif
-
-struct qemu_JoyConfig8Impl_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI JoyConfig8Impl_Release(IDirectInputJoyConfig8 *iface)
 {
-    struct qemu_JoyConfig8Impl_Release call;
     struct qemu_dinput *dinput = impl_from_IDirectInputJoyConfig8(iface);
 
-    call.super.id = QEMU_SYSCALL_ID(CALL_JOYCONFIG8IMPL_RELEASE);
-    call.iface = (ULONG_PTR)dinput;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_JoyConfig8Impl_Release(struct qemu_syscall *call)
-{
-    struct qemu_JoyConfig8Impl_Release *c = (struct qemu_JoyConfig8Impl_Release *)call;
-    struct qemu_dinput *dinput = QEMU_G2H(c->iface);
-
-    WINE_TRACE("\n");
-
-    c->super.iret = qemu_IDirectInputImpl_Release_internal(dinput);
+    return IDirectInputAImpl_Release( &dinput->IDirectInput7A_iface );
 }
 
 #endif
@@ -3047,7 +2963,6 @@ static const syscall_handler dll_functions[] =
     qemu_init_dll,
     qemu_JoyConfig8Impl_Acquire,
     qemu_JoyConfig8Impl_AddNewHardware,
-    qemu_JoyConfig8Impl_AddRef,
     qemu_JoyConfig8Impl_DeleteConfig,
     qemu_JoyConfig8Impl_DeleteType,
     qemu_JoyConfig8Impl_EnumTypes,
@@ -3056,8 +2971,6 @@ static const syscall_handler dll_functions[] =
     qemu_JoyConfig8Impl_GetUserValues,
     qemu_JoyConfig8Impl_OpenAppStatusKey,
     qemu_JoyConfig8Impl_OpenTypeKey,
-    qemu_JoyConfig8Impl_QueryInterface,
-    qemu_JoyConfig8Impl_Release,
     qemu_JoyConfig8Impl_SendNotify,
     qemu_JoyConfig8Impl_SetConfig,
     qemu_JoyConfig8Impl_SetCooperativeLevel,
