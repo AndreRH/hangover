@@ -567,7 +567,7 @@ void qemu_IDirectInputDeviceAImpl_AddRef(struct qemu_syscall *call)
     struct qemu_IDirectInputDeviceAImpl_AddRef *c = (struct qemu_IDirectInputDeviceAImpl_AddRef *)call;
     struct qemu_dinput_device *device;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
 
     c->super.iret = IDirectInputDevice8_AddRef(device->host_a);
