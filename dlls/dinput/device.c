@@ -2654,7 +2654,8 @@ struct qemu_IDirectInputDeviceWImpl_SetActionMap
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInputDeviceWImpl_SetActionMap(IDirectInputDevice8W *iface, LPDIACTIONFORMATW lpdiaf, LPCWSTR lpszUserName, DWORD dwFlags)
+static HRESULT WINAPI IDirectInputDeviceWImpl_SetActionMap(IDirectInputDevice8W *iface, LPDIACTIONFORMATW lpdiaf,
+        LPCWSTR lpszUserName, DWORD dwFlags)
 {
     struct qemu_IDirectInputDeviceWImpl_SetActionMap call;
     struct qemu_dinput_device *device = impl_from_IDirectInputDevice8W(iface);
@@ -2696,7 +2697,8 @@ struct qemu_IDirectInputDeviceAImpl_SetActionMap
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI IDirectInputDeviceAImpl_SetActionMap(IDirectInputDevice8A *iface, LPDIACTIONFORMATA lpdiaf, LPCSTR lpszUserName, DWORD dwFlags)
+static HRESULT WINAPI IDirectInputDeviceAImpl_SetActionMap(IDirectInputDevice8A *iface, LPDIACTIONFORMATA lpdiaf,
+        LPCSTR lpszUserName, DWORD dwFlags)
 {
     struct qemu_IDirectInputDeviceAImpl_SetActionMap call;
     struct qemu_dinput_device *device = impl_from_IDirectInputDevice8A(iface);
@@ -2718,11 +2720,33 @@ void qemu_IDirectInputDeviceAImpl_SetActionMap(struct qemu_syscall *call)
 {
     struct qemu_IDirectInputDeviceAImpl_SetActionMap *c = (struct qemu_IDirectInputDeviceAImpl_SetActionMap *)call;
     struct qemu_dinput_device *device;
+    struct qemu_DIACTIONFORMATA *fmt32;
+    DIACTIONA *actions = NULL;
+    DIACTIONFORMATA stack, *fmt = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     device = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    fmt = QEMU_G2H(c->lpdiaf);
+#else
+    /* Wine does not care about dwSize. */
+    fmt32 = QEMU_G2H(c->lpdiaf);
+    if (!fmt32)
+        fmt = NULL;
+    else
+    {
+        actions = HeapAlloc(GetProcessHeap(), 0, sizeof(*actions) * fmt32->dwNumActions);
+        if (!actions)
+            WINE_ERR("Out of memory\n");
+        DIACTIONFORMATA_g2h(fmt, fmt32, actions);
+    }
+#endif
 
-    c->super.iret = IDirectInputDevice8_SetActionMap(device->host_a, QEMU_G2H(c->lpdiaf), QEMU_G2H(c->lpszUserName), c->dwFlags);
+    c->super.iret = IDirectInputDevice8_SetActionMap(device->host_a, fmt, QEMU_G2H(c->lpszUserName), c->dwFlags);
+
+#if GUEST_BIT != HOST_BIT
+    HeapFree(GetProcessHeap(), 0, actions);
+#endif
 }
 
 #endif
