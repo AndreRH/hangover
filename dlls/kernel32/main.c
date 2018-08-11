@@ -38,6 +38,7 @@ struct qemu_set_callbacks
     struct qemu_syscall super;
     uint64_t call_entry;
     uint64_t guest_completion_cb;
+    uint64_t guest_register_class_wrapper;
 };
 
 struct qemu_GetSystemRegistryQuota
@@ -119,6 +120,23 @@ static void __fastcall kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
     kernel32_ExitProcess(kernel32_GetLastError());
 }
 
+static BOOL __fastcall guest_register_class_wrapper(WCHAR *name)
+{
+    static HMODULE comctl32;
+    static BOOL (* WINAPI p_RegisterClassNameW)(const WCHAR *class);
+
+    if (!p_RegisterClassNameW)
+    {
+        comctl32 = kernel32_LoadLibraryA("comctl32.dll");
+        if (!comctl32)
+            return FALSE;
+        p_RegisterClassNameW = kernel32_GetProcAddress(comctl32, "RegisterClassNameW");
+        if (!p_RegisterClassNameW)
+            return FALSE;
+    }
+    return p_RegisterClassNameW(name);
+}
+
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_set_callbacks call;
@@ -131,6 +149,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
             call.super.id = QEMU_SYSCALL_ID(CALL_SET_CALLBACKS);
             call.call_entry = (ULONG_PTR)kernel32_call_process_main;
             call.guest_completion_cb = (ULONG_PTR)guest_completion_cb;
+            call.guest_register_class_wrapper = (ULONG_PTR)guest_register_class_wrapper;
             qemu_syscall(&call.super);
 
             ntdll = kernel32_GetModuleHandleW(ntdllW);
@@ -181,6 +200,7 @@ WINBASEAPI BOOL WINAPI GetSystemRegistryQuota(PDWORD pdwQuotaAllowed, PDWORD pdw
 #else
 
 #include <wine/debug.h>
+#include <wine/unicode.h>
 #include "va_helper_impl.h"
 #include "callback_helper_impl.h"
 
@@ -189,12 +209,14 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 const struct qemu_ops *qemu_ops;
 
 uint64_t guest_completion_cb;
+uint64_t guest_register_class_wrapper;
 
 static void qemu_set_callbacks(struct qemu_syscall *call)
 {
     struct qemu_set_callbacks *c = (struct qemu_set_callbacks *)call;
     qemu_ops->qemu_set_call_entry(c->call_entry);
     guest_completion_cb = c->guest_completion_cb;
+    guest_register_class_wrapper = c->guest_register_class_wrapper;
 }
 
 /* We cannot use the OVERLAPPED structure as a context pointer to add our data because it is passed to
@@ -1333,6 +1355,47 @@ static void hook(void *to_hook, const void *replace)
     VirtualProtect(hooked_function, sizeof(*hooked_function), old_protect, &old_protect);
 }
 
+static BOOL WINAPI hook_RegisterClassNameW(const WCHAR *class)
+{
+    BOOL ret;
+
+    WINE_TRACE("Called for %s %lx\n", wine_dbgstr_w(class), guest_register_class_wrapper);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(guest_register_class_wrapper), QEMU_H2G(class));
+    WINE_TRACE("Guest returned %x.\n", ret);
+
+    return ret;
+}
+
+/* Wine's user32 loads comctl32 if the application attempts to access known comctl32 classes
+ * that aren't registered yet. We want the guest comctl32.dll to register those classes, not
+ * the host. Interecept the load and hook the register callback.
+ *
+ * Note that we can't just load comctl32.dll to access RegisterClassNameW because comctl32's
+ * DllMain registers some classes as well. */
+static HMODULE WINAPI hook_LoadLibraryW(const WCHAR *name)
+{
+    static const WCHAR comctl32W[] = {'c','o','m','c','t','l','3','2','.','d','l','l',0};
+
+    if (!strcmpW(name, comctl32W))
+    {
+        HMODULE kernel32, ret, old_lib = GetModuleHandleW(name);
+
+        /* FIXME: I should probably make sure guest comctl32 is loaded here, and not when
+         * RegisterClassNameW is invoked. */
+
+        WINE_TRACE("Loading host comctl32, previously loaded %s\n", old_lib ? "yes" : "no");
+        ret = LoadLibraryExW(name, 0, 0);
+        if (ret && !old_lib)
+        {
+            hook(GetProcAddress(ret, "RegisterClassNameW"), hook_RegisterClassNameW);
+        }
+        return ret;
+    }
+
+    return LoadLibraryExW(name, 0, 0);
+
+}
+
 struct callback_entry_table *overlapped_wrappers;
 
 static CRITICAL_SECTION ov_cs = {0, -1, 0, 0, 0, 0};
@@ -1571,6 +1634,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     kernel32 = GetModuleHandleA("kernel32");
     hook(GetProcAddress(kernel32, "SetCurrentDirectoryA"), hook_SetCurrentDirectoryA);
     hook(GetProcAddress(kernel32, "SetCurrentDirectoryW"), hook_SetCurrentDirectoryW);
+    hook(GetProcAddress(kernel32, "LoadLibraryW"), hook_LoadLibraryW);
 
     /* We're searching through this array every time there's an IO request. If 32 entries are not enough for
      * an application, then the linear search isn't good enough. Before growing this array find a way to do

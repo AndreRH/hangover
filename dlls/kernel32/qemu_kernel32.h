@@ -985,6 +985,7 @@ void WINAPI kernel32_SetLastError(DWORD error);
 LONG WINAPI kernel32_UnhandledExceptionFilter(PEXCEPTION_POINTERS epointers);
 HMODULE WINAPI kernel32_GetModuleHandleW(const WCHAR *name);
 FARPROC WINAPI kernel32_GetProcAddress(HMODULE module, const char *name);
+HMODULE WINAPI kernel32_LoadLibraryA(const char *name);
 
 void (* WINAPI pRtlRaiseException)(PEXCEPTION_RECORD);
 

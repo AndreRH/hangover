@@ -1041,7 +1041,7 @@
 @ stdcall LeaveCriticalSection(ptr) ntdll.RtlLeaveCriticalSection
 @ stdcall LeaveCriticalSectionWhenCallbackReturns(ptr ptr) ntdll.TpCallbackLeaveCriticalSectionOnCompletion
 # @ stub LoadAppInitDlls
-@ stdcall LoadLibraryA(str)
+@ stdcall LoadLibraryA(str) kernel32_LoadLibraryA
 @ stdcall LoadLibraryExA( str long long)
 @ stdcall LoadLibraryExW(wstr long long)
 @ stdcall LoadLibraryW(wstr)

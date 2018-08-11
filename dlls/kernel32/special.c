@@ -455,7 +455,7 @@ void qemu_GetProcAddress(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HMODULE WINAPI LoadLibraryA(const char *name)
+HMODULE WINAPI kernel32_LoadLibraryA(const char *name)
 {
     struct qemu_ModuleOpA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYA);
