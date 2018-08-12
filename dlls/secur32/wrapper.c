@@ -36,7 +36,7 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_secur32);
 #endif
 
 
-struct qemu_AcquireCredentialsHandleA
+struct qemu_AcquireCredentialsHandle
 {
     struct qemu_syscall super;
     uint64_t pszPrincipal;
@@ -52,9 +52,11 @@ struct qemu_AcquireCredentialsHandleA
 
 #ifdef QEMU_DLL_GUEST
 
-SECURITY_STATUS WINAPI AcquireCredentialsHandleA(SEC_CHAR *pszPrincipal,SEC_CHAR *pszPackage,unsigned __LONG32 fCredentialUse,void *pvLogonId,void *pAuthData,SEC_GET_KEY_FN pGetKeyFn,void *pvGetKeyArgument,PCredHandle phCredential,PTimeStamp ptsExpiry)
+SECURITY_STATUS WINAPI AcquireCredentialsHandleA(SEC_CHAR *pszPrincipal, SEC_CHAR *pszPackage,
+        unsigned __LONG32 fCredentialUse, void *pvLogonId, void *pAuthData, SEC_GET_KEY_FN pGetKeyFn,
+        void *pvGetKeyArgument, PCredHandle phCredential, PTimeStamp ptsExpiry)
 {
-    struct qemu_AcquireCredentialsHandleA call;
+    struct qemu_AcquireCredentialsHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACQUIRECREDENTIALSHANDLEA);
     call.pszPrincipal = (ULONG_PTR)pszPrincipal;
     call.pszPackage = (ULONG_PTR)pszPackage;
@@ -71,36 +73,11 @@ SECURITY_STATUS WINAPI AcquireCredentialsHandleA(SEC_CHAR *pszPrincipal,SEC_CHAR
     return call.super.iret;
 }
 
-#else
-
-void qemu_AcquireCredentialsHandleA(struct qemu_syscall *call)
+KSECDDDECLSPEC SECURITY_STATUS WINAPI AcquireCredentialsHandleW(SEC_WCHAR *pszPrincipal, SEC_WCHAR *pszPackage,
+        unsigned __LONG32 fCredentialUse, void *pvLogonId, void *pAuthData, SEC_GET_KEY_FN pGetKeyFn,
+        void *pvGetKeyArgument, PCredHandle phCredential, PTimeStamp ptsExpiry)
 {
-    struct qemu_AcquireCredentialsHandleA *c = (struct qemu_AcquireCredentialsHandleA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AcquireCredentialsHandleA(QEMU_G2H(c->pszPrincipal), QEMU_G2H(c->pszPackage), c->fCredentialUse, QEMU_G2H(c->pvLogonId), QEMU_G2H(c->pAuthData), QEMU_G2H(c->pGetKeyFn), QEMU_G2H(c->pvGetKeyArgument), QEMU_G2H(c->phCredential), QEMU_G2H(c->ptsExpiry));
-}
-
-#endif
-
-struct qemu_AcquireCredentialsHandleW
-{
-    struct qemu_syscall super;
-    uint64_t pszPrincipal;
-    uint64_t pszPackage;
-    uint64_t fCredentialUse;
-    uint64_t pvLogonId;
-    uint64_t pAuthData;
-    uint64_t pGetKeyFn;
-    uint64_t pvGetKeyArgument;
-    uint64_t phCredential;
-    uint64_t ptsExpiry;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-KSECDDDECLSPEC SECURITY_STATUS WINAPI AcquireCredentialsHandleW(SEC_WCHAR *pszPrincipal,SEC_WCHAR *pszPackage, unsigned __LONG32 fCredentialUse,void *pvLogonId,void *pAuthData,SEC_GET_KEY_FN pGetKeyFn,void *pvGetKeyArgument,PCredHandle phCredential,PTimeStamp ptsExpiry)
-{
-    struct qemu_AcquireCredentialsHandleW call;
+    struct qemu_AcquireCredentialsHandle call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACQUIRECREDENTIALSHANDLEW);
     call.pszPrincipal = (ULONG_PTR)pszPrincipal;
     call.pszPackage = (ULONG_PTR)pszPackage;
@@ -119,11 +96,42 @@ KSECDDDECLSPEC SECURITY_STATUS WINAPI AcquireCredentialsHandleW(SEC_WCHAR *pszPr
 
 #else
 
-void qemu_AcquireCredentialsHandleW(struct qemu_syscall *call)
+void qemu_AcquireCredentialsHandle(struct qemu_syscall *call)
 {
-    struct qemu_AcquireCredentialsHandleW *c = (struct qemu_AcquireCredentialsHandleW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AcquireCredentialsHandleW(QEMU_G2H(c->pszPrincipal), QEMU_G2H(c->pszPackage), c->fCredentialUse, QEMU_G2H(c->pvLogonId), QEMU_G2H(c->pAuthData), QEMU_G2H(c->pGetKeyFn), QEMU_G2H(c->pvGetKeyArgument), QEMU_G2H(c->phCredential), QEMU_G2H(c->ptsExpiry));
+    struct qemu_AcquireCredentialsHandle *c = (struct qemu_AcquireCredentialsHandle *)call;
+    SEC_WINNT_AUTH_IDENTITY_W stack, *auth = &stack;
+    CredHandle handle;
+
+    WINE_TRACE("\n");
+    if (c->pGetKeyFn)
+        WINE_FIXME("pGetKeyFn not handled yet.\n");
+
+#if GUEST_BIT == HOST_BIT
+    auth = QEMU_G2H(c->pAuthData);
+#else
+    if (c->pAuthData)
+        SEC_WINNT_AUTH_IDENTITY_g2h(auth, QEMU_G2H(c->pAuthData));
+    else
+        auth = NULL;
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_ACQUIRECREDENTIALSHANDLEA))
+    {
+        c->super.iret = AcquireCredentialsHandleA(QEMU_G2H(c->pszPrincipal), QEMU_G2H(c->pszPackage),
+                c->fCredentialUse, QEMU_G2H(c->pvLogonId), auth, QEMU_G2H(c->pGetKeyFn),
+                QEMU_G2H(c->pvGetKeyArgument), c->phCredential ? &handle : NULL, QEMU_G2H(c->ptsExpiry));
+    }
+    else
+    {
+        c->super.iret = AcquireCredentialsHandleW(QEMU_G2H(c->pszPrincipal), QEMU_G2H(c->pszPackage),
+                c->fCredentialUse, QEMU_G2H(c->pvLogonId), auth, QEMU_G2H(c->pGetKeyFn),
+                QEMU_G2H(c->pvGetKeyArgument), c->phCredential ? &handle : NULL, QEMU_G2H(c->ptsExpiry));
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret == SEC_E_OK)
+        SecHandle_h2g(QEMU_G2H(c->phCredential), &handle);
+#endif
 }
 
 #endif

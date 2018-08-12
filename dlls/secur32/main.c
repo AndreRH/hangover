@@ -42,8 +42,8 @@ const struct qemu_ops *qemu_ops;
 static const syscall_handler dll_functions[] =
 {
     qemu_AcceptSecurityContext,
-    qemu_AcquireCredentialsHandleA,
-    qemu_AcquireCredentialsHandleW,
+    qemu_AcquireCredentialsHandle,
+    qemu_AcquireCredentialsHandle,
     qemu_AddCredentialsA,
     qemu_AddCredentialsW,
     qemu_AddSecurityPackageA,

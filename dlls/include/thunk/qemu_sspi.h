@@ -21,4 +21,16 @@ static inline void SecPkgInfo_h2g(struct qemu_SecPkgInfo *guest, const SecPkgInf
     guest->Comment = (ULONG_PTR)host->Comment;
 }
 
+struct qemu_SecHandle
+{
+    qemu_ptr dwLower;
+    qemu_ptr dwUpper;
+};
+
+static inline void SecHandle_h2g(struct qemu_SecHandle *guest, const SecHandle *host)
+{
+    guest->dwLower = host->dwLower;
+    guest->dwUpper = host->dwUpper;
+}
+
 #endif

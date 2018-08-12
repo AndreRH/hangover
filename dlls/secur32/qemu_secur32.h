@@ -65,8 +65,7 @@ enum secur32_calls
 extern const struct qemu_ops *qemu_ops;
 
 void qemu_AcceptSecurityContext(struct qemu_syscall *call);
-void qemu_AcquireCredentialsHandleA(struct qemu_syscall *call);
-void qemu_AcquireCredentialsHandleW(struct qemu_syscall *call);
+void qemu_AcquireCredentialsHandle(struct qemu_syscall *call);
 void qemu_AddCredentialsA(struct qemu_syscall *call);
 void qemu_AddCredentialsW(struct qemu_syscall *call);
 void qemu_AddSecurityPackageA(struct qemu_syscall *call);
