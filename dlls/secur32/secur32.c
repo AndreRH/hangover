@@ -459,7 +459,7 @@ WINBASEAPI PSecurityFunctionTableA WINAPI InitSecurityInterfaceA(void)
 void qemu_InitSecurityInterfaceA(struct qemu_syscall *call)
 {
     struct qemu_InitSecurityInterfaceA *c = (struct qemu_InitSecurityInterfaceA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(InitSecurityInterfaceA());
 }
 
