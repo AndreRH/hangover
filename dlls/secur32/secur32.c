@@ -62,7 +62,7 @@ WINBASEAPI SECURITY_STATUS WINAPI FreeContextBuffer(PVOID pv)
 void qemu_FreeContextBuffer(struct qemu_syscall *call)
 {
     struct qemu_FreeContextBuffer *c = (struct qemu_FreeContextBuffer *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FreeContextBuffer(QEMU_G2H(c->pv));
 }
 
