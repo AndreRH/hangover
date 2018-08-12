@@ -24,6 +24,9 @@
 #include <ntsecapi.h>
 #include <secext.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_sspi.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_secur32.h"
@@ -79,9 +82,10 @@ WINBASEAPI SECURITY_STATUS WINAPI EnumerateSecurityPackagesW(PULONG pcPackages, 
     struct qemu_EnumerateSecurityPackagesW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMERATESECURITYPACKAGESW);
     call.pcPackages = (ULONG_PTR)pcPackages;
-    call.ppPackageInfo = (ULONG_PTR)ppPackageInfo;
 
     qemu_syscall(&call.super);
+    /* windows just crashes if pcPackages or ppPackageInfo is NULL, so will I */
+    *ppPackageInfo = (SecPkgInfoW *)(ULONG_PTR)call.ppPackageInfo;
 
     return call.super.iret;
 }
@@ -91,8 +95,19 @@ WINBASEAPI SECURITY_STATUS WINAPI EnumerateSecurityPackagesW(PULONG pcPackages, 
 void qemu_EnumerateSecurityPackagesW(struct qemu_syscall *call)
 {
     struct qemu_EnumerateSecurityPackagesW *c = (struct qemu_EnumerateSecurityPackagesW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumerateSecurityPackagesW(QEMU_G2H(c->pcPackages), QEMU_G2H(c->ppPackageInfo));
+    SecPkgInfoW *info;
+    ULONG i, *count;
+
+    WINE_TRACE("\n");
+    count = QEMU_G2H(c->pcPackages);
+    c->super.iret = EnumerateSecurityPackagesW(count, &info);
+    c->ppPackageInfo = QEMU_H2G(info);
+
+#if GUEST_BIT != HOST_BIT
+    for (i = 0; i < *count; ++i)
+        SecPkgInfo_h2g((void *)info, info);
+#endif
+
 }
 
 #endif
@@ -111,9 +126,10 @@ WINBASEAPI SECURITY_STATUS WINAPI EnumerateSecurityPackagesA(PULONG pcPackages, 
     struct qemu_EnumerateSecurityPackagesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMERATESECURITYPACKAGESA);
     call.pcPackages = (ULONG_PTR)pcPackages;
-    call.ppPackageInfo = (ULONG_PTR)ppPackageInfo;
 
     qemu_syscall(&call.super);
+    /* windows just crashes if pcPackages or ppPackageInfo is NULL, so will I */
+    *ppPackageInfo = (SecPkgInfoA *)(ULONG_PTR)call.ppPackageInfo;
 
     return call.super.iret;
 }
@@ -123,8 +139,18 @@ WINBASEAPI SECURITY_STATUS WINAPI EnumerateSecurityPackagesA(PULONG pcPackages, 
 void qemu_EnumerateSecurityPackagesA(struct qemu_syscall *call)
 {
     struct qemu_EnumerateSecurityPackagesA *c = (struct qemu_EnumerateSecurityPackagesA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumerateSecurityPackagesA(QEMU_G2H(c->pcPackages), QEMU_G2H(c->ppPackageInfo));
+    SecPkgInfoA *info;
+    ULONG i, *count;
+
+    WINE_TRACE("\n");
+    count = QEMU_G2H(c->pcPackages);
+    c->super.iret = EnumerateSecurityPackagesA(count, &info);
+    c->ppPackageInfo = QEMU_H2G(info);
+
+#if GUEST_BIT != HOST_BIT
+    for (i = 0; i < *count; ++i)
+        SecPkgInfo_h2g((void *)info, (SecPkgInfoW *)info);
+#endif
 }
 
 #endif
