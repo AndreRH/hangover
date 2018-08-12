@@ -160,8 +160,18 @@ WINBASEAPI SECURITY_STATUS WINAPI FreeCredentialsHandle(PCredHandle phCredential
 void qemu_FreeCredentialsHandle(struct qemu_syscall *call)
 {
     struct qemu_FreeCredentialsHandle *c = (struct qemu_FreeCredentialsHandle *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = FreeCredentialsHandle(QEMU_G2H(c->phCredential));
+    CredHandle stack, *handle = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    handle = QEMU_G2H(c->phCredential);
+#else
+    if (c->phCredential)
+        SecHandle_g2h(handle, QEMU_G2H(c->phCredential));
+    else
+        handle = NULL;
+#endif
+    c->super.iret = FreeCredentialsHandle(handle);
 }
 
 #endif
