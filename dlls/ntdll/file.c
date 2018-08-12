@@ -206,8 +206,38 @@ WINBASEAPI NTSTATUS WINAPI NtReadFile(HANDLE hFile, HANDLE hEvent, PIO_APC_ROUTI
 void qemu_NtReadFile(struct qemu_syscall *call)
 {
     struct qemu_NtReadFile *c = (struct qemu_NtReadFile *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtReadFile(QEMU_G2H(c->hFile), QEMU_G2H(c->hEvent), QEMU_G2H(c->apc), QEMU_G2H(c->apc_user), QEMU_G2H(c->io_status), QEMU_G2H(c->buffer), c->length, QEMU_G2H(c->offset), QEMU_G2H(c->key));
+    IO_STATUS_BLOCK stack, *iosb = &stack;
+
+    WINE_TRACE("\n");
+    if (c->apc)
+        WINE_FIXME("Handle APC routine.\n");
+
+#if GUEST_BIT == HOST_BIT
+    iosb = QEMU_G2H(c->io_status);
+#else
+    if (c->io_status)
+        IO_STATUS_BLOCK_g2h(iosb, QEMU_G2H(c->io_status));
+    else
+        iosb = NULL;
+#endif
+
+    c->super.iret = NtReadFile(QEMU_G2H(c->hFile), QEMU_G2H(c->hEvent), QEMU_G2H(c->apc),
+            QEMU_G2H(c->apc_user), iosb, QEMU_G2H(c->buffer), c->length,
+            QEMU_G2H(c->offset), QEMU_G2H(c->key));
+
+#if GUEST_BIT != HOST_BIT
+    if (c->io_status)
+    {
+        if (c->super.iret == STATUS_PENDING)
+        {
+            WINE_FIXME("Handle async returns.\n");
+            WaitForSingleObject(QEMU_G2H(c->hFile), INFINITE);
+            c->super.iret = iosb->Status;
+        }
+
+        IO_STATUS_BLOCK_h2g(QEMU_G2H(c->io_status), iosb);
+    }
+#endif
 }
 
 #endif
@@ -274,7 +304,8 @@ struct qemu_NtWriteFile
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtWriteFile(HANDLE hFile, HANDLE hEvent, PIO_APC_ROUTINE apc, void* apc_user, PIO_STATUS_BLOCK io_status, const void* buffer, ULONG length, PLARGE_INTEGER offset, PULONG key)
+WINBASEAPI NTSTATUS WINAPI NtWriteFile(HANDLE hFile, HANDLE hEvent, PIO_APC_ROUTINE apc, void* apc_user,
+        PIO_STATUS_BLOCK io_status, const void* buffer, ULONG length, PLARGE_INTEGER offset, PULONG key)
 {
     struct qemu_NtWriteFile call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTWRITEFILE);
@@ -298,8 +329,38 @@ WINBASEAPI NTSTATUS WINAPI NtWriteFile(HANDLE hFile, HANDLE hEvent, PIO_APC_ROUT
 void qemu_NtWriteFile(struct qemu_syscall *call)
 {
     struct qemu_NtWriteFile *c = (struct qemu_NtWriteFile *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtWriteFile(QEMU_G2H(c->hFile), QEMU_G2H(c->hEvent), QEMU_G2H(c->apc), QEMU_G2H(c->apc_user), QEMU_G2H(c->io_status), QEMU_G2H(c->buffer), c->length, QEMU_G2H(c->offset), QEMU_G2H(c->key));
+    IO_STATUS_BLOCK stack, *iosb = &stack;
+
+    WINE_TRACE("\n");
+    if (c->apc)
+        WINE_FIXME("Handle APC routine.\n");
+
+#if GUEST_BIT == HOST_BIT
+    iosb = QEMU_G2H(c->io_status);
+#else
+    if (c->io_status)
+        IO_STATUS_BLOCK_g2h(iosb, QEMU_G2H(c->io_status));
+    else
+        iosb = NULL;
+#endif
+
+    c->super.iret = NtWriteFile(QEMU_G2H(c->hFile), QEMU_G2H(c->hEvent), QEMU_G2H(c->apc),
+            QEMU_G2H(c->apc_user), iosb, QEMU_G2H(c->buffer), c->length, QEMU_G2H(c->offset),
+            QEMU_G2H(c->key));
+
+#if GUEST_BIT != HOST_BIT
+    if (c->io_status)
+    {
+        if (c->super.iret == STATUS_PENDING)
+        {
+            WINE_FIXME("Handle async returns.\n");
+            WaitForSingleObject(QEMU_G2H(c->hFile), INFINITE);
+            c->super.iret = iosb->Status;
+        }
+
+        IO_STATUS_BLOCK_h2g(QEMU_G2H(c->io_status), iosb);
+    }
+#endif
 }
 
 #endif
