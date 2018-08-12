@@ -513,8 +513,19 @@ WINBASEAPI SECURITY_STATUS WINAPI DeleteSecurityContext(PCtxtHandle phContext)
 void qemu_DeleteSecurityContext(struct qemu_syscall *call)
 {
     struct qemu_DeleteSecurityContext *c = (struct qemu_DeleteSecurityContext *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DeleteSecurityContext(QEMU_G2H(c->phContext));
+    CtxtHandle stack, *ctx = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    ctx = QEMU_G2H(c->phContext);
+#else
+    if (c->phContext)
+        SecHandle_g2h(ctx, QEMU_G2H(c->phContext));
+    else
+        ctx = NULL;
+#endif
+
+    c->super.iret = DeleteSecurityContext(ctx);
 }
 
 #endif
