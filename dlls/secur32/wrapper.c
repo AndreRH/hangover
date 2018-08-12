@@ -23,6 +23,9 @@
 #include <sspi.h>
 #include <ntsecapi.h>
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_sspi.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_secur32.h"
@@ -681,9 +684,10 @@ WINBASEAPI SECURITY_STATUS WINAPI QuerySecurityPackageInfoA(SEC_CHAR *pszPackage
     struct qemu_QuerySecurityPackageInfoA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSECURITYPACKAGEINFOA);
     call.pszPackageName = (ULONG_PTR)pszPackageName;
-    call.ppPackageInfo = (ULONG_PTR)ppPackageInfo;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == SEC_E_OK)
+        *ppPackageInfo = (SecPkgInfoA *)(ULONG_PTR)call.ppPackageInfo;
 
     return call.super.iret;
 }
@@ -693,8 +697,16 @@ WINBASEAPI SECURITY_STATUS WINAPI QuerySecurityPackageInfoA(SEC_CHAR *pszPackage
 void qemu_QuerySecurityPackageInfoA(struct qemu_syscall *call)
 {
     struct qemu_QuerySecurityPackageInfoA *c = (struct qemu_QuerySecurityPackageInfoA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QuerySecurityPackageInfoA(QEMU_G2H(c->pszPackageName), QEMU_G2H(c->ppPackageInfo));
+    SecPkgInfoA *info;
+
+    WINE_TRACE("\n");
+    c->super.iret = QuerySecurityPackageInfoA(QEMU_G2H(c->pszPackageName), &info);
+    c->ppPackageInfo = QEMU_H2G(info);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret == SEC_E_OK)
+        SecPkgInfo_h2g((void *)info, (SecPkgInfoW *)info);
+#endif
 }
 
 #endif
@@ -713,9 +725,10 @@ WINBASEAPI SECURITY_STATUS WINAPI QuerySecurityPackageInfoW(SEC_WCHAR *pszPackag
     struct qemu_QuerySecurityPackageInfoW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSECURITYPACKAGEINFOW);
     call.pszPackageName = (ULONG_PTR)pszPackageName;
-    call.ppPackageInfo = (ULONG_PTR)ppPackageInfo;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == SEC_E_OK)
+        *ppPackageInfo = (SecPkgInfoW *)(ULONG_PTR)call.ppPackageInfo;
 
     return call.super.iret;
 }
@@ -725,8 +738,16 @@ WINBASEAPI SECURITY_STATUS WINAPI QuerySecurityPackageInfoW(SEC_WCHAR *pszPackag
 void qemu_QuerySecurityPackageInfoW(struct qemu_syscall *call)
 {
     struct qemu_QuerySecurityPackageInfoW *c = (struct qemu_QuerySecurityPackageInfoW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QuerySecurityPackageInfoW(QEMU_G2H(c->pszPackageName), QEMU_G2H(c->ppPackageInfo));
+    SecPkgInfoW *info;
+
+    WINE_TRACE("\n");
+    c->super.iret = QuerySecurityPackageInfoW(QEMU_G2H(c->pszPackageName), &info);
+    c->ppPackageInfo = QEMU_H2G(info);
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret == SEC_E_OK)
+        SecPkgInfo_h2g((void *)info, info);
+#endif
 }
 
 #endif
