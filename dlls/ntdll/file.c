@@ -42,6 +42,75 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ntdll);
 
+static struct IOSB_data *alloc_io_wrapper(struct qemu_IO_STATUS_BLOCK *guest)
+{
+    OBJECT_ATTRIBUTES attr;
+    struct IOSB_data *ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+        WINE_ERR("Out of memory\n");
+
+    ret->guest_iosb = guest;
+    IO_STATUS_BLOCK_g2h(&ret->iosb, guest);
+
+    ret->host_event = CreateEventW(NULL, FALSE, FALSE, NULL);
+    if (!ret)
+        WINE_ERR("Out of memory\n");
+
+    return ret;
+}
+
+DWORD CALLBACK iosb32_wait_func(void *ctx)
+{
+    struct IOSB_data *iosb = ctx;
+
+    WINE_TRACE("Work item started %p\n", iosb);
+
+    /* FIXME: This proxy event breaks the kernel32 pipe.c tests because ReadFile (on a pipe)
+     * returns to the application before the WriteFile event that was previously waiting gets
+     * signalled. Either this is just an unlucky race, or there is a guarantee that IO ops
+     * that depend on each other finish in order. The WriteFile is started before the ReadFile,
+     * but the ReadFile ends up finishing first due to the delay here. */
+    WaitForSingleObjectEx(iosb->host_event, INFINITE, TRUE);
+    WINE_TRACE("Event wait finished %p\n", iosb);
+    IO_STATUS_BLOCK_h2g(iosb->guest_iosb, &iosb->iosb);
+
+    WINE_TRACE("Signalling event %p\n", iosb->guest_event);
+    if (iosb->guest_event)
+        SetEvent(iosb->guest_event);
+
+    CloseHandle(iosb->host_event);
+    HeapFree(GetProcessHeap(), 0, iosb);
+
+    return 0;
+}
+
+void process_io_status(uint64_t retval, struct IOSB_data *data)
+{
+    IO_STATUS_BLOCK_h2g(data->guest_iosb, &data->iosb);
+
+    if (retval == STATUS_PENDING)
+    {
+        WINE_TRACE("Async return, starting wait thread.\n");
+        if (!QueueUserWorkItem(iosb32_wait_func, data, 0))
+            WINE_ERR("Failed to queue work item\n");
+    }
+    else
+    {
+        WINE_TRACE("Synchonous return return, host ptr %p, guest ptr %p.\n", data, data->guest_iosb);
+
+        if (data->guest_event)
+        {
+            if (retval == STATUS_SUCCESS)
+                NtSetEvent(data->guest_event, NULL);
+            else
+                NtResetEvent(data->guest_event, NULL);
+        }
+
+        CloseHandle(data->host_event);
+        HeapFree(GetProcessHeap(), 0, data); /* Won't be needed any more. */
+    }
+}
+
 #endif
 
 struct qemu_NtOpenFile
@@ -206,7 +275,9 @@ WINBASEAPI NTSTATUS WINAPI NtReadFile(HANDLE hFile, HANDLE hEvent, PIO_APC_ROUTI
 void qemu_NtReadFile(struct qemu_syscall *call)
 {
     struct qemu_NtReadFile *c = (struct qemu_NtReadFile *)call;
-    IO_STATUS_BLOCK stack, *iosb = &stack;
+    struct IOSB_data *io_wrapper;
+    IO_STATUS_BLOCK *iosb;
+    HANDLE guest_event, host_event;
 
     WINE_TRACE("\n");
     if (c->apc)
@@ -214,29 +285,30 @@ void qemu_NtReadFile(struct qemu_syscall *call)
 
 #if GUEST_BIT == HOST_BIT
     iosb = QEMU_G2H(c->io_status);
+    host_event = QEMU_G2H(c->hEvent);
 #else
-    if (c->io_status)
-        IO_STATUS_BLOCK_g2h(iosb, QEMU_G2H(c->io_status));
-    else
-        iosb = NULL;
+    if (!c->io_status)
+    {
+        /* This will do nothing and just return an error. */
+        c->super.iret = NtReadFile(QEMU_G2H(c->hFile), QEMU_G2H(c->hEvent), QEMU_G2H(c->apc),
+                QEMU_G2H(c->apc_user), NULL, QEMU_G2H(c->buffer), c->length,
+                QEMU_G2H(c->offset), QEMU_G2H(c->key));
+        return;
+    }
+    io_wrapper = alloc_io_wrapper(QEMU_G2H(c->io_status));
+
+    iosb = &io_wrapper->iosb;
+    guest_event = QEMU_G2H(c->hEvent);
+    host_event = io_wrapper->host_event;
+    io_wrapper->guest_event = guest_event;
 #endif
 
-    c->super.iret = NtReadFile(QEMU_G2H(c->hFile), QEMU_G2H(c->hEvent), QEMU_G2H(c->apc),
+    c->super.iret = NtReadFile(QEMU_G2H(c->hFile), host_event, QEMU_G2H(c->apc),
             QEMU_G2H(c->apc_user), iosb, QEMU_G2H(c->buffer), c->length,
             QEMU_G2H(c->offset), QEMU_G2H(c->key));
 
 #if GUEST_BIT != HOST_BIT
-    if (c->io_status)
-    {
-        if (c->super.iret == STATUS_PENDING)
-        {
-            WINE_FIXME("Handle async returns.\n");
-            WaitForSingleObject(QEMU_G2H(c->hFile), INFINITE);
-            c->super.iret = iosb->Status;
-        }
-
-        IO_STATUS_BLOCK_h2g(QEMU_G2H(c->io_status), iosb);
-    }
+    process_io_status(c->super.iret, io_wrapper);
 #endif
 }
 
@@ -329,7 +401,9 @@ WINBASEAPI NTSTATUS WINAPI NtWriteFile(HANDLE hFile, HANDLE hEvent, PIO_APC_ROUT
 void qemu_NtWriteFile(struct qemu_syscall *call)
 {
     struct qemu_NtWriteFile *c = (struct qemu_NtWriteFile *)call;
-    IO_STATUS_BLOCK stack, *iosb = &stack;
+    struct IOSB_data *io_wrapper;
+    IO_STATUS_BLOCK *iosb;
+    HANDLE guest_event, host_event;
 
     WINE_TRACE("\n");
     if (c->apc)
@@ -337,29 +411,31 @@ void qemu_NtWriteFile(struct qemu_syscall *call)
 
 #if GUEST_BIT == HOST_BIT
     iosb = QEMU_G2H(c->io_status);
+    host_event = QEMU_G2H(c->hEvent);
 #else
-    if (c->io_status)
-        IO_STATUS_BLOCK_g2h(iosb, QEMU_G2H(c->io_status));
-    else
-        iosb = NULL;
+    if (!c->io_status)
+    {
+        /* This will do nothing and just return an error. */
+        c->super.iret = NtWriteFile(QEMU_G2H(c->hFile), QEMU_G2H(c->hEvent), QEMU_G2H(c->apc),
+            QEMU_G2H(c->apc_user), NULL, QEMU_G2H(c->buffer), c->length, QEMU_G2H(c->offset),
+            QEMU_G2H(c->key));
+        return;
+    }
+    io_wrapper = alloc_io_wrapper(QEMU_G2H(c->io_status));
+
+    iosb = &io_wrapper->iosb;
+    guest_event = QEMU_G2H(c->hEvent);
+    host_event = io_wrapper->host_event;
+    io_wrapper->guest_event = guest_event;
 #endif
+
 
     c->super.iret = NtWriteFile(QEMU_G2H(c->hFile), QEMU_G2H(c->hEvent), QEMU_G2H(c->apc),
             QEMU_G2H(c->apc_user), iosb, QEMU_G2H(c->buffer), c->length, QEMU_G2H(c->offset),
             QEMU_G2H(c->key));
 
 #if GUEST_BIT != HOST_BIT
-    if (c->io_status)
-    {
-        if (c->super.iret == STATUS_PENDING)
-        {
-            WINE_FIXME("Handle async returns.\n");
-            WaitForSingleObject(QEMU_G2H(c->hFile), INFINITE);
-            c->super.iret = iosb->Status;
-        }
-
-        IO_STATUS_BLOCK_h2g(QEMU_G2H(c->io_status), iosb);
-    }
+    process_io_status(c->super.iret, io_wrapper);
 #endif
 }
 

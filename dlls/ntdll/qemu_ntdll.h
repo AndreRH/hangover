@@ -1312,6 +1312,21 @@ LONG (* CDECL p__wtol)(LPCWSTR str);
 int (* CDECL p__wtoi)(LPCWSTR str);
 LONGLONG (* CDECL p__wtoi64)(LPCWSTR str);
 
+struct IOSB_data
+{
+    IO_STATUS_BLOCK iosb;
+    HANDLE host_event, guest_event;
+
+    struct qemu_IO_STATUS_BLOCK *guest_iosb;
+
+    /*
+     * Ignore this for now. It'll probably be needed for some cancel function.
+    struct list free_list_entry;
+    struct wine_rb_entry rbtree_entry;
+    BOOL in_tree;
+     */
+};
+
 #endif
 
 #endif
