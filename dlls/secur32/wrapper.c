@@ -416,7 +416,6 @@ void qemu_InitializeSecurityContext(struct qemu_syscall *call)
             SecBuffer_h2g(&buf32[i], &buf_array_out[i]);
     }
 #endif
-
 }
 
 #endif
@@ -437,7 +436,9 @@ struct qemu_AcceptSecurityContext
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI SECURITY_STATUS WINAPI AcceptSecurityContext(PCredHandle phCredential, PCtxtHandle phContext, PSecBufferDesc pInput, ULONG fContextReq, ULONG TargetDataRep, PCtxtHandle phNewContext, PSecBufferDesc pOutput, ULONG *pfContextAttr, PTimeStamp ptsExpiry)
+WINBASEAPI SECURITY_STATUS WINAPI AcceptSecurityContext(PCredHandle phCredential, PCtxtHandle phContext,
+        PSecBufferDesc pInput, ULONG fContextReq, ULONG TargetDataRep, PCtxtHandle phNewContext,
+        PSecBufferDesc pOutput, ULONG *pfContextAttr, PTimeStamp ptsExpiry)
 {
     struct qemu_AcceptSecurityContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ACCEPTSECURITYCONTEXT);
@@ -461,8 +462,97 @@ WINBASEAPI SECURITY_STATUS WINAPI AcceptSecurityContext(PCredHandle phCredential
 void qemu_AcceptSecurityContext(struct qemu_syscall *call)
 {
     struct qemu_AcceptSecurityContext *c = (struct qemu_AcceptSecurityContext *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = AcceptSecurityContext(QEMU_G2H(c->phCredential), QEMU_G2H(c->phContext), QEMU_G2H(c->pInput), c->fContextReq, c->TargetDataRep, QEMU_G2H(c->phNewContext), QEMU_G2H(c->pOutput), QEMU_G2H(c->pfContextAttr), QEMU_G2H(c->ptsExpiry));
+    struct qemu_SecHandle *handle32;
+    CredHandle cred_stack, *cred = &cred_stack;
+    CtxtHandle ctx_stack, *ctx_handle = &ctx_stack, new_stack, *new_ctx;
+    SecBuffer buf_array_in[8];
+    SecBuffer buf_array_out[8];
+    SecBufferDesc buf_in_stack, *buf_in = &buf_in_stack;
+    SecBufferDesc buf_out_stack, *buf_out = &buf_out_stack;
+    struct qemu_SecBuffer *buf32;
+    struct qemu_SecBufferDesc *desc32;
+    ULONG i;
+
+    WINE_FIXME("Am I done with this yet?\n");
+
+#if GUEST_BIT == HOST_BIT
+    cred = QEMU_G2H(c->phCredential);
+    ctx_handle = QEMU_G2H(c->phContext);
+    new_ctx = QEMU_G2H(c->phNewContext);
+    buf_in = QEMU_G2H(c->pInput);
+    buf_out = QEMU_G2H(c->pOutput);
+#else
+    handle32 = QEMU_G2H(c->phCredential);
+    if (handle32)
+        SecHandle_g2h(cred, handle32);
+    else
+        cred = NULL;
+
+    handle32 = QEMU_G2H(c->phContext);
+    if (handle32)
+        SecHandle_g2h(ctx_handle, handle32);
+    else
+        ctx_handle = NULL;
+
+    handle32 = QEMU_G2H(c->phNewContext);
+    if (handle32)
+        new_ctx = &new_stack;
+    else
+        new_ctx = NULL;
+
+    desc32 = QEMU_G2H(c->pInput);
+    if (desc32)
+    {
+        SecBufferDesc_g2h(buf_in, desc32);
+        buf32 = QEMU_G2H((ULONG_PTR)desc32->pBuffers);
+        if (buf_in->cBuffers > (sizeof(buf_array_in) / sizeof(buf_array_in[0])))
+            WINE_FIXME("Alloc buffers dynamically.\n");
+
+        buf_in->pBuffers = buf_array_in;
+        for (i = 0; i < buf_in->cBuffers; ++i)
+            SecBuffer_g2h(&buf_array_in[i], &buf32[i]);
+    }
+    else
+    {
+        buf_in = NULL;
+    }
+
+    desc32 = QEMU_G2H(c->pOutput);
+    if (desc32)
+    {
+        SecBufferDesc_g2h(buf_out, desc32);
+        buf32 = QEMU_G2H((ULONG_PTR)desc32->pBuffers);
+        if (buf_out->cBuffers > (sizeof(buf_array_out) / sizeof(buf_array_out[0])))
+            WINE_FIXME("Alloc buffers dynamically.\n");
+
+        buf_out->pBuffers = buf_array_out;
+        for (i = 0; i < buf_out->cBuffers; ++i)
+            SecBuffer_g2h(&buf_array_out[i], &buf32[i]);
+    }
+    else
+    {
+        buf_out = NULL;
+    }
+#endif
+
+    c->super.iret = AcceptSecurityContext(cred, ctx_handle, buf_in, c->fContextReq, c->TargetDataRep, new_ctx,
+            buf_out, QEMU_G2H(c->pfContextAttr), QEMU_G2H(c->ptsExpiry));
+
+#if GUEST_BIT != HOST_BIT
+    if (new_ctx)
+        SecHandle_h2g(QEMU_G2H(c->phNewContext), new_ctx);
+
+    desc32 = QEMU_G2H(c->pOutput);
+    if (desc32)
+    {
+        if (desc32->cBuffers != buf_out->cBuffers)
+            WINE_FIXME("Number of buffers changed.\n");
+
+        buf32 = QEMU_G2H((ULONG_PTR)desc32->pBuffers);
+        for (i = 0; i < buf_out->cBuffers; ++i)
+            SecBuffer_h2g(&buf32[i], &buf_array_out[i]);
+    }
+#endif
 }
 
 #endif
