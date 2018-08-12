@@ -315,7 +315,7 @@ WINBASEAPI BOOLEAN WINAPI GetUserNameExA(EXTENDED_NAME_FORMAT NameFormat, LPSTR 
 void qemu_GetUserNameExA(struct qemu_syscall *call)
 {
     struct qemu_GetUserNameExA *c = (struct qemu_GetUserNameExA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUserNameExA(c->NameFormat, QEMU_G2H(c->lpNameBuffer), QEMU_G2H(c->nSize));
 }
 
@@ -349,7 +349,7 @@ WINBASEAPI BOOLEAN WINAPI GetUserNameExW(EXTENDED_NAME_FORMAT NameFormat, LPWSTR
 void qemu_GetUserNameExW(struct qemu_syscall *call)
 {
     struct qemu_GetUserNameExW *c = (struct qemu_GetUserNameExW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetUserNameExW(c->NameFormat, QEMU_G2H(c->lpNameBuffer), QEMU_G2H(c->nSize));
 }
 
