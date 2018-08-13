@@ -186,7 +186,8 @@ struct qemu_QueryCredentialsAttributesA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI SECURITY_STATUS WINAPI QueryCredentialsAttributesA(PCredHandle phCredential, ULONG ulAttribute, void *pBuffer)
+WINBASEAPI SECURITY_STATUS WINAPI QueryCredentialsAttributesA(PCredHandle phCredential, ULONG ulAttribute,
+        void *pBuffer)
 {
     struct qemu_QueryCredentialsAttributesA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYCREDENTIALSATTRIBUTESA);
@@ -204,8 +205,19 @@ WINBASEAPI SECURITY_STATUS WINAPI QueryCredentialsAttributesA(PCredHandle phCred
 void qemu_QueryCredentialsAttributesA(struct qemu_syscall *call)
 {
     struct qemu_QueryCredentialsAttributesA *c = (struct qemu_QueryCredentialsAttributesA *)call;
+    CredHandle stack, *handle = &stack;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QueryCredentialsAttributesA(QEMU_G2H(c->phCredential), c->ulAttribute, QEMU_G2H(c->pBuffer));
+#if GUEST_BIT == HOST_BIT
+    handle = QEMU_G2H(c->phCredential);
+#else
+    if (c->phCredential)
+        SecHandle_g2h(handle, QEMU_G2H(c->phCredential));
+    else
+        handle = NULL;
+#endif
+
+    c->super.iret = QueryCredentialsAttributesA(handle, c->ulAttribute, QEMU_G2H(c->pBuffer));
 }
 
 #endif
