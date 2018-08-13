@@ -327,7 +327,7 @@ void qemu_InitializeSecurityContext(struct qemu_syscall *call)
     struct qemu_SecBufferDesc *desc32;
     ULONG i;
 
-    WINE_FIXME("Am I done with this yet?\n");
+    WINE_TRACE("\n");
 #if GUEST_BIT == HOST_BIT
     cred = QEMU_G2H(c->phCredential);
     ctx_handle = QEMU_G2H(c->phContext);
@@ -348,7 +348,9 @@ void qemu_InitializeSecurityContext(struct qemu_syscall *call)
         ctx_handle = NULL;
 
     handle32 = QEMU_G2H(c->phNewContext);
-    if (handle32)
+    if (handle32 == QEMU_G2H(c->phContext))
+        new_ctx = ctx_handle;
+    else if (handle32)
         new_ctx = &new_stack;
     else
         new_ctx = NULL;
@@ -402,7 +404,7 @@ void qemu_InitializeSecurityContext(struct qemu_syscall *call)
     }
 
 #if GUEST_BIT != HOST_BIT
-    if (new_ctx)
+    if (new_ctx && new_ctx != ctx_handle)
         SecHandle_h2g(QEMU_G2H(c->phNewContext), new_ctx);
 
     desc32 = QEMU_G2H(c->pOutput);
@@ -473,7 +475,7 @@ void qemu_AcceptSecurityContext(struct qemu_syscall *call)
     struct qemu_SecBufferDesc *desc32;
     ULONG i;
 
-    WINE_FIXME("Am I done with this yet?\n");
+    WINE_TRACE("\n");
 
 #if GUEST_BIT == HOST_BIT
     cred = QEMU_G2H(c->phCredential);
@@ -495,7 +497,9 @@ void qemu_AcceptSecurityContext(struct qemu_syscall *call)
         ctx_handle = NULL;
 
     handle32 = QEMU_G2H(c->phNewContext);
-    if (handle32)
+    if (handle32 == QEMU_G2H(c->phContext))
+        new_ctx = ctx_handle;
+    else if (handle32)
         new_ctx = &new_stack;
     else
         new_ctx = NULL;
@@ -539,7 +543,7 @@ void qemu_AcceptSecurityContext(struct qemu_syscall *call)
             buf_out, QEMU_G2H(c->pfContextAttr), QEMU_G2H(c->ptsExpiry));
 
 #if GUEST_BIT != HOST_BIT
-    if (new_ctx)
+    if (new_ctx && new_ctx != ctx_handle)
         SecHandle_h2g(QEMU_G2H(c->phNewContext), new_ctx);
 
     desc32 = QEMU_G2H(c->pOutput);
