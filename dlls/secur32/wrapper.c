@@ -1399,7 +1399,8 @@ struct qemu_EncryptMessage
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI SECURITY_STATUS WINAPI EncryptMessage(PCtxtHandle phContext, ULONG fQOP, PSecBufferDesc pMessage, ULONG MessageSeqNo)
+WINBASEAPI SECURITY_STATUS WINAPI EncryptMessage(PCtxtHandle phContext, ULONG fQOP, PSecBufferDesc pMessage,
+        ULONG MessageSeqNo)
 {
     struct qemu_EncryptMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENCRYPTMESSAGE);
@@ -1418,8 +1419,42 @@ WINBASEAPI SECURITY_STATUS WINAPI EncryptMessage(PCtxtHandle phContext, ULONG fQ
 void qemu_EncryptMessage(struct qemu_syscall *call)
 {
     struct qemu_EncryptMessage *c = (struct qemu_EncryptMessage *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = EncryptMessage(QEMU_G2H(c->phContext), c->fQOP, QEMU_G2H(c->pMessage), c->MessageSeqNo);
+    CtxtHandle stack, *ctx = &stack;
+    SecBuffer buf_array[8];
+    SecBufferDesc msg_stack, *msg = &msg_stack;
+    struct qemu_SecBuffer *buf32;
+    struct qemu_SecBufferDesc *msg32;
+    ULONG i;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    ctx = QEMU_G2H(c->phContext);
+    msg = QEMU_G2H(c->pMessage);
+#else
+    if (c->phContext)
+        SecHandle_g2h(ctx, QEMU_G2H(c->phContext));
+    else
+        ctx = NULL;
+
+    msg32 = QEMU_G2H(c->pMessage);
+    if (msg32)
+    {
+        SecBufferDesc_g2h(msg, msg32);
+        buf32 = QEMU_G2H((ULONG_PTR)msg32->pBuffers);
+        if (msg->cBuffers > (sizeof(buf_array) / sizeof(buf_array[0])))
+            WINE_FIXME("Alloc buffers dynamically.\n");
+
+        msg->pBuffers = buf_array;
+        for (i = 0; i < msg->cBuffers; ++i)
+            SecBuffer_g2h(&buf_array[i], &buf32[i]);
+    }
+    else
+    {
+        msg = NULL;
+    }
+#endif
+
+    c->super.iret = EncryptMessage(ctx, c->fQOP, msg, c->MessageSeqNo);
 }
 
 #endif
@@ -1435,7 +1470,8 @@ struct qemu_DecryptMessage
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI SECURITY_STATUS WINAPI DecryptMessage(PCtxtHandle phContext, PSecBufferDesc pMessage, ULONG MessageSeqNo, PULONG pfQOP)
+WINBASEAPI SECURITY_STATUS WINAPI DecryptMessage(PCtxtHandle phContext, PSecBufferDesc pMessage,
+        ULONG MessageSeqNo, PULONG pfQOP)
 {
     struct qemu_DecryptMessage call;
     call.super.id = QEMU_SYSCALL_ID(CALL_DECRYPTMESSAGE);
@@ -1454,8 +1490,42 @@ WINBASEAPI SECURITY_STATUS WINAPI DecryptMessage(PCtxtHandle phContext, PSecBuff
 void qemu_DecryptMessage(struct qemu_syscall *call)
 {
     struct qemu_DecryptMessage *c = (struct qemu_DecryptMessage *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = DecryptMessage(QEMU_G2H(c->phContext), QEMU_G2H(c->pMessage), c->MessageSeqNo, QEMU_G2H(c->pfQOP));
+    CtxtHandle stack, *ctx = &stack;
+    SecBuffer buf_array[8];
+    SecBufferDesc msg_stack, *msg = &msg_stack;
+    struct qemu_SecBuffer *buf32;
+    struct qemu_SecBufferDesc *msg32;
+    ULONG i;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    ctx = QEMU_G2H(c->phContext);
+    msg = QEMU_G2H(c->pMessage);
+#else
+    if (c->phContext)
+        SecHandle_g2h(ctx, QEMU_G2H(c->phContext));
+    else
+        ctx = NULL;
+
+    msg32 = QEMU_G2H(c->pMessage);
+    if (msg32)
+    {
+        SecBufferDesc_g2h(msg, msg32);
+        buf32 = QEMU_G2H((ULONG_PTR)msg32->pBuffers);
+        if (msg->cBuffers > (sizeof(buf_array) / sizeof(buf_array[0])))
+            WINE_FIXME("Alloc buffers dynamically.\n");
+
+        msg->pBuffers = buf_array;
+        for (i = 0; i < msg->cBuffers; ++i)
+            SecBuffer_g2h(&buf_array[i], &buf32[i]);
+    }
+    else
+    {
+        msg = NULL;
+    }
+#endif
+
+    c->super.iret = DecryptMessage(ctx, msg, c->MessageSeqNo, QEMU_G2H(c->pfQOP));
 }
 
 #endif
