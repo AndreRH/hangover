@@ -82,4 +82,10 @@ static inline void SecBufferDesc_g2h(SecBufferDesc *host, const struct qemu_SecB
     host->pBuffers = (void *)(ULONG_PTR)guest->pBuffers;
 }
 
+struct qemu_SecPkgContext_NegotiationInfo
+{
+    qemu_ptr PackageInfo;
+    ULONG        NegotiationState;
+};
+
 #endif

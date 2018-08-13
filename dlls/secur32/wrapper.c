@@ -690,8 +690,150 @@ WINBASEAPI SECURITY_STATUS WINAPI QueryContextAttributesA(PCtxtHandle phContext,
 void qemu_QueryContextAttributesA(struct qemu_syscall *call)
 {
     struct qemu_QueryContextAttributesA *c = (struct qemu_QueryContextAttributesA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QueryContextAttributesA(QEMU_G2H(c->phContext), c->ulAttribute, QEMU_G2H(c->pBuffer));
+    CtxtHandle stack, *handle = &stack;
+    union
+    {
+        SecPkgContext_NegotiationInfoW neg_info;
+    } buffer;
+    void *data;
+    struct qemu_SecPkgContext_NegotiationInfo *neg_info32;
+    struct qemu_SecPkgInfo *pkg_info32;
+    size_t size;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    handle = QEMU_G2H(c->phContext);
+    data = QEMU_G2H(c->pBuffer);
+#else
+    if (c->phContext)
+        SecHandle_g2h(handle, QEMU_G2H(c->phContext));
+    else
+        handle = NULL;
+
+    if (c->pBuffer)
+    {
+        switch (c->ulAttribute)
+        {
+            case SECPKG_ATTR_NEGOTIATION_INFO:
+                data = &buffer.neg_info;
+                break;
+
+            /* Compatible structs. */
+            case SECPKG_ATTR_SIZES:
+                data = QEMU_G2H(c->pBuffer);
+                break;
+
+            default:
+                data = &buffer.neg_info;
+        }
+    }
+    else
+        data = NULL;
+#endif
+
+    c->super.iret = QueryContextAttributesA(handle, c->ulAttribute, data);
+
+#if GUEST_BIT != HOST_BIT
+    switch (c->ulAttribute)
+    {
+            case SECPKG_ATTR_NAMES:
+                WINE_FIXME("Unhandled SECPKG_ATTR_NAMES\n");
+                break;
+
+            case SECPKG_ATTR_AUTHORITY:
+                WINE_FIXME("Unhandled SECPKG_ATTR_AUTHORITY\n");
+                break;
+
+            case SECPKG_ATTR_KEY_INFO:
+                WINE_FIXME("Unhandled SECPKG_ATTR_KEY_INFO\n");
+                break;
+
+            case SECPKG_ATTR_PACKAGE_INFO:
+                WINE_FIXME("Unhandled SECPKG_ATTR_PACKAGE_INFO\n");
+                break;
+
+            case SECPKG_ATTR_NEGOTIATION_INFO:
+            {
+                SecPkgInfoW *pi = buffer.neg_info.PackageInfo;
+                LONG_PTR size_diff = sizeof(*pi) - sizeof(*pkg_info32);
+
+                neg_info32 = QEMU_G2H(c->pBuffer);
+                neg_info32->NegotiationState = buffer.neg_info.NegotiationState;
+
+                if (!pi)
+                {
+                    neg_info32->PackageInfo = 0;
+                    break;
+                }
+
+                /* The tests check the heap size of this thing... */
+                size = HeapSize(GetProcessHeap(), 0, pi) - size_diff;
+
+                pkg_info32 = HeapAlloc(GetProcessHeap(), 0, size);
+                if (!pkg_info32)
+                    WINE_ERR("Out of memory\n");
+                neg_info32->PackageInfo = QEMU_H2G(pkg_info32);
+
+                /* We don't want to figure out if we have char or WCHAR here, so try to just duplicate
+                 * the offsets of the original struct. */
+                SecPkgInfo_h2g(pkg_info32, pi);
+                pkg_info32->Name = (ULONG_PTR)(pkg_info32 + 1);
+                pkg_info32->Comment = (ULONG_PTR)pkg_info32 + (ULONG_PTR)pi->Comment - (ULONG_PTR)pi - size_diff;
+
+                memcpy((char *)(pkg_info32 + 1), (char *)(pi + 1), size - sizeof(*pkg_info32));
+
+                FreeContextBuffer(pi);
+                break;
+            }
+
+            case SECPKG_ATTR_NATIVE_NAMES:
+                WINE_FIXME("Unhandled SECPKG_ATTR_NATIVE_NAMES\n");
+                break;
+
+            case SECPKG_ATTR_CREDENTIAL_NAME:
+                WINE_FIXME("Unhandled SECPKG_ATTR_CREDENTIAL_NAME\n");
+                break;
+
+            case SECPKG_ATTR_ACCESS_TOKEN:
+                WINE_FIXME("Unhandled SECPKG_ATTR_ACCESS_TOKEN\n");
+                break;
+
+            case SECPKG_ATTR_DCE_INFO:
+                WINE_FIXME("Unhandled SECPKG_ATTR_DCE_INFO\n");
+                break;
+
+            case SECPKG_ATTR_FLAGS:
+                WINE_FIXME("Unhandled SECPKG_ATTR_FLAGS\n");
+                break;
+
+            case SECPKG_ATTR_LIFESPAN:
+                WINE_FIXME("Unhandled SECPKG_ATTR_LIFESPAN\n");
+                break;
+
+            case SECPKG_ATTR_PASSWORD_EXPIRY:
+                WINE_FIXME("Unhandled SECPKG_ATTR_PASSWORD_EXPIRY\n");
+                break;
+
+            case SECPKG_ATTR_SESSION_KEY:
+                WINE_FIXME("Unhandled SECPKG_ATTR_SESSION_KEY\n");
+                break;
+
+            case SECPKG_ATTR_STREAM_SIZES:
+                WINE_FIXME("Unhandled SECPKG_ATTR_STREAM_SIZES\n");
+                break;
+
+            case SECPKG_ATTR_TARGET_INFORMATION:
+                WINE_FIXME("Unhandled SECPKG_ATTR_TARGET_INFORMATION\n");
+                break;
+
+            /* Compatible structs. */
+            case SECPKG_ATTR_SIZES:
+                break;
+
+            default:
+                WINE_ERR("Unknown attribute %u.\n", (ULONG)c->ulAttribute);
+    }
+#endif
 }
 
 #endif
