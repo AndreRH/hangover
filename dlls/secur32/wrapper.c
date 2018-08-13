@@ -1018,7 +1018,8 @@ struct qemu_VerifySignature
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI SECURITY_STATUS WINAPI VerifySignature(PCtxtHandle phContext, PSecBufferDesc pMessage, ULONG MessageSeqNo, PULONG pfQOP)
+WINBASEAPI SECURITY_STATUS WINAPI VerifySignature(PCtxtHandle phContext, PSecBufferDesc pMessage,
+        ULONG MessageSeqNo, PULONG pfQOP)
 {
     struct qemu_VerifySignature call;
     call.super.id = QEMU_SYSCALL_ID(CALL_VERIFYSIGNATURE);
@@ -1037,8 +1038,42 @@ WINBASEAPI SECURITY_STATUS WINAPI VerifySignature(PCtxtHandle phContext, PSecBuf
 void qemu_VerifySignature(struct qemu_syscall *call)
 {
     struct qemu_VerifySignature *c = (struct qemu_VerifySignature *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = VerifySignature(QEMU_G2H(c->phContext), QEMU_G2H(c->pMessage), c->MessageSeqNo, QEMU_G2H(c->pfQOP));
+    CtxtHandle stack, *ctx = &stack;
+    SecBuffer buf_array[8];
+    SecBufferDesc msg_stack, *msg = &msg_stack;
+    struct qemu_SecBuffer *buf32;
+    struct qemu_SecBufferDesc *msg32;
+    ULONG i;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    ctx = QEMU_G2H(c->phContext);
+    msg = QEMU_G2H(c->pMessage);
+#else
+    if (c->phContext)
+        SecHandle_g2h(ctx, QEMU_G2H(c->phContext));
+    else
+        ctx = NULL;
+
+    msg32 = QEMU_G2H(c->pMessage);
+    if (msg32)
+    {
+        SecBufferDesc_g2h(msg, msg32);
+        buf32 = QEMU_G2H((ULONG_PTR)msg32->pBuffers);
+        if (msg->cBuffers > (sizeof(buf_array) / sizeof(buf_array[0])))
+            WINE_FIXME("Alloc buffers dynamically.\n");
+
+        msg->pBuffers = buf_array;
+        for (i = 0; i < msg->cBuffers; ++i)
+            SecBuffer_g2h(&buf_array[i], &buf32[i]);
+    }
+    else
+    {
+        msg = NULL;
+    }
+#endif
+
+    c->super.iret = VerifySignature(ctx, msg, c->MessageSeqNo, QEMU_G2H(c->pfQOP));
 }
 
 #endif
