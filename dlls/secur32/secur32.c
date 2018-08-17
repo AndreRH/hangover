@@ -96,6 +96,7 @@ void qemu_EnumerateSecurityPackagesW(struct qemu_syscall *call)
 {
     struct qemu_EnumerateSecurityPackagesW *c = (struct qemu_EnumerateSecurityPackagesW *)call;
     SecPkgInfoW *info;
+    struct qemu_SecPkgInfo *info32;
     ULONG i, *count;
 
     WINE_TRACE("\n");
@@ -104,8 +105,9 @@ void qemu_EnumerateSecurityPackagesW(struct qemu_syscall *call)
     c->ppPackageInfo = QEMU_H2G(info);
 
 #if GUEST_BIT != HOST_BIT
+    info32 = (struct qemu_SecPkgInfo *)info;
     for (i = 0; i < *count; ++i)
-        SecPkgInfo_h2g((void *)info, info);
+        SecPkgInfo_h2g(&info32[i], &info[i]);
 #endif
 
 }
@@ -140,6 +142,7 @@ void qemu_EnumerateSecurityPackagesA(struct qemu_syscall *call)
 {
     struct qemu_EnumerateSecurityPackagesA *c = (struct qemu_EnumerateSecurityPackagesA *)call;
     SecPkgInfoA *info;
+    struct qemu_SecPkgInfo *info32;
     ULONG i, *count;
 
     WINE_TRACE("\n");
@@ -148,8 +151,9 @@ void qemu_EnumerateSecurityPackagesA(struct qemu_syscall *call)
     c->ppPackageInfo = QEMU_H2G(info);
 
 #if GUEST_BIT != HOST_BIT
+    info32 = (struct qemu_SecPkgInfo *)info;
     for (i = 0; i < *count; ++i)
-        SecPkgInfo_h2g((void *)info, (SecPkgInfoW *)info);
+        SecPkgInfo_h2g(&info32[i], (SecPkgInfoW *)&info[i]);
 #endif
 }
 
