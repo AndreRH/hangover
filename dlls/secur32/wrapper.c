@@ -22,9 +22,11 @@
 #include <stdio.h>
 #include <sspi.h>
 #include <ntsecapi.h>
+#include <schannel.h>
 
 #include "thunk/qemu_windows.h"
 #include "thunk/qemu_sspi.h"
+#include "thunk/qemu_schannel.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -176,7 +178,7 @@ void qemu_FreeCredentialsHandle(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_QueryCredentialsAttributesA
+struct qemu_QueryCredentialsAttributes
 {
     struct qemu_syscall super;
     uint64_t phCredential;
@@ -189,7 +191,7 @@ struct qemu_QueryCredentialsAttributesA
 WINBASEAPI SECURITY_STATUS WINAPI QueryCredentialsAttributesA(PCredHandle phCredential, ULONG ulAttribute,
         void *pBuffer)
 {
-    struct qemu_QueryCredentialsAttributesA call;
+    struct qemu_QueryCredentialsAttributes call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYCREDENTIALSATTRIBUTESA);
     call.phCredential = (ULONG_PTR)phCredential;
     call.ulAttribute = (ULONG_PTR)ulAttribute;
@@ -200,41 +202,10 @@ WINBASEAPI SECURITY_STATUS WINAPI QueryCredentialsAttributesA(PCredHandle phCred
     return call.super.iret;
 }
 
-#else
-
-void qemu_QueryCredentialsAttributesA(struct qemu_syscall *call)
+WINBASEAPI SECURITY_STATUS WINAPI QueryCredentialsAttributesW(PCredHandle phCredential, ULONG ulAttribute,
+        void *pBuffer)
 {
-    struct qemu_QueryCredentialsAttributesA *c = (struct qemu_QueryCredentialsAttributesA *)call;
-    CredHandle stack, *handle = &stack;
-
-    WINE_FIXME("Unverified!\n");
-#if GUEST_BIT == HOST_BIT
-    handle = QEMU_G2H(c->phCredential);
-#else
-    if (c->phCredential)
-        SecHandle_g2h(handle, QEMU_G2H(c->phCredential));
-    else
-        handle = NULL;
-#endif
-
-    c->super.iret = QueryCredentialsAttributesA(handle, c->ulAttribute, QEMU_G2H(c->pBuffer));
-}
-
-#endif
-
-struct qemu_QueryCredentialsAttributesW
-{
-    struct qemu_syscall super;
-    uint64_t phCredential;
-    uint64_t ulAttribute;
-    uint64_t pBuffer;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI SECURITY_STATUS WINAPI QueryCredentialsAttributesW(PCredHandle phCredential, ULONG ulAttribute, void *pBuffer)
-{
-    struct qemu_QueryCredentialsAttributesW call;
+    struct qemu_QueryCredentialsAttributes call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYCREDENTIALSATTRIBUTESW);
     call.phCredential = (ULONG_PTR)phCredential;
     call.ulAttribute = (ULONG_PTR)ulAttribute;
@@ -247,11 +218,59 @@ WINBASEAPI SECURITY_STATUS WINAPI QueryCredentialsAttributesW(PCredHandle phCred
 
 #else
 
-void qemu_QueryCredentialsAttributesW(struct qemu_syscall *call)
+void qemu_QueryCredentialsAttributes(struct qemu_syscall *call)
 {
-    struct qemu_QueryCredentialsAttributesW *c = (struct qemu_QueryCredentialsAttributesW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QueryCredentialsAttributesW(QEMU_G2H(c->phCredential), c->ulAttribute, QEMU_G2H(c->pBuffer));
+    struct qemu_QueryCredentialsAttributes *c = (struct qemu_QueryCredentialsAttributes *)call;
+    CredHandle stack, *handle = &stack;
+    ULONG attrib;
+    void *buffer;
+    SecPkgCred_SupportedAlgs supported_algs;
+
+    WINE_TRACE("\n");
+    attrib = c->ulAttribute;
+#if GUEST_BIT == HOST_BIT
+    handle = QEMU_G2H(c->phCredential);
+    buffer = QEMU_G2H(c->pBuffer);
+#else
+    if (c->phCredential)
+        SecHandle_g2h(handle, QEMU_G2H(c->phCredential));
+    else
+        handle = NULL;
+
+    switch (attrib)
+    {
+        case SECPKG_CRED_ATTR_NAMES:
+            /* This one is unimplemented in Wine. */
+            WINE_FIXME("Unimplemented SECPKG_CRED_ATTR_NAMES.\n");
+            buffer = QEMU_G2H(c->pBuffer);
+            break;
+
+        case SECPKG_ATTR_SUPPORTED_ALGS:
+            /* This one is unimplemented in Wine. */
+            buffer = c->pBuffer ? &supported_algs : NULL;
+            break;
+
+        case SECPKG_ATTR_CIPHER_STRENGTHS:
+        case SECPKG_ATTR_SUPPORTED_PROTOCOLS:
+            /* Nothing to do */
+            buffer = QEMU_G2H(c->pBuffer);
+            break;
+
+        default:
+            WINE_FIXME("Unknown attribute %x\n", attrib);
+            buffer = QEMU_G2H(c->pBuffer);
+    }
+#endif
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_QUERYCREDENTIALSATTRIBUTESW))
+        c->super.iret = QueryCredentialsAttributesW(handle, attrib, buffer);
+    else
+        c->super.iret = QueryCredentialsAttributesA(handle, attrib, buffer);
+
+    if (attrib == SECPKG_ATTR_SUPPORTED_ALGS && buffer)
+    {
+        SecPkgCred_SupportedAlgs_h2g(QEMU_G2H(c->pBuffer), &supported_algs);
+    }
 }
 
 #endif
