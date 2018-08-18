@@ -1907,6 +1907,7 @@ void qemu_WS_setsockopt(struct qemu_syscall *call)
         default:
             WINE_FIXME("Unknown option %d\n", optname);
             /* Drop through. */
+        case WS_TCP_NODELAY:
         case WS_SO_OPENTYPE:
         case WS_SO_RCVTIMEO:
         case WS_SO_SNDTIMEO:
