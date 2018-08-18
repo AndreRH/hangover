@@ -839,11 +839,50 @@ void WINAPI qemu_riched20_hook_old(HMODULE riched32)
     DestroyWindow(win);
 }
 
+static LRESULT WINAPI my_SendMessageW(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    NMHDR *hdr;
+    struct qemu_NMHDR hdr32;
+    struct qemu_MSGFILTER filter32;
+    struct qemu_ENLINK link32;
+    LRESULT ret;
+
+    if (msg != WM_NOTIFY)
+        return SendMessageW(wnd, msg, wp, lp);
+
+    hdr = (NMHDR *)lp;
+    WINE_TRACE("Patching up WM_NOTIFY message, code %x.\n", hdr->code);
+    switch (hdr->code)
+    {
+        case EN_MSGFILTER:
+            MSGFILTER_h2g(&filter32, (MSGFILTER *)hdr);
+            ret = SendMessageW(wnd, msg, wp, (LPARAM)&filter32);
+            MSGFILTER_g2h((MSGFILTER *)hdr, &filter32);
+            return ret;
+
+        case EN_LINK:
+            ENLINK_h2g(&link32, (ENLINK *)hdr);
+            ret = SendMessageW(wnd, msg, wp, (LPARAM)&link32);
+            ENLINK_g2h((ENLINK *)hdr, &link32);
+            return ret;
+
+        default:
+            NMHDR_h2g(&hdr32, hdr);
+            return SendMessageW(wnd, msg, wp, (LPARAM)&hdr32);
+    }
+}
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     HWND win;
     HMODULE riched20 = GetModuleHandleA("riched20");
+    HMODULE user32 = GetModuleHandleA("user32");
     WNDPROC wndproc2;
+    IMAGE_IMPORT_DESCRIPTOR *imports;
+    ULONG size;
+    BOOL found = FALSE;
+    void *p_SendMessageW = GetProcAddress(user32, "SendMessageW");
+    IMAGE_THUNK_DATA *thunk;
 
     WINE_TRACE("Loading host-side riched20 wrapper.\n");
 
@@ -921,6 +960,45 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     }
 
     /* Overwrite W: Confused. */
+
+#if GUEST_BIT != HOST_BIT
+    /* Hook SendMessage to fix up WM_NOTIFY messages. */
+    imports = RtlImageDirectoryEntryToData(riched20, TRUE, IMAGE_DIRECTORY_ENTRY_IMPORT, &size);
+    if (!imports)
+        WINE_ERR("Cannot find riched20.dll imports.\n");
+
+    while (imports->Characteristics && imports->Name)
+    {
+        char *name = (char *)riched20 + imports->Name;
+        if (!strcmp(name, "user32.dll"))
+        {
+            found = TRUE;
+            break;
+        }
+
+        imports++;
+    }
+    if (!found)
+        WINE_ERR("Could not find user32 import.\n");
+
+    thunk = (IMAGE_THUNK_DATA *)((char *)riched20 + imports->FirstThunk);
+    found = FALSE;
+    while (thunk->u1.Function)
+    {
+        void **func = (void **)&thunk->u1.Function;
+        if (*func == p_SendMessageW)
+        {
+            *func = my_SendMessageW;
+            found = TRUE;
+            break;
+        }
+
+        thunk++;
+    }
+
+    if (!found)
+        WINE_ERR("Could not find SendMessageW thunk.\n");
+#endif
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;

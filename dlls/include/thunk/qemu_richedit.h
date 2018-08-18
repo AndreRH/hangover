@@ -188,4 +188,31 @@ static void GETTEXTEX_g2h(GETTEXTEX *host, const struct qemu_GETTEXTEX *guest)
     host->lpUsedDefChar = (BOOL *)(ULONG_PTR)guest->lpUsedDefChar;
 }
 
+struct qemu_ENLINK
+{
+    struct qemu_NMHDR   nmhdr;
+    UINT                msg;
+    qemu_ptr            wParam;
+    qemu_ptr            lParam;
+    CHARRANGE           chrg;
+};
+
+static void ENLINK_h2g(struct qemu_ENLINK *guest, const ENLINK *host)
+{
+    NMHDR_h2g(&guest->nmhdr, &host->nmhdr);
+    guest->msg = host->msg;
+    guest->wParam = host->wParam;
+    guest->lParam = host->lParam;
+    guest->chrg = host->chrg;
+}
+
+static void ENLINK_g2h(ENLINK *host, const struct qemu_ENLINK *guest)
+{
+    NMHDR_g2h(&host->nmhdr, &guest->nmhdr);
+    host->msg = guest->msg;
+    host->wParam = guest->wParam;
+    host->lParam = guest->lParam;
+    host->chrg = guest->chrg;
+}
+
 #endif
