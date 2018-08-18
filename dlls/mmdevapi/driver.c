@@ -956,6 +956,7 @@ static HRESULT WINAPI AudioRenderClient_GetBuffer(IAudioRenderClient *iface, UIN
     call.data = (ULONG_PTR)data;
 
     qemu_syscall(&call.super);
+    /* IAudioRenderClient::GetBuffer differs from IAudioCaptureClient wrt zeroing *data. */
     if (data)
         *data = (BYTE *)(ULONG_PTR)call.data;
 
@@ -1129,7 +1130,11 @@ static HRESULT WINAPI AudioCaptureClient_GetBuffer(IAudioCaptureClient *iface, B
     call.qpcpos = (ULONG_PTR)qpcpos;
 
     qemu_syscall(&call.super);
-    if (data)
+    /* IAudioRenderClient::GetBuffer differs from IAudioCaptureClient wrt zeroing *data.
+     *
+     * Comparing to S_OK is done on purpose here. AUDCLNT_S_BUFFER_EMPTY is considered a success
+     * value, but it doesn't touch *data. */
+    if (call.super.iret == S_OK)
         *data = (BYTE *)(ULONG_PTR)call.data;
 
     return call.super.iret;
