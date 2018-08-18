@@ -143,4 +143,22 @@ static void FORMATRANGE_g2h(FORMATRANGE *host, const struct qemu_FORMATRANGE *gu
     host->chrg.cpMax = guest->chrg.cpMax;
 }
 
+struct qemu_TEXTRANGE
+{
+    CHARRANGE chrg;
+    qemu_ptr  lpstrText;
+};
+
+static void TEXTRANGE_h2g(struct qemu_TEXTRANGE *guest, const TEXTRANGEW *host)
+{
+    guest->chrg = host->chrg;
+    guest->lpstrText = (ULONG_PTR)host->lpstrText;
+}
+
+static void TEXTRANGE_g2h(TEXTRANGEW *host, const struct qemu_TEXTRANGE *guest)
+{
+    host->chrg = guest->chrg;
+    host->lpstrText = (WCHAR *)(ULONG_PTR)guest->lpstrText;
+}
+
 #endif
