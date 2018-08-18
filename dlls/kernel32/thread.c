@@ -847,7 +847,7 @@ struct qemu_QueueUserAPC_cb
 
 #ifdef QEMU_DLL_GUEST
 
-static void __fastcall guset_user_apc_wrapper(struct qemu_QueueUserAPC_cb *param)
+static void __fastcall guest_user_apc_wrapper(struct qemu_QueueUserAPC_cb *param)
 {
     PAPCFUNC func = (PAPCFUNC)(ULONG_PTR)param->func;
     ULONG_PTR data = param->data;
@@ -861,7 +861,7 @@ WINBASEAPI DWORD WINAPI QueueUserAPC(PAPCFUNC func, HANDLE hthread, ULONG_PTR da
     call.func = (ULONG_PTR)func;
     call.hthread = guest_HANDLE_g2h(hthread);
     call.data = (ULONG_PTR)data;
-    call.wrapper = (ULONG_PTR)guset_user_apc_wrapper;
+    call.wrapper = (ULONG_PTR)guest_user_apc_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -931,6 +931,7 @@ struct qemu_QueueUserWorkItem
     uint64_t Function;
     uint64_t Context;
     uint64_t Flags;
+    uint64_t wrapper;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -942,6 +943,7 @@ WINBASEAPI BOOL WINAPI QueueUserWorkItem(LPTHREAD_START_ROUTINE Function, PVOID 
     call.Function = (ULONG_PTR)Function;
     call.Context = (ULONG_PTR)Context;
     call.Flags = (ULONG_PTR)Flags;
+    call.wrapper = (ULONG_PTR)guest_user_apc_wrapper;
 
     qemu_syscall(&call.super);
 
@@ -953,14 +955,16 @@ WINBASEAPI BOOL WINAPI QueueUserWorkItem(LPTHREAD_START_ROUTINE Function, PVOID 
 static DWORD CALLBACK host_user_work_cb(void *param)
 {
     struct apc_data *data = param;
-    uint64_t func = data->func;
-    uint64_t guest_data = data->guest_data;
+    struct qemu_QueueUserAPC_cb call;
+    uint64_t wrapper = data->wrapper;
     DWORD ret;
 
+    call.func = data->func;
+    call.data = data->guest_data;
+
     HeapFree(GetProcessHeap(), 0, data);
-    WINE_TRACE("Executing user work callback 0x%lx(0x%lx).\n", (unsigned long)func,
-            (unsigned long)guest_data);
-    ret = qemu_ops->qemu_execute(QEMU_G2H(func), guest_data);
+    WINE_TRACE("Executing user work callback 0x%lx(0x%lx).\n", (unsigned long)call.func, (unsigned long)call.data);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(wrapper), QEMU_H2G(&call));
     WINE_TRACE("User callback returned %x.\n", ret);
 
     return ret;
@@ -982,6 +986,7 @@ void qemu_QueueUserWorkItem(struct qemu_syscall *call)
 
     data->guest_data = c->Context;
     data->func = c->Function;
+    data->wrapper = c->wrapper;
 
     c->super.iret = QueueUserWorkItem(host_user_work_cb, data, c->Flags);
     if (!c->super.iret)
