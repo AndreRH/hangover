@@ -101,23 +101,106 @@ KSECDDDECLSPEC SECURITY_STATUS WINAPI AcquireCredentialsHandleW(SEC_WCHAR *pszPr
 void qemu_AcquireCredentialsHandle(struct qemu_syscall *call)
 {
     struct qemu_AcquireCredentialsHandle *c = (struct qemu_AcquireCredentialsHandle *)call;
-    SEC_WINNT_AUTH_IDENTITY_W stack, *auth = &stack;
+    SEC_WINNT_AUTH_IDENTITY_W winnt_stack;
+    SCHANNEL_CRED schannel_stack;
+    void *auth;
     CredHandle handle;
+    BOOL ascii;
+    static const WCHAR NTLM_W[] = {'N','T','L','M',0};
+    static const WCHAR Negotiate_W[] = {'N','e','g','o','t','i','a','t','e',0};
+    const CERT_CONTEXT *cert_array[2];
+    qemu_ptr *cert_array_32;
+    CERT_CONTEXT certs[2];
+    ULONG i;
 
     WINE_TRACE("\n");
     if (c->pGetKeyFn)
         WINE_FIXME("pGetKeyFn not handled yet.\n");
 
+    ascii = c->super.id == QEMU_SYSCALL_ID(CALL_ACQUIRECREDENTIALSHANDLEA);
 #if GUEST_BIT == HOST_BIT
     auth = QEMU_G2H(c->pAuthData);
 #else
-    if (c->pAuthData)
-        SEC_WINNT_AUTH_IDENTITY_g2h(auth, QEMU_G2H(c->pAuthData));
-    else
+    if (!c->pAuthData)
+    {
         auth = NULL;
+    }
+    else if (!c->pszPackage)
+    {
+        WINE_FIXME("NULL package. How to convert auth data?\n");
+        auth = NULL;
+    }
+    else
+    {
+        if ((ascii && !lstrcmpA(QEMU_G2H(c->pszPackage), "NTLM"))
+                || (ascii && !lstrcmpA(QEMU_G2H(c->pszPackage), "Negotiate"))
+                || (!ascii && !lstrcmpW(QEMU_G2H(c->pszPackage), NTLM_W))
+                || (!ascii && !lstrcmpW(QEMU_G2H(c->pszPackage), Negotiate_W)))
+        {
+            auth = &winnt_stack;
+            SEC_WINNT_AUTH_IDENTITY_g2h(auth, QEMU_G2H(c->pAuthData));
+        }
+        else if ((ascii && !lstrcmpA(QEMU_G2H(c->pszPackage), UNISP_NAME_A))
+                || (!ascii && !lstrcmpW(QEMU_G2H(c->pszPackage), UNISP_NAME_W)))
+        {
+            struct qemu_SCHANNEL_CRED *cred32 = QEMU_G2H(c->pAuthData);
+
+            SCHANNEL_CRED_g2h(&schannel_stack, cred32);
+
+            if (cred32->aphMappers)
+                WINE_FIXME("aphMappers not supported yet.\n");
+            if (cred32->hRootStore)
+            {
+                /* This works, except for the replacement for the static store that's above 4 GB.
+                 * Need to ask qemu_crytp32.dll for translation. */
+                WINE_FIXME("hRootStore not supported yet.\n");
+                schannel_stack.hRootStore = (HCERTSTORE)(ULONG_PTR)cred32->hRootStore;
+            }
+            if (cred32->paCred)
+            {
+                if (cred32->cCreds > 2)
+                {
+                    /* The tests suggest that more than 1 cert results in an error, so I guess we're fine
+                     * to clamp this to 2. */
+                    WINE_FIXME("More than 2 certificates.\n");
+                    schannel_stack.cCreds = 2;
+                }
+
+                /* Move this elsewhere once needed. */
+                if (!p_CERT_CONTEXT_g2h)
+                {
+                    HMODULE crypt32_wrapper;
+                    crypt32_wrapper = GetModuleHandleA("qemu_crypt32");
+                    if (!crypt32_wrapper)
+                        WINE_ERR("Cannot find qemu_crytp32.dll.so in loaded modules.\n");
+                    p_CERT_CONTEXT_g2h = (void *)GetProcAddress(crypt32_wrapper, "crypt32_CERT_CONTEXT_g2h");
+                    if (!p_CERT_CONTEXT_g2h)
+                        WINE_ERR("Cannot find crypt32_CERT_CONTEXT_g2h in qemu_crytp32.dll.so.\n");
+                }
+
+                cert_array_32 = QEMU_G2H((ULONG_PTR)cred32->paCred);
+                for (i = 0; i < schannel_stack.cCreds; ++i)
+                    cert_array[i] = p_CERT_CONTEXT_g2h(cert_array_32[i]);
+
+                schannel_stack.paCred = cert_array;
+            }
+
+            auth = &schannel_stack;
+        }
+        else if (ascii)
+        {
+            WINE_FIXME("Unknown provider %s\n", wine_dbgstr_a(QEMU_G2H(c->pszPackage)));
+            auth = QEMU_G2H(c->pAuthData);
+        }
+        else
+        {
+            WINE_FIXME("Unknown provider %s\n", wine_dbgstr_w(QEMU_G2H(c->pszPackage)));
+            auth = QEMU_G2H(c->pAuthData);
+        }
+    }
 #endif
 
-    if (c->super.id == QEMU_SYSCALL_ID(CALL_ACQUIRECREDENTIALSHANDLEA))
+    if (ascii)
     {
         c->super.iret = AcquireCredentialsHandleA(QEMU_G2H(c->pszPrincipal), QEMU_G2H(c->pszPackage),
                 c->fCredentialUse, QEMU_G2H(c->pvLogonId), auth, QEMU_G2H(c->pGetKeyFn),

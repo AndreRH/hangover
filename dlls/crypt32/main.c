@@ -1200,4 +1200,12 @@ HCERTSTORE cert_store_g2h(uint64_t store)
         return QEMU_G2H(store);
 }
 
+const CERT_CONTEXT WINAPI *crypt32_CERT_CONTEXT_g2h(qemu_ptr cert32)
+{
+    struct qemu_cert_context *impl = context_impl_from_context32(QEMU_G2H((ULONG_PTR)cert32));
+    if (!impl)
+        return NULL;
+    return impl->cert64;
+}
+
 #endif
