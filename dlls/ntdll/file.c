@@ -91,6 +91,7 @@ void process_io_status(uint64_t retval, struct IOSB_data *data)
     if (retval == STATUS_PENDING)
     {
         WINE_TRACE("Async return, starting wait thread.\n");
+        NtResetEvent(data->guest_event, NULL);
         if (!QueueUserWorkItem(iosb32_wait_func, data, 0))
             WINE_ERR("Failed to queue work item\n");
     }
