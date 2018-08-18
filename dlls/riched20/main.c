@@ -709,6 +709,26 @@ static LRESULT handle_gettextrange(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
     return ret;
 }
 
+static LRESULT handle_gettextex(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, BOOL unicode)
+{
+    GETTEXTEX host;
+    LRESULT ret;
+    struct qemu_GETTEXTEX *guest = (struct qemu_GETTEXTEX *)wParam;
+
+    if (guest)
+        GETTEXTEX_g2h(&host, guest);
+
+    if (unicode)
+        ret = CallWindowProcW(orig_proc_w, hWnd, msg, guest ? (WPARAM)&host : 0, lParam);
+    else
+        ret = CallWindowProcA(orig_proc_a, hWnd, msg, guest ? (WPARAM)&host : 0, lParam);
+
+    if (guest)
+        GETTEXTEX_h2g(guest, &host);
+
+    return ret;
+}
+
 static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     WINE_TRACE("Richedit message %x\n", msg);
@@ -739,6 +759,9 @@ static LRESULT WINAPI wrap_proc_w(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
         case EM_GETTEXTRANGE:
             return handle_gettextrange(hWnd, msg, wParam, lParam, TRUE);
+
+        case EM_GETTEXTEX:
+            return handle_gettextex(hWnd, msg, wParam, lParam, TRUE);
 #endif
 
         default:
@@ -775,6 +798,9 @@ LRESULT WINAPI wrap_proc_a(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         case EM_GETTEXTRANGE:
             return handle_gettextrange(hWnd, msg, wParam, lParam, FALSE);
+
+        case EM_GETTEXTEX:
+            return handle_gettextex(hWnd, msg, wParam, lParam, FALSE);
 #endif
 
         default:

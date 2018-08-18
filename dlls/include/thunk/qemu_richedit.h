@@ -161,4 +161,31 @@ static void TEXTRANGE_g2h(TEXTRANGEW *host, const struct qemu_TEXTRANGE *guest)
     host->lpstrText = (WCHAR *)(ULONG_PTR)guest->lpstrText;
 }
 
+struct qemu_GETTEXTEX
+{
+    DWORD      cb;
+    DWORD      flags;
+    UINT       codepage;
+    qemu_ptr   lpDefaultChar;
+    qemu_ptr   lpUsedDefChar;
+};
+
+static void GETTEXTEX_h2g(struct qemu_GETTEXTEX *guest, const GETTEXTEX *host)
+{
+    guest->cb = host->cb;
+    guest->flags = host->flags;
+    guest->codepage = host->codepage;
+    guest->lpDefaultChar = (ULONG_PTR)host->lpDefaultChar;
+    guest->lpUsedDefChar = (ULONG_PTR)host->lpUsedDefChar;
+}
+
+static void GETTEXTEX_g2h(GETTEXTEX *host, const struct qemu_GETTEXTEX *guest)
+{
+    host->cb = guest->cb;
+    host->flags = guest->flags;
+    host->codepage = guest->codepage;
+    host->lpDefaultChar = (const char *)(ULONG_PTR)guest->lpDefaultChar;
+    host->lpUsedDefChar = (BOOL *)(ULONG_PTR)guest->lpUsedDefChar;
+}
+
 #endif
