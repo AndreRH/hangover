@@ -608,6 +608,8 @@ void qemu_CertSetCertificateContextProperty(struct qemu_syscall *call)
     CRYPT_DATA_BLOB stack, *blob = &stack;
     CERT_KEY_CONTEXT key_ctx;
     struct qemu_CERT_KEY_CONTEXT *key_ctx32;
+    CRYPT_KEY_PROV_INFO key_prov;
+    struct qemu_CRYPT_KEY_PROV_INFO *key_prov32;
     void *data;
 
     WINE_TRACE("\n");
@@ -634,6 +636,12 @@ void qemu_CertSetCertificateContextProperty(struct qemu_syscall *call)
                 else
                     key_ctx.cbSize = 0;
                 data = &key_ctx;
+                break;
+
+            case CERT_KEY_PROV_INFO_PROP_ID:
+                key_prov32 = data;
+                CRYPT_KEY_PROV_INFO_g2h(&key_prov, data);
+                data = &key_prov;
                 break;
 
             default:
@@ -1264,7 +1272,7 @@ void qemu_CertVerifyRevocation(struct qemu_syscall *call)
 
         for (i = 0; i < count; ++i)
         {
-            context32 = context_impl_from_context32((uint64_t)certs32[i]);
+            context32 = context_impl_from_context32(QEMU_G2H((uint64_t)certs32[i]));
             certs[i] = context32 ? context32->cert64 : NULL;
         }
     }
