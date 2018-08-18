@@ -2731,7 +2731,8 @@ struct qemu_WS_getnameinfo
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI int WINAPI WS_getnameinfo(const SOCKADDR *sa, socklen_t salen, PCHAR host, DWORD hostlen, PCHAR serv, DWORD servlen, INT flags)
+WINBASEAPI int WINAPI WS_getnameinfo(const SOCKADDR *sa, socklen_t salen, PCHAR host, DWORD hostlen, PCHAR serv,
+        DWORD servlen, INT flags)
 {
     struct qemu_WS_getnameinfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WS_GETNAMEINFO);
@@ -2753,7 +2754,9 @@ WINBASEAPI int WINAPI WS_getnameinfo(const SOCKADDR *sa, socklen_t salen, PCHAR 
 void qemu_WS_getnameinfo(struct qemu_syscall *call)
 {
     struct qemu_WS_getnameinfo *c = (struct qemu_WS_getnameinfo *)call;
-    WINE_FIXME("Unverified!\n");
+
+    /* WS_sockaddr has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = p_getnameinfo(QEMU_G2H(c->sa), c->salen, QEMU_G2H(c->host), c->hostlen, QEMU_G2H(c->serv), c->servlen, c->flags);
 }
 
