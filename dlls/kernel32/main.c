@@ -39,6 +39,7 @@ struct qemu_set_callbacks
     uint64_t call_entry;
     uint64_t guest_completion_cb;
     uint64_t guest_register_class_wrapper;
+    uint64_t guest_load_comctl32;
 };
 
 struct qemu_GetSystemRegistryQuota
@@ -122,19 +123,25 @@ static void __fastcall kernel32_call_process_main(LPTHREAD_START_ROUTINE entry)
 
 static BOOL __fastcall guest_register_class_wrapper(WCHAR *name)
 {
-    static HMODULE comctl32;
-    static BOOL (* WINAPI p_RegisterClassNameW)(const WCHAR *class);
+    static const WCHAR comctl32W[] = {'c','o','m','c','t','l','3','2','.','d','l','l',0};
+    HMODULE comctl32;
+    BOOL (* WINAPI p_RegisterClassNameW)(const WCHAR *class);
 
+    /* The user32 class tests unload comctl32.dll after user32 loads it, so don't assume
+     * that RegisterClassNameW stays in the same place. */
+    comctl32 = kernel32_GetModuleHandleW(comctl32W);
+    if (!comctl32)
+        return FALSE;
+    p_RegisterClassNameW = kernel32_GetProcAddress(comctl32, "RegisterClassNameW");
     if (!p_RegisterClassNameW)
-    {
-        comctl32 = kernel32_LoadLibraryA("comctl32.dll");
-        if (!comctl32)
-            return FALSE;
-        p_RegisterClassNameW = kernel32_GetProcAddress(comctl32, "RegisterClassNameW");
-        if (!p_RegisterClassNameW)
-            return FALSE;
-    }
+        return FALSE;
+
     return p_RegisterClassNameW(name);
+}
+
+static BOOL __fastcall guest_load_comctl32(void *dummy)
+{
+    return !!kernel32_LoadLibraryA("comctl32.dll");
 }
 
 BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
@@ -150,6 +157,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
             call.call_entry = (ULONG_PTR)kernel32_call_process_main;
             call.guest_completion_cb = (ULONG_PTR)guest_completion_cb;
             call.guest_register_class_wrapper = (ULONG_PTR)guest_register_class_wrapper;
+            call.guest_load_comctl32 = (ULONG_PTR)guest_load_comctl32;
             qemu_syscall(&call.super);
 
             ntdll = kernel32_GetModuleHandleW(ntdllW);
@@ -210,6 +218,7 @@ const struct qemu_ops *qemu_ops;
 
 uint64_t guest_completion_cb;
 uint64_t guest_register_class_wrapper;
+uint64_t guest_load_comctl32;
 
 static void qemu_set_callbacks(struct qemu_syscall *call)
 {
@@ -217,6 +226,7 @@ static void qemu_set_callbacks(struct qemu_syscall *call)
     qemu_ops->qemu_set_call_entry(c->call_entry);
     guest_completion_cb = c->guest_completion_cb;
     guest_register_class_wrapper = c->guest_register_class_wrapper;
+    guest_load_comctl32 = c->guest_load_comctl32;
 }
 
 /* We cannot use the OVERLAPPED structure as a context pointer to add our data because it is passed to
@@ -1379,16 +1389,22 @@ static HMODULE WINAPI hook_LoadLibraryW(const WCHAR *name)
     if (!strcmpW(name, comctl32W))
     {
         HMODULE kernel32, ret, old_lib = GetModuleHandleW(name);
+        BOOL guest_load_ret;
 
-        /* FIXME: I should probably make sure guest comctl32 is loaded here, and not when
-         * RegisterClassNameW is invoked. */
+        WINE_TRACE("Loading host comctl32.\n");
+        if (old_lib)
+            WINE_ERR("Hot comctl32.dll already loaded.\n");
 
-        WINE_TRACE("Loading host comctl32, previously loaded %s\n", old_lib ? "yes" : "no");
+        WINE_TRACE("Calling guest to load comctl32.\n");
+        guest_load_ret = qemu_ops->qemu_execute(QEMU_G2H(guest_load_comctl32), 0);
+        WINE_TRACE("Guest returned %u.\n", guest_load_ret);
+        if (!guest_load_ret)
+            return NULL;
+
         ret = LoadLibraryExW(name, 0, 0);
-        if (ret && !old_lib)
-        {
+        if (ret)
             hook(GetProcAddress(ret, "RegisterClassNameW"), hook_RegisterClassNameW);
-        }
+
         return ret;
     }
 
