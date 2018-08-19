@@ -537,8 +537,30 @@ WINBASEAPI WINBOOL WINAPI FreeLibrary(HMODULE module)
 void qemu_FreeLibrary(struct qemu_syscall *call)
 {
     struct qemu_FreeLibrary *c = (struct qemu_FreeLibrary *)call;
+    HMODULE comctl32, unload;
+    static const WCHAR comctl32W[] = {'c','o','m','c','t','l','3','2','.','d','l','l',0};
+
     WINE_TRACE("\n");
-    c->super.iret = qemu_ops->qemu_FreeLibrary((HMODULE)c->module);
+    comctl32 = qemu_ops->qemu_GetModuleHandleEx( GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, comctl32W);
+    unload = (HMODULE)c->module;
+    c->super.iret = qemu_ops->qemu_FreeLibrary(unload);
+
+    /* user32 (host side, we use a wrapper) loads comctl32.dll if a known comctl32 class is used but not
+     * registered. The tests then call FreeLibrary on comctl32, unloading the library user32 just loaded.
+     * This unregisters the classes even in hangover because we make sure our guest-side comctl32 registers
+     * itself, and not the host comctl32.
+     *
+     * However, the tests repeat this trick and expect user32 to load the library again. User32 will think
+     * that comctl32 is already loaded and not attempt to load it agaon. So make sure we reset the host
+     * state to the same situation we find in the guest. */
+    if (c->super.iret && unload == comctl32)
+    {
+        comctl32 = GetModuleHandleA("comctl32");
+        if (!comctl32)
+            WINE_FIXME("Host comctl32 not loaded. Might be OK.\n");
+        else if (!FreeLibrary(GetModuleHandleW(comctl32W)))
+            WINE_ERR("Failed to unload host comctl32\n");
+    }
 }
 
 #endif
