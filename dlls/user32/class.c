@@ -693,17 +693,20 @@ void qemu_GetClassInfoA(struct qemu_syscall *call)
 {
     struct qemu_GetClassInfoA *c = (struct qemu_GetClassInfoA *)call;
     WNDCLASSA stack, *wc = &stack;
+    HINSTANCE inst;
 
     WINE_TRACE("\n");
 
 #if GUEST_BIT == HOST_BIT
     wc = QEMU_G2H(c->wc);
 #endif
-    c->super.iret = GetClassInfoA(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), wc);
+    inst = qemu_ops->qemu_module_g2h(c->hInstance);
+    c->super.iret = GetClassInfoA(inst, QEMU_G2H(c->name), wc);
 
     if (c->super.iret)
     {
         wc->lpfnWndProc = (void *)wndproc_host_to_guest(wc->lpfnWndProc);
+        wc->hInstance = (HINSTANCE)qemu_ops->qemu_module_h2g(wc->hInstance);
 #if GUEST_BIT != HOST_BIT
         WNDCLASS_h2g(QEMU_G2H(c->wc), (WNDCLASSW *)wc);
 #endif
@@ -741,17 +744,20 @@ void qemu_GetClassInfoW(struct qemu_syscall *call)
 {
     struct qemu_GetClassInfoW *c = (struct qemu_GetClassInfoW *)call;
     WNDCLASSW stack, *wc = &stack;
+    HINSTANCE inst;
 
     WINE_TRACE("\n");
 
 #if GUEST_BIT == HOST_BIT
     wc = QEMU_G2H(c->wc);
 #endif
-    c->super.iret = GetClassInfoW(QEMU_G2H(c->hInstance), QEMU_G2H(c->name), wc);
+    inst = qemu_ops->qemu_module_g2h(c->hInstance);
+    c->super.iret = GetClassInfoW(inst, QEMU_G2H(c->name), wc);
 
     if (c->super.iret)
     {
         wc->lpfnWndProc = (void *)wndproc_host_to_guest(wc->lpfnWndProc);
+        wc->hInstance = (HINSTANCE)qemu_ops->qemu_module_h2g(wc->hInstance);
 #if GUEST_BIT != HOST_BIT
         WNDCLASS_h2g(QEMU_G2H(c->wc), wc);
 #endif

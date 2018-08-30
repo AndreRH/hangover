@@ -101,8 +101,15 @@ void qemu_CreateWindowExA(struct qemu_syscall *call)
     }
 #endif
 
-    /* Do not modify hInstance here, it breaks the tests. Let's see if it is actually necessary. */
-    c->super.iret = (ULONG_PTR)CreateWindowExA(c->exStyle, classname, QEMU_G2H(c->windowName), c->style, c->x, c->y, c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), (HINSTANCE)c->instance, data);
+    /* Do not modify a NULL hInstance here, it breaks the tests. However, we want to translate
+     * things like kernel32 and user32. */
+    if (!c->instance)
+        inst = NULL;
+    else
+        inst = qemu_ops->qemu_module_g2h(c->instance);
+
+    c->super.iret = (ULONG_PTR)CreateWindowExA(c->exStyle, classname, QEMU_G2H(c->windowName), c->style, c->x, c->y,
+            c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), inst, data);
 }
 
 #endif
@@ -176,9 +183,15 @@ void qemu_CreateWindowExW(struct qemu_syscall *call)
     }
 #endif
 
-    /* Do not modify hInstance here, it breaks the tests. Let's see if it is actually necessary. */
+    /* Do not modify a NULL hInstance here, it breaks the tests. However, we want to translate
+     * things like kernel32 and user32. */
+    if (!c->instance)
+        inst = NULL;
+    else
+        inst = qemu_ops->qemu_module_g2h(c->instance);
+
     c->super.iret = (ULONG_PTR)CreateWindowExW(c->exStyle, classname, QEMU_G2H(c->windowName), c->style,
-            c->x, c->y, c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), (HINSTANCE)c->instance, data);
+            c->x, c->y, c->width, c->height, QEMU_G2H(c->parent), QEMU_G2H(c->menu), inst, data);
 }
 
 #endif
