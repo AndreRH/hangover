@@ -404,4 +404,88 @@ static inline void CMSG_SIGNER_INFO_h2g(struct qemu_CMSG_SIGNER_INFO *guest, con
     /* FIXME Needs more complicated data */
 }
 
+struct qemu_CERT_CHAIN_POLICY_STATUS
+{
+    DWORD cbSize;
+    DWORD dwError;
+    LONG  lChainIndex;
+    LONG  lElementIndex;
+    qemu_ptr pvExtraPolicyStatus;
+};
+
+static inline void CERT_CHAIN_POLICY_STATUS_h2g(struct qemu_CERT_CHAIN_POLICY_STATUS *guest,
+        const CERT_CHAIN_POLICY_STATUS *host)
+{
+    guest->dwError = host->dwError;
+    guest->lChainIndex = host->lChainIndex;
+    guest->lElementIndex = host->lElementIndex;
+    guest->pvExtraPolicyStatus = (ULONG_PTR)host->pvExtraPolicyStatus;
+}
+
+static inline void CERT_CHAIN_POLICY_STATUS_g2h(CERT_CHAIN_POLICY_STATUS *host,
+        const struct qemu_CERT_CHAIN_POLICY_STATUS *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->dwError = guest->dwError;
+    host->lChainIndex = guest->lChainIndex;
+    host->lElementIndex = guest->lElementIndex;
+    host->pvExtraPolicyStatus = (void *)(ULONG_PTR)guest->pvExtraPolicyStatus;
+}
+
+struct qemu_CERT_CHAIN_POLICY_PARA
+{
+    DWORD cbSize;
+    DWORD dwFlags;
+    qemu_ptr pvExtraPolicyPara;
+};
+
+static inline void CERT_CHAIN_POLICY_PARA_h2g(struct qemu_CERT_CHAIN_POLICY_PARA *guest,
+        const CERT_CHAIN_POLICY_PARA *host)
+{
+    guest->dwFlags = host->dwFlags;
+    guest->pvExtraPolicyPara = (ULONG_PTR)host->pvExtraPolicyPara;
+}
+
+static inline void CERT_CHAIN_POLICY_PARA_g2h(CERT_CHAIN_POLICY_PARA *host,
+        const struct qemu_CERT_CHAIN_POLICY_PARA *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->dwFlags = guest->dwFlags;
+    host->pvExtraPolicyPara = (void *)(ULONG_PTR)guest->pvExtraPolicyPara;
+}
+
+struct qemu_CERT_CHAIN_ELEMENT
+{
+    DWORD                 cbSize;
+    qemu_ptr              pCertContext;
+    CERT_TRUST_STATUS     TrustStatus;
+    qemu_ptr              pRevocationInfo;
+    qemu_ptr              pIssuanceUsage;
+    qemu_ptr              pApplicationUsage;
+    qemu_ptr              pwszExtendedErrorInfo;
+};
+
+struct qemu_CERT_SIMPLE_CHAIN
+{
+    DWORD                 cbSize;
+    CERT_TRUST_STATUS     TrustStatus;
+    DWORD                 cElement;
+    qemu_ptr              rgpElement;
+    qemu_ptr              pTrustListInfo;
+    BOOL                  fHasRevocationFreshnessTime;
+    DWORD                 dwRevocationFreshnessTime;
+};
+
+struct qemu_CERT_CHAIN_CONTEXT
+{
+    DWORD                 cbSize;
+    CERT_TRUST_STATUS     TrustStatus;
+    DWORD                 cChain;
+    qemu_ptr              rgpChain;
+    DWORD                 cLowerQualityChainContext;
+    qemu_ptr              rgpLowerQualityChainContext;
+    BOOL                  fHasRevocationFreshnessTime;
+    DWORD                 dwRevocationFreshnessTime;
+};
+
 #endif
