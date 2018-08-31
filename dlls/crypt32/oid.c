@@ -605,8 +605,14 @@ WINBASEAPI PCCRYPT_OID_INFO WINAPI CryptFindOIDInfo(DWORD dwKeyType, void *pvKey
 void qemu_CryptFindOIDInfo(struct qemu_syscall *call)
 {
     struct qemu_CryptFindOIDInfo *c = (struct qemu_CryptFindOIDInfo *)call;
+#if GUEST_BIT == HOST_BIT
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(CryptFindOIDInfo(c->dwKeyType, QEMU_G2H(c->pvKey), c->dwGroupId));
+#else
+    /* This call returns a pointer into static data. I should copy the entire data on DLL load somehow. */
+    WINE_FIXME("Disabled\n");
+    c->super.iret = 0;
+#endif
 }
 
 #endif
