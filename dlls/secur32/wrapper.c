@@ -525,11 +525,23 @@ void qemu_InitializeSecurityContext(struct qemu_syscall *call)
     if (desc32)
     {
         if (desc32->cBuffers != buf_out->cBuffers)
-            WINE_FIXME("Number of buffers changed.\n");
+            WINE_FIXME("Number of output buffers changed.\n");
 
         buf32 = QEMU_G2H((ULONG_PTR)desc32->pBuffers);
         for (i = 0; i < buf_out->cBuffers; ++i)
             SecBuffer_h2g(&buf32[i], &buf_array_out[i]);
+    }
+
+    /* Input buffers can change too, see winhttp tests (with winhttp as a PE build). */
+    desc32 = QEMU_G2H(c->pInput);
+    if (desc32)
+    {
+        if (desc32->cBuffers != buf_in->cBuffers)
+            WINE_FIXME("Number of input buffers changed.\n");
+
+        buf32 = QEMU_G2H((ULONG_PTR)desc32->pBuffers);
+        for (i = 0; i < buf_in->cBuffers; ++i)
+            SecBuffer_h2g(&buf32[i], &buf_array_in[i]);
     }
 #endif
 }
