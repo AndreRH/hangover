@@ -545,4 +545,58 @@ static inline void ADDJOB_INFO_1_h2g(struct qemu_ADDJOB_INFO_1 *guest, const ADD
     guest->JobId = host->JobId;
 }
 
+struct qemu_JOB_INFO_2
+{
+  DWORD JobId;
+  qemu_ptr pPrinterName;
+  qemu_ptr pMachineName;
+  qemu_ptr pUserName;
+  qemu_ptr pDocument;
+  qemu_ptr pNotifyName;
+  qemu_ptr pDatatype;
+  qemu_ptr pPrintProcessor;
+  qemu_ptr pParameters;
+  qemu_ptr pDriverName;
+  qemu_ptr pDevMode;
+  qemu_ptr pStatus;
+  qemu_ptr pSecurityDescriptor;
+  DWORD Status;
+  DWORD Priority;
+  DWORD Position;
+  DWORD StartTime;
+  DWORD UntilTime;
+  DWORD TotalPages;
+  DWORD Size;
+  SYSTEMTIME Submitted;
+  DWORD Time;
+  DWORD PagesPrinted;
+};
+
+static inline void JOB_INFO_2_h2g(struct qemu_JOB_INFO_2 *guest, const JOB_INFO_2W *host)
+{
+    guest->JobId = host->JobId;
+    guest->pPrinterName = (ULONG_PTR)host->pPrinterName;
+    guest->pMachineName = (ULONG_PTR)host->pMachineName;
+    guest->pUserName = (ULONG_PTR)host->pUserName;
+    guest->pDocument = (ULONG_PTR)host->pDocument;
+    guest->pNotifyName = (ULONG_PTR)host->pNotifyName;
+    guest->pDatatype = (ULONG_PTR)host->pDatatype;
+    guest->pPrintProcessor = (ULONG_PTR)host->pPrintProcessor;
+    guest->pParameters = (ULONG_PTR)host->pParameters;
+    guest->pDriverName = (ULONG_PTR)host->pDriverName;
+    guest->pDevMode = (ULONG_PTR)host->pDevMode;
+    guest->pStatus = (ULONG_PTR)host->pStatus;
+    guest->pSecurityDescriptor = (ULONG_PTR)host->pSecurityDescriptor;
+    guest->Status = host->Status;
+    guest->Priority = host->Priority;
+    guest->Position = host->Position;
+    guest->StartTime = host->StartTime;
+    guest->UntilTime = host->UntilTime;
+    guest->TotalPages = host->TotalPages;
+    guest->Size = host->Size;
+    guest->Submitted = host->Submitted;
+    guest->Time = host->Time;
+    guest->PagesPrinted = host->PagesPrinted;
+}
+
 #endif

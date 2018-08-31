@@ -4685,7 +4685,7 @@ void qemu_FreePrinterNotifyInfo(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_GetJobA
+struct qemu_GetJob
 {
     struct qemu_syscall super;
     uint64_t hPrinter;
@@ -4700,7 +4700,7 @@ struct qemu_GetJobA
 
 WINBASEAPI BOOL WINAPI GetJobA(HANDLE hPrinter, DWORD JobId, DWORD Level, LPBYTE pJob, DWORD cbBuf, LPDWORD pcbNeeded)
 {
-    struct qemu_GetJobA call;
+    struct qemu_GetJob call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETJOBA);
     call.hPrinter = (ULONG_PTR)hPrinter;
     call.JobId = JobId;
@@ -4714,33 +4714,9 @@ WINBASEAPI BOOL WINAPI GetJobA(HANDLE hPrinter, DWORD JobId, DWORD Level, LPBYTE
     return call.super.iret;
 }
 
-#else
-
-void qemu_GetJobA(struct qemu_syscall *call)
-{
-    struct qemu_GetJobA *c = (struct qemu_GetJobA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetJobA(QEMU_G2H(c->hPrinter), c->JobId, c->Level, QEMU_G2H(c->pJob), c->cbBuf, QEMU_G2H(c->pcbNeeded));
-}
-
-#endif
-
-struct qemu_GetJobW
-{
-    struct qemu_syscall super;
-    uint64_t hPrinter;
-    uint64_t JobId;
-    uint64_t Level;
-    uint64_t pJob;
-    uint64_t cbBuf;
-    uint64_t pcbNeeded;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI GetJobW(HANDLE hPrinter, DWORD JobId, DWORD Level, LPBYTE pJob, DWORD cbBuf, LPDWORD pcbNeeded)
 {
-    struct qemu_GetJobW call;
+    struct qemu_GetJob call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETJOBW);
     call.hPrinter = (ULONG_PTR)hPrinter;
     call.JobId = JobId;
@@ -4756,11 +4732,40 @@ WINBASEAPI BOOL WINAPI GetJobW(HANDLE hPrinter, DWORD JobId, DWORD Level, LPBYTE
 
 #else
 
-void qemu_GetJobW(struct qemu_syscall *call)
+void qemu_GetJob(struct qemu_syscall *call)
 {
-    struct qemu_GetJobW *c = (struct qemu_GetJobW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = GetJobW(QEMU_G2H(c->hPrinter), c->JobId, c->Level, QEMU_G2H(c->pJob), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+    struct qemu_GetJob *c = (struct qemu_GetJob *)call;
+    WINE_TRACE("\n");
+
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_GETJOBW))
+    {
+        c->super.iret = GetJobW(QEMU_G2H(c->hPrinter), c->JobId, c->Level, QEMU_G2H(c->pJob), c->cbBuf,
+                QEMU_G2H(c->pcbNeeded));
+    }
+    else
+    {
+        c->super.iret = GetJobA(QEMU_G2H(c->hPrinter), c->JobId, c->Level, QEMU_G2H(c->pJob), c->cbBuf,
+                QEMU_G2H(c->pcbNeeded));
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret)
+    {
+        switch (c->Level)
+        {
+            case 1:
+                WINE_FIXME("Convert JOB_INFO_1.\n");
+                break;
+
+            case 2:
+                JOB_INFO_2_h2g(QEMU_G2H(c->pJob), QEMU_G2H(c->pJob));
+                break;
+
+            default:
+                WINE_ERR("Unexpected level %u\n", (DWORD)c->Level);
+        }
+    }
+#endif
 }
 
 #endif
