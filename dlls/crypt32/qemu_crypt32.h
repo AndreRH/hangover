@@ -446,6 +446,13 @@ extern HCERTSTORE empty_store;
 extern uint64_t empty_store_replace;
 HCERTSTORE cert_store_g2h(uint64_t store);
 
+struct qemu_cert_chain_context
+{
+    struct qemu_CERT_CHAIN_CONTEXT context32;
+    const CERT_CHAIN_CONTEXT *context64;
+    LONG ref;
+};
+
 #endif
 
 #endif

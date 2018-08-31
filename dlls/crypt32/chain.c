@@ -171,11 +171,16 @@ void qemu_CertGetCertificateChain(struct qemu_syscall *call)
     struct qemu_cert_context *context32;
     struct qemu_CERT_CHAIN_PARA *para32;
     CERT_CHAIN_PARA para_stack, *para = &para_stack;
+    const CERT_CHAIN_CONTEXT *chain_stack = (const CERT_CHAIN_CONTEXT *)0x1;
+    const CERT_CHAIN_CONTEXT **chain64;
+    qemu_ptr *chain32;
+    struct qemu_cert_chain_context *chain_impl;
 
     WINE_TRACE("\n");
 #if GUEST_BIT == HOST_BIT
     context = QEMU_G2H(c->pCertContext);
     para = QEMU_G2H(c->pChainPara);
+    chain64 = QEMU_G2H(c->ppChainContext);
 #else
     context32 = context_impl_from_context32(QEMU_G2H(c->pCertContext));
     context = context32 ? context32->cert64 : NULL;
@@ -187,11 +192,94 @@ void qemu_CertGetCertificateChain(struct qemu_syscall *call)
         para->cbSize = 0;
     else
         CERT_CHAIN_PARA_g2h(para, para32);
+
+    chain32 = QEMU_G2H(c->ppChainContext);
+    if (chain32)
+        chain64 = &chain_stack;
+    else
+        chain64 = NULL;
 #endif
 
     c->super.iret = CertGetCertificateChain(QEMU_G2H(c->hChainEngine), context,
             QEMU_G2H(c->pTime), QEMU_G2H(c->hAdditionalStore), para, c->dwFlags,
-            QEMU_G2H(c->pvReserved), QEMU_G2H(c->ppChainContext));
+            QEMU_G2H(c->pvReserved), chain64);
+
+#if GUEST_BIT != HOST_BIT
+    if (chain_stack && chain_stack != (const CERT_CHAIN_CONTEXT *)0x1)
+    {
+        /* FIXME: I suppose that for two identical invocations of this function I am supposed
+         * to return the same chain. */
+        struct qemu_CERT_SIMPLE_CHAIN *simple_chain;
+        struct qemu_CERT_CHAIN_ELEMENT *element;
+
+        chain_impl = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*chain_impl));
+        if (!chain_impl)
+            WINE_ERR("Out of memory\n");
+
+        chain_impl->context64 = chain_stack;
+        chain_impl->ref = 1;
+        CERT_CHAIN_CONTEXT_h2g(&chain_impl->context32, chain_stack);
+
+        if (chain_stack->rgpChain)
+        {
+            unsigned int i, j;
+            qemu_ptr *ptrs, *ptrs2;
+            struct qemu_cert_context *cert_context;
+
+            ptrs = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
+                    sizeof(*simple_chain) * chain_stack->cChain + sizeof(qemu_ptr) * chain_stack->cChain);
+            if (!ptrs)
+                WINE_ERR("Out of memory\n");
+            simple_chain = (struct qemu_CERT_SIMPLE_CHAIN *)&ptrs[chain_stack->cChain + 1];
+
+            for (i = 0; i < chain_stack->cChain; ++i)
+            {
+                if (chain_stack->rgpChain[i]->pTrustListInfo)
+                    WINE_FIXME("CERT_SIMPLE_CHAIN.pTrustListInfo not handled yet.\n");
+                CERT_SIMPLE_CHAIN_h2g(&simple_chain[i], chain_stack->rgpChain[i]);
+
+                ptrs2 = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
+                        sizeof(*element) * simple_chain[i].cElement + sizeof(qemu_ptr) * simple_chain[i].cElement);
+                if (!ptrs2)
+                    WINE_ERR("Out of memory\n");
+                element = (struct qemu_CERT_CHAIN_ELEMENT *)&ptrs2[simple_chain[i].cElement + 1];
+
+                for (j = 0; j < simple_chain[i].cElement; j++)
+                {
+                    if (chain_stack->rgpChain[i]->rgpElement[j]->pRevocationInfo)
+                        WINE_FIXME("CERT_CHAIN_ELEMENT.pRevocationInfo not handled yet.\n");
+                    if (chain_stack->rgpChain[i]->rgpElement[j]->pIssuanceUsage)
+                        WINE_FIXME("CERT_CHAIN_ELEMENT.pIssuanceUsage not handled yet.\n");
+                    if (chain_stack->rgpChain[i]->rgpElement[j]->pApplicationUsage)
+                        WINE_FIXME("CERT_CHAIN_ELEMENT.pApplicationUsage not handled yet.\n");
+
+                    CERT_CHAIN_ELEMENT_h2g(&element[j], chain_stack->rgpChain[i]->rgpElement[j]);
+                    cert_context = context32_create(chain_stack->rgpChain[i]->rgpElement[j]->pCertContext);
+                    element[j].pCertContext = QEMU_H2G(&cert_context->cert32);
+
+                    ptrs2[j] = QEMU_H2G(&element[j]);
+                }
+
+                simple_chain[i].rgpElement = QEMU_H2G(ptrs2);
+                ptrs[i] = QEMU_H2G(&simple_chain[i]);
+            }
+
+            chain_impl->context32.rgpChain = QEMU_H2G(ptrs);
+        }
+
+        if (chain_stack->cLowerQualityChainContext)
+        {
+            WINE_FIXME("Lower quality chains not handled yet.\n");
+            chain_impl->context32.cLowerQualityChainContext = 0;
+        }
+
+        *chain32 = QEMU_H2G(chain_impl);
+    }
+    else if (!chain_stack)
+    {
+        *chain32 = 0;
+    }
+#endif
 }
 
 #endif
@@ -220,8 +308,32 @@ WINBASEAPI PCCERT_CHAIN_CONTEXT WINAPI CertDuplicateCertificateChain(PCCERT_CHAI
 void qemu_CertDuplicateCertificateChain(struct qemu_syscall *call)
 {
     struct qemu_CertDuplicateCertificateChain *c = (struct qemu_CertDuplicateCertificateChain *)call;
-    WINE_FIXME("Unverified!\n");
+    struct qemu_cert_chain_context *chain32;
+    const CERT_CHAIN_CONTEXT *chain64;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     c->super.iret = QEMU_H2G(CertDuplicateCertificateChain(QEMU_G2H(c->pChainContext)));
+    return;
+#endif
+
+    chain32 = QEMU_G2H(c->pChainContext);
+    if (!chain32)
+    {
+        chain64 = CertDuplicateCertificateChain(NULL);
+        if (chain64)
+            WINE_ERR("Duplicating a NULL chain returned a non-NULL chain.\n");
+
+        c->super.iret = QEMU_H2G(chain64);
+        return;
+    }
+
+    chain64 = CertDuplicateCertificateChain(chain32->context64);
+    if (chain64 != chain32->context64)
+        WINE_ERR("CertDuplicateCertificateChain returned a different pointer\n");
+
+    InterlockedIncrement(&chain32->ref);
+    c->super.iret = c->pChainContext;
 }
 
 #endif
@@ -248,8 +360,40 @@ WINBASEAPI VOID WINAPI CertFreeCertificateChain(PCCERT_CHAIN_CONTEXT pChainConte
 void qemu_CertFreeCertificateChain(struct qemu_syscall *call)
 {
     struct qemu_CertFreeCertificateChain *c = (struct qemu_CertFreeCertificateChain *)call;
-    WINE_FIXME("Unverified!\n");
+    struct qemu_cert_chain_context *chain32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
     CertFreeCertificateChain(QEMU_G2H(c->pChainContext));
+    return;
+#endif
+
+    chain32 = QEMU_G2H(c->pChainContext);
+    if (!chain32)
+    {
+        CertFreeCertificateChain(NULL);
+        return;
+    }
+    CertFreeCertificateChain(chain32->context64);
+    if (InterlockedDecrement(&chain32->ref) == 0)
+    {
+        if (chain32->context32.rgpChain)
+        {
+            qemu_ptr *chains = QEMU_G2H((ULONG_PTR)chain32->context32.rgpChain);
+            unsigned int i;
+
+            for (i = 0; i < chain32->context32.cChain; ++i)
+            {
+                struct qemu_CERT_SIMPLE_CHAIN *elem = QEMU_G2H((ULONG_PTR)chains[i]);
+                /* FIXME: Do I have to decref elem->rgpElement[j]->pCertContext ? */
+                HeapFree(GetProcessHeap(), 0, QEMU_G2H((ULONG_PTR)elem->rgpElement));
+            }
+
+            HeapFree(GetProcessHeap(), 0, chains);
+        }
+
+        HeapFree(GetProcessHeap(), 0, chain32);
+    }
 }
 
 #endif
@@ -267,7 +411,8 @@ struct qemu_CertFindChainInStore
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI PCCERT_CHAIN_CONTEXT WINAPI CertFindChainInStore(HCERTSTORE store, DWORD certEncodingType, DWORD findFlags, DWORD findType, const void *findPara, PCCERT_CHAIN_CONTEXT prevChainContext)
+WINBASEAPI PCCERT_CHAIN_CONTEXT WINAPI CertFindChainInStore(HCERTSTORE store, DWORD certEncodingType, DWORD findFlags,
+        DWORD findType, const void *findPara, PCCERT_CHAIN_CONTEXT prevChainContext)
 {
     struct qemu_CertFindChainInStore call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CERTFINDCHAININSTORE);
@@ -288,8 +433,10 @@ WINBASEAPI PCCERT_CHAIN_CONTEXT WINAPI CertFindChainInStore(HCERTSTORE store, DW
 void qemu_CertFindChainInStore(struct qemu_syscall *call)
 {
     struct qemu_CertFindChainInStore *c = (struct qemu_CertFindChainInStore *)call;
+    /* The Wine implementation is a stub at the time of the writing of this comment. */
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CertFindChainInStore(QEMU_G2H(c->store), c->certEncodingType, c->findFlags, c->findType, QEMU_G2H(c->findPara), QEMU_G2H(c->prevChainContext)));
+    c->super.iret = QEMU_H2G(CertFindChainInStore(QEMU_G2H(c->store), c->certEncodingType, c->findFlags, c->findType,
+            QEMU_G2H(c->findPara), QEMU_G2H(c->prevChainContext)));
 }
 
 #endif

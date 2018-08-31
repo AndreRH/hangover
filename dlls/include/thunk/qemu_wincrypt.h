@@ -454,6 +454,13 @@ static inline void CERT_CHAIN_POLICY_PARA_g2h(CERT_CHAIN_POLICY_PARA *host,
     host->pvExtraPolicyPara = (void *)(ULONG_PTR)guest->pvExtraPolicyPara;
 }
 
+struct qemu_CERT_TRUST_LIST_INFO
+{
+    DWORD           cbSize;
+    qemu_ptr        pCtlEntry;
+    qemu_ptr        pCtlContext;
+};
+
 struct qemu_CERT_CHAIN_ELEMENT
 {
     DWORD                 cbSize;
@@ -464,6 +471,18 @@ struct qemu_CERT_CHAIN_ELEMENT
     qemu_ptr              pApplicationUsage;
     qemu_ptr              pwszExtendedErrorInfo;
 };
+
+static inline void CERT_CHAIN_ELEMENT_h2g(struct qemu_CERT_CHAIN_ELEMENT *guest,
+        const CERT_CHAIN_ELEMENT *host)
+{
+    guest->cbSize = sizeof(*guest);
+    guest->pCertContext = (ULONG_PTR)host->pCertContext;
+    guest->TrustStatus = host->TrustStatus;
+    guest->pRevocationInfo = (ULONG_PTR)host->pRevocationInfo;
+    guest->pIssuanceUsage = (ULONG_PTR)host->pIssuanceUsage;
+    guest->pApplicationUsage = (ULONG_PTR)host->pApplicationUsage;
+    guest->pwszExtendedErrorInfo = (ULONG_PTR)host->pwszExtendedErrorInfo;
+}
 
 struct qemu_CERT_SIMPLE_CHAIN
 {
@@ -476,6 +495,19 @@ struct qemu_CERT_SIMPLE_CHAIN
     DWORD                 dwRevocationFreshnessTime;
 };
 
+/* rgpElement and pTrustListInfo have to be handled by the caller. */
+static inline void CERT_SIMPLE_CHAIN_h2g(struct qemu_CERT_SIMPLE_CHAIN *guest,
+        const CERT_SIMPLE_CHAIN *host)
+{
+    guest->cbSize = sizeof(*guest);
+    guest->TrustStatus = host->TrustStatus;
+    guest->cElement = host->cElement;
+    guest->rgpElement = (ULONG_PTR)host->rgpElement;
+    guest->pTrustListInfo = (ULONG_PTR)host->pTrustListInfo;
+    guest->fHasRevocationFreshnessTime = host->fHasRevocationFreshnessTime;
+    guest->dwRevocationFreshnessTime = host->dwRevocationFreshnessTime;
+}
+
 struct qemu_CERT_CHAIN_CONTEXT
 {
     DWORD                 cbSize;
@@ -487,5 +519,17 @@ struct qemu_CERT_CHAIN_CONTEXT
     BOOL                  fHasRevocationFreshnessTime;
     DWORD                 dwRevocationFreshnessTime;
 };
+
+/* rgpChain and rgpLowerQualityChainContext need to be handled by the caller. */
+static inline void CERT_CHAIN_CONTEXT_h2g(struct qemu_CERT_CHAIN_CONTEXT *guest,
+        const CERT_CHAIN_CONTEXT *host)
+{
+    guest->cbSize = sizeof(*guest);
+    guest->TrustStatus = host->TrustStatus;
+    guest->cChain = host->cChain;
+    guest->cLowerQualityChainContext = host->cLowerQualityChainContext;
+    guest->fHasRevocationFreshnessTime = host->fHasRevocationFreshnessTime;
+    guest->dwRevocationFreshnessTime = host->dwRevocationFreshnessTime;
+}
 
 #endif
