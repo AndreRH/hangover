@@ -955,10 +955,6 @@ void qemu_QueryContextAttributes(struct qemu_syscall *call)
                 WINE_FIXME("Unhandled SECPKG_ATTR_ISSUER_LIST_EX\n");
                 break;
 
-            case SECPKG_ATTR_CONNECTION_INFO:
-                WINE_FIXME("Unhandled SECPKG_ATTR_CONNECTION_INFO\n");
-                break;
-
             case SECPKG_ATTR_EAP_KEY_BLOCK:
                 WINE_FIXME("Unhandled SECPKG_ATTR_EAP_KEY_BLOCK\n");
                 break;
@@ -978,6 +974,7 @@ void qemu_QueryContextAttributes(struct qemu_syscall *call)
             /* Compatible structs. */
             case SECPKG_ATTR_SIZES:
             case SECPKG_ATTR_STREAM_SIZES:
+            case SECPKG_ATTR_CONNECTION_INFO:
                 break;
 
             default:
