@@ -792,7 +792,7 @@ void qemu_ApplyControlToken(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_QueryContextAttributesA
+struct qemu_QueryContextAttributes
 {
     struct qemu_syscall super;
     uint64_t phContext;
@@ -804,8 +804,21 @@ struct qemu_QueryContextAttributesA
 
 WINBASEAPI SECURITY_STATUS WINAPI QueryContextAttributesA(PCtxtHandle phContext, ULONG ulAttribute, void *pBuffer)
 {
-    struct qemu_QueryContextAttributesA call;
+    struct qemu_QueryContextAttributes call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYCONTEXTATTRIBUTESA);
+    call.phContext = (ULONG_PTR)phContext;
+    call.ulAttribute = (ULONG_PTR)ulAttribute;
+    call.pBuffer = (ULONG_PTR)pBuffer;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINBASEAPI SECURITY_STATUS WINAPI QueryContextAttributesW(PCtxtHandle phContext, ULONG ulAttribute, void *pBuffer)
+{
+    struct qemu_QueryContextAttributes call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_QUERYCONTEXTATTRIBUTESW);
     call.phContext = (ULONG_PTR)phContext;
     call.ulAttribute = (ULONG_PTR)ulAttribute;
     call.pBuffer = (ULONG_PTR)pBuffer;
@@ -817,13 +830,14 @@ WINBASEAPI SECURITY_STATUS WINAPI QueryContextAttributesA(PCtxtHandle phContext,
 
 #else
 
-void qemu_QueryContextAttributesA(struct qemu_syscall *call)
+void qemu_QueryContextAttributes(struct qemu_syscall *call)
 {
-    struct qemu_QueryContextAttributesA *c = (struct qemu_QueryContextAttributesA *)call;
+    struct qemu_QueryContextAttributes *c = (struct qemu_QueryContextAttributes *)call;
     CtxtHandle stack, *handle = &stack;
     union
     {
         SecPkgContext_NegotiationInfoW neg_info;
+        CERT_CONTEXT *cert_context;
     } buffer;
     void *data;
     struct qemu_SecPkgContext_NegotiationInfo *neg_info32;
@@ -842,30 +856,13 @@ void qemu_QueryContextAttributesA(struct qemu_syscall *call)
 
     if (c->pBuffer)
     {
+        data = QEMU_G2H(c->pBuffer);
         switch (c->ulAttribute)
         {
             case SECPKG_ATTR_NEGOTIATION_INFO:
                 data = &buffer.neg_info;
                 break;
 
-            /* Compatible structs. */
-            case SECPKG_ATTR_SIZES:
-                data = QEMU_G2H(c->pBuffer);
-                break;
-
-            default:
-                data = &buffer.neg_info;
-        }
-    }
-    else
-        data = NULL;
-#endif
-
-    c->super.iret = QueryContextAttributesA(handle, c->ulAttribute, data);
-
-#if GUEST_BIT != HOST_BIT
-    switch (c->ulAttribute)
-    {
             case SECPKG_ATTR_NAMES:
                 WINE_FIXME("Unhandled SECPKG_ATTR_NAMES\n");
                 break;
@@ -881,40 +878,6 @@ void qemu_QueryContextAttributesA(struct qemu_syscall *call)
             case SECPKG_ATTR_PACKAGE_INFO:
                 WINE_FIXME("Unhandled SECPKG_ATTR_PACKAGE_INFO\n");
                 break;
-
-            case SECPKG_ATTR_NEGOTIATION_INFO:
-            {
-                SecPkgInfoW *pi = buffer.neg_info.PackageInfo;
-                LONG_PTR size_diff = sizeof(*pi) - sizeof(*pkg_info32);
-
-                neg_info32 = QEMU_G2H(c->pBuffer);
-                neg_info32->NegotiationState = buffer.neg_info.NegotiationState;
-
-                if (!pi)
-                {
-                    neg_info32->PackageInfo = 0;
-                    break;
-                }
-
-                /* The tests check the heap size of this thing... */
-                size = HeapSize(GetProcessHeap(), 0, pi) - size_diff;
-
-                pkg_info32 = HeapAlloc(GetProcessHeap(), 0, size);
-                if (!pkg_info32)
-                    WINE_ERR("Out of memory\n");
-                neg_info32->PackageInfo = QEMU_H2G(pkg_info32);
-
-                /* We don't want to figure out if we have char or WCHAR here, so try to just duplicate
-                 * the offsets of the original struct. */
-                SecPkgInfo_h2g(pkg_info32, pi);
-                pkg_info32->Name = (ULONG_PTR)(pkg_info32 + 1);
-                pkg_info32->Comment = (ULONG_PTR)pkg_info32 + (ULONG_PTR)pi->Comment - (ULONG_PTR)pi - size_diff;
-
-                memcpy((char *)(pkg_info32 + 1), (char *)(pi + 1), size - sizeof(*pkg_info32));
-
-                FreeContextBuffer(pi);
-                break;
-            }
 
             case SECPKG_ATTR_NATIVE_NAMES:
                 WINE_FIXME("Unhandled SECPKG_ATTR_NATIVE_NAMES\n");
@@ -948,56 +911,144 @@ void qemu_QueryContextAttributesA(struct qemu_syscall *call)
                 WINE_FIXME("Unhandled SECPKG_ATTR_SESSION_KEY\n");
                 break;
 
-            case SECPKG_ATTR_STREAM_SIZES:
-                WINE_FIXME("Unhandled SECPKG_ATTR_STREAM_SIZES\n");
-                break;
-
             case SECPKG_ATTR_TARGET_INFORMATION:
                 WINE_FIXME("Unhandled SECPKG_ATTR_TARGET_INFORMATION\n");
                 break;
 
+            case SECPKG_ATTR_ISSUER_LIST:
+                WINE_FIXME("Unhandled SECPKG_ATTR_ISSUER_LIST\n");
+                break;
+
+            case SECPKG_ATTR_REMOTE_CRED:
+                WINE_FIXME("Unhandled SECPKG_ATTR_REMOTE_CRED\n");
+                break;
+
+            case SECPKG_ATTR_LOCAL_CRED:
+                WINE_FIXME("Unhandled SECPKG_ATTR_LOCAL_CRED\n");
+                break;
+
+            case SECPKG_ATTR_REMOTE_CERT_CONTEXT:
+                data = &buffer.cert_context;
+                break;
+
+            case SECPKG_ATTR_LOCAL_CERT_CONTEXT:
+                WINE_FIXME("Unhandled SECPKG_ATTR_LOCAL_CERT_CONTEXT\n");
+                break;
+
+            case SECPKG_ATTR_ROOT_STORE:
+                WINE_FIXME("Unhandled SECPKG_ATTR_ROOT_STORE\n");
+                break;
+
+            case SECPKG_ATTR_SUPPORTED_ALGS:
+                WINE_FIXME("Unhandled SECPKG_ATTR_SUPPORTED_ALGS\n");
+                break;
+
+            case SECPKG_ATTR_CIPHER_STRENGTHS:
+                WINE_FIXME("Unhandled SECPKG_ATTR_CIPHER_STRENGTHS\n");
+                break;
+
+            case SECPKG_ATTR_SUPPORTED_PROTOCOLS:
+                WINE_FIXME("Unhandled SECPKG_ATTR_SUPPORTED_PROTOCOLS\n");
+                break;
+
+            case SECPKG_ATTR_ISSUER_LIST_EX:
+                WINE_FIXME("Unhandled SECPKG_ATTR_ISSUER_LIST_EX\n");
+                break;
+
+            case SECPKG_ATTR_CONNECTION_INFO:
+                WINE_FIXME("Unhandled SECPKG_ATTR_CONNECTION_INFO\n");
+                break;
+
+            case SECPKG_ATTR_EAP_KEY_BLOCK:
+                WINE_FIXME("Unhandled SECPKG_ATTR_EAP_KEY_BLOCK\n");
+                break;
+
+            case SECPKG_ATTR_MAPPED_CRED_ATTR:
+                WINE_FIXME("Unhandled SECPKG_ATTR_MAPPED_CRED_ATTR\n");
+                break;
+
+            case SECPKG_ATTR_SESSION_INFO:
+                WINE_FIXME("Unhandled SECPKG_ATTR_SESSION_INFO\n");
+                break;
+
+            case SECPKG_ATTR_APP_DATA:
+                WINE_FIXME("Unhandled SECPKG_ATTR_APP_DATA\n");
+                break;
+
             /* Compatible structs. */
             case SECPKG_ATTR_SIZES:
+            case SECPKG_ATTR_STREAM_SIZES:
                 break;
 
             default:
                 WINE_ERR("Unknown attribute %u.\n", (ULONG)c->ulAttribute);
+        }
+    }
+    else
+    {
+        data = NULL;
     }
 #endif
-}
 
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_QUERYCONTEXTATTRIBUTESW))
+        c->super.iret = QueryContextAttributesW(handle, c->ulAttribute, data);
+    else
+        c->super.iret = QueryContextAttributesA(handle, c->ulAttribute, data);
+
+#if GUEST_BIT != HOST_BIT
+    switch (c->ulAttribute)
+    {
+        case SECPKG_ATTR_NEGOTIATION_INFO:
+        {
+            SecPkgInfoW *pi = buffer.neg_info.PackageInfo;
+            LONG_PTR size_diff = sizeof(*pi) - sizeof(*pkg_info32);
+
+            neg_info32 = QEMU_G2H(c->pBuffer);
+            neg_info32->NegotiationState = buffer.neg_info.NegotiationState;
+
+            if (!pi)
+            {
+                neg_info32->PackageInfo = 0;
+                break;
+            }
+
+            /* The tests check the heap size of this thing... */
+            size = HeapSize(GetProcessHeap(), 0, pi) - size_diff;
+
+            pkg_info32 = HeapAlloc(GetProcessHeap(), 0, size);
+            if (!pkg_info32)
+                WINE_ERR("Out of memory\n");
+            neg_info32->PackageInfo = QEMU_H2G(pkg_info32);
+
+            /* We don't want to figure out if we have char or WCHAR here, so try to just duplicate
+             * the offsets of the original struct. */
+            SecPkgInfo_h2g(pkg_info32, pi);
+            pkg_info32->Name = (ULONG_PTR)(pkg_info32 + 1);
+            pkg_info32->Comment = (ULONG_PTR)pkg_info32 + (ULONG_PTR)pi->Comment - (ULONG_PTR)pi - size_diff;
+
+            memcpy((char *)(pkg_info32 + 1), (char *)(pi + 1), size - sizeof(*pkg_info32));
+
+            FreeContextBuffer(pi);
+            break;
+        }
+
+        case SECPKG_ATTR_REMOTE_CERT_CONTEXT:
+        {
+            qemu_ptr *out = QEMU_G2H(c->pBuffer);
+            if (!p_CERT_CONTEXT_h2g)
+            {
+                HMODULE crypt32_wrapper;
+                crypt32_wrapper = GetModuleHandleA("qemu_crypt32");
+                if (!crypt32_wrapper)
+                    WINE_ERR("Cannot find qemu_crytp32.dll.so in loaded modules.\n");
+                p_CERT_CONTEXT_h2g = (void *)GetProcAddress(crypt32_wrapper, "crypt32_CERT_CONTEXT_h2g");
+                if (!p_CERT_CONTEXT_h2g)
+                    WINE_ERR("Cannot find crypt32_CERT_CONTEXT_h2g in qemu_crytp32.dll.so.\n");
+            }
+            *out = p_CERT_CONTEXT_h2g(buffer.cert_context);
+        }
+    }
 #endif
-
-struct qemu_QueryContextAttributesW
-{
-    struct qemu_syscall super;
-    uint64_t phContext;
-    uint64_t ulAttribute;
-    uint64_t pBuffer;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI SECURITY_STATUS WINAPI QueryContextAttributesW(PCtxtHandle phContext, ULONG ulAttribute, void *pBuffer)
-{
-    struct qemu_QueryContextAttributesW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_QUERYCONTEXTATTRIBUTESW);
-    call.phContext = (ULONG_PTR)phContext;
-    call.ulAttribute = (ULONG_PTR)ulAttribute;
-    call.pBuffer = (ULONG_PTR)pBuffer;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_QueryContextAttributesW(struct qemu_syscall *call)
-{
-    struct qemu_QueryContextAttributesW *c = (struct qemu_QueryContextAttributesW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QueryContextAttributesW(QEMU_G2H(c->phContext), c->ulAttribute, QEMU_G2H(c->pBuffer));
 }
 
 #endif

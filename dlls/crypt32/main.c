@@ -1208,4 +1208,13 @@ const CERT_CONTEXT WINAPI *crypt32_CERT_CONTEXT_g2h(qemu_ptr cert32)
     return impl->cert64;
 }
 
+const qemu_ptr WINAPI crypt32_CERT_CONTEXT_h2g(CERT_CONTEXT *cert64)
+{
+    struct qemu_cert_context *impl;
+    if (!cert64)
+        return 0;
+    impl = context32_create(cert64);
+    return QEMU_H2G(impl);
+}
+
 #endif
