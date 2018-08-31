@@ -1629,6 +1629,18 @@ void qemu_EncryptMessage(struct qemu_syscall *call)
 #endif
 
     c->super.iret = EncryptMessage(ctx, c->fQOP, msg, c->MessageSeqNo);
+
+#if GUEST_BIT != HOST_BIT
+    if (msg32)
+    {
+        if (msg32->cBuffers != msg->cBuffers)
+            WINE_FIXME("Number of output buffers changed.\n");
+
+        buf32 = QEMU_G2H((ULONG_PTR)msg32->pBuffers);
+        for (i = 0; i < msg->cBuffers; ++i)
+            SecBuffer_h2g(&buf32[i], &buf_array[i]);
+    }
+#endif
 }
 
 #endif
@@ -1700,6 +1712,18 @@ void qemu_DecryptMessage(struct qemu_syscall *call)
 #endif
 
     c->super.iret = DecryptMessage(ctx, msg, c->MessageSeqNo, QEMU_G2H(c->pfQOP));
+
+#if GUEST_BIT != HOST_BIT
+    if (msg32)
+    {
+        if (msg32->cBuffers != msg->cBuffers)
+            WINE_FIXME("Number of output buffers changed.\n");
+
+        buf32 = QEMU_G2H((ULONG_PTR)msg32->pBuffers);
+        for (i = 0; i < msg->cBuffers; ++i)
+            SecBuffer_h2g(&buf32[i], &buf_array[i]);
+    }
+#endif
 }
 
 #endif
