@@ -484,6 +484,18 @@ static inline void CERT_CHAIN_ELEMENT_h2g(struct qemu_CERT_CHAIN_ELEMENT *guest,
     guest->pwszExtendedErrorInfo = (ULONG_PTR)host->pwszExtendedErrorInfo;
 }
 
+static inline void CERT_CHAIN_ELEMENT_g2h(CERT_CHAIN_ELEMENT *host,
+        const struct qemu_CERT_CHAIN_ELEMENT *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->pCertContext = (void *)(ULONG_PTR)guest->pCertContext;
+    host->TrustStatus = guest->TrustStatus;
+    host->pRevocationInfo = (void *)(ULONG_PTR)guest->pRevocationInfo;
+    host->pIssuanceUsage = (void *)(ULONG_PTR)guest->pIssuanceUsage;
+    host->pApplicationUsage = (void *)(ULONG_PTR)guest->pApplicationUsage;
+    host->pwszExtendedErrorInfo = (void *)(ULONG_PTR)guest->pwszExtendedErrorInfo;
+}
+
 struct qemu_CERT_SIMPLE_CHAIN
 {
     DWORD                 cbSize;
@@ -508,6 +520,18 @@ static inline void CERT_SIMPLE_CHAIN_h2g(struct qemu_CERT_SIMPLE_CHAIN *guest,
     guest->dwRevocationFreshnessTime = host->dwRevocationFreshnessTime;
 }
 
+static inline void CERT_SIMPLE_CHAIN_g2h(CERT_SIMPLE_CHAIN *host,
+        const struct qemu_CERT_SIMPLE_CHAIN *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->TrustStatus = guest->TrustStatus;
+    host->cElement = guest->cElement;
+    host->rgpElement = (void *)(ULONG_PTR)guest->rgpElement;
+    host->pTrustListInfo = (void *)(ULONG_PTR)guest->pTrustListInfo;
+    host->fHasRevocationFreshnessTime = guest->fHasRevocationFreshnessTime;
+    host->dwRevocationFreshnessTime = guest->dwRevocationFreshnessTime;
+}
+
 struct qemu_CERT_CHAIN_CONTEXT
 {
     DWORD                 cbSize;
@@ -527,9 +551,24 @@ static inline void CERT_CHAIN_CONTEXT_h2g(struct qemu_CERT_CHAIN_CONTEXT *guest,
     guest->cbSize = sizeof(*guest);
     guest->TrustStatus = host->TrustStatus;
     guest->cChain = host->cChain;
+    guest->rgpChain = (ULONG_PTR)host->rgpChain;
     guest->cLowerQualityChainContext = host->cLowerQualityChainContext;
+    guest->rgpLowerQualityChainContext = (ULONG_PTR)host->rgpLowerQualityChainContext;
     guest->fHasRevocationFreshnessTime = host->fHasRevocationFreshnessTime;
     guest->dwRevocationFreshnessTime = host->dwRevocationFreshnessTime;
+}
+
+static inline void CERT_CHAIN_CONTEXT_g2h(CERT_CHAIN_CONTEXT *host,
+        const struct qemu_CERT_CHAIN_CONTEXT *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->TrustStatus = guest->TrustStatus;
+    host->cChain = guest->cChain;
+    host->rgpChain = (void *)(ULONG_PTR)guest->rgpChain;
+    host->cLowerQualityChainContext = guest->cLowerQualityChainContext;
+    host->rgpLowerQualityChainContext = (void *)(ULONG_PTR)guest->rgpLowerQualityChainContext;
+    host->fHasRevocationFreshnessTime = guest->fHasRevocationFreshnessTime;
+    host->dwRevocationFreshnessTime = guest->dwRevocationFreshnessTime;
 }
 
 #endif

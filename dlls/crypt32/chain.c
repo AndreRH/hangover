@@ -230,7 +230,7 @@ void qemu_CertGetCertificateChain(struct qemu_syscall *call)
                     sizeof(*simple_chain) * chain_stack->cChain + sizeof(qemu_ptr) * chain_stack->cChain);
             if (!ptrs)
                 WINE_ERR("Out of memory\n");
-            simple_chain = (struct qemu_CERT_SIMPLE_CHAIN *)&ptrs[chain_stack->cChain + 1];
+            simple_chain = (struct qemu_CERT_SIMPLE_CHAIN *)&ptrs[chain_stack->cChain];
 
             for (i = 0; i < chain_stack->cChain; ++i)
             {
@@ -242,7 +242,7 @@ void qemu_CertGetCertificateChain(struct qemu_syscall *call)
                         sizeof(*element) * simple_chain[i].cElement + sizeof(qemu_ptr) * simple_chain[i].cElement);
                 if (!ptrs2)
                     WINE_ERR("Out of memory\n");
-                element = (struct qemu_CERT_CHAIN_ELEMENT *)&ptrs2[simple_chain[i].cElement + 1];
+                element = (struct qemu_CERT_CHAIN_ELEMENT *)&ptrs2[simple_chain[i].cElement];
 
                 for (j = 0; j < simple_chain[i].cElement; j++)
                 {
@@ -472,8 +472,116 @@ WINBASEAPI BOOL WINAPI CertVerifyCertificateChainPolicy(LPCSTR szPolicyOID, PCCE
 void qemu_CertVerifyCertificateChainPolicy(struct qemu_syscall *call)
 {
     struct qemu_CertVerifyCertificateChainPolicy *c = (struct qemu_CertVerifyCertificateChainPolicy *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CertVerifyCertificateChainPolicy(QEMU_G2H(c->szPolicyOID), QEMU_G2H(c->pChainContext), QEMU_G2H(c->pPolicyPara), QEMU_G2H(c->pPolicyStatus));
+    CERT_CHAIN_POLICY_STATUS status = {0};
+    struct qemu_CERT_CHAIN_POLICY_STATUS *status32;
+    CERT_CHAIN_POLICY_PARA para;
+    struct qemu_CERT_CHAIN_POLICY_PARA *para32;
+    CERT_CHAIN_CONTEXT context;
+    CERT_SIMPLE_CHAIN *chain64;
+    const struct qemu_CERT_CHAIN_CONTEXT *context32;
+    unsigned int i, j, chain_count, elem_count;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = CertVerifyCertificateChainPolicy(QEMU_G2H(c->szPolicyOID), QEMU_G2H(c->pChainContext),
+            QEMU_G2H(c->pPolicyPara), QEMU_G2H(c->pPolicyStatus));
+    return
+#endif
+
+    status32 = QEMU_G2H(c->pPolicyStatus);
+    para32 = QEMU_G2H(c->pPolicyPara);
+    context32 = QEMU_G2H(c->pChainContext);
+
+    if (para32)
+    {
+        CERT_CHAIN_POLICY_PARA_g2h(&para, para32);
+        if (para.pvExtraPolicyPara)
+        {
+            WINE_FIXME("Convert pvExtraPolicyPara.\n");
+            para.pvExtraPolicyPara = NULL;
+        }
+    }
+
+    if (context32)
+    {
+        /* Don't rely on context32 pointing to a qemu_cert_chain_context. */
+        qemu_ptr *chains32, *elem32;
+        CERT_SIMPLE_CHAIN **ptr_array;
+        CERT_CHAIN_ELEMENT **elem_array;
+        CERT_CHAIN_ELEMENT *elem64;
+
+        CERT_CHAIN_CONTEXT_g2h(&context, context32);
+
+        if (context.rgpLowerQualityChainContext)
+        {
+            WINE_FIXME("Lower quality contexts not supported.\n");
+            context.rgpLowerQualityChainContext = NULL;
+            context.cLowerQualityChainContext = 0;
+        }
+
+        if (context.rgpChain)
+        {
+            chains32 = (qemu_ptr *)context.rgpChain;
+            chain_count = context.cChain;
+
+            ptr_array = HeapAlloc(GetProcessHeap(), 0,
+                    (sizeof(*ptr_array) + sizeof(*chain64)) * chain_count);
+            if (!ptr_array)
+                WINE_ERR("Out of memory\n");
+            chain64 = (CERT_SIMPLE_CHAIN *)&ptr_array[chain_count];
+
+            for (i = 0; i < chain_count; ++i)
+            {
+                ptr_array[i] = &chain64[i];
+                CERT_SIMPLE_CHAIN_g2h(&chain64[i], QEMU_G2H((ULONG_PTR)chains32[i]));
+                elem32 = (qemu_ptr *)chain64[i].rgpElement;
+
+                elem_count = chain64[i].cElement;
+                if (chain64[i].pTrustListInfo)
+                {
+                    WINE_FIXME("CERT_SIMPLE_CHAIN.pTrustListInfo not supported yet.\n");
+                    chain64[i].pTrustListInfo = NULL;
+                }
+
+                elem_array = HeapAlloc(GetProcessHeap(), 0,
+                        (sizeof(*elem_array) + sizeof(*elem64)) * elem_count);
+                if (!elem_array)
+                    WINE_ERR("Out of memory\n");
+                elem64 = (CERT_CHAIN_ELEMENT *)&elem_array[elem_count];
+
+                for (j = 0; j < elem_count; ++j)
+                {
+                    struct qemu_cert_context *cert_context;
+
+                    elem_array[j] = &elem64[j];
+                    CERT_CHAIN_ELEMENT_g2h(&elem64[j], QEMU_G2H((ULONG_PTR)elem32[i]));
+                    cert_context = context_impl_from_context32(QEMU_G2H(elem64[j].pCertContext));
+                    elem64[j].pCertContext = cert_context ? cert_context->cert64 : NULL;
+                }
+
+                chain64[i].rgpElement = elem_array;
+            }
+            context.rgpChain = ptr_array;
+        }
+    }
+
+    c->super.iret = CertVerifyCertificateChainPolicy(QEMU_G2H(c->szPolicyOID), para32 ? &context : NULL,
+            para32 ? &para : NULL, status32 ? &status : NULL);
+
+    if (status32)
+    {
+        /* Wine currently never sets this. */
+        if (status.pvExtraPolicyStatus)
+            WINE_FIXME("CERT_CHAIN_POLICY_STATUS.pvExtraPolicyStatus not handled yet.\n");
+        CERT_CHAIN_POLICY_STATUS_h2g(status32, &status);
+    }
+
+    if (context32)
+    {
+        for (i = 0; i < chain_count; ++i)
+            HeapFree(GetProcessHeap(), 0, chain64[i].rgpElement);
+        HeapFree(GetProcessHeap(), 0, context.rgpChain);
+    }
 }
 
 #endif
