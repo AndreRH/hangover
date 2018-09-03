@@ -117,6 +117,9 @@ static const syscall_handler dll_functions[] =
     qemu_WICConvertBitmapSource,
     qemu_WICCreateBitmapFromSection,
     qemu_WICCreateBitmapFromSectionEx,
+    qemu_WICMapGuidToShortName,
+    qemu_WICMapSchemaToName,
+    qemu_WICMapShortNameToGuid,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
