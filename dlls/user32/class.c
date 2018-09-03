@@ -217,7 +217,10 @@ void qemu_UnregisterClass(struct qemu_syscall *call)
     ULONG_PTR proc;
     WINE_TRACE("\n");
 
-    inst = qemu_ops->qemu_module_g2h(c->hInstance);
+    if (c->hInstance)
+        inst = qemu_ops->qemu_module_g2h(c->hInstance);
+    else
+        inst = NULL;
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_UNREGISTERCLASSA))
         c->super.iret = UnregisterClassA(QEMU_G2H(c->className), inst);
