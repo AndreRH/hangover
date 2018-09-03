@@ -35,7 +35,6 @@ static inline void WNDCLASSEX_g2h(WNDCLASSEXW *host, const struct qemu_WNDCLASSE
 
 static inline void WNDCLASSEX_h2g(struct qemu_WNDCLASSEX *guest, const WNDCLASSEXW *host)
 {
-    guest->cbSize = sizeof(*guest);
     guest->style = host->style;
     guest->lpfnWndProc = (ULONG_PTR)host->lpfnWndProc;
     guest->cbClsExtra = host->cbClsExtra;
