@@ -638,6 +638,7 @@ void qemu_GetWindowLongA(struct qemu_syscall *call)
     struct qemu_GetWindowLongA *c = (struct qemu_GetWindowLongA *)call;
     HWND win;
     INT offset;
+    LONG_PTR module;
 
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
@@ -648,6 +649,11 @@ void qemu_GetWindowLongA(struct qemu_syscall *call)
         case GWLP_WNDPROC:
         case DWLP_DLGPROC:
             c->super.iret = get_wndproc(win, FALSE, offset);
+            break;
+
+        case GWLP_HINSTANCE:
+            module = GetWindowLongPtrA(win, offset);
+            c->super.iret = qemu_ops->qemu_module_h2g((HMODULE)module);
             break;
 
         default:
@@ -686,6 +692,7 @@ void qemu_GetWindowLongW(struct qemu_syscall *call)
     struct qemu_GetWindowLongW *c = (struct qemu_GetWindowLongW *)call;
     HWND win;
     INT offset;
+    LONG_PTR module;
 
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
@@ -696,6 +703,11 @@ void qemu_GetWindowLongW(struct qemu_syscall *call)
         case DWLP_DLGPROC:
         case GWLP_WNDPROC:
             c->super.iret = get_wndproc(win, TRUE, offset);
+            break;
+
+        case GWLP_HINSTANCE:
+            module = GetWindowLongPtrW(win, offset);
+            c->super.iret = qemu_ops->qemu_module_h2g((HMODULE)module);
             break;
 
         default:
@@ -2261,6 +2273,7 @@ void qemu_GetWindowLongPtrW(struct qemu_syscall *call)
     struct qemu_GetWindowLongPtrW *c = (struct qemu_GetWindowLongPtrW *)call;
     HWND win;
     INT offset;
+    LONG_PTR module;
 
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
@@ -2271,6 +2284,11 @@ void qemu_GetWindowLongPtrW(struct qemu_syscall *call)
         case DWLP_DLGPROC:
         case GWLP_WNDPROC:
             c->super.iret = get_wndproc(win, TRUE, offset);
+            break;
+
+        case GWLP_HINSTANCE:
+            module = GetWindowLongPtrW(win, offset);
+            c->super.iret = qemu_ops->qemu_module_h2g((HMODULE)module);
             break;
 
         default:
@@ -2309,6 +2327,7 @@ void qemu_GetWindowLongPtrA(struct qemu_syscall *call)
     struct qemu_GetWindowLongPtrA *c = (struct qemu_GetWindowLongPtrA *)call;
     HWND win;
     INT offset;
+    LONG_PTR module;
 
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
@@ -2319,6 +2338,11 @@ void qemu_GetWindowLongPtrA(struct qemu_syscall *call)
         case GWLP_WNDPROC:
         case DWLP_DLGPROC:
             c->super.iret = get_wndproc(win, FALSE, offset);
+            break;
+
+        case GWLP_HINSTANCE:
+            module = GetWindowLongPtrA(win, offset);
+            c->super.iret = qemu_ops->qemu_module_h2g((HMODULE)module);
             break;
 
         default:

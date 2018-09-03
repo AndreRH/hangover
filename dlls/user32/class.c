@@ -300,6 +300,8 @@ void qemu_GetClassLongW(struct qemu_syscall *call)
 {
     struct qemu_GetClassLongW *c = (struct qemu_GetClassLongW *)call;
     HWND win;
+    DWORD_PTR module;
+
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
 
@@ -307,6 +309,11 @@ void qemu_GetClassLongW(struct qemu_syscall *call)
     {
         case GCLP_WNDPROC:
             c->super.iret = get_class_wndproc(win, TRUE);
+            break;
+
+        case GCLP_HMODULE:
+            module = GetClassLongPtrW(win, c->offset);
+            c->super.iret = qemu_ops->qemu_module_h2g((HMODULE)module);
             break;
 
 #if 0
@@ -348,6 +355,8 @@ void qemu_GetClassLongA(struct qemu_syscall *call)
 {
     struct qemu_GetClassLongA *c = (struct qemu_GetClassLongA *)call;
     HWND win;
+    DWORD_PTR module;
+
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
 
@@ -355,6 +364,11 @@ void qemu_GetClassLongA(struct qemu_syscall *call)
     {
         case GCLP_WNDPROC:
             c->super.iret = get_class_wndproc(win, FALSE);
+            break;
+
+        case GCLP_HMODULE:
+            module = GetClassLongPtrA(win, c->offset);
+            c->super.iret = qemu_ops->qemu_module_h2g((HMODULE)module);
             break;
 
 #if 0
@@ -945,13 +959,19 @@ void qemu_GetClassLongPtrA(struct qemu_syscall *call)
 {
     struct qemu_GetClassLongPtrA *c = (struct qemu_GetClassLongPtrA *)call;
     HWND win;
+    ULONG_PTR module;
+
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
-
     switch (c->offset)
     {
         case GCLP_WNDPROC:
             c->super.iret = get_class_wndproc(win, FALSE);
+            break;
+
+        case GCLP_HMODULE:
+            module = GetClassLongPtrA(win, c->offset);
+            c->super.iret = qemu_ops->qemu_module_h2g((HMODULE)module);
             break;
 
         default:
@@ -1018,6 +1038,8 @@ void qemu_GetClassLongPtrW(struct qemu_syscall *call)
 {
     struct qemu_GetClassLongPtrW *c = (struct qemu_GetClassLongPtrW *)call;
     HWND win;
+    ULONG_PTR module;
+
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
 
@@ -1025,6 +1047,11 @@ void qemu_GetClassLongPtrW(struct qemu_syscall *call)
     {
         case GCLP_WNDPROC:
             c->super.iret = get_class_wndproc(win, TRUE);
+            break;
+
+        case GCLP_HMODULE:
+            module = GetClassLongPtrW(win, c->offset);
+            c->super.iret = qemu_ops->qemu_module_h2g((HMODULE)module);
             break;
 
         default:
