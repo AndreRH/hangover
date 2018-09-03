@@ -477,6 +477,13 @@ void qemu_SetClassLongW(struct qemu_syscall *call)
             c->super.iret = set_class_wndproc(win, TRUE, c->newval);
             break;
 
+        case GCLP_HMODULE:
+            if (c->newval)
+                c->newval = (ULONG_PTR)qemu_ops->qemu_module_g2h(c->newval);
+
+            c->super.iret = SetClassLongPtrW(win, c->offset, c->newval);
+            break;
+
 #if 0
         case GCL_CBWNDEXTRA:
             WINE_FIXME("Check correct return value for GCL_CBWNDEXTRA.\n");
@@ -527,6 +534,13 @@ void qemu_SetClassLongA(struct qemu_syscall *call)
     {
         case GCLP_WNDPROC:
             c->super.iret = set_class_wndproc(win, FALSE, c->newval);
+            break;
+
+        case GCLP_HMODULE:
+            if (c->newval)
+                c->newval = (ULONG_PTR)qemu_ops->qemu_module_g2h(c->newval);
+
+            c->super.iret = SetClassLongPtrA(win, c->offset, c->newval);
             break;
 
 #if 0
@@ -1090,6 +1104,7 @@ void qemu_SetClassLongPtrW(struct qemu_syscall *call)
 {
     struct qemu_SetClassLongPtrW *c = (struct qemu_SetClassLongPtrW *)call;
     HWND win;
+    LONG_PTR mod;
 
     WINE_TRACE("\n");
     win = (HWND)c->hwnd;
@@ -1098,6 +1113,13 @@ void qemu_SetClassLongPtrW(struct qemu_syscall *call)
     {
         case GCLP_WNDPROC:
             c->super.iret = set_class_wndproc(win, TRUE, c->newval);
+            break;
+
+        case GCLP_HMODULE:
+            if (c->newval)
+                c->newval = (ULONG_PTR)qemu_ops->qemu_module_g2h(c->newval);
+
+            c->super.iret = SetClassLongPtrW(win, c->offset, c->newval);
             break;
 
         default:
@@ -1146,6 +1168,13 @@ void qemu_SetClassLongPtrA(struct qemu_syscall *call)
     {
         case GCLP_WNDPROC:
             c->super.iret = set_class_wndproc(win, FALSE, c->newval);
+            break;
+
+        case GCLP_HMODULE:
+            if (c->newval)
+                c->newval = (ULONG_PTR)qemu_ops->qemu_module_g2h(c->newval);
+
+            c->super.iret = SetClassLongPtrA(win, c->offset, c->newval);
             break;
 
         default:
