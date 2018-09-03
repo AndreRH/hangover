@@ -728,7 +728,12 @@ void qemu_GetClassInfoA(struct qemu_syscall *call)
 #if GUEST_BIT == HOST_BIT
     wc = QEMU_G2H(c->wc);
 #endif
-    inst = qemu_ops->qemu_module_g2h(c->hInstance);
+
+    if (c->hInstance)
+        inst = qemu_ops->qemu_module_g2h(c->hInstance);
+    else
+        inst = NULL;
+
     c->super.iret = GetClassInfoA(inst, QEMU_G2H(c->name), wc);
 
     if (c->super.iret)
@@ -779,7 +784,12 @@ void qemu_GetClassInfoW(struct qemu_syscall *call)
 #if GUEST_BIT == HOST_BIT
     wc = QEMU_G2H(c->wc);
 #endif
-    inst = qemu_ops->qemu_module_g2h(c->hInstance);
+
+    if (c->hInstance)
+        inst = qemu_ops->qemu_module_g2h(c->hInstance);
+    else
+        inst = NULL;
+
     c->super.iret = GetClassInfoW(inst, QEMU_G2H(c->name), wc);
 
     if (c->super.iret)
