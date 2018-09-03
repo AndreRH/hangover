@@ -123,6 +123,7 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
 {
     struct qemu_RegisterClass *c = (struct qemu_RegisterClass *)call;
     uint64_t guest_proc;
+    struct qemu_WNDCLASSEX *class32;
 
     WINE_TRACE("\n");
 
@@ -132,8 +133,15 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
 #if HOST_BIT == GUEST_BIT
         exw = *(WNDCLASSEXW *)QEMU_G2H(c->wc);
 #else
-        /* FIXME: Verify cbSize */
-        WNDCLASSEX_g2h(&exw, QEMU_G2H(c->wc));
+        class32 = QEMU_G2H(c->wc);
+        if (class32->cbSize != sizeof(*class32))
+        {
+            WINE_WARN("Invalid size, passing invalid struct to host.\n");
+            memset(&exw, 0, sizeof(exw));
+            c->super.iret = RegisterClassExW(&exw);
+            return;
+        }
+        WNDCLASSEX_g2h(&exw, class32);
 
         /* DLGPROC and LPARAM are 8 bytes in Wine. DLGWINDOWEXTRA may cause issues,
          * but it seems to be a "comdlg32 needs this much" value, and not a "read from
@@ -154,8 +162,15 @@ void qemu_RegisterClassEx(struct qemu_syscall *call)
 #if HOST_BIT == GUEST_BIT
         exa = *(WNDCLASSEXA *)QEMU_G2H(c->wc);
 #else
-        /* FIXME: Verify cbSize */
-        WNDCLASSEX_g2h((WNDCLASSEXW *)&exa, QEMU_G2H(c->wc));
+        class32 = QEMU_G2H(c->wc);
+        if (class32->cbSize != sizeof(*class32))
+        {
+            WINE_WARN("Invalid size, passing invalid struct to host.\n");
+            memset(&exa, 0, sizeof(exa));
+            c->super.iret = RegisterClassExA(&exa);
+            return;
+        }
+        WNDCLASSEX_g2h((WNDCLASSEXW *)&exa, class32);
 
         /* DLGPROC and LPARAM are 8 bytes in Wine. DLGWINDOWEXTRA may cause issues,
          * but it seems to be a "comdlg32 needs this much" value, and not a "read from
