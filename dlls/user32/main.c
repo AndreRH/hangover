@@ -1254,6 +1254,15 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             msg_out->wParam = (LONG)msg_in->wParam;
             break;
 
+        case WM_MEASUREITEM:
+        {
+            struct qemu_MEASUREITEMSTRUCT *guest = (struct qemu_MEASUREITEMSTRUCT *)msg_in->lParam;
+            MEASUREITEMSTRUCT *host = HeapAlloc(GetProcessHeap(), 0, sizeof(*host));
+            MEASUREITEMSTRUCT_g2h(host, guest);
+            msg_out->lParam = (LPARAM)host;
+            break;
+        }
+
 #if 0
         case WM_NOTIFY:
         {
@@ -1630,6 +1639,17 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
 
+        case WM_MEASUREITEM:
+        {
+            struct qemu_MEASUREITEMSTRUCT *guest = (struct qemu_MEASUREITEMSTRUCT *)orig->lParam;
+            MEASUREITEMSTRUCT *host = (MEASUREITEMSTRUCT *)conv->lParam;
+
+            MEASUREITEMSTRUCT_h2g(guest, host);
+
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+        }
+
 #if 0
         case WM_NOTIFY:
             if (conv->lParam != orig->lParam)
@@ -1946,6 +1966,15 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             break;
         }
 
+        case WM_MEASUREITEM:
+        {
+            MEASUREITEMSTRUCT *host = (MEASUREITEMSTRUCT *)msg_in->lParam;
+            struct qemu_MEASUREITEMSTRUCT *guest = HeapAlloc(GetProcessHeap(), 0, sizeof(*guest));
+            MEASUREITEMSTRUCT_h2g(guest, host);
+            msg_out->lParam = (LPARAM)guest;
+            break;
+        }
+
 #if 0
         case WM_NOTIFY:
         {
@@ -2183,6 +2212,17 @@ void msg_host_to_guest_return(MSG *orig, MSG *conv)
         case WM_COMPAREITEM:
             HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
             break;
+
+        case WM_MEASUREITEM:
+        {
+            struct qemu_MEASUREITEMSTRUCT *guest = (struct qemu_MEASUREITEMSTRUCT *)conv->lParam;
+            MEASUREITEMSTRUCT *host = (MEASUREITEMSTRUCT *)orig->lParam;
+
+            MEASUREITEMSTRUCT_g2h(host, guest);
+
+            HeapFree(GetProcessHeap(), 0, (void *)conv->lParam);
+            break;
+        }
 
 #if 0
         case WM_NOTIFY:

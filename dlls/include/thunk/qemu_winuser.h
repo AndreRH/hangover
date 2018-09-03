@@ -907,6 +907,36 @@ static inline void COMPAREITEMSTRUCT_g2h(COMPAREITEMSTRUCT *host, const struct q
     host->dwLocaleId = guest->dwLocaleId;
 }
 
+struct qemu_MEASUREITEMSTRUCT
+{
+    UINT      CtlType;
+    UINT      CtlID;
+    UINT      itemID;
+    UINT      itemWidth;
+    UINT      itemHeight;
+    qemu_ptr  itemData;
+};
+
+static inline void MEASUREITEMSTRUCT_h2g(struct qemu_MEASUREITEMSTRUCT *guest, const MEASUREITEMSTRUCT *host)
+{
+    guest->CtlType = host->CtlType;
+    guest->CtlID = host->CtlID;
+    guest->itemID = host->itemID;
+    guest->itemWidth = host->itemWidth;
+    guest->itemHeight = host->itemHeight;
+    guest->itemData = host->itemData;
+}
+
+static inline void MEASUREITEMSTRUCT_g2h(MEASUREITEMSTRUCT *host, const struct qemu_MEASUREITEMSTRUCT *guest)
+{
+    host->CtlType = guest->CtlType;
+    host->CtlID = guest->CtlID;
+    host->itemID = guest->itemID;
+    host->itemWidth = guest->itemWidth;
+    host->itemHeight = guest->itemHeight;
+    host->itemData = guest->itemData;
+}
+
 #endif
 
 #endif
