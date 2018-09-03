@@ -23,6 +23,7 @@
 enum windowscodecs_calls
 {
     CALL_INIT_DLL = 0,
+    CALL_WICCONVERTBITMAPSOURCE,
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -30,6 +31,8 @@ enum windowscodecs_calls
 #else
 
 extern const struct qemu_ops *qemu_ops;
+
+void qemu_WICConvertBitmapSource(struct qemu_syscall *call);
 
 #endif
 

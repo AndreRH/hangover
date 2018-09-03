@@ -671,7 +671,7 @@ HRESULT WINAPI WICSetEncoderFormat_Proxy(IWICBitmapSource *pSourceIn,
         }
         else
         {
-            hr = E_NOTIMPL; /*WICConvertBitmapSource(&framepixelformat, pSourceIn, ppSourceOut);*/
+            hr = WICConvertBitmapSource(&framepixelformat, pSourceIn, ppSourceOut);
         }
     }
 

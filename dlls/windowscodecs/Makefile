@@ -8,11 +8,11 @@ VPATH=$(SRCDIR)
 
 all: windowscodecs.dll qemu_windowscodecs.dll.so
 
-windowscodecs.dll: main_g.o proxy_g.o windowscodecs.spec
+windowscodecs.dll: info_g.o main_g.o proxy_g.o windowscodecs.spec
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/windowscodecs.spec *_g.o -o windowscodecs.dll -nodefaultlibs -nostdlib -lkernel32 -lwine -lmsvcrt -luuid -lole32 -loleaut32 -L../../$(WINE_DIR)/libs/wine
 
-qemu_windowscodecs.dll.so: main_h.o proxy_h.o qemu_windowscodecs.spec
-	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_windowscodecs.spec *_h.o -o qemu_windowscodecs.dll.so -lole32
+qemu_windowscodecs.dll.so: info_h.o main_h.o proxy_h.o qemu_windowscodecs.spec
+	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_windowscodecs.spec *_h.o -o qemu_windowscodecs.dll.so -lwindowscodecs
 
 %_g.o: %.c qemu_windowscodecs.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../../wine/include/wine -Wno-format
