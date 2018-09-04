@@ -23,6 +23,7 @@
 
 #include <initguid.h>
 #include <windows.h>
+#include <wincodec.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -114,6 +115,33 @@ const struct qemu_ops *qemu_ops;
 static const syscall_handler dll_functions[] =
 {
     qemu_init_dll,
+    qemu_WICBitmapEncoder_AddRef,
+    qemu_WICBitmapEncoder_Commit,
+    qemu_WICBitmapEncoder_CreateNewFrame,
+    qemu_WICBitmapEncoder_GetContainerFormat,
+    qemu_WICBitmapEncoder_GetEncoderInfo,
+    qemu_WICBitmapEncoder_GetMetadataQueryWriter,
+    qemu_WICBitmapEncoder_Initialize,
+    qemu_WICBitmapEncoder_QueryInterface,
+    qemu_WICBitmapEncoder_Release,
+    qemu_WICBitmapEncoder_SetColorContexts,
+    qemu_WICBitmapEncoder_SetPalette,
+    qemu_WICBitmapEncoder_SetPreview,
+    qemu_WICBitmapEncoder_SetThumbnail,
+    qemu_WICBitmapFrameEncode_AddRef,
+    qemu_WICBitmapFrameEncode_Commit,
+    qemu_WICBitmapFrameEncode_GetMetadataQueryWriter,
+    qemu_WICBitmapFrameEncode_Initialize,
+    qemu_WICBitmapFrameEncode_QueryInterface,
+    qemu_WICBitmapFrameEncode_Release,
+    qemu_WICBitmapFrameEncode_SetColorContexts,
+    qemu_WICBitmapFrameEncode_SetPalette,
+    qemu_WICBitmapFrameEncode_SetPixelFormat,
+    qemu_WICBitmapFrameEncode_SetResolution,
+    qemu_WICBitmapFrameEncode_SetSize,
+    qemu_WICBitmapFrameEncode_SetThumbnail,
+    qemu_WICBitmapFrameEncode_WritePixels,
+    qemu_WICBitmapFrameEncode_WriteSource,
     qemu_WICConvertBitmapSource,
     qemu_WICCreateBitmapFromSection,
     qemu_WICCreateBitmapFromSectionEx,

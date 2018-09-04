@@ -23,6 +23,33 @@
 enum windowscodecs_calls
 {
     CALL_INIT_DLL = 0,
+    CALL_WICBITMAPENCODER_ADDREF,
+    CALL_WICBITMAPENCODER_COMMIT,
+    CALL_WICBITMAPENCODER_CREATENEWFRAME,
+    CALL_WICBITMAPENCODER_GETCONTAINERFORMAT,
+    CALL_WICBITMAPENCODER_GETENCODERINFO,
+    CALL_WICBITMAPENCODER_GETMETADATAQUERYWRITER,
+    CALL_WICBITMAPENCODER_INITIALIZE,
+    CALL_WICBITMAPENCODER_QUERYINTERFACE,
+    CALL_WICBITMAPENCODER_RELEASE,
+    CALL_WICBITMAPENCODER_SETCOLORCONTEXTS,
+    CALL_WICBITMAPENCODER_SETPALETTE,
+    CALL_WICBITMAPENCODER_SETPREVIEW,
+    CALL_WICBITMAPENCODER_SETTHUMBNAIL,
+    CALL_WICBITMAPFRAMEENCODE_ADDREF,
+    CALL_WICBITMAPFRAMEENCODE_COMMIT,
+    CALL_WICBITMAPFRAMEENCODE_GETMETADATAQUERYWRITER,
+    CALL_WICBITMAPFRAMEENCODE_INITIALIZE,
+    CALL_WICBITMAPFRAMEENCODE_QUERYINTERFACE,
+    CALL_WICBITMAPFRAMEENCODE_RELEASE,
+    CALL_WICBITMAPFRAMEENCODE_SETCOLORCONTEXTS,
+    CALL_WICBITMAPFRAMEENCODE_SETPALETTE,
+    CALL_WICBITMAPFRAMEENCODE_SETPIXELFORMAT,
+    CALL_WICBITMAPFRAMEENCODE_SETRESOLUTION,
+    CALL_WICBITMAPFRAMEENCODE_SETSIZE,
+    CALL_WICBITMAPFRAMEENCODE_SETTHUMBNAIL,
+    CALL_WICBITMAPFRAMEENCODE_WRITEPIXELS,
+    CALL_WICBITMAPFRAMEENCODE_WRITESOURCE,
     CALL_WICCONVERTBITMAPSOURCE,
     CALL_WICCREATEBITMAPFROMSECTION,
     CALL_WICCREATEBITMAPFROMSECTIONEX,
@@ -31,12 +58,61 @@ enum windowscodecs_calls
     CALL_WICMAPSHORTNAMETOGUID,
 };
 
+struct qemu_wic_frame_encode
+{
+    /* Guest fields */
+    IWICBitmapFrameEncode IWICBitmapFrameEncode_iface;
+
+    /* Host fields */
+    IWICBitmapFrameEncode *host;
+};
+
+struct qemu_wic_encode
+{
+    /* Guest fields */
+    IWICBitmapEncoder IWICBitmapEncoder_iface;
+    IStream *stream;
+
+    /* struct qemu_wic_frame_encode *frame; */
+
+    /* Host fields */
+    IWICBitmapEncoder *host;
+    /* Put some stream wrapper vtable here */
+};
+
 #ifdef QEMU_DLL_GUEST
 
 #else
 
 extern const struct qemu_ops *qemu_ops;
 
+void qemu_WICBitmapEncoder_AddRef(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_Commit(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_CreateNewFrame(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_GetContainerFormat(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_GetEncoderInfo(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_GetMetadataQueryWriter(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_Initialize(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_QueryInterface(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_Release(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_SetColorContexts(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_SetPalette(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_SetPreview(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_SetThumbnail(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_AddRef(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_Commit(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_GetMetadataQueryWriter(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_Initialize(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_QueryInterface(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_Release(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_SetColorContexts(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_SetPalette(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_SetPixelFormat(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_SetResolution(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_SetSize(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_SetThumbnail(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_WritePixels(struct qemu_syscall *call);
+void qemu_WICBitmapFrameEncode_WriteSource(struct qemu_syscall *call);
 void qemu_WICConvertBitmapSource(struct qemu_syscall *call);
 void qemu_WICCreateBitmapFromSection(struct qemu_syscall *call);
 void qemu_WICCreateBitmapFromSectionEx(struct qemu_syscall *call);
