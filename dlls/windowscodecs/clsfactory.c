@@ -29,14 +29,7 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_wic);
 
-/* Generating the files is easy, but the .c file needs Wine's exception headers to compile. It'll also need
- * the hacky 32 bit style exception handling in Win64. */
-HRESULT WINAPI WIC_DllGetClassObject(const CLSID *clazz, const IID *iface, void **obj)
-{
-    WINE_FIXME("Figure out how to make the widl-generated code work.\n");
-    *obj = NULL;
-    return E_FAIL;
-}
+extern HRESULT WINAPI WIC_DllGetClassObject(const CLSID *, const IID *, void **);
 
 typedef struct {
     REFCLSID classid;
