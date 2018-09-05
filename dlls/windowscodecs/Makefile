@@ -15,7 +15,7 @@ qemu_windowscodecs.dll.so: clsfactory_h.o decode_h.o encode_h.o imgfactory_h.o i
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_windowscodecs.spec *_h.o -o qemu_windowscodecs.dll.so -lwindowscodecs
 
 %_g.o: %.c qemu_windowscodecs.h Makefile $(SRCDIR)/Makefile
-	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../../wine/include/wine -Wno-format
+	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../wine-guest32/include -I../../../wine/include -Wno-format
 
 %_h.o: %.c qemu_windowscodecs.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $(HOST_CC) $< -c -o $@ $(CFLAGS)

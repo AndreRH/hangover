@@ -23,8 +23,8 @@
 #define COBJMACROS
 #include <windows.h>
 #include <wincodec.h>
-#include <debug.h>
-#include <list.h>
+#include <wine/debug.h>
+#include <wine/list.h>
 
 #include "qemu_windowscodecs.h"
 #include "wincodecsdk.h"
