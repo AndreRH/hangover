@@ -1073,3 +1073,33 @@ void qemu_WICBitmapEncoder_GetMetadataQueryWriter(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+HRESULT Encoder_CreateInstance(const IID *iid, void **obj)
+{
+#if 0
+    BmpEncoder *This;
+    HRESULT ret;
+
+    TRACE("(%s,%p)\n", debugstr_guid(iid), ppv);
+
+    *ppv = NULL;
+
+    This = HeapAlloc(GetProcessHeap(), 0, sizeof(BmpEncoder));
+    if (!This) return E_OUTOFMEMORY;
+
+    This->IWICBitmapEncoder_iface.lpVtbl = &BmpEncoder_Vtbl;
+    This->ref = 1;
+    This->stream = NULL;
+    This->frame = NULL;
+
+    ret = IWICBitmapEncoder_QueryInterface(&This->IWICBitmapEncoder_iface, iid, ppv);
+    IWICBitmapEncoder_Release(&This->IWICBitmapEncoder_iface);
+
+    return ret;
+#endif
+    WINE_FIXME("Stub\n");
+    return E_FAIL;
+}
+
+#endif

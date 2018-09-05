@@ -29,7 +29,7 @@
 #include "qemu_windowscodecs.h"
 #include "wincodecsdk.h"
 
-WINE_DEFAULT_DEBUG_CHANNEL(wincodecs);
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_wic);
 
 HRESULT WINAPI IPropertyBag2_Write_Proxy(IPropertyBag2 *iface,
     ULONG cProperties, PROPBAG2 *ppropbag, VARIANT *pvarValue)

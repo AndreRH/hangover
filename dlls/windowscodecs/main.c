@@ -75,13 +75,6 @@ HRESULT WINAPI DllCanUnloadNow(void)
     return S_FALSE;
 }
 
-
-HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID *ppv)
-{
-    WINE_FIXME("Stub\n");
-    return CLASS_E_CLASSNOTAVAILABLE;
-}
-
 HRESULT WINAPI DllRegisterServer(void)
 {
     WINE_ERR("Should not be called on the wrapper.\n");

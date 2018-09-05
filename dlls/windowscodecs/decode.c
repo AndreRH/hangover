@@ -1018,3 +1018,13 @@ void qemu_WICBitmapDecoder_GetFrame(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+HRESULT Decoder_CreateInstance(const IID *iid, void **obj)
+{
+    WINE_FIXME("Stub\n");
+    return E_FAIL; //BmpDecoder_Construct(FALSE, FALSE, iid, ppv);
+}
+
+#endif
+
