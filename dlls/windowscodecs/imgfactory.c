@@ -135,7 +135,7 @@ void qemu_ComponentFactory_AddRef(struct qemu_syscall *call)
     struct qemu_ComponentFactory_AddRef *c = (struct qemu_ComponentFactory_AddRef *)call;
     struct qemu_component_factory *factory;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
     c->super.iret = IWICComponentFactory_AddRef(factory->host);
@@ -171,10 +171,15 @@ void qemu_ComponentFactory_Release(struct qemu_syscall *call)
     struct qemu_ComponentFactory_Release *c = (struct qemu_ComponentFactory_Release *)call;
     struct qemu_component_factory *factory;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
     c->super.iret = IWICComponentFactory_Release(factory->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying component factory wrapper %p for host texture %p.\n", factory, factory->host);
+        HeapFree(GetProcessHeap(), 0, factory);
+    }
 }
 
 #endif
