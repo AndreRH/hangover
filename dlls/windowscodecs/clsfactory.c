@@ -36,12 +36,6 @@ typedef struct {
     class_constructor constructor;
 } classinfo;
 
-static HRESULT ComponentFactory_CreateInstance(const IID *iid, void **obj)
-{
-    WINE_FIXME("Stub\n");
-    return E_FAIL;
-}
-
 static HRESULT FormatConverter_CreateInstance(const IID *iid, void **obj)
 {
     WINE_FIXME("Stub\n");

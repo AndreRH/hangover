@@ -8,7 +8,7 @@ VPATH=$(SRCDIR)
 
 all: windowscodecs.dll qemu_windowscodecs.dll.so
 
-windowscodecs.dll: clsfactory_g.o decode_g.o encode_g.o imgfactory_g.o info_g.o main_g.o metadataquery_g.o proxy_g.o windowscodecs.spec dlldata.o windowscodecs_wincodec_p.o
+windowscodecs.dll: clsfactory_g.o decode_g.o dlldata.o encode_g.o imgfactory_g.o info_g.o main_g.o metadataquery_g.o proxy_g.o windowscodecs.spec windowscodecs_wincodec_p.o
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/windowscodecs.spec *_g.o dlldata.o windowscodecs_wincodec_p.o -o windowscodecs.dll -lwine -luuid -lole32 -loleaut32 -lrpcrt4 -L../../$(WINE_DIR)/libs/wine -L../../$(WINE_DIR)/dlls/winecrt0
 
 qemu_windowscodecs.dll.so: clsfactory_h.o decode_h.o encode_h.o imgfactory_h.o info_h.o main_h.o metadataquery_h.o proxy_h.o qemu_windowscodecs.spec
