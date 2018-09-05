@@ -22,6 +22,7 @@
 #include <initguid.h>
 #include <windows.h>
 #include <wincodec.h>
+#include <wincodecsdk.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"

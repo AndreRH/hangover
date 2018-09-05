@@ -21,11 +21,11 @@
 #define COBJMACROS
 #include <windows.h>
 #include <wincodec.h>
+#include <wincodecsdk.h>
 #include <wine/debug.h>
 #include <wine/list.h>
 
 #include "qemu_windowscodecs.h"
-#include "wincodecsdk.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_wic);
 
@@ -36,8 +36,32 @@ typedef struct {
     class_constructor constructor;
 } classinfo;
 
+static HRESULT ComponentFactory_CreateInstance(const IID *iid, void **obj)
+{
+    WINE_FIXME("Stub\n");
+    return E_FAIL;
+}
+
+static HRESULT FormatConverter_CreateInstance(const IID *iid, void **obj)
+{
+    WINE_FIXME("Stub\n");
+    return E_FAIL;
+}
+
+static HRESULT MetadataReader_CreateInstance(const IID *iid, void **obj)
+{
+    WINE_FIXME("Stub\n");
+    return E_FAIL;
+}
+
+static HRESULT CommentReader_CreateInstance(const IID *iid, void **obj)
+{
+    WINE_FIXME("Stub\n");
+    return E_FAIL;
+}
+
 static const classinfo wic_classes[] = {
-//     {&CLSID_WICImagingFactory, ComponentFactory_CreateInstance},
+    {&CLSID_WICImagingFactory, ComponentFactory_CreateInstance},
     {&CLSID_WICBmpDecoder, Decoder_CreateInstance},
     {&CLSID_WICPngDecoder, Decoder_CreateInstance},
     {&CLSID_WICPngEncoder, Encoder_CreateInstance},
@@ -49,18 +73,18 @@ static const classinfo wic_classes[] = {
     {&CLSID_WICTiffDecoder, Decoder_CreateInstance},
     {&CLSID_WICTiffEncoder, Encoder_CreateInstance},
     {&CLSID_WICIcnsEncoder, Encoder_CreateInstance},
-//     {&CLSID_WICDefaultFormatConverter, FormatConverter_CreateInstance},
+    {&CLSID_WICDefaultFormatConverter, FormatConverter_CreateInstance},
     {&CLSID_WineTgaDecoder, Decoder_CreateInstance},
-//     {&CLSID_WICUnknownMetadataReader, UnknownMetadataReader_CreateInstance},
-//     {&CLSID_WICIfdMetadataReader, IfdMetadataReader_CreateInstance},
-//     {&CLSID_WICPngChrmMetadataReader, PngChrmReader_CreateInstance},
-//     {&CLSID_WICPngGamaMetadataReader, PngGamaReader_CreateInstance},
-//     {&CLSID_WICPngTextMetadataReader, PngTextReader_CreateInstance},
-//     {&CLSID_WICLSDMetadataReader, LSDReader_CreateInstance},
-//     {&CLSID_WICIMDMetadataReader, IMDReader_CreateInstance},
-//     {&CLSID_WICGCEMetadataReader, GCEReader_CreateInstance},
-//     {&CLSID_WICAPEMetadataReader, APEReader_CreateInstance},
-//     {&CLSID_WICGifCommentMetadataReader, GifCommentReader_CreateInstance},
+    {&CLSID_WICUnknownMetadataReader, MetadataReader_CreateInstance},
+    {&CLSID_WICIfdMetadataReader, MetadataReader_CreateInstance},
+    {&CLSID_WICPngChrmMetadataReader, MetadataReader_CreateInstance},
+    {&CLSID_WICPngGamaMetadataReader, MetadataReader_CreateInstance},
+    {&CLSID_WICPngTextMetadataReader, MetadataReader_CreateInstance},
+    {&CLSID_WICLSDMetadataReader, MetadataReader_CreateInstance},
+    {&CLSID_WICIMDMetadataReader, MetadataReader_CreateInstance},
+    {&CLSID_WICGCEMetadataReader, MetadataReader_CreateInstance},
+    {&CLSID_WICAPEMetadataReader, MetadataReader_CreateInstance},
+    {&CLSID_WICGifCommentMetadataReader, CommentReader_CreateInstance},
     {0}};
 
 typedef struct {
@@ -189,9 +213,15 @@ HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID iid, LPVOID *ppv)
     }
 
     if (info)
+    {
         ret = ClassFactoryImpl_Constructor(info, iid, ppv);
+    }
     else
+    {
+        WINE_FIXME("Calling the magic blob\n");
         ret = WIC_DllGetClassObject(rclsid, iid, ppv);
+        WINE_FIXME("Magic blob returned %08x\n", ret);
+    }
 
     WINE_TRACE("<-- %08X\n", ret);
     return ret;
