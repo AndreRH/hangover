@@ -465,7 +465,7 @@ void qemu_WICBitmap_AddRef(struct qemu_syscall *call)
     struct qemu_WICBitmap_AddRef *c = (struct qemu_WICBitmap_AddRef *)call;
     struct qemu_wic_bitmap *bitmap;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bitmap = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmap_AddRef(bitmap->bitmap_host);
@@ -505,9 +505,9 @@ void qemu_WICBitmap_Release(struct qemu_syscall *call)
     bitmap = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmap_Release(bitmap->bitmap_host);
-    if (c->super.iret)
+    if (!c->super.iret)
     {
-        WINE_TRACE("Destroying lock wrapper %p for host lock %p.\n", bitmap, bitmap->bitmap_host);
+        WINE_TRACE("Destroying bitmap wrapper %p for bitmap lock %p.\n", bitmap, bitmap->bitmap_host);
         HeapFree(GetProcessHeap(), 0, bitmap);
     }
 }

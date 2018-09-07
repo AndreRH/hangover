@@ -25,6 +25,7 @@
 #include <wine/debug.h>
 #include <wine/list.h>
 
+#include "windows-user-services.h"
 #include "qemu_windowscodecs.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_wic);

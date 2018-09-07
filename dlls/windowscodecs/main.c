@@ -38,9 +38,89 @@ struct qemu_dll_init
 {
     struct qemu_syscall super;
     uint64_t reason;
+    uint64_t guest_bitmap_source_addref;
+    uint64_t guest_bitmap_source_release;
+    uint64_t guest_bitmap_source_getsize;
+    uint64_t guest_bitmap_source_getpixelformat;
+    uint64_t guest_bitmap_source_copypixels;
+    uint64_t guest_bitmap_source_getresolution;
+    uint64_t guest_bitmap_source_copypalette;
+};
+
+struct guest_bitmap_source_getsize
+{
+    uint64_t source;
+    uint64_t width, height;
+};
+
+struct guest_bitmap_source_getpixelformat
+{
+    uint64_t source;
+    uint64_t fmt;
+};
+
+struct guest_bitmap_source_copypixels
+{
+    uint64_t source;
+    uint64_t rect, stride, size, buffer;
+};
+
+struct guest_bitmap_source_getresolution
+{
+    uint64_t source;
+    uint64_t x, y;
+};
+
+struct guest_bitmap_source_copypalette
+{
+    uint64_t source;
+    uint64_t palette;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static ULONG __fastcall guest_bitmap_source_addref(IWICBitmapSource *source)
+{
+    return IWICBitmapSource_AddRef(source);
+}
+
+static ULONG __fastcall guest_bitmap_source_release(IWICBitmapSource *source)
+{
+    return IWICBitmapSource_Release(source);
+}
+
+static ULONG __fastcall guest_bitmap_source_getsize(struct guest_bitmap_source_getsize *call)
+{
+    return IWICBitmapSource_GetSize((IWICBitmapSource *)(ULONG_PTR)call->source,
+            (UINT *)(ULONG_PTR)call->width, (UINT *)(ULONG_PTR)call->height);
+}
+
+static ULONG __fastcall guest_bitmap_source_getpixelformat(struct guest_bitmap_source_getpixelformat *call)
+{
+    return IWICBitmapSource_GetPixelFormat((IWICBitmapSource *)(ULONG_PTR)call->source,
+            (WICPixelFormatGUID *)(ULONG_PTR)call->fmt);
+}
+
+static ULONG __fastcall guest_bitmap_source_copypixels(struct guest_bitmap_source_copypixels *call)
+{
+    return IWICBitmapSource_CopyPixels((IWICBitmapSource *)(ULONG_PTR)call->source,
+            (const WICRect *)(ULONG_PTR)call->rect, call->stride, call->size, (BYTE *)(ULONG_PTR)call->buffer);
+}
+
+static ULONG __fastcall guest_bitmap_source_getresolution(struct guest_bitmap_source_getresolution *call)
+{
+    return IWICBitmapSource_GetResolution((IWICBitmapSource *)(ULONG_PTR)call->source,
+            (double *)(ULONG_PTR)call->x, (double *)(ULONG_PTR)call->y);
+}
+
+static ULONG __fastcall guest_bitmap_source_copypalette(struct guest_bitmap_source_copypalette *call)
+{
+    struct qemu_wic_palette *pal = (struct qemu_wic_palette *)(ULONG_PTR)call->palette;
+
+    WICPalette_init_guest(pal);
+
+    return IWICBitmapSource_CopyPalette((IWICBitmapSource *)(ULONG_PTR)call->source, &pal->IWICPalette_iface);
+}
 
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
@@ -51,6 +131,13 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
     {
         call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
         call.reason = DLL_PROCESS_ATTACH;
+        call.guest_bitmap_source_addref = (ULONG_PTR)guest_bitmap_source_addref;
+        call.guest_bitmap_source_release = (ULONG_PTR)guest_bitmap_source_release;
+        call.guest_bitmap_source_getsize = (ULONG_PTR)guest_bitmap_source_getsize;
+        call.guest_bitmap_source_getpixelformat = (ULONG_PTR)guest_bitmap_source_getpixelformat;
+        call.guest_bitmap_source_copypixels = (ULONG_PTR)guest_bitmap_source_copypixels;
+        call.guest_bitmap_source_getresolution = (ULONG_PTR)guest_bitmap_source_getresolution;
+        call.guest_bitmap_source_copypalette = (ULONG_PTR)guest_bitmap_source_copypalette;
         qemu_syscall(&call.super);
     }
     else if (reason == DLL_PROCESS_DETACH)
@@ -83,6 +170,14 @@ HRESULT WINAPI DllUnregisterServer(void)
 
 #else
 
+static uint64_t guest_bitmap_source_addref;
+static uint64_t guest_bitmap_source_release;
+static uint64_t guest_bitmap_source_getsize;
+static uint64_t guest_bitmap_source_getpixelformat;
+static uint64_t guest_bitmap_source_copypixels;
+static uint64_t guest_bitmap_source_getresolution;
+static uint64_t guest_bitmap_source_copypalette;
+
 static void qemu_init_dll(struct qemu_syscall *call)
 {
     struct qemu_dll_init *c = (struct qemu_dll_init *)call;
@@ -90,6 +185,13 @@ static void qemu_init_dll(struct qemu_syscall *call)
     switch (c->reason)
     {
         case DLL_PROCESS_ATTACH:
+            guest_bitmap_source_addref = c->guest_bitmap_source_addref;
+            guest_bitmap_source_release = c->guest_bitmap_source_release;
+            guest_bitmap_source_getsize = c->guest_bitmap_source_getsize;
+            guest_bitmap_source_getpixelformat = c->guest_bitmap_source_getpixelformat;
+            guest_bitmap_source_copypixels = c->guest_bitmap_source_copypixels;
+            guest_bitmap_source_getresolution = c->guest_bitmap_source_getresolution;
+            guest_bitmap_source_copypalette = c->guest_bitmap_source_copypalette;
             break;
 
         case DLL_PROCESS_DETACH:
@@ -247,6 +349,173 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     *dll_num = QEMU_CURRENT_DLL;
 
     return dll_functions;
+}
+
+static inline struct qemu_bitmap_source *impl_from_IWICBitmapSource(IWICBitmapSource *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_bitmap_source, IWICBitmapSource_iface);
+}
+
+static HRESULT WINAPI qemu_bitmap_source_QueryInterface(IWICBitmapSource *iface, REFIID iid, void **ppv)
+{
+    if (IsEqualIID(&IID_IUnknown, iid) ||
+        IsEqualIID(&IID_IWICBitmapSource, iid))
+    {
+        *ppv = iface;
+    }
+    else
+    {
+        *ppv = NULL;
+        return E_NOINTERFACE;
+    }
+
+    return S_OK;
+}
+
+static ULONG WINAPI qemu_bitmap_source_AddRef(IWICBitmapSource *iface)
+{
+    struct qemu_bitmap_source *source = impl_from_IWICBitmapSource(iface);
+    ULONG ref = InterlockedIncrement(&source->ref);
+
+    WINE_TRACE("(%p) refcount=%u\n", iface, ref);
+
+    return ref;
+}
+
+static ULONG WINAPI qemu_bitmap_source_Release(IWICBitmapSource *iface)
+{
+    struct qemu_bitmap_source *source = impl_from_IWICBitmapSource(iface);
+    ULONG ref = InterlockedDecrement(&source->ref), ref2;
+
+    WINE_TRACE("(%p) refcount=%u\n", iface, ref);
+
+    if (ref == 0)
+    {
+        WINE_TRACE("Calling guest release method.\n");
+        ref2 = qemu_ops->qemu_execute(QEMU_G2H(guest_bitmap_source_release), source->guest);
+        WINE_TRACE("Guest release method returned %u.\n", ref2);
+        HeapFree(GetProcessHeap(), 0, source);
+    }
+
+    return ref;
+}
+
+static HRESULT WINAPI qemu_bitmap_source_GetSize(IWICBitmapSource *iface, UINT *width, UINT *height)
+{
+    struct qemu_bitmap_source *source = impl_from_IWICBitmapSource(iface);
+    struct guest_bitmap_source_getsize call;
+    HRESULT hr;
+
+    WINE_TRACE("\n");
+    call.source = source->guest;
+    call.width = QEMU_H2G(width);
+    call.height = QEMU_H2G(height);
+
+    hr = qemu_ops->qemu_execute(QEMU_G2H(guest_bitmap_source_getsize), QEMU_H2G(&call));
+
+    return hr;
+}
+
+static HRESULT WINAPI qemu_bitmap_source_GetPixelFormat(IWICBitmapSource *iface,
+        WICPixelFormatGUID *format)
+{
+    struct qemu_bitmap_source *source = impl_from_IWICBitmapSource(iface);
+    struct guest_bitmap_source_getpixelformat call;
+    HRESULT hr;
+
+    WINE_TRACE("\n");
+    call.source = source->guest;
+    call.fmt = QEMU_H2G(format);
+
+    hr = qemu_ops->qemu_execute(QEMU_G2H(guest_bitmap_source_getpixelformat), QEMU_H2G(&call));
+
+    return hr;
+}
+
+static HRESULT WINAPI qemu_bitmap_source_GetResolution(IWICBitmapSource *iface,
+        double *dpiX, double *dpiY)
+{
+    struct qemu_bitmap_source *source = impl_from_IWICBitmapSource(iface);
+    struct guest_bitmap_source_getresolution call;
+    HRESULT hr;
+
+    WINE_TRACE("\n");
+    call.source = source->guest;
+    call.x = QEMU_H2G(dpiX);
+    call.y = QEMU_H2G(dpiY);
+
+    hr = qemu_ops->qemu_execute(QEMU_G2H(guest_bitmap_source_getresolution), QEMU_H2G(&call));
+
+    return hr;
+}
+
+static HRESULT WINAPI qemu_bitmap_source_CopyPalette(IWICBitmapSource *iface,
+        IWICPalette *palette)
+{
+    struct qemu_bitmap_source *source = impl_from_IWICBitmapSource(iface);
+    struct qemu_wic_palette temp_palette = {0};
+    struct guest_bitmap_source_copypalette call;
+    HRESULT hr;
+
+    WINE_FIXME("The stack alloc is begging for trouble.\n");
+    temp_palette.host = palette;
+    call.source = source->guest;
+    call.palette = QEMU_H2G(&temp_palette);
+
+    hr = qemu_ops->qemu_execute(QEMU_G2H(guest_bitmap_source_copypalette), QEMU_H2G(&call));
+
+    return hr;
+}
+
+static HRESULT WINAPI qemu_bitmap_source_CopyPixels(IWICBitmapSource *iface,
+        const WICRect *rc, UINT stride, UINT buffer_size, BYTE *buffer)
+{
+    struct qemu_bitmap_source *source = impl_from_IWICBitmapSource(iface);
+    struct guest_bitmap_source_copypixels call;
+    HRESULT hr;
+
+    WINE_TRACE("\n");
+    call.source = source->guest;
+    call.rect = QEMU_H2G(rc);
+    call.stride = stride;
+    call.size = buffer_size;
+    call.buffer = QEMU_H2G(buffer);
+
+    hr = qemu_ops->qemu_execute(QEMU_G2H(guest_bitmap_source_copypixels), QEMU_H2G(&call));
+
+    return hr;
+}
+
+static const IWICBitmapSourceVtbl qemu_bitmap_source_vtbl =
+{
+    qemu_bitmap_source_QueryInterface,
+    qemu_bitmap_source_AddRef,
+    qemu_bitmap_source_Release,
+    qemu_bitmap_source_GetSize,
+    qemu_bitmap_source_GetPixelFormat,
+    qemu_bitmap_source_GetResolution,
+    qemu_bitmap_source_CopyPalette,
+    qemu_bitmap_source_CopyPixels
+};
+
+struct qemu_bitmap_source *bitmap_source_wrapper_create(uint64_t guest)
+{
+    struct qemu_bitmap_source *ret;
+    ULONG ref;
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+        return NULL;
+
+    ret->IWICBitmapSource_iface.lpVtbl = &qemu_bitmap_source_vtbl;
+    ret->guest = guest;
+    ret->ref = 1;
+
+    WINE_TRACE("Calling guest addref method.\n");
+    ref = qemu_ops->qemu_execute(QEMU_G2H(guest_bitmap_source_addref), guest);
+    WINE_TRACE("Guest addref returned %u.\n", ref);
+
+    return ret;
 }
 
 #endif

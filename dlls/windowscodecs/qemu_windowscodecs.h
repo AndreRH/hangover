@@ -202,6 +202,15 @@ struct qemu_wic_palette
     IWICPalette *host;
 };
 
+/* This is a reverse wrapper. */
+struct qemu_bitmap_source
+{
+    /* Host fields. */
+    IWICBitmapSource IWICBitmapSource_iface;
+    uint64_t guest;
+    LONG ref;
+};
+
 struct qemu_wic_bitmap;
 
 DEFINE_GUID(CLSID_WineTgaDecoder, 0xb11fc79a,0x67cc,0x43e6,0xa9,0xce,0xe3,0xd5,0x49,0x45,0xd3,0x04);
@@ -403,6 +412,8 @@ void qemu_WICPalette_Release(struct qemu_syscall *call);
 
 struct qemu_wic_bitmap *WICBitmap_create_host(IWICBitmap *host);
 struct qemu_wic_palette *WICPalette_create_host(IWICPalette *host);
+
+struct qemu_bitmap_source *bitmap_source_wrapper_create(uint64_t guest);
 
 #endif
 

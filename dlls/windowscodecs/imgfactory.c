@@ -844,18 +844,24 @@ struct qemu_ComponentFactory_CreateBitmapFromSource
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateBitmapFromSource(IWICComponentFactory *iface, IWICBitmapSource *piBitmapSource, WICBitmapCreateCacheOption option, IWICBitmap **ppIBitmap)
+static HRESULT WINAPI ComponentFactory_CreateBitmapFromSource(IWICComponentFactory *iface,
+        IWICBitmapSource *piBitmapSource, WICBitmapCreateCacheOption option, IWICBitmap **ppIBitmap)
 {
     struct qemu_ComponentFactory_CreateBitmapFromSource call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_wic_bitmap *bitmap;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATEBITMAPFROMSOURCE);
     call.iface = (ULONG_PTR)factory;
     call.piBitmapSource = (ULONG_PTR)piBitmapSource;
     call.option = option;
-    call.ppIBitmap = (ULONG_PTR)ppIBitmap;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    bitmap = (struct qemu_wic_bitmap *)(ULONG_PTR)call.ppIBitmap;
+    *ppIBitmap = WICBitmap_init_guest(bitmap);
 
     return call.super.iret;
 }
@@ -864,13 +870,48 @@ static HRESULT WINAPI ComponentFactory_CreateBitmapFromSource(IWICComponentFacto
 
 void qemu_ComponentFactory_CreateBitmapFromSource(struct qemu_syscall *call)
 {
-    struct qemu_ComponentFactory_CreateBitmapFromSource *c = (struct qemu_ComponentFactory_CreateBitmapFromSource *)call;
+    struct qemu_ComponentFactory_CreateBitmapFromSource *c =
+            (struct qemu_ComponentFactory_CreateBitmapFromSource *)call;
     struct qemu_component_factory *factory;
+    struct qemu_bitmap_source *source_wrapper;
+    IWICBitmap *host;
+    struct qemu_wic_bitmap *bitmap;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentFactory_CreateBitmapFromSource(factory->host, QEMU_G2H(c->piBitmapSource), c->option, QEMU_G2H(c->ppIBitmap));
+    /* Note that piBitmapSource could point to one of our bitmaps. We don't care right now, but we could detect
+     * this situation and avoid jumping back and forth between host and guest. */
+    if (c->piBitmapSource)
+    {
+        source_wrapper = bitmap_source_wrapper_create(c->piBitmapSource);
+        if (!source_wrapper)
+        {
+            WINE_WARN("Out of memory.\n");
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+    }
+
+    c->super.iret = IWICComponentFactory_CreateBitmapFromSource(factory->host,
+            source_wrapper ? &source_wrapper->IWICBitmapSource_iface : NULL,
+            c->option, &host);
+
+    if (source_wrapper)
+        IWICBitmapSource_Release(&source_wrapper->IWICBitmapSource_iface);
+
+    if (FAILED(c->super.iret))
+        return;
+
+    bitmap = WICBitmap_create_host(host);
+    if (!bitmap)
+    {
+        IWICBitmap_Release(host);
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->ppIBitmap = QEMU_H2G(bitmap);
 }
 
 #endif
