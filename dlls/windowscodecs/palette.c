@@ -168,7 +168,8 @@ struct qemu_WICPalette_InitializePredefined
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICPalette_InitializePredefined(IWICPalette *iface, WICBitmapPaletteType type, BOOL add_transparent)
+static HRESULT WINAPI WICPalette_InitializePredefined(IWICPalette *iface, WICBitmapPaletteType type,
+        BOOL add_transparent)
 {
     struct qemu_WICPalette_InitializePredefined call;
     struct qemu_wic_palette *palette = impl_from_IWICPalette(iface);
@@ -190,7 +191,7 @@ void qemu_WICPalette_InitializePredefined(struct qemu_syscall *call)
     struct qemu_WICPalette_InitializePredefined *c = (struct qemu_WICPalette_InitializePredefined *)call;
     struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IWICPalette_InitializePredefined(palette->host, c->type, c->add_transparent);
