@@ -550,3 +550,48 @@ void qemu_WICPalette_HasAlpha(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+static const IWICPaletteVtbl WICPalette_Vtbl =
+{
+    WICPalette_QueryInterface,
+    WICPalette_AddRef,
+    WICPalette_Release,
+    WICPalette_InitializePredefined,
+    WICPalette_InitializeCustom,
+    WICPalette_InitializeFromBitmap,
+    WICPalette_InitializeFromPalette,
+    WICPalette_GetType,
+    WICPalette_GetColorCount,
+    WICPalette_GetColors,
+    WICPalette_IsBlackWhite,
+    WICPalette_IsGrayscale,
+    WICPalette_HasAlpha
+};
+
+IWICPalette *WICPalette_init_guest(struct qemu_wic_palette *palette)
+{
+    palette->IWICPalette_iface.lpVtbl = &WICPalette_Vtbl;
+    return &palette->IWICPalette_iface;
+}
+
+#else
+
+struct qemu_wic_palette *WICPalette_create_host(IWICPalette *host)
+{
+    struct qemu_wic_palette *ret;
+    HRESULT hr;
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+    {
+        WINE_WARN("Out of memory\n");
+        return NULL;
+    }
+
+    ret->host = host;
+
+    return ret;
+}
+
+#endif
