@@ -138,11 +138,7 @@ void qemu_WICBitmapLock_QueryInterface(struct qemu_syscall *call)
     struct qemu_WICBitmapLock_QueryInterface *c = (struct qemu_WICBitmapLock_QueryInterface *)call;
     struct qemu_wic_lock *lock;
 
-    struct qemu_wic_bitmap *bitmap;
-
     WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
     lock = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapLock_QueryInterface(lock->host, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
@@ -178,11 +174,7 @@ void qemu_WICBitmapLock_AddRef(struct qemu_syscall *call)
     struct qemu_WICBitmapLock_AddRef *c = (struct qemu_WICBitmapLock_AddRef *)call;
     struct qemu_wic_lock *lock;
 
-    struct qemu_wic_bitmap *bitmap;
-
-    WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
+    WINE_TRACE("\n");
     lock = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapLock_AddRef(lock->host);
@@ -218,14 +210,15 @@ void qemu_WICBitmapLock_Release(struct qemu_syscall *call)
     struct qemu_WICBitmapLock_Release *c = (struct qemu_WICBitmapLock_Release *)call;
     struct qemu_wic_lock *lock;
 
-    struct qemu_wic_bitmap *bitmap;
-
-    WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
+    WINE_TRACE("\n");
     lock = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapLock_Release(lock->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying lock wrapper %p for host lock %p.\n", lock, lock->host);
+        HeapFree(GetProcessHeap(), 0, lock);
+    }
 }
 
 #endif
@@ -262,11 +255,7 @@ void qemu_WICBitmapLock_GetSize(struct qemu_syscall *call)
     struct qemu_WICBitmapLock_GetSize *c = (struct qemu_WICBitmapLock_GetSize *)call;
     struct qemu_wic_lock *lock;
 
-    struct qemu_wic_bitmap *bitmap;
-
     WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
     lock = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapLock_GetSize(lock->host, QEMU_G2H(c->puiWidth), QEMU_G2H(c->puiHeight));
@@ -304,11 +293,7 @@ void qemu_WICBitmapLock_GetStride(struct qemu_syscall *call)
     struct qemu_WICBitmapLock_GetStride *c = (struct qemu_WICBitmapLock_GetStride *)call;
     struct qemu_wic_lock *lock;
 
-    struct qemu_wic_bitmap *bitmap;
-
     WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
     lock = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapLock_GetStride(lock->host, QEMU_G2H(c->pcbStride));
@@ -348,11 +333,7 @@ void qemu_WICBitmapLock_GetDataPointer(struct qemu_syscall *call)
     struct qemu_WICBitmapLock_GetDataPointer *c = (struct qemu_WICBitmapLock_GetDataPointer *)call;
     struct qemu_wic_lock *lock;
 
-    struct qemu_wic_bitmap *bitmap;
-
     WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
     lock = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapLock_GetDataPointer(lock->host, QEMU_G2H(c->pcbBufferSize), QEMU_G2H(c->ppbData));
@@ -383,6 +364,17 @@ static HRESULT WINAPI WICBitmapLock_GetPixelFormat(IWICBitmapLock *iface, WICPix
     return call.super.iret;
 }
 
+static const IWICBitmapLockVtbl WICBitmapLock_Vtbl =
+{
+    WICBitmapLock_QueryInterface,
+    WICBitmapLock_AddRef,
+    WICBitmapLock_Release,
+    WICBitmapLock_GetSize,
+    WICBitmapLock_GetStride,
+    WICBitmapLock_GetDataPointer,
+    WICBitmapLock_GetPixelFormat
+};
+
 #else
 
 void qemu_WICBitmapLock_GetPixelFormat(struct qemu_syscall *call)
@@ -390,11 +382,7 @@ void qemu_WICBitmapLock_GetPixelFormat(struct qemu_syscall *call)
     struct qemu_WICBitmapLock_GetPixelFormat *c = (struct qemu_WICBitmapLock_GetPixelFormat *)call;
     struct qemu_wic_lock *lock;
 
-    struct qemu_wic_bitmap *bitmap;
-
     WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
     lock = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapLock_GetPixelFormat(lock->host, QEMU_G2H(c->pPixelFormat));
@@ -735,6 +723,7 @@ static HRESULT WINAPI WICBitmap_Lock(IWICBitmap *iface, const WICRect *prcLock, 
 {
     struct qemu_WICBitmap_Lock call;
     struct qemu_wic_bitmap *bitmap = impl_from_IWICBitmap(iface);
+    struct qemu_wic_lock *lock;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAP_LOCK);
     call.iface = (ULONG_PTR)bitmap;
@@ -743,6 +732,12 @@ static HRESULT WINAPI WICBitmap_Lock(IWICBitmap *iface, const WICRect *prcLock, 
     call.ppILock = (ULONG_PTR)ppILock;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    lock = (struct qemu_wic_lock *)(ULONG_PTR)call.ppILock;
+    lock->IWICBitmapLock_iface.lpVtbl = &WICBitmapLock_Vtbl;
+    *ppILock = &lock->IWICBitmapLock_iface;
 
     return call.super.iret;
 }
@@ -753,11 +748,27 @@ void qemu_WICBitmap_Lock(struct qemu_syscall *call)
 {
     struct qemu_WICBitmap_Lock *c = (struct qemu_WICBitmap_Lock *)call;
     struct qemu_wic_bitmap *bitmap;
+    IWICBitmapLock *host;
+    struct qemu_wic_lock *lock;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bitmap = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmap_Lock(bitmap->bitmap_host, QEMU_G2H(c->prcLock), c->flags, QEMU_G2H(c->ppILock));
+    c->super.iret = IWICBitmap_Lock(bitmap->bitmap_host, QEMU_G2H(c->prcLock), c->flags,
+            c->ppILock ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    lock = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*lock));
+    if (!lock)
+    {
+        IWICBitmapLock_Release(host);
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    lock->host = host;
+    c->ppILock = QEMU_H2G(lock);
 }
 
 #endif
