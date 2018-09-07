@@ -255,7 +255,7 @@ void qemu_WICBitmapLock_GetSize(struct qemu_syscall *call)
     struct qemu_WICBitmapLock_GetSize *c = (struct qemu_WICBitmapLock_GetSize *)call;
     struct qemu_wic_lock *lock;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     lock = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapLock_GetSize(lock->host, QEMU_G2H(c->puiWidth), QEMU_G2H(c->puiHeight));
@@ -293,7 +293,7 @@ void qemu_WICBitmapLock_GetStride(struct qemu_syscall *call)
     struct qemu_WICBitmapLock_GetStride *c = (struct qemu_WICBitmapLock_GetStride *)call;
     struct qemu_wic_lock *lock;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     lock = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapLock_GetStride(lock->host, QEMU_G2H(c->pcbStride));
@@ -322,6 +322,10 @@ static HRESULT WINAPI WICBitmapLock_GetDataPointer(IWICBitmapLock *iface, UINT *
     call.ppbData = (ULONG_PTR)ppbData;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    *ppbData = (BYTE *)(ULONG_PTR)call.ppbData;
 
     return call.super.iret;
 }
@@ -332,11 +336,13 @@ void qemu_WICBitmapLock_GetDataPointer(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapLock_GetDataPointer *c = (struct qemu_WICBitmapLock_GetDataPointer *)call;
     struct qemu_wic_lock *lock;
+    BYTE *ptr;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     lock = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapLock_GetDataPointer(lock->host, QEMU_G2H(c->pcbBufferSize), QEMU_G2H(c->ppbData));
+    c->super.iret = IWICBitmapLock_GetDataPointer(lock->host, QEMU_G2H(c->pcbBufferSize), c->ppbData ? &ptr : NULL);
+    c->ppbData = QEMU_H2G(ptr);
 }
 
 #endif
@@ -382,7 +388,7 @@ void qemu_WICBitmapLock_GetPixelFormat(struct qemu_syscall *call)
     struct qemu_WICBitmapLock_GetPixelFormat *c = (struct qemu_WICBitmapLock_GetPixelFormat *)call;
     struct qemu_wic_lock *lock;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     lock = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapLock_GetPixelFormat(lock->host, QEMU_G2H(c->pPixelFormat));
