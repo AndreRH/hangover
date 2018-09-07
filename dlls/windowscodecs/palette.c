@@ -341,7 +341,7 @@ void qemu_WICPalette_GetType(struct qemu_syscall *call)
     struct qemu_WICPalette_GetType *c = (struct qemu_WICPalette_GetType *)call;
     struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IWICPalette_GetType(palette->host, QEMU_G2H(c->pePaletteType));
