@@ -465,7 +465,8 @@ static HRESULT WINAPI ComponentFactory_CreatePalette(IWICComponentFactory *iface
         return call.super.iret;
 
     palette = (struct qemu_wic_palette *)(ULONG_PTR)call.ppIPalette;
-    *ppIPalette = WICPalette_init_guest(palette);
+    WICPalette_init_guest(palette);
+    *ppIPalette = &palette->IWICPalette_iface;
 
     return call.super.iret;
 }

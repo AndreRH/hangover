@@ -21,6 +21,7 @@
 #include <windows.h>
 #include <wincodec.h>
 #include <wincodecsdk.h>
+#include <assert.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -31,15 +32,6 @@
 #include "qemu_windowscodecs.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_wic);
-
-struct qemu_wic_palette
-{
-    /* Guest fields */
-    IWICPalette IWICPalette_iface;
-
-    /* Host fields */
-    IWICPalette *host;
-};
 
 struct qemu_WICPalette_QueryInterface
 {
@@ -570,10 +562,21 @@ static const IWICPaletteVtbl WICPalette_Vtbl =
     WICPalette_HasAlpha
 };
 
-IWICPalette *WICPalette_init_guest(struct qemu_wic_palette *palette)
+void WICPalette_init_guest(struct qemu_wic_palette *palette)
 {
     palette->IWICPalette_iface.lpVtbl = &WICPalette_Vtbl;
-    return &palette->IWICPalette_iface;
+}
+
+struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface)
+{
+    if (!iface)
+        return NULL;
+
+    /* Wine's library has some methods that only access public methods of the
+     * other palette, so they'd theoretically work with different implementations. */
+    assert(iface->lpVtbl == &WICPalette_Vtbl);
+
+    return CONTAINING_RECORD(iface, struct qemu_wic_palette, IWICPalette_iface);
 }
 
 #else

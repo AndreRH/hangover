@@ -199,6 +199,17 @@ struct qemu_wic_decode
     IWICBitmapFrameDecode *host_frame;
 };
 
+struct qemu_wic_palette
+{
+    /* Guest fields */
+    IWICPalette IWICPalette_iface;
+
+    /* Host fields */
+    IWICPalette *host;
+};
+
+struct qemu_wic_bitmap;
+
 DEFINE_GUID(CLSID_WineTgaDecoder, 0xb11fc79a,0x67cc,0x43e6,0xa9,0xce,0xe3,0xd5,0x49,0x45,0xd3,0x04);
 DEFINE_GUID(CLSID_WICIcnsEncoder, 0x312fb6f1,0xb767,0x409d,0x8a,0x6d,0x0f,0xc1,0x54,0xd4,0xf0,0x5c);
 DEFINE_GUID(GUID_WineContainerFormatTga, 0x0c44fda1,0xa5c5,0x4298,0x96,0x85,0x47,0x3f,0xc1,0x7c,0xd3,0x22);
@@ -251,10 +262,10 @@ extern HRESULT Decoder_CreateInstance(const IID *iid, void **obj);
 extern HRESULT Encoder_CreateInstance(const IID *iid, void **obj);
 HRESULT ComponentFactory_CreateInstance(const IID *iid, void **obj);
 
-struct qemu_wic_bitmap;
-struct qemu_wic_palette;
 IWICBitmap *WICBitmap_init_guest(struct qemu_wic_bitmap *bitmap);
-IWICPalette *WICPalette_init_guest(struct qemu_wic_palette *palette);
+void WICPalette_init_guest(struct qemu_wic_palette *palette);
+
+struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
 
 #else
 

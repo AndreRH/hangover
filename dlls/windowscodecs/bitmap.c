@@ -645,10 +645,11 @@ static HRESULT WINAPI WICBitmap_CopyPalette(IWICBitmap *iface, IWICPalette *pIPa
 {
     struct qemu_WICBitmap_CopyPalette call;
     struct qemu_wic_bitmap *bitmap = impl_from_IWICBitmap(iface);
+    struct qemu_wic_palette *palette = unsafe_impl_from_IWICPalette(pIPalette);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAP_COPYPALETTE);
     call.iface = (ULONG_PTR)bitmap;
-    call.pIPalette = (ULONG_PTR)pIPalette;
+    call.pIPalette = (ULONG_PTR)palette;
 
     qemu_syscall(&call.super);
 
@@ -661,11 +662,13 @@ void qemu_WICBitmap_CopyPalette(struct qemu_syscall *call)
 {
     struct qemu_WICBitmap_CopyPalette *c = (struct qemu_WICBitmap_CopyPalette *)call;
     struct qemu_wic_bitmap *bitmap;
+    struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bitmap = QEMU_G2H(c->iface);
+    palette = QEMU_G2H(c->pIPalette);
 
-    c->super.iret = IWICBitmap_CopyPalette(bitmap->bitmap_host, QEMU_G2H(c->pIPalette));
+    c->super.iret = IWICBitmap_CopyPalette(bitmap->bitmap_host, palette ? palette->host : NULL);
 }
 
 #endif
@@ -769,10 +772,11 @@ static HRESULT WINAPI WICBitmap_SetPalette(IWICBitmap *iface, IWICPalette *pIPal
 {
     struct qemu_WICBitmap_SetPalette call;
     struct qemu_wic_bitmap *bitmap = impl_from_IWICBitmap(iface);
+    struct qemu_wic_palette *palette = unsafe_impl_from_IWICPalette(pIPalette);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAP_SETPALETTE);
     call.iface = (ULONG_PTR)bitmap;
-    call.pIPalette = (ULONG_PTR)pIPalette;
+    call.pIPalette = (ULONG_PTR)palette;
 
     qemu_syscall(&call.super);
 
@@ -785,11 +789,13 @@ void qemu_WICBitmap_SetPalette(struct qemu_syscall *call)
 {
     struct qemu_WICBitmap_SetPalette *c = (struct qemu_WICBitmap_SetPalette *)call;
     struct qemu_wic_bitmap *bitmap;
+    struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bitmap = QEMU_G2H(c->iface);
+    palette = QEMU_G2H(c->pIPalette);
 
-    c->super.iret = IWICBitmap_SetPalette(bitmap->bitmap_host, QEMU_G2H(c->pIPalette));
+    c->super.iret = IWICBitmap_SetPalette(bitmap->bitmap_host, palette ? palette->host : NULL);
 }
 
 #endif
