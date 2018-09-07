@@ -102,6 +102,7 @@ const struct qemu_ops *qemu_ops;
 static const syscall_handler dll_functions[] =
 {
     qemu_ComponentFactory_AddRef,
+    qemu_ComponentFactory_create_host,
     qemu_ComponentFactory_CreateBitmap,
     qemu_ComponentFactory_CreateBitmapClipper,
     qemu_ComponentFactory_CreateBitmapFlipRotator,
@@ -134,7 +135,6 @@ static const syscall_handler dll_functions[] =
     qemu_ComponentFactory_CreateQueryWriterFromBlockWriter,
     qemu_ComponentFactory_CreateQueryWriterFromReader,
     qemu_ComponentFactory_CreateStream,
-    qemu_ComponentFactory_create_host,
     qemu_ComponentFactory_QueryInterface,
     qemu_ComponentFactory_Release,
     qemu_init_dll,
@@ -196,6 +196,19 @@ static const syscall_handler dll_functions[] =
     qemu_WICMapGuidToShortName,
     qemu_WICMapSchemaToName,
     qemu_WICMapShortNameToGuid,
+    qemu_WICPalette_AddRef,
+    qemu_WICPalette_GetColorCount,
+    qemu_WICPalette_GetColors,
+    qemu_WICPalette_GetType,
+    qemu_WICPalette_HasAlpha,
+    qemu_WICPalette_InitializeCustom,
+    qemu_WICPalette_InitializeFromBitmap,
+    qemu_WICPalette_InitializeFromPalette,
+    qemu_WICPalette_InitializePredefined,
+    qemu_WICPalette_IsBlackWhite,
+    qemu_WICPalette_IsGrayscale,
+    qemu_WICPalette_QueryInterface,
+    qemu_WICPalette_Release,
 };
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)

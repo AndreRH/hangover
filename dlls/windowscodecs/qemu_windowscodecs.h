@@ -23,6 +23,7 @@
 enum windowscodecs_calls
 {
     CALL_COMPONENTFACTORY_ADDREF = 0,
+    CALL_COMPONENTFACTORY_CREATE_HOST,
     CALL_COMPONENTFACTORY_CREATEBITMAP,
     CALL_COMPONENTFACTORY_CREATEBITMAPCLIPPER,
     CALL_COMPONENTFACTORY_CREATEBITMAPFLIPROTATOR,
@@ -55,7 +56,6 @@ enum windowscodecs_calls
     CALL_COMPONENTFACTORY_CREATEQUERYWRITERFROMBLOCKWRITER,
     CALL_COMPONENTFACTORY_CREATEQUERYWRITERFROMREADER,
     CALL_COMPONENTFACTORY_CREATESTREAM,
-    CALL_COMPONENTFACTORY_CREATE_HOST,
     CALL_COMPONENTFACTORY_QUERYINTERFACE,
     CALL_COMPONENTFACTORY_RELEASE,
     CALL_INIT_DLL,
@@ -117,6 +117,19 @@ enum windowscodecs_calls
     CALL_WICMAPGUIDTOSHORTNAME,
     CALL_WICMAPSCHEMATONAME,
     CALL_WICMAPSHORTNAMETOGUID,
+    CALL_WICPALETTE_ADDREF,
+    CALL_WICPALETTE_GETCOLORCOUNT,
+    CALL_WICPALETTE_GETCOLORS,
+    CALL_WICPALETTE_GETTYPE,
+    CALL_WICPALETTE_HASALPHA,
+    CALL_WICPALETTE_INITIALIZECUSTOM,
+    CALL_WICPALETTE_INITIALIZEFROMBITMAP,
+    CALL_WICPALETTE_INITIALIZEFROMPALETTE,
+    CALL_WICPALETTE_INITIALIZEPREDEFINED,
+    CALL_WICPALETTE_ISBLACKWHITE,
+    CALL_WICPALETTE_ISGRAYSCALE,
+    CALL_WICPALETTE_QUERYINTERFACE,
+    CALL_WICPALETTE_RELEASE,
 };
 
 struct qemu_wic_frame_encode
@@ -262,6 +275,19 @@ void qemu_WICCreateBitmapFromSectionEx(struct qemu_syscall *call);
 void qemu_WICMapGuidToShortName(struct qemu_syscall *call);
 void qemu_WICMapSchemaToName(struct qemu_syscall *call);
 void qemu_WICMapShortNameToGuid(struct qemu_syscall *call);
+void qemu_WICPalette_AddRef(struct qemu_syscall *call);
+void qemu_WICPalette_GetColorCount(struct qemu_syscall *call);
+void qemu_WICPalette_GetColors(struct qemu_syscall *call);
+void qemu_WICPalette_GetType(struct qemu_syscall *call);
+void qemu_WICPalette_HasAlpha(struct qemu_syscall *call);
+void qemu_WICPalette_InitializeCustom(struct qemu_syscall *call);
+void qemu_WICPalette_InitializeFromBitmap(struct qemu_syscall *call);
+void qemu_WICPalette_InitializeFromPalette(struct qemu_syscall *call);
+void qemu_WICPalette_InitializePredefined(struct qemu_syscall *call);
+void qemu_WICPalette_IsBlackWhite(struct qemu_syscall *call);
+void qemu_WICPalette_IsGrayscale(struct qemu_syscall *call);
+void qemu_WICPalette_QueryInterface(struct qemu_syscall *call);
+void qemu_WICPalette_Release(struct qemu_syscall *call);
 
 #endif
 

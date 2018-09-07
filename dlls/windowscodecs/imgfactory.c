@@ -759,7 +759,8 @@ struct qemu_ComponentFactory_CreateBitmap
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateBitmap(IWICComponentFactory *iface, UINT uiWidth, UINT uiHeight, REFWICPixelFormatGUID pixelFormat, WICBitmapCreateCacheOption option, IWICBitmap **ppIBitmap)
+static HRESULT WINAPI ComponentFactory_CreateBitmap(IWICComponentFactory *iface, UINT uiWidth, UINT uiHeight,
+        REFWICPixelFormatGUID pixelFormat, WICBitmapCreateCacheOption option, IWICBitmap **ppIBitmap)
 {
     struct qemu_ComponentFactory_CreateBitmap call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
