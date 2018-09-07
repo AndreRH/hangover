@@ -540,7 +540,7 @@ void qemu_WICBitmap_GetSize(struct qemu_syscall *call)
     struct qemu_WICBitmap_GetSize *c = (struct qemu_WICBitmap_GetSize *)call;
     struct qemu_wic_bitmap *bitmap;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bitmap = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmap_GetSize(bitmap->bitmap_host, QEMU_G2H(c->puiWidth), QEMU_G2H(c->puiHeight));
@@ -578,7 +578,7 @@ void qemu_WICBitmap_GetPixelFormat(struct qemu_syscall *call)
     struct qemu_WICBitmap_GetPixelFormat *c = (struct qemu_WICBitmap_GetPixelFormat *)call;
     struct qemu_wic_bitmap *bitmap;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bitmap = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmap_GetPixelFormat(bitmap->bitmap_host, QEMU_G2H(c->pPixelFormat));
@@ -618,7 +618,7 @@ void qemu_WICBitmap_GetResolution(struct qemu_syscall *call)
     struct qemu_WICBitmap_GetResolution *c = (struct qemu_WICBitmap_GetResolution *)call;
     struct qemu_wic_bitmap *bitmap;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bitmap = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmap_GetResolution(bitmap->bitmap_host, QEMU_G2H(c->pDpiX), QEMU_G2H(c->pDpiY));
@@ -824,8 +824,8 @@ struct qemu_WICBitmap_SetResolution
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t dpiX;
-    uint64_t dpiY;
+    double dpiX;
+    double dpiY;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -852,7 +852,7 @@ void qemu_WICBitmap_SetResolution(struct qemu_syscall *call)
     struct qemu_WICBitmap_SetResolution *c = (struct qemu_WICBitmap_SetResolution *)call;
     struct qemu_wic_bitmap *bitmap;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bitmap = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmap_SetResolution(bitmap->bitmap_host, c->dpiX, c->dpiY);
@@ -1082,10 +1082,11 @@ void qemu_IMILBitmapImpl_GetResolution(struct qemu_syscall *call)
     struct qemu_IMILBitmapImpl_GetResolution *c = (struct qemu_IMILBitmapImpl_GetResolution *)call;
     struct qemu_wic_bitmap *bitmap;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bitmap = QEMU_G2H(c->iface);
 
-    c->super.iret = bitmap->source_host->lpVtbl->GetResolution(bitmap->source_host, QEMU_G2H(c->dpix), QEMU_G2H(c->dpiy));
+    c->super.iret = bitmap->source_host->lpVtbl->GetResolution(bitmap->source_host,
+            QEMU_G2H(c->dpix), QEMU_G2H(c->dpiy));
 }
 
 #endif
