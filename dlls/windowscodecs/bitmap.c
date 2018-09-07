@@ -213,6 +213,7 @@ void qemu_WICBitmapLock_Release(struct qemu_syscall *call)
     WINE_TRACE("\n");
     lock = QEMU_G2H(c->iface);
 
+    /* FIXME: Make sure that the bitmap is released when the lock holds the last ref. */
     c->super.iret = IWICBitmapLock_Release(lock->host);
     if (!c->super.iret)
     {
@@ -500,10 +501,15 @@ void qemu_WICBitmap_Release(struct qemu_syscall *call)
     struct qemu_WICBitmap_Release *c = (struct qemu_WICBitmap_Release *)call;
     struct qemu_wic_bitmap *bitmap;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bitmap = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmap_Release(bitmap->bitmap_host);
+    if (c->super.iret)
+    {
+        WINE_TRACE("Destroying lock wrapper %p for host lock %p.\n", bitmap, bitmap->bitmap_host);
+        HeapFree(GetProcessHeap(), 0, bitmap);
+    }
 }
 
 #endif
@@ -900,74 +906,18 @@ void qemu_IMILBitmapImpl_QueryInterface(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_IMILBitmapImpl_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI IMILBitmapImpl_AddRef(IMILBitmapSource *iface)
 {
-    struct qemu_IMILBitmapImpl_AddRef call;
     struct qemu_wic_bitmap *bitmap = impl_from_IMILBitmapSource(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IMILBITMAPIMPL_ADDREF);
-    call.iface = (ULONG_PTR)bitmap;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IWICBitmap_AddRef(&bitmap->IWICBitmap_iface);
 }
-
-#else
-
-void qemu_IMILBitmapImpl_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_IMILBitmapImpl_AddRef *c = (struct qemu_IMILBitmapImpl_AddRef *)call;
-    struct qemu_wic_bitmap *bitmap;
-
-    WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
-    c->super.iret = bitmap->source_host->lpVtbl->AddRef(bitmap->source_host);
-}
-
-#endif
-
-struct qemu_IMILBitmapImpl_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI IMILBitmapImpl_Release(IMILBitmapSource *iface)
 {
-    struct qemu_IMILBitmapImpl_Release call;
     struct qemu_wic_bitmap *bitmap = impl_from_IMILBitmapSource(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IMILBITMAPIMPL_RELEASE);
-    call.iface = (ULONG_PTR)bitmap;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_IMILBitmapImpl_Release(struct qemu_syscall *call)
-{
-    struct qemu_IMILBitmapImpl_Release *c = (struct qemu_IMILBitmapImpl_Release *)call;
-    struct qemu_wic_bitmap *bitmap;
-
-    WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
-    c->super.iret = bitmap->source_host->lpVtbl->Release(bitmap->source_host);
+    return IWICBitmap_Release(&bitmap->IWICBitmap_iface);
 }
 
 #endif
@@ -1251,74 +1201,18 @@ void qemu_IMILUnknown1Impl_QueryInterface(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_IMILUnknown1Impl_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI IMILUnknown1Impl_AddRef(IMILUnknown1 *iface)
 {
-    struct qemu_IMILUnknown1Impl_AddRef call;
     struct qemu_wic_bitmap *bitmap = impl_from_IMILUnknown1(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IMILUNKNOWN1IMPL_ADDREF);
-    call.iface = (ULONG_PTR)bitmap;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IWICBitmap_AddRef(&bitmap->IWICBitmap_iface);
 }
-
-#else
-
-void qemu_IMILUnknown1Impl_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_IMILUnknown1Impl_AddRef *c = (struct qemu_IMILUnknown1Impl_AddRef *)call;
-    struct qemu_wic_bitmap *bitmap;
-
-    WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
-    c->super.iret = bitmap->unk1_host->lpVtbl->AddRef(bitmap->unk1_host);
-}
-
-#endif
-
-struct qemu_IMILUnknown1Impl_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI IMILUnknown1Impl_Release(IMILUnknown1 *iface)
 {
-    struct qemu_IMILUnknown1Impl_Release call;
     struct qemu_wic_bitmap *bitmap = impl_from_IMILUnknown1(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IMILUNKNOWN1IMPL_RELEASE);
-    call.iface = (ULONG_PTR)bitmap;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_IMILUnknown1Impl_Release(struct qemu_syscall *call)
-{
-    struct qemu_IMILUnknown1Impl_Release *c = (struct qemu_IMILUnknown1Impl_Release *)call;
-    struct qemu_wic_bitmap *bitmap;
-
-    WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
-    c->super.iret = bitmap->unk1_host->lpVtbl->Release(bitmap->unk1_host);
+    return IWICBitmap_Release(&bitmap->IWICBitmap_iface);
 }
 
 #endif
@@ -1363,74 +1257,18 @@ void qemu_IMILUnknown2Impl_QueryInterface(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_IMILUnknown2Impl_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
 #ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI IMILUnknown2Impl_AddRef(IMILUnknown2 *iface)
 {
-    struct qemu_IMILUnknown2Impl_AddRef call;
     struct qemu_wic_bitmap *bitmap = impl_from_IMILUnknown2(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IMILUNKNOWN2IMPL_ADDREF);
-    call.iface = (ULONG_PTR)bitmap;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IWICBitmap_AddRef(&bitmap->IWICBitmap_iface);
 }
-
-#else
-
-void qemu_IMILUnknown2Impl_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_IMILUnknown2Impl_AddRef *c = (struct qemu_IMILUnknown2Impl_AddRef *)call;
-    struct qemu_wic_bitmap *bitmap;
-
-    WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
-    c->super.iret = bitmap->unk2_host->lpVtbl->AddRef(bitmap->unk2_host);
-}
-
-#endif
-
-struct qemu_IMILUnknown2Impl_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI IMILUnknown2Impl_Release(IMILUnknown2 *iface)
 {
-    struct qemu_IMILUnknown2Impl_Release call;
     struct qemu_wic_bitmap *bitmap = impl_from_IMILUnknown2(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_IMILUNKNOWN2IMPL_RELEASE);
-    call.iface = (ULONG_PTR)bitmap;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_IMILUnknown2Impl_Release(struct qemu_syscall *call)
-{
-    struct qemu_IMILUnknown2Impl_Release *c = (struct qemu_IMILUnknown2Impl_Release *)call;
-    struct qemu_wic_bitmap *bitmap;
-
-    WINE_FIXME("Unverified!\n");
-    bitmap = QEMU_G2H(c->iface);
-
-    c->super.iret = bitmap->unk2_host->lpVtbl->Release(bitmap->unk2_host);
+    return IWICBitmap_Release(&bitmap->IWICBitmap_iface);
 }
 
 #endif

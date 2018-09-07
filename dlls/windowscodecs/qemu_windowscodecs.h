@@ -58,21 +58,15 @@ enum windowscodecs_calls
     CALL_COMPONENTFACTORY_CREATESTREAM,
     CALL_COMPONENTFACTORY_QUERYINTERFACE,
     CALL_COMPONENTFACTORY_RELEASE,
-    CALL_IMILBITMAPIMPL_ADDREF,
     CALL_IMILBITMAPIMPL_COPYPALETTE,
     CALL_IMILBITMAPIMPL_COPYPIXELS,
     CALL_IMILBITMAPIMPL_GETPIXELFORMAT,
     CALL_IMILBITMAPIMPL_GETRESOLUTION,
     CALL_IMILBITMAPIMPL_GETSIZE,
     CALL_IMILBITMAPIMPL_QUERYINTERFACE,
-    CALL_IMILBITMAPIMPL_RELEASE,
     CALL_IMILBITMAPIMPL_UNKNOWNMETHOD1,
-    CALL_IMILUNKNOWN1IMPL_ADDREF,
     CALL_IMILUNKNOWN1IMPL_QUERYINTERFACE,
-    CALL_IMILUNKNOWN1IMPL_RELEASE,
-    CALL_IMILUNKNOWN2IMPL_ADDREF,
     CALL_IMILUNKNOWN2IMPL_QUERYINTERFACE,
-    CALL_IMILUNKNOWN2IMPL_RELEASE,
     CALL_IMILUNKNOWN2IMPL_UNKNOWNMETHOD1,
     CALL_INIT_DLL,
     CALL_WICBITMAP_ADDREF,
@@ -307,21 +301,15 @@ void qemu_ComponentFactory_CreateStream(struct qemu_syscall *call);
 void qemu_ComponentFactory_QueryInterface(struct qemu_syscall *call);
 void qemu_ComponentFactory_Release(struct qemu_syscall *call);
 void qemu_ComponentFactory_create_host(struct qemu_syscall *call);
-void qemu_IMILBitmapImpl_AddRef(struct qemu_syscall *call);
 void qemu_IMILBitmapImpl_CopyPalette(struct qemu_syscall *call);
 void qemu_IMILBitmapImpl_CopyPixels(struct qemu_syscall *call);
 void qemu_IMILBitmapImpl_GetPixelFormat(struct qemu_syscall *call);
 void qemu_IMILBitmapImpl_GetResolution(struct qemu_syscall *call);
 void qemu_IMILBitmapImpl_GetSize(struct qemu_syscall *call);
 void qemu_IMILBitmapImpl_QueryInterface(struct qemu_syscall *call);
-void qemu_IMILBitmapImpl_Release(struct qemu_syscall *call);
 void qemu_IMILBitmapImpl_UnknownMethod1(struct qemu_syscall *call);
-void qemu_IMILUnknown1Impl_AddRef(struct qemu_syscall *call);
 void qemu_IMILUnknown1Impl_QueryInterface(struct qemu_syscall *call);
-void qemu_IMILUnknown1Impl_Release(struct qemu_syscall *call);
-void qemu_IMILUnknown2Impl_AddRef(struct qemu_syscall *call);
 void qemu_IMILUnknown2Impl_QueryInterface(struct qemu_syscall *call);
-void qemu_IMILUnknown2Impl_Release(struct qemu_syscall *call);
 void qemu_IMILUnknown2Impl_UnknownMethod1(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_AddRef(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_CopyPalette(struct qemu_syscall *call);
