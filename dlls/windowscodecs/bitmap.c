@@ -685,7 +685,8 @@ struct qemu_WICBitmap_CopyPixels
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmap_CopyPixels(IWICBitmap *iface, const WICRect *prc, UINT cbStride, UINT cbBufferSize, BYTE *pbBuffer)
+static HRESULT WINAPI WICBitmap_CopyPixels(IWICBitmap *iface, const WICRect *prc, UINT cbStride,
+        UINT cbBufferSize, BYTE *pbBuffer)
 {
     struct qemu_WICBitmap_CopyPixels call;
     struct qemu_wic_bitmap *bitmap = impl_from_IWICBitmap(iface);
@@ -709,10 +710,12 @@ void qemu_WICBitmap_CopyPixels(struct qemu_syscall *call)
     struct qemu_WICBitmap_CopyPixels *c = (struct qemu_WICBitmap_CopyPixels *)call;
     struct qemu_wic_bitmap *bitmap;
 
-    WINE_FIXME("Unverified!\n");
+    /* WICRect has the same size on 32 and 64 bit. */
+    WINE_TRACE("\n");
     bitmap = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmap_CopyPixels(bitmap->bitmap_host, QEMU_G2H(c->prc), c->cbStride, c->cbBufferSize, QEMU_G2H(c->pbBuffer));
+    c->super.iret = IWICBitmap_CopyPixels(bitmap->bitmap_host, QEMU_G2H(c->prc), c->cbStride, c->cbBufferSize,
+            QEMU_G2H(c->pbBuffer));
 }
 
 #endif
