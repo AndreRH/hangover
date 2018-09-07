@@ -177,7 +177,7 @@ void qemu_ComponentFactory_Release(struct qemu_syscall *call)
     c->super.iret = IWICComponentFactory_Release(factory->host);
     if (!c->super.iret)
     {
-        WINE_TRACE("Destroying component factory wrapper %p for host texture %p.\n", factory, factory->host);
+        WINE_TRACE("Destroying component factory wrapper %p for host factory %p.\n", factory, factory->host);
         HeapFree(GetProcessHeap(), 0, factory);
     }
 }

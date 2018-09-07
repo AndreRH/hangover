@@ -106,7 +106,7 @@ void qemu_WICPalette_AddRef(struct qemu_syscall *call)
     struct qemu_WICPalette_AddRef *c = (struct qemu_WICPalette_AddRef *)call;
     struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IWICPalette_AddRef(palette->host);
@@ -142,10 +142,17 @@ void qemu_WICPalette_Release(struct qemu_syscall *call)
     struct qemu_WICPalette_Release *c = (struct qemu_WICPalette_Release *)call;
     struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IWICPalette_Release(palette->host);
+    if (!c->super.iret)
+    {
+        /* I could not spot a place where WIC keeps an internal refcount on palettes created by
+         * the app. */
+        WINE_TRACE("Destroying palette wrapper %p for host palette %p.\n", palette, palette->host);
+        HeapFree(GetProcessHeap(), 0, palette);
+    }
 }
 
 #endif
