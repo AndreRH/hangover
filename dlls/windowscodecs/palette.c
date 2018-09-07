@@ -16,8 +16,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-/* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
-
 #define COBJMACROS
 
 #include <windows.h>

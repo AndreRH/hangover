@@ -58,7 +58,34 @@ enum windowscodecs_calls
     CALL_COMPONENTFACTORY_CREATESTREAM,
     CALL_COMPONENTFACTORY_QUERYINTERFACE,
     CALL_COMPONENTFACTORY_RELEASE,
+    CALL_IMILBITMAPIMPL_ADDREF,
+    CALL_IMILBITMAPIMPL_COPYPALETTE,
+    CALL_IMILBITMAPIMPL_COPYPIXELS,
+    CALL_IMILBITMAPIMPL_GETPIXELFORMAT,
+    CALL_IMILBITMAPIMPL_GETRESOLUTION,
+    CALL_IMILBITMAPIMPL_GETSIZE,
+    CALL_IMILBITMAPIMPL_QUERYINTERFACE,
+    CALL_IMILBITMAPIMPL_RELEASE,
+    CALL_IMILBITMAPIMPL_UNKNOWNMETHOD1,
+    CALL_IMILUNKNOWN1IMPL_ADDREF,
+    CALL_IMILUNKNOWN1IMPL_QUERYINTERFACE,
+    CALL_IMILUNKNOWN1IMPL_RELEASE,
+    CALL_IMILUNKNOWN2IMPL_ADDREF,
+    CALL_IMILUNKNOWN2IMPL_QUERYINTERFACE,
+    CALL_IMILUNKNOWN2IMPL_RELEASE,
+    CALL_IMILUNKNOWN2IMPL_UNKNOWNMETHOD1,
     CALL_INIT_DLL,
+    CALL_WICBITMAP_ADDREF,
+    CALL_WICBITMAP_COPYPALETTE,
+    CALL_WICBITMAP_COPYPIXELS,
+    CALL_WICBITMAP_GETPIXELFORMAT,
+    CALL_WICBITMAP_GETRESOLUTION,
+    CALL_WICBITMAP_GETSIZE,
+    CALL_WICBITMAP_LOCK,
+    CALL_WICBITMAP_QUERYINTERFACE,
+    CALL_WICBITMAP_RELEASE,
+    CALL_WICBITMAP_SETPALETTE,
+    CALL_WICBITMAP_SETRESOLUTION,
     CALL_WICBITMAPDECODER_ADDREF,
     CALL_WICBITMAPDECODER_COPYPALETTE,
     CALL_WICBITMAPDECODER_GETCOLORCONTEXTS,
@@ -111,6 +138,13 @@ enum windowscodecs_calls
     CALL_WICBITMAPFRAMEENCODE_SETTHUMBNAIL,
     CALL_WICBITMAPFRAMEENCODE_WRITEPIXELS,
     CALL_WICBITMAPFRAMEENCODE_WRITESOURCE,
+    CALL_WICBITMAPLOCK_ADDREF,
+    CALL_WICBITMAPLOCK_GETDATAPOINTER,
+    CALL_WICBITMAPLOCK_GETPIXELFORMAT,
+    CALL_WICBITMAPLOCK_GETSIZE,
+    CALL_WICBITMAPLOCK_GETSTRIDE,
+    CALL_WICBITMAPLOCK_QUERYINTERFACE,
+    CALL_WICBITMAPLOCK_RELEASE,
     CALL_WICCONVERTBITMAPSOURCE,
     CALL_WICCREATEBITMAPFROMSECTION,
     CALL_WICCREATEBITMAPFROMSECTIONEX,
@@ -170,6 +204,46 @@ DEFINE_GUID(CLSID_WICIcnsEncoder, 0x312fb6f1,0xb767,0x409d,0x8a,0x6d,0x0f,0xc1,0
 DEFINE_GUID(GUID_WineContainerFormatTga, 0x0c44fda1,0xa5c5,0x4298,0x96,0x85,0x47,0x3f,0xc1,0x7c,0xd3,0x22);
 DEFINE_GUID(GUID_VendorWine, 0xddf46da1,0x7dc1,0x404e,0x98,0xf2,0xef,0xa4,0x8d,0xfc,0x95,0x0a);
 
+DEFINE_GUID(IID_IMILBitmapSource,0x7543696a,0xbc8d,0x46b0,0x5f,0x81,0x8d,0x95,0x72,0x89,0x72,0xbe);
+#define INTERFACE IMILBitmapSource
+DECLARE_INTERFACE_(IMILBitmapSource,IUnknown)
+{
+    /*** IUnknown methods ***/
+    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID,void **) PURE;
+    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG,Release)(THIS) PURE;
+    /*** IMILBitmapSource methods ***/
+    STDMETHOD_(HRESULT,GetSize)(THIS_ UINT *,UINT *);
+    STDMETHOD_(HRESULT,GetPixelFormat)(THIS_ int *);
+    STDMETHOD_(HRESULT,GetResolution)(THIS_ double *,double *);
+    STDMETHOD_(HRESULT,CopyPalette)(THIS_ IWICPalette *);
+    STDMETHOD_(HRESULT,CopyPixels)(THIS_ const WICRect *,UINT,UINT,BYTE *);
+    STDMETHOD_(HRESULT,UnknownMethod1)(THIS_ void **);
+};
+#undef INTERFACE
+
+#define INTERFACE IMILUnknown1
+DECLARE_INTERFACE_(IMILUnknown1,IUnknown)
+{
+    /*** IUnknown methods ***/
+    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID,void **) PURE;
+    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG,Release)(THIS) PURE;
+};
+#undef INTERFACE
+
+#define INTERFACE IMILUnknown2
+DECLARE_INTERFACE_(IMILUnknown2,IUnknown)
+{
+    /*** IUnknown methods ***/
+    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID,void **) PURE;
+    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG,Release)(THIS) PURE;
+    /*** unknown methods ***/
+    STDMETHOD_(HRESULT,UnknownMethod1)(THIS_ void *, void *) PURE;
+};
+#undef INTERFACE
+
 #ifdef QEMU_DLL_GUEST
 
 typedef HRESULT (*class_constructor)(const IID *, void **);
@@ -217,6 +291,22 @@ void qemu_ComponentFactory_CreateStream(struct qemu_syscall *call);
 void qemu_ComponentFactory_QueryInterface(struct qemu_syscall *call);
 void qemu_ComponentFactory_Release(struct qemu_syscall *call);
 void qemu_ComponentFactory_create_host(struct qemu_syscall *call);
+void qemu_IMILBitmapImpl_AddRef(struct qemu_syscall *call);
+void qemu_IMILBitmapImpl_CopyPalette(struct qemu_syscall *call);
+void qemu_IMILBitmapImpl_CopyPixels(struct qemu_syscall *call);
+void qemu_IMILBitmapImpl_GetPixelFormat(struct qemu_syscall *call);
+void qemu_IMILBitmapImpl_GetResolution(struct qemu_syscall *call);
+void qemu_IMILBitmapImpl_GetSize(struct qemu_syscall *call);
+void qemu_IMILBitmapImpl_QueryInterface(struct qemu_syscall *call);
+void qemu_IMILBitmapImpl_Release(struct qemu_syscall *call);
+void qemu_IMILBitmapImpl_UnknownMethod1(struct qemu_syscall *call);
+void qemu_IMILUnknown1Impl_AddRef(struct qemu_syscall *call);
+void qemu_IMILUnknown1Impl_QueryInterface(struct qemu_syscall *call);
+void qemu_IMILUnknown1Impl_Release(struct qemu_syscall *call);
+void qemu_IMILUnknown2Impl_AddRef(struct qemu_syscall *call);
+void qemu_IMILUnknown2Impl_QueryInterface(struct qemu_syscall *call);
+void qemu_IMILUnknown2Impl_Release(struct qemu_syscall *call);
+void qemu_IMILUnknown2Impl_UnknownMethod1(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_AddRef(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_CopyPalette(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_GetColorContexts(struct qemu_syscall *call);
@@ -269,6 +359,24 @@ void qemu_WICBitmapFrameEncode_SetSize(struct qemu_syscall *call);
 void qemu_WICBitmapFrameEncode_SetThumbnail(struct qemu_syscall *call);
 void qemu_WICBitmapFrameEncode_WritePixels(struct qemu_syscall *call);
 void qemu_WICBitmapFrameEncode_WriteSource(struct qemu_syscall *call);
+void qemu_WICBitmapLock_AddRef(struct qemu_syscall *call);
+void qemu_WICBitmapLock_GetDataPointer(struct qemu_syscall *call);
+void qemu_WICBitmapLock_GetPixelFormat(struct qemu_syscall *call);
+void qemu_WICBitmapLock_GetSize(struct qemu_syscall *call);
+void qemu_WICBitmapLock_GetStride(struct qemu_syscall *call);
+void qemu_WICBitmapLock_QueryInterface(struct qemu_syscall *call);
+void qemu_WICBitmapLock_Release(struct qemu_syscall *call);
+void qemu_WICBitmap_AddRef(struct qemu_syscall *call);
+void qemu_WICBitmap_CopyPalette(struct qemu_syscall *call);
+void qemu_WICBitmap_CopyPixels(struct qemu_syscall *call);
+void qemu_WICBitmap_GetPixelFormat(struct qemu_syscall *call);
+void qemu_WICBitmap_GetResolution(struct qemu_syscall *call);
+void qemu_WICBitmap_GetSize(struct qemu_syscall *call);
+void qemu_WICBitmap_Lock(struct qemu_syscall *call);
+void qemu_WICBitmap_QueryInterface(struct qemu_syscall *call);
+void qemu_WICBitmap_Release(struct qemu_syscall *call);
+void qemu_WICBitmap_SetPalette(struct qemu_syscall *call);
+void qemu_WICBitmap_SetResolution(struct qemu_syscall *call);
 void qemu_WICConvertBitmapSource(struct qemu_syscall *call);
 void qemu_WICCreateBitmapFromSection(struct qemu_syscall *call);
 void qemu_WICCreateBitmapFromSectionEx(struct qemu_syscall *call);
