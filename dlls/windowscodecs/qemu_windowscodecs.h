@@ -251,6 +251,9 @@ extern HRESULT Decoder_CreateInstance(const IID *iid, void **obj);
 extern HRESULT Encoder_CreateInstance(const IID *iid, void **obj);
 HRESULT ComponentFactory_CreateInstance(const IID *iid, void **obj);
 
+struct qemu_wic_bitmap;
+IWICBitmap *WICBitmap_init_guest(struct qemu_wic_bitmap *bitmap);
+
 #else
 
 extern const struct qemu_ops *qemu_ops;
@@ -396,6 +399,8 @@ void qemu_WICPalette_IsBlackWhite(struct qemu_syscall *call);
 void qemu_WICPalette_IsGrayscale(struct qemu_syscall *call);
 void qemu_WICPalette_QueryInterface(struct qemu_syscall *call);
 void qemu_WICPalette_Release(struct qemu_syscall *call);
+
+struct qemu_wic_bitmap *WICBitmap_create_host(IWICBitmap *host);
 
 #endif
 

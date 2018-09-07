@@ -1448,3 +1448,91 @@ void qemu_IMILUnknown2Impl_UnknownMethod1(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+static const IWICBitmapVtbl WICBitmap_Vtbl =
+{
+    WICBitmap_QueryInterface,
+    WICBitmap_AddRef,
+    WICBitmap_Release,
+    WICBitmap_GetSize,
+    WICBitmap_GetPixelFormat,
+    WICBitmap_GetResolution,
+    WICBitmap_CopyPalette,
+    WICBitmap_CopyPixels,
+    WICBitmap_Lock,
+    WICBitmap_SetPalette,
+    WICBitmap_SetResolution
+};
+
+static const IMILBitmapSourceVtbl IMILBitmapImpl_Vtbl =
+{
+    IMILBitmapImpl_QueryInterface,
+    IMILBitmapImpl_AddRef,
+    IMILBitmapImpl_Release,
+    IMILBitmapImpl_GetSize,
+    IMILBitmapImpl_GetPixelFormat,
+    IMILBitmapImpl_GetResolution,
+    IMILBitmapImpl_CopyPalette,
+    IMILBitmapImpl_CopyPixels,
+    IMILBitmapImpl_UnknownMethod1,
+};
+
+static const IMILUnknown1Vtbl IMILUnknown1Impl_Vtbl =
+{
+    IMILUnknown1Impl_QueryInterface,
+    IMILUnknown1Impl_AddRef,
+    IMILUnknown1Impl_Release,
+};
+
+static const IMILUnknown2Vtbl IMILUnknown2Impl_Vtbl =
+{
+    IMILUnknown2Impl_QueryInterface,
+    IMILUnknown2Impl_AddRef,
+    IMILUnknown2Impl_Release,
+    IMILUnknown2Impl_UnknownMethod1,
+};
+
+IWICBitmap *WICBitmap_init_guest(struct qemu_wic_bitmap *bitmap)
+{
+    bitmap->IWICBitmap_iface.lpVtbl = &WICBitmap_Vtbl;
+    bitmap->IMILBitmapSource_iface.lpVtbl = &IMILBitmapImpl_Vtbl;
+    bitmap->IMILUnknown1_iface.lpVtbl = &IMILUnknown1Impl_Vtbl;
+    bitmap->IMILUnknown2_iface.lpVtbl = &IMILUnknown2Impl_Vtbl;
+
+    /* TODO: Init the shadow copies of the other fields. */
+    return &bitmap->IWICBitmap_iface;
+}
+
+#else
+
+struct qemu_wic_bitmap *WICBitmap_create_host(IWICBitmap *host)
+{
+    struct qemu_wic_bitmap *ret;
+    HRESULT hr;
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+    {
+        WINE_WARN("Out of memory\n");
+        return NULL;
+    }
+
+    ret->bitmap_host = host;
+
+    hr = IWICBitmap_QueryInterface(host, &IID_IMILBitmapSource, (void **)&ret->source_host);
+    if (FAILED(hr))
+        WINE_ERR("Failed to get IMILBitmapSource interface.\n");
+    ret->source_host->lpVtbl->Release(ret->source_host);
+
+    hr = ret->source_host->lpVtbl->UnknownMethod1(ret->source_host, (void **)&ret->unk1_host);
+    if (FAILED(hr))
+        WINE_ERR("Failed to get IMILUnknown1 interface.\n");
+    ret->unk1_host->lpVtbl->Release(ret->unk1_host);
+
+    /* How do I get IMILUnknown2? There's nothing obvious in the Wine code, other than reading the magic
+     * offset. */
+
+    return ret;
+}
+#endif
