@@ -169,6 +169,82 @@ enum windowscodecs_calls
     CALL_WICPALETTE_RELEASE,
 };
 
+DEFINE_GUID(IID_IMILBitmapSource,0x7543696a,0xbc8d,0x46b0,0x5f,0x81,0x8d,0x95,0x72,0x89,0x72,0xbe);
+#define INTERFACE IMILBitmapSource
+DECLARE_INTERFACE_(IMILBitmapSource,IUnknown)
+{
+    /*** IUnknown methods ***/
+    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID,void **) PURE;
+    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG,Release)(THIS) PURE;
+    /*** IMILBitmapSource methods ***/
+    STDMETHOD_(HRESULT,GetSize)(THIS_ UINT *,UINT *);
+    STDMETHOD_(HRESULT,GetPixelFormat)(THIS_ int *);
+    STDMETHOD_(HRESULT,GetResolution)(THIS_ double *,double *);
+    STDMETHOD_(HRESULT,CopyPalette)(THIS_ IWICPalette *);
+    STDMETHOD_(HRESULT,CopyPixels)(THIS_ const WICRect *,UINT,UINT,BYTE *);
+    STDMETHOD_(HRESULT,UnknownMethod1)(THIS_ void **);
+};
+#undef INTERFACE
+
+#define INTERFACE IMILUnknown1
+DECLARE_INTERFACE_(IMILUnknown1,IUnknown)
+{
+    /*** IUnknown methods ***/
+    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID,void **) PURE;
+    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG,Release)(THIS) PURE;
+};
+#undef INTERFACE
+
+#define INTERFACE IMILUnknown2
+DECLARE_INTERFACE_(IMILUnknown2,IUnknown)
+{
+    /*** IUnknown methods ***/
+    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID,void **) PURE;
+    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
+    STDMETHOD_(ULONG,Release)(THIS) PURE;
+    /*** unknown methods ***/
+    STDMETHOD_(HRESULT,UnknownMethod1)(THIS_ void *, void *) PURE;
+};
+#undef INTERFACE
+
+/* WARNING: .NET Media Integration Layer (MIL) directly dereferences
+ * BitmapImpl members and depends on its exact layout.
+ *
+ * TODO: I just copied the struct from Wine, most of the fields are
+ * not used by the wrapper. They'll probably need syncing between
+ * host and guest when methods are called. Note that they can only
+ * be written by the guest as the host might have an incompatible
+ * view on them. */
+struct qemu_wic_bitmap
+{
+    /* Guest fields */
+    IMILUnknown1 IMILUnknown1_iface;
+    LONG ref;
+    IMILBitmapSource IMILBitmapSource_iface;
+    IWICBitmap IWICBitmap_iface;
+    IMILUnknown2 IMILUnknown2_iface;
+    IWICPalette *palette;
+    int palette_set;
+    LONG lock; /* 0 if not locked, -1 if locked for writing, count if locked for reading */
+    BYTE *data;
+    void *view; /* used if data is a section created by an application */
+    UINT offset; /* offset into view */
+    UINT width, height;
+    UINT stride;
+    UINT bpp;
+    WICPixelFormatGUID pixelformat;
+    double dpix, dpiy;
+    CRITICAL_SECTION cs;
+
+    /* Host fields */
+    IMILUnknown1 *unk1_host;
+    IMILBitmapSource *source_host;
+    IWICBitmap *bitmap_host;
+    IMILUnknown2 *unk2_host;
+};
+
 struct qemu_wic_frame_encode
 {
     /* Guest fields */
@@ -218,6 +294,8 @@ struct qemu_wic_clipper
 
     /* Host fields */
     IWICBitmapClipper *host;
+    struct qemu_wic_clipper *source_clipper;
+    struct qemu_wic_bitmap *source_bitmap;
 };
 
 /* This is a reverse wrapper. */
@@ -229,52 +307,10 @@ struct qemu_bitmap_source
     LONG ref;
 };
 
-struct qemu_wic_bitmap;
-
 DEFINE_GUID(CLSID_WineTgaDecoder, 0xb11fc79a,0x67cc,0x43e6,0xa9,0xce,0xe3,0xd5,0x49,0x45,0xd3,0x04);
 DEFINE_GUID(CLSID_WICIcnsEncoder, 0x312fb6f1,0xb767,0x409d,0x8a,0x6d,0x0f,0xc1,0x54,0xd4,0xf0,0x5c);
 DEFINE_GUID(GUID_WineContainerFormatTga, 0x0c44fda1,0xa5c5,0x4298,0x96,0x85,0x47,0x3f,0xc1,0x7c,0xd3,0x22);
 DEFINE_GUID(GUID_VendorWine, 0xddf46da1,0x7dc1,0x404e,0x98,0xf2,0xef,0xa4,0x8d,0xfc,0x95,0x0a);
-
-DEFINE_GUID(IID_IMILBitmapSource,0x7543696a,0xbc8d,0x46b0,0x5f,0x81,0x8d,0x95,0x72,0x89,0x72,0xbe);
-#define INTERFACE IMILBitmapSource
-DECLARE_INTERFACE_(IMILBitmapSource,IUnknown)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID,void **) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** IMILBitmapSource methods ***/
-    STDMETHOD_(HRESULT,GetSize)(THIS_ UINT *,UINT *);
-    STDMETHOD_(HRESULT,GetPixelFormat)(THIS_ int *);
-    STDMETHOD_(HRESULT,GetResolution)(THIS_ double *,double *);
-    STDMETHOD_(HRESULT,CopyPalette)(THIS_ IWICPalette *);
-    STDMETHOD_(HRESULT,CopyPixels)(THIS_ const WICRect *,UINT,UINT,BYTE *);
-    STDMETHOD_(HRESULT,UnknownMethod1)(THIS_ void **);
-};
-#undef INTERFACE
-
-#define INTERFACE IMILUnknown1
-DECLARE_INTERFACE_(IMILUnknown1,IUnknown)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID,void **) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-};
-#undef INTERFACE
-
-#define INTERFACE IMILUnknown2
-DECLARE_INTERFACE_(IMILUnknown2,IUnknown)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID,void **) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** unknown methods ***/
-    STDMETHOD_(HRESULT,UnknownMethod1)(THIS_ void *, void *) PURE;
-};
-#undef INTERFACE
 
 #ifdef QEMU_DLL_GUEST
 
@@ -288,6 +324,20 @@ void WICPalette_init_guest(struct qemu_wic_palette *palette);
 void WICBitmapClipper_init_guest(struct qemu_wic_clipper *clipper);
 
 struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
+
+/* For detection of our own IWICBitmapSource objects. */
+const IWICBitmapClipperVtbl WICBitmapClipper_Vtbl;
+const IWICBitmapVtbl WICBitmap_Vtbl;
+
+static inline struct qemu_wic_bitmap *impl_from_IWICBitmap(IWICBitmap *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_wic_bitmap, IWICBitmap_iface);
+}
+
+static inline struct qemu_wic_clipper *impl_from_IWICBitmapClipper(IWICBitmapClipper *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_wic_clipper, IWICBitmapClipper_iface);
+}
 
 #else
 
@@ -441,6 +491,8 @@ void qemu_WICPalette_Release(struct qemu_syscall *call);
 struct qemu_wic_bitmap *WICBitmap_create_host(IWICBitmap *host);
 struct qemu_wic_palette *WICPalette_create_host(IWICPalette *host);
 struct qemu_wic_clipper *WICBitmapClipper_create_host(IWICBitmapClipper *host);
+
+ULONG qemu_WICBitmap_Release_internal(struct qemu_wic_bitmap *bitmap);
 
 struct qemu_bitmap_source *bitmap_source_wrapper_create(uint64_t guest);
 

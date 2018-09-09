@@ -42,42 +42,6 @@ struct qemu_WICBitmapLock_QueryInterface
     uint64_t ppv;
 };
 
-/* WARNING: .NET Media Integration Layer (MIL) directly dereferences
- * BitmapImpl members and depends on its exact layout.
- *
- * TODO: I just copied the struct from Wine, most of the fields are
- * not used by the wrapper. They'll probably need syncing between
- * host and guest when methods are called. Note that they can only
- * be written by the guest as the host might have an incompatible
- * view on them. */
-struct qemu_wic_bitmap
-{
-    /* Guest fields */
-    IMILUnknown1 IMILUnknown1_iface;
-    LONG ref;
-    IMILBitmapSource IMILBitmapSource_iface;
-    IWICBitmap IWICBitmap_iface;
-    IMILUnknown2 IMILUnknown2_iface;
-    IWICPalette *palette;
-    int palette_set;
-    LONG lock; /* 0 if not locked, -1 if locked for writing, count if locked for reading */
-    BYTE *data;
-    void *view; /* used if data is a section created by an application */
-    UINT offset; /* offset into view */
-    UINT width, height;
-    UINT stride;
-    UINT bpp;
-    WICPixelFormatGUID pixelformat;
-    double dpix, dpiy;
-    CRITICAL_SECTION cs;
-
-    /* Host fields */
-    IMILUnknown1 *unk1_host;
-    IMILBitmapSource *source_host;
-    IWICBitmap *bitmap_host;
-    IMILUnknown2 *unk2_host;
-};
-
 /* Is there Windows software that depends on the implementation here too? Not sure,
  * hope not for now. */
 struct qemu_wic_lock
@@ -90,11 +54,6 @@ struct qemu_wic_lock
 };
 
 #ifdef QEMU_DLL_GUEST
-
-static inline struct qemu_wic_bitmap *impl_from_IWICBitmap(IWICBitmap *iface)
-{
-    return CONTAINING_RECORD(iface, struct qemu_wic_bitmap, IWICBitmap_iface);
-}
 
 static inline struct qemu_wic_bitmap *impl_from_IMILBitmapSource(IMILBitmapSource *iface)
 {
@@ -496,6 +455,20 @@ static ULONG WINAPI WICBitmap_Release(IWICBitmap *iface)
 
 #else
 
+ULONG qemu_WICBitmap_Release_internal(struct qemu_wic_bitmap *bitmap)
+{
+    ULONG ref;
+
+    ref = IWICBitmap_Release(bitmap->bitmap_host);
+    if (!ref)
+    {
+        WINE_TRACE("Destroying bitmap wrapper %p for host bitmap %p.\n", bitmap, bitmap->bitmap_host);
+        HeapFree(GetProcessHeap(), 0, bitmap);
+    }
+
+    return ref;
+}
+
 void qemu_WICBitmap_Release(struct qemu_syscall *call)
 {
     struct qemu_WICBitmap_Release *c = (struct qemu_WICBitmap_Release *)call;
@@ -503,13 +476,7 @@ void qemu_WICBitmap_Release(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
     bitmap = QEMU_G2H(c->iface);
-
-    c->super.iret = IWICBitmap_Release(bitmap->bitmap_host);
-    if (!c->super.iret)
-    {
-        WINE_TRACE("Destroying bitmap wrapper %p for bitmap lock %p.\n", bitmap, bitmap->bitmap_host);
-        HeapFree(GetProcessHeap(), 0, bitmap);
-    }
+    c->super.iret = qemu_WICBitmap_Release_internal(bitmap);
 }
 
 #endif
@@ -1315,7 +1282,7 @@ void qemu_IMILUnknown2Impl_UnknownMethod1(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-static const IWICBitmapVtbl WICBitmap_Vtbl =
+const IWICBitmapVtbl WICBitmap_Vtbl =
 {
     WICBitmap_QueryInterface,
     WICBitmap_AddRef,

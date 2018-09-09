@@ -42,11 +42,6 @@ struct qemu_WICBitmapClipper_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct qemu_wic_clipper *impl_from_IWICBitmapClipper(IWICBitmapClipper *iface)
-{
-    return CONTAINING_RECORD(iface, struct qemu_wic_clipper, IWICBitmapClipper_iface);
-}
-
 static HRESULT WINAPI WICBitmapClipper_QueryInterface(IWICBitmapClipper *iface, REFIID iid, void **ppv)
 {
     struct qemu_WICBitmapClipper_QueryInterface call;
@@ -136,6 +131,31 @@ static ULONG WINAPI WICBitmapClipper_Release(IWICBitmapClipper *iface)
 
 #else
 
+static ULONG qemu_WICBitmapClipper_Release_internal(struct qemu_wic_clipper *clipper)
+{
+    ULONG ref;
+
+    if (clipper->source_clipper)
+        IWICBitmapClipper_AddRef(clipper->source_clipper->host);
+    else if (clipper->source_bitmap)
+        IWICBitmap_AddRef(clipper->source_bitmap->bitmap_host);
+
+    ref = IWICBitmapClipper_Release(clipper->host);
+
+    if (clipper->source_clipper)
+        qemu_WICBitmapClipper_Release_internal(clipper->source_clipper);
+    else if (clipper->source_bitmap)
+        qemu_WICBitmap_Release_internal(clipper->source_bitmap);
+
+    if (!ref)
+    {
+        WINE_TRACE("Destroying clipper wrapper %p for host clipper %p.\n", clipper, clipper->host);
+        HeapFree(GetProcessHeap(), 0, clipper);
+    }
+
+    return ref;
+}
+
 void qemu_WICBitmapClipper_Release(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapClipper_Release *c = (struct qemu_WICBitmapClipper_Release *)call;
@@ -143,13 +163,7 @@ void qemu_WICBitmapClipper_Release(struct qemu_syscall *call)
 
     WINE_TRACE("\n");
     clipper = QEMU_G2H(c->iface);
-
-    c->super.iret = IWICBitmapClipper_Release(clipper->host);
-    if (!c->super.iret)
-    {
-        WINE_FIXME("Make sure the contained source is released properly.\n");
-        HeapFree(GetProcessHeap(), 0, clipper);
-    }
+    c->super.iret = qemu_WICBitmapClipper_Release_internal(clipper);
 }
 
 #endif
@@ -361,7 +375,7 @@ struct qemu_WICBitmapClipper_Initialize
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t source;
+    uint64_t bitmap, clipper, custom;
     uint64_t rc;
 };
 
@@ -375,7 +389,29 @@ static HRESULT WINAPI WICBitmapClipper_Initialize(IWICBitmapClipper *iface, IWIC
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPCLIPPER_INITIALIZE);
     call.iface = (ULONG_PTR)clipper;
-    call.source = (ULONG_PTR)source;
+
+    if (!source)
+    {
+        call.bitmap = call.clipper = call.custom = 0;
+    }
+    else if (((IWICBitmap *)source)->lpVtbl == &WICBitmap_Vtbl)
+    {
+        struct qemu_wic_bitmap *bitmap = impl_from_IWICBitmap((IWICBitmap *)source);
+        call.bitmap = (ULONG_PTR)bitmap;
+        call.clipper = call.custom = 0;
+    }
+    else if (((IWICBitmapClipper *)source)->lpVtbl == &WICBitmapClipper_Vtbl)
+    {
+        struct qemu_wic_clipper *other = impl_from_IWICBitmapClipper((IWICBitmapClipper *)source);
+        call.clipper = (ULONG_PTR)other;
+        call.bitmap = call.custom = 0;
+    }
+    else
+    {
+        call.bitmap = call.clipper = 0;
+        call.custom = (ULONG_PTR)source;
+    }
+
     call.rc = (ULONG_PTR)rc;
 
     qemu_syscall(&call.super);
@@ -388,18 +424,32 @@ static HRESULT WINAPI WICBitmapClipper_Initialize(IWICBitmapClipper *iface, IWIC
 void qemu_WICBitmapClipper_Initialize(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapClipper_Initialize *c = (struct qemu_WICBitmapClipper_Initialize *)call;
-    struct qemu_wic_clipper *clipper;
+    struct qemu_wic_clipper *clipper, *other = NULL;
     struct qemu_bitmap_source *source_wrapper = NULL;
     IWICBitmapSource *host_source;
+    struct qemu_wic_bitmap *bitmap = NULL;
 
     WINE_TRACE("\n");
     clipper = QEMU_G2H(c->iface);
 
-    /* Note that source could point to one of our bitmaps. We don't care right now, but we could detect
-     * this situation and avoid jumping back and forth between host and guest. */
-    if (c->source)
+    if (c->bitmap)
     {
-        source_wrapper = bitmap_source_wrapper_create(c->source);
+        bitmap = QEMU_G2H(c->bitmap);
+        host_source = (IWICBitmapSource *)bitmap->bitmap_host;
+        WINE_TRACE("Found our bitmap %p, passing host %p.\n", bitmap, host_source);
+        IWICBitmapSource_AddRef(host_source);
+    }
+    else if (c->clipper)
+    {
+        other = QEMU_G2H(c->clipper);
+        host_source = (IWICBitmapSource *)other->host;
+        WINE_TRACE("Found our clipper %p, passing host %p.\n", other, host_source);
+        IWICBitmapSource_AddRef(host_source);
+    }
+    else if (c->custom)
+    {
+        WINE_TRACE("Creating a wrapper for unrecognized source %p.\n", (void *)c->custom);
+        source_wrapper = bitmap_source_wrapper_create(c->custom);
         if (!source_wrapper)
         {
             WINE_WARN("Out of memory.\n");
@@ -418,13 +468,19 @@ void qemu_WICBitmapClipper_Initialize(struct qemu_syscall *call)
     /* Release our ref, the host clipper has its own if it wants one. */
     if (host_source)
         IWICBitmapSource_Release(host_source);
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        clipper->source_bitmap = bitmap;
+        clipper->source_clipper = other;
+    }
 }
 
 #endif
 
 #ifdef QEMU_DLL_GUEST
 
-static const IWICBitmapClipperVtbl WICBitmapClipper_Vtbl =
+const IWICBitmapClipperVtbl WICBitmapClipper_Vtbl =
 {
     WICBitmapClipper_QueryInterface,
     WICBitmapClipper_AddRef,
