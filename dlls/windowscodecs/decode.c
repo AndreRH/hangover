@@ -387,12 +387,20 @@ void qemu_WICBitmapFrameDecode_GetMetadataQueryReader(struct qemu_syscall *call)
     struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader *c =
             (struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader *)call;
     struct qemu_wic_decoder *decoder;
+    IWICMetadataQueryReader *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapFrameDecode_GetMetadataQueryReader(decoder->host_frame,
-            QEMU_G2H(c->ppIMetadataQueryReader));
+            c->ppIMetadataQueryReader ? &host : NULL);
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host GetMetadataQueryReader succeeded, write a wrapper.\n");
+        IWICMetadataQueryReader_Release(host);
+        c->super.iret = E_FAIL;
+    }
 }
 
 #endif
@@ -431,12 +439,20 @@ void qemu_WICBitmapFrameDecode_GetColorContexts(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_GetColorContexts *c = (struct qemu_WICBitmapFrameDecode_GetColorContexts *)call;
     struct qemu_wic_decoder *decoder;
+    IWICColorContext *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapFrameDecode_GetColorContexts(decoder->host_frame, c->cCount,
-            QEMU_G2H(c->ppIColorContexts), QEMU_G2H(c->pcActualCount));
+            c->ppIColorContexts ? &host : NULL, QEMU_G2H(c->pcActualCount));
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host GetColorContexts succeeded, write a wrapper.\n");
+        IWICColorContext_Release(host);
+        c->super.iret = E_FAIL;
+    }
 }
 
 #endif
@@ -470,11 +486,19 @@ void qemu_WICBitmapFrameDecode_GetThumbnail(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_GetThumbnail *c = (struct qemu_WICBitmapFrameDecode_GetThumbnail *)call;
     struct qemu_wic_decoder *decoder;
+    IWICBitmapSource *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_GetThumbnail(decoder->host_frame, QEMU_G2H(c->ppIThumbnail));
+    c->super.iret = IWICBitmapFrameDecode_GetThumbnail(decoder->host_frame, c->ppIThumbnail ? &host : NULL);
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host GetColorContexts succeeded, write a wrapper.\n");
+        IWICBitmapSource_Release(host);
+        c->super.iret = E_FAIL;
+    }
 }
 
 #endif
@@ -846,12 +870,20 @@ void qemu_WICBitmapDecoder_GetMetadataQueryReader(struct qemu_syscall *call)
     struct qemu_WICBitmapDecoder_GetMetadataQueryReader *c =
             (struct qemu_WICBitmapDecoder_GetMetadataQueryReader *)call;
     struct qemu_wic_decoder *decoder;
+    IWICMetadataQueryReader *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapDecoder_GetMetadataQueryReader(decoder->host_bitmap,
-            QEMU_G2H(c->ppIMetadataQueryReader));
+            c->ppIMetadataQueryReader ? &host : NULL);
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host GetMetadataQueryReader succeeded, write a wrapper.\n");
+        IWICMetadataQueryReader_Release(host);
+        c->super.iret = E_FAIL;
+    }
 }
 
 #endif
@@ -885,11 +917,18 @@ void qemu_WICBitmapDecoder_GetPreview(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoder_GetPreview *c = (struct qemu_WICBitmapDecoder_GetPreview *)call;
     struct qemu_wic_decoder *decoder;
+    IWICBitmapSource *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetPreview(decoder->host_bitmap, QEMU_G2H(c->ppIBitmapSource));
+    c->super.iret = IWICBitmapDecoder_GetPreview(decoder->host_bitmap, c->ppIBitmapSource ? &host : NULL);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host GetColorContexts succeeded, write a wrapper.\n");
+        IWICBitmapSource_Release(host);
+        c->super.iret = E_FAIL;
+    }
 }
 
 #endif
@@ -928,12 +967,20 @@ void qemu_WICBitmapDecoder_GetColorContexts(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoder_GetColorContexts *c = (struct qemu_WICBitmapDecoder_GetColorContexts *)call;
     struct qemu_wic_decoder *decoder;
+    IWICColorContext *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetColorContexts(decoder->host_bitmap, c->cCount, QEMU_G2H(c->ppIColorContexts),
-            QEMU_G2H(c->pcActualCount));
+    c->super.iret = IWICBitmapDecoder_GetColorContexts(decoder->host_bitmap, c->cCount,
+            c->ppIColorContexts ? & host : NULL, QEMU_G2H(c->pcActualCount));
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host GetColorContexts succeeded, write a wrapper.\n");
+        IWICColorContext_Release(host);
+        c->super.iret = E_FAIL;
+    }
 }
 
 #endif
@@ -967,11 +1014,19 @@ void qemu_WICBitmapDecoder_GetThumbnail(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoder_GetThumbnail *c = (struct qemu_WICBitmapDecoder_GetThumbnail *)call;
     struct qemu_wic_decoder *decoder;
+    IWICBitmapSource *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetThumbnail(decoder->host_bitmap, QEMU_G2H(c->ppIThumbnail));
+    c->super.iret = IWICBitmapDecoder_GetThumbnail(decoder->host_bitmap, c->ppIThumbnail ? &host : NULL);
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host GetColorContexts succeeded, write a wrapper.\n");
+        IWICBitmapSource_Release(host);
+        c->super.iret = E_FAIL;
+    }
 }
 
 #endif
