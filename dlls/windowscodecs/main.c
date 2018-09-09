@@ -272,6 +272,7 @@ static const syscall_handler dll_functions[] =
     qemu_WICBitmapClipper_Release,
     qemu_WICBitmapDecoder_AddRef,
     qemu_WICBitmapDecoder_CopyPalette,
+    qemu_WICBitmapDecoder_create_host,
     qemu_WICBitmapDecoder_GetColorContexts,
     qemu_WICBitmapDecoder_GetContainerFormat,
     qemu_WICBitmapDecoder_GetDecoderInfo,

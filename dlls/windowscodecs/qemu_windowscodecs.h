@@ -91,6 +91,7 @@ enum windowscodecs_calls
     CALL_WICBITMAPCLIPPER_RELEASE,
     CALL_WICBITMAPDECODER_ADDREF,
     CALL_WICBITMAPDECODER_COPYPALETTE,
+    CALL_WICBITMAPDECODER_CREATE_HOST,
     CALL_WICBITMAPDECODER_GETCOLORCONTEXTS,
     CALL_WICBITMAPDECODER_GETCONTAINERFORMAT,
     CALL_WICBITMAPDECODER_GETDECODERINFO,
@@ -399,6 +400,7 @@ void qemu_WICBitmapClipper_QueryInterface(struct qemu_syscall *call);
 void qemu_WICBitmapClipper_Release(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_AddRef(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_CopyPalette(struct qemu_syscall *call);
+void qemu_WICBitmapDecoder_create_host(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_GetColorContexts(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_GetContainerFormat(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_GetDecoderInfo(struct qemu_syscall *call);
