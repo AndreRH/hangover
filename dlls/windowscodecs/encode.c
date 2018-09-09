@@ -1068,7 +1068,7 @@ void qemu_WICBitmapEncoder_GetMetadataQueryWriter(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-HRESULT Encoder_CreateInstance(const IID *iid, void **obj)
+HRESULT Encoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 {
 #if 0
     BmpEncoder *This;

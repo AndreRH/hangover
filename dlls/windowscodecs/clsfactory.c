@@ -37,19 +37,19 @@ typedef struct {
     class_constructor constructor;
 } classinfo;
 
-static HRESULT FormatConverter_CreateInstance(const IID *iid, void **obj)
+static HRESULT FormatConverter_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 {
     WINE_FIXME("Stub\n");
     return E_FAIL;
 }
 
-static HRESULT MetadataReader_CreateInstance(const IID *iid, void **obj)
+static HRESULT MetadataReader_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 {
     WINE_FIXME("Stub\n");
     return E_FAIL;
 }
 
-static HRESULT CommentReader_CreateInstance(const IID *iid, void **obj)
+static HRESULT CommentReader_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 {
     WINE_FIXME("Stub\n");
     return E_FAIL;
@@ -148,7 +148,7 @@ static HRESULT WINAPI ClassFactoryImpl_CreateInstance(IClassFactory *iface,
 
     if (pUnkOuter) return CLASS_E_NOAGGREGATION;
 
-    return This->info->constructor(riid, ppv);
+    return This->info->constructor(This->info->classid, riid, ppv);
 }
 
 static HRESULT WINAPI ClassFactoryImpl_LockServer(IClassFactory *iface, BOOL lock)
@@ -220,17 +220,6 @@ HRESULT WINAPI DllGetClassObject(REFCLSID rclsid, REFIID iid, LPVOID *ppv)
 
     WINE_TRACE("<-- %08X\n", ret);
     return ret;
-}
-
-HRESULT create_instance(CLSID *clsid, const IID *iid, void **ppv)
-{
-    int i;
-
-    for (i=0; wic_classes[i].classid; i++)
-        if (IsEqualCLSID(wic_classes[i].classid, clsid))
-            return wic_classes[i].constructor(iid, ppv);
-
-    return CoCreateInstance(clsid, NULL, CLSCTX_INPROC_SERVER, iid, ppv);
 }
 
 #endif

@@ -1781,7 +1781,7 @@ static const IWICComponentFactoryVtbl ComponentFactory_Vtbl =
     ComponentFactory_CreateEncoderPropertyBag
 };
 
-HRESULT ComponentFactory_CreateInstance(const IID *iid, void **obj)
+HRESULT ComponentFactory_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 {
     struct qemu_ComponentFactory_create_host call;
     struct qemu_component_factory *factory;

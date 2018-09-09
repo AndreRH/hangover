@@ -1014,6 +1014,7 @@ void qemu_WICBitmapDecoder_GetFrame(struct qemu_syscall *call)
 struct qemu_WICBitmapDecoder_create_host
 {
     struct qemu_syscall super;
+    uint64_t clsid;
     uint64_t decoder;
 };
 
@@ -1037,7 +1038,7 @@ static const IWICBitmapDecoderVtbl WICBitmapDecoder_Vtbl =
     WICBitmapDecoder_GetFrame
 };
 
-HRESULT Decoder_CreateInstance(const IID *iid, void **obj)
+HRESULT Decoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 {
     struct qemu_WICBitmapDecoder_create_host call;
     struct qemu_wic_decoder *decoder;
@@ -1047,7 +1048,10 @@ HRESULT Decoder_CreateInstance(const IID *iid, void **obj)
 
     *obj = NULL;
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPDECODER_CREATE_HOST);
+    call.clsid = (ULONG_PTR)clsid;
+
     qemu_syscall(&call.super);
+
     if (FAILED(call.super.iret))
         return call.super.iret;
 
@@ -1081,7 +1085,7 @@ void qemu_WICBitmapDecoder_create_host(struct qemu_syscall *call)
     lib = GetModuleHandleA("windowscodecs");
     p_DllGetClassObject = (void *)GetProcAddress(lib, "DllGetClassObject");
 
-    hr = p_DllGetClassObject(&CLSID_WICImagingFactory, &IID_IClassFactory, (void *)&host_factory);
+    hr = p_DllGetClassObject(QEMU_G2H(c->clsid), &IID_IClassFactory, (void *)&host_factory);
     if (FAILED(hr))
         WINE_ERR("Cannot create class factory\n");
 
