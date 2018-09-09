@@ -855,6 +855,7 @@ static HRESULT WINAPI ComponentFactory_CreateBitmapFromSource(IWICComponentFacto
     call.iface = (ULONG_PTR)factory;
     call.piBitmapSource = (ULONG_PTR)piBitmapSource;
     call.option = option;
+    call.ppIBitmap = (ULONG_PTR)ppIBitmap;
 
     qemu_syscall(&call.super);
     if (FAILED(call.super.iret))
@@ -895,7 +896,7 @@ void qemu_ComponentFactory_CreateBitmapFromSource(struct qemu_syscall *call)
 
     c->super.iret = IWICComponentFactory_CreateBitmapFromSource(factory->host,
             source_wrapper ? &source_wrapper->IWICBitmapSource_iface : NULL,
-            c->option, &host);
+            c->option, c->ppIBitmap ? &host : NULL);
 
     if (source_wrapper)
         IWICBitmapSource_Release(&source_wrapper->IWICBitmapSource_iface);
