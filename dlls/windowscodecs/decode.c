@@ -1037,6 +1037,9 @@ static HRESULT WINAPI WICBitmapDecoder_GetFrame(IWICBitmapDecoder *iface, UINT i
 
     qemu_syscall(&call.super);
 
+    if (SUCCEEDED(call.super.iret))
+        *ppIBitmapFrame = &decoder->IWICBitmapFrameDecode_iface;
+
     return call.super.iret;
 }
 
@@ -1046,11 +1049,35 @@ void qemu_WICBitmapDecoder_GetFrame(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoder_GetFrame *c = (struct qemu_WICBitmapDecoder_GetFrame *)call;
     struct qemu_wic_decoder *decoder;
+    IWICBitmapFrameDecode *host, *host2;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetFrame(decoder->host_bitmap, c->index, QEMU_G2H(c->ppIBitmapFrame));
+    /* Pass the reference to the app. */
+    c->super.iret = IWICBitmapDecoder_GetFrame(decoder->host_bitmap, c->index, 
+            c->ppIBitmapFrame ? &host : NULL);
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        /* I based this off BmpDecoder, which probably wasn't the best idea. Gif supports more than one frame.
+         *
+         * However, the bmp decoder returns the same interface on repeated calls to GetFrame for frame 0, while
+         * the gif decoder doesn't do that. This is something we may need to replicate. */
+        if (!c->index)
+        {
+            c->super.iret = IWICBitmapDecoder_GetFrame(decoder->host_bitmap, 0, &host2);
+            if (host != host2)
+                WINE_FIXME("Different frames returned.\n");
+
+            decoder->host_frame = host;
+            IWICBitmapFrameDecode_Release(host2);
+        }
+        else
+        {
+            WINE_FIXME("Only one frame supported so far.\n");
+        }
+    }
 }
 
 #endif
@@ -1082,6 +1109,21 @@ static const IWICBitmapDecoderVtbl WICBitmapDecoder_Vtbl =
     WICBitmapDecoder_GetFrame
 };
 
+static const IWICBitmapFrameDecodeVtbl WICBitmapFrameDecode_FrameVtbl =
+{
+    WICBitmapFrameDecode_QueryInterface,
+    WICBitmapFrameDecode_AddRef,
+    WICBitmapFrameDecode_Release,
+    WICBitmapFrameDecode_GetSize,
+    WICBitmapFrameDecode_GetPixelFormat,
+    WICBitmapFrameDecode_GetResolution,
+    WICBitmapFrameDecode_CopyPalette,
+    WICBitmapFrameDecode_CopyPixels,
+    WICBitmapFrameDecode_GetMetadataQueryReader,
+    WICBitmapFrameDecode_GetColorContexts,
+    WICBitmapFrameDecode_GetThumbnail
+};
+
 HRESULT Decoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 {
     struct qemu_WICBitmapDecoder_create_host call;
@@ -1101,6 +1143,7 @@ HRESULT Decoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 
     decoder = (struct qemu_wic_decoder *)(ULONG_PTR)call.decoder;
     decoder->IWICBitmapDecoder_iface.lpVtbl = &WICBitmapDecoder_Vtbl;
+    decoder->IWICBitmapFrameDecode_iface.lpVtbl = &WICBitmapFrameDecode_FrameVtbl;
 
     hr = IWICBitmapDecoder_QueryInterface(&decoder->IWICBitmapDecoder_iface, iid, obj);
     IWICBitmapDecoder_Release(&decoder->IWICBitmapDecoder_iface);
