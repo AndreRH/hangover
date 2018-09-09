@@ -1863,6 +1863,8 @@ HRESULT WINAPI WICCreateBitmapFromSectionEx(UINT width, UINT height, REFWICPixel
         HANDLE section, UINT stride, UINT offset, WICSectionAccessLevel wicaccess, IWICBitmap **bitmap)
 {
     struct qemu_WICCreateBitmapFromSectionEx call;
+    struct qemu_wic_bitmap *new_bitmap;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_WICCREATEBITMAPFROMSECTIONEX);
     call.width = width;
     call.height = height;
@@ -1874,6 +1876,11 @@ HRESULT WINAPI WICCreateBitmapFromSectionEx(UINT width, UINT height, REFWICPixel
     call.bitmap = (ULONG_PTR)bitmap;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    new_bitmap = (struct qemu_wic_bitmap *)(ULONG_PTR)call.bitmap;
+    *bitmap = WICBitmap_init_guest(new_bitmap);
 
     return call.super.iret;
 }
@@ -1893,9 +1900,26 @@ WINBASEAPI HRESULT WINAPI WICCreateBitmapFromSection(UINT width, UINT height, RE
 void qemu_WICCreateBitmapFromSectionEx(struct qemu_syscall *call)
 {
     struct qemu_WICCreateBitmapFromSectionEx *c = (struct qemu_WICCreateBitmapFromSectionEx *)call;
-    WINE_FIXME("Unverified!\n");
+    struct qemu_wic_bitmap *bitmap;
+    IWICBitmap *host;
+
+
+    WINE_TRACE("\n");
+
     c->super.iret = WICCreateBitmapFromSectionEx(c->width, c->height, QEMU_G2H(c->format), QEMU_G2H(c->section),
-            c->stride, c->offset, c->wicaccess, QEMU_G2H(c->bitmap));
+            c->stride, c->offset, c->wicaccess, c->bitmap ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    bitmap = WICBitmap_create_host(host);
+    if (!bitmap)
+    {
+        IWICBitmap_Release(host);
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->bitmap = QEMU_H2G(bitmap);
 }
 
 #endif
