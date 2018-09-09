@@ -149,7 +149,6 @@ enum windowscodecs_calls
     CALL_WICBITMAPLOCK_QUERYINTERFACE,
     CALL_WICBITMAPLOCK_RELEASE,
     CALL_WICCONVERTBITMAPSOURCE,
-    CALL_WICCREATEBITMAPFROMSECTION,
     CALL_WICCREATEBITMAPFROMSECTIONEX,
     CALL_WICMAPGUIDTOSHORTNAME,
     CALL_WICMAPSCHEMATONAME,
@@ -469,7 +468,6 @@ void qemu_WICBitmap_Release(struct qemu_syscall *call);
 void qemu_WICBitmap_SetPalette(struct qemu_syscall *call);
 void qemu_WICBitmap_SetResolution(struct qemu_syscall *call);
 void qemu_WICConvertBitmapSource(struct qemu_syscall *call);
-void qemu_WICCreateBitmapFromSection(struct qemu_syscall *call);
 void qemu_WICCreateBitmapFromSectionEx(struct qemu_syscall *call);
 void qemu_WICMapGuidToShortName(struct qemu_syscall *call);
 void qemu_WICMapSchemaToName(struct qemu_syscall *call);

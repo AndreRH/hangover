@@ -330,7 +330,6 @@ static const syscall_handler dll_functions[] =
     qemu_WICBitmapLock_QueryInterface,
     qemu_WICBitmapLock_Release,
     qemu_WICConvertBitmapSource,
-    qemu_WICCreateBitmapFromSection,
     qemu_WICCreateBitmapFromSectionEx,
     qemu_WICMapGuidToShortName,
     qemu_WICMapSchemaToName,

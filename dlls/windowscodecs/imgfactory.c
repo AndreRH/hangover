@@ -1734,96 +1734,6 @@ void qemu_ComponentFactory_CreateEncoderPropertyBag(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_WICCreateBitmapFromSectionEx
-{
-    struct qemu_syscall super;
-    uint64_t width;
-    uint64_t height;
-    uint64_t format;
-    uint64_t section;
-    uint64_t stride;
-    uint64_t offset;
-    uint64_t wicaccess;
-    uint64_t bitmap;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI HRESULT WINAPI WICCreateBitmapFromSectionEx(UINT width, UINT height, REFWICPixelFormatGUID format,
-        HANDLE section, UINT stride, UINT offset, WICSectionAccessLevel wicaccess, IWICBitmap **bitmap)
-{
-    struct qemu_WICCreateBitmapFromSectionEx call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_WICCREATEBITMAPFROMSECTIONEX);
-    call.width = width;
-    call.height = height;
-    call.format = (ULONG_PTR)format;
-    call.section = (ULONG_PTR)section;
-    call.stride = stride;
-    call.offset = offset;
-    call.wicaccess = wicaccess;
-    call.bitmap = (ULONG_PTR)bitmap;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_WICCreateBitmapFromSectionEx(struct qemu_syscall *call)
-{
-    struct qemu_WICCreateBitmapFromSectionEx *c = (struct qemu_WICCreateBitmapFromSectionEx *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WICCreateBitmapFromSectionEx(c->width, c->height, QEMU_G2H(c->format), QEMU_G2H(c->section),
-            c->stride, c->offset, c->wicaccess, QEMU_G2H(c->bitmap));
-}
-
-#endif
-
-struct qemu_WICCreateBitmapFromSection
-{
-    struct qemu_syscall super;
-    uint64_t width;
-    uint64_t height;
-    uint64_t format;
-    uint64_t section;
-    uint64_t stride;
-    uint64_t offset;
-    uint64_t bitmap;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI HRESULT WINAPI WICCreateBitmapFromSection(UINT width, UINT height, REFWICPixelFormatGUID format,
-        HANDLE section, UINT stride, UINT offset, IWICBitmap **bitmap)
-{
-    struct qemu_WICCreateBitmapFromSection call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_WICCREATEBITMAPFROMSECTION);
-    call.width = width;
-    call.height = height;
-    call.format = (ULONG_PTR)format;
-    call.section = (ULONG_PTR)section;
-    call.stride = stride;
-    call.offset = offset;
-    call.bitmap = (ULONG_PTR)bitmap;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_WICCreateBitmapFromSection(struct qemu_syscall *call)
-{
-    struct qemu_WICCreateBitmapFromSection *c = (struct qemu_WICCreateBitmapFromSection *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WICCreateBitmapFromSection(c->width, c->height, QEMU_G2H(c->format), QEMU_G2H(c->section),
-            c->stride, c->offset, QEMU_G2H(c->bitmap));
-}
-
-#endif
-
 struct qemu_ComponentFactory_create_host
 {
     struct qemu_syscall super;
@@ -1930,6 +1840,62 @@ void qemu_ComponentFactory_create_host(struct qemu_syscall *call)
 
     c->factory = QEMU_H2G(factory);
     c->super.iret = hr;
+}
+
+#endif
+
+struct qemu_WICCreateBitmapFromSectionEx
+{
+    struct qemu_syscall super;
+    uint64_t width;
+    uint64_t height;
+    uint64_t format;
+    uint64_t section;
+    uint64_t stride;
+    uint64_t offset;
+    uint64_t wicaccess;
+    uint64_t bitmap;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+HRESULT WINAPI WICCreateBitmapFromSectionEx(UINT width, UINT height, REFWICPixelFormatGUID format,
+        HANDLE section, UINT stride, UINT offset, WICSectionAccessLevel wicaccess, IWICBitmap **bitmap)
+{
+    struct qemu_WICCreateBitmapFromSectionEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICCREATEBITMAPFROMSECTIONEX);
+    call.width = width;
+    call.height = height;
+    call.format = (ULONG_PTR)format;
+    call.section = (ULONG_PTR)section;
+    call.stride = stride;
+    call.offset = offset;
+    call.wicaccess = wicaccess;
+    call.bitmap = (ULONG_PTR)bitmap;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+WINBASEAPI HRESULT WINAPI WICCreateBitmapFromSection(UINT width, UINT height, REFWICPixelFormatGUID format,
+        HANDLE section, UINT stride, UINT offset, IWICBitmap **bitmap)
+{
+    WINE_TRACE("%u,%u,%s,%p,%u,%u,%p\n", width, height, wine_dbgstr_guid(format),
+        section, stride, offset, bitmap);
+
+    return WICCreateBitmapFromSectionEx(width, height, format, section,
+        stride, offset, WICSectionAccessLevelRead, bitmap);
+}
+
+#else
+
+void qemu_WICCreateBitmapFromSectionEx(struct qemu_syscall *call)
+{
+    struct qemu_WICCreateBitmapFromSectionEx *c = (struct qemu_WICCreateBitmapFromSectionEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = WICCreateBitmapFromSectionEx(c->width, c->height, QEMU_G2H(c->format), QEMU_G2H(c->section),
+            c->stride, c->offset, c->wicaccess, QEMU_G2H(c->bitmap));
 }
 
 #endif
