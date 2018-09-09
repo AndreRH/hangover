@@ -1050,10 +1050,12 @@ struct qemu_ComponentFactory_CreateBitmapFromHBITMAP
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateBitmapFromHBITMAP(IWICComponentFactory *iface, HBITMAP hbm, HPALETTE hpal, WICBitmapAlphaChannelOption option, IWICBitmap **bitmap)
+static HRESULT WINAPI ComponentFactory_CreateBitmapFromHBITMAP(IWICComponentFactory *iface, HBITMAP hbm,
+        HPALETTE hpal, WICBitmapAlphaChannelOption option, IWICBitmap **bitmap)
 {
     struct qemu_ComponentFactory_CreateBitmapFromHBITMAP call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_wic_bitmap *new_bitmap;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATEBITMAPFROMHBITMAP);
     call.iface = (ULONG_PTR)factory;
@@ -1063,6 +1065,11 @@ static HRESULT WINAPI ComponentFactory_CreateBitmapFromHBITMAP(IWICComponentFact
     call.bitmap = (ULONG_PTR)bitmap;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    new_bitmap = (struct qemu_wic_bitmap *)(ULONG_PTR)call.bitmap;
+    *bitmap = WICBitmap_init_guest(new_bitmap);
 
     return call.super.iret;
 }
@@ -1073,11 +1080,26 @@ void qemu_ComponentFactory_CreateBitmapFromHBITMAP(struct qemu_syscall *call)
 {
     struct qemu_ComponentFactory_CreateBitmapFromHBITMAP *c = (struct qemu_ComponentFactory_CreateBitmapFromHBITMAP *)call;
     struct qemu_component_factory *factory;
+    IWICBitmap *host;
+    struct qemu_wic_bitmap *bitmap;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentFactory_CreateBitmapFromHBITMAP(factory->host, QEMU_G2H(c->hbm), QEMU_G2H(c->hpal), c->option, QEMU_G2H(c->bitmap));
+    c->super.iret = IWICComponentFactory_CreateBitmapFromHBITMAP(factory->host, QEMU_G2H(c->hbm), QEMU_G2H(c->hpal),
+            c->option, c->bitmap ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    bitmap = WICBitmap_create_host(host);
+    if (!bitmap)
+    {
+        IWICBitmap_Release(host);
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->bitmap = QEMU_H2G(bitmap);
 }
 
 #endif
@@ -1092,10 +1114,12 @@ struct qemu_ComponentFactory_CreateBitmapFromHICON
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateBitmapFromHICON(IWICComponentFactory *iface, HICON hicon, IWICBitmap **bitmap)
+static HRESULT WINAPI ComponentFactory_CreateBitmapFromHICON(IWICComponentFactory *iface, HICON hicon,
+        IWICBitmap **bitmap)
 {
     struct qemu_ComponentFactory_CreateBitmapFromHICON call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_wic_bitmap *new_bitmap;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATEBITMAPFROMHICON);
     call.iface = (ULONG_PTR)factory;
@@ -1103,6 +1127,11 @@ static HRESULT WINAPI ComponentFactory_CreateBitmapFromHICON(IWICComponentFactor
     call.bitmap = (ULONG_PTR)bitmap;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    new_bitmap = (struct qemu_wic_bitmap *)(ULONG_PTR)call.bitmap;
+    *bitmap = WICBitmap_init_guest(new_bitmap);
 
     return call.super.iret;
 }
@@ -1113,11 +1142,26 @@ void qemu_ComponentFactory_CreateBitmapFromHICON(struct qemu_syscall *call)
 {
     struct qemu_ComponentFactory_CreateBitmapFromHICON *c = (struct qemu_ComponentFactory_CreateBitmapFromHICON *)call;
     struct qemu_component_factory *factory;
+    IWICBitmap *host;
+    struct qemu_wic_bitmap *bitmap;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentFactory_CreateBitmapFromHICON(factory->host, QEMU_G2H(c->hicon), QEMU_G2H(c->bitmap));
+    c->super.iret = IWICComponentFactory_CreateBitmapFromHICON(factory->host, QEMU_G2H(c->hicon),
+            c->bitmap ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    bitmap = WICBitmap_create_host(host);
+    if (!bitmap)
+    {
+        IWICBitmap_Release(host);
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->bitmap = QEMU_H2G(bitmap);
 }
 
 #endif
