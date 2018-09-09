@@ -8,10 +8,10 @@ VPATH=$(SRCDIR)
 
 all: windowscodecs.dll qemu_windowscodecs.dll.so
 
-windowscodecs.dll: bitmap_g.o clsfactory_g.o decode_g.o dlldata.o encode_g.o imgfactory_g.o info_g.o main_g.o metadataquery_g.o palette_g.o proxy_g.o windowscodecs.spec windowscodecs_wincodec_p.o
+windowscodecs.dll: bitmap_g.o clipper_g.o clsfactory_g.o decode_g.o dlldata.o encode_g.o imgfactory_g.o info_g.o main_g.o metadataquery_g.o palette_g.o proxy_g.o windowscodecs.spec windowscodecs_wincodec_p.o
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/windowscodecs.spec *_g.o dlldata.o windowscodecs_wincodec_p.o -o windowscodecs.dll -lwine -luuid -lole32 -loleaut32 -lrpcrt4 -L../../$(WINE_DIR)/libs/wine -L../../$(WINE_DIR)/dlls/winecrt0
 
-qemu_windowscodecs.dll.so: bitmap_h.o clsfactory_h.o decode_h.o encode_h.o imgfactory_h.o info_h.o main_h.o metadataquery_h.o palette_h.o proxy_h.o qemu_windowscodecs.spec
+qemu_windowscodecs.dll.so: bitmap_h.o clipper_h.o clsfactory_h.o decode_h.o encode_h.o imgfactory_h.o info_h.o main_h.o metadataquery_h.o palette_h.o proxy_h.o qemu_windowscodecs.spec
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_windowscodecs.spec *_h.o -o qemu_windowscodecs.dll.so -lwindowscodecs
 
 %_g.o: %.c qemu_windowscodecs.h Makefile $(SRCDIR)/Makefile

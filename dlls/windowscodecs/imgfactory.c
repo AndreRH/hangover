@@ -585,16 +585,24 @@ struct qemu_ComponentFactory_CreateBitmapClipper
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateBitmapClipper(IWICComponentFactory *iface, IWICBitmapClipper **ppIBitmapClipper)
+static HRESULT WINAPI ComponentFactory_CreateBitmapClipper(IWICComponentFactory *iface,
+        IWICBitmapClipper **ppIBitmapClipper)
 {
     struct qemu_ComponentFactory_CreateBitmapClipper call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_wic_clipper *clipper;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATEBITMAPCLIPPER);
     call.iface = (ULONG_PTR)factory;
     call.ppIBitmapClipper = (ULONG_PTR)ppIBitmapClipper;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    clipper = (struct qemu_wic_clipper *)(ULONG_PTR)call.ppIBitmapClipper;
+    WICBitmapClipper_init_guest(clipper);
+    *ppIBitmapClipper = &clipper->IWICBitmapClipper_iface;
 
     return call.super.iret;
 }
@@ -605,11 +613,25 @@ void qemu_ComponentFactory_CreateBitmapClipper(struct qemu_syscall *call)
 {
     struct qemu_ComponentFactory_CreateBitmapClipper *c = (struct qemu_ComponentFactory_CreateBitmapClipper *)call;
     struct qemu_component_factory *factory;
+    struct qemu_wic_clipper *clipper;
+    IWICBitmapClipper *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentFactory_CreateBitmapClipper(factory->host, QEMU_G2H(c->ppIBitmapClipper));
+    c->super.iret = IWICComponentFactory_CreateBitmapClipper(factory->host, c->ppIBitmapClipper ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    clipper = WICBitmapClipper_create_host(host);
+    if (!clipper)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        IWICBitmapClipper_Release(host);
+        return;
+    }
+
+    c->ppIBitmapClipper = QEMU_H2G(clipper);
 }
 
 #endif

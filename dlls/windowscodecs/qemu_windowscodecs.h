@@ -80,6 +80,15 @@ enum windowscodecs_calls
     CALL_WICBITMAP_RELEASE,
     CALL_WICBITMAP_SETPALETTE,
     CALL_WICBITMAP_SETRESOLUTION,
+    CALL_WICBITMAPCLIPPER_ADDREF,
+    CALL_WICBITMAPCLIPPER_COPYPALETTE,
+    CALL_WICBITMAPCLIPPER_COPYPIXELS,
+    CALL_WICBITMAPCLIPPER_GETPIXELFORMAT,
+    CALL_WICBITMAPCLIPPER_GETRESOLUTION,
+    CALL_WICBITMAPCLIPPER_GETSIZE,
+    CALL_WICBITMAPCLIPPER_INITIALIZE,
+    CALL_WICBITMAPCLIPPER_QUERYINTERFACE,
+    CALL_WICBITMAPCLIPPER_RELEASE,
     CALL_WICBITMAPDECODER_ADDREF,
     CALL_WICBITMAPDECODER_COPYPALETTE,
     CALL_WICBITMAPDECODER_GETCOLORCONTEXTS,
@@ -202,6 +211,15 @@ struct qemu_wic_palette
     IWICPalette *host;
 };
 
+struct qemu_wic_clipper
+{
+    /* Guest fields */
+    IWICBitmapClipper IWICBitmapClipper_iface;
+
+    /* Host fields */
+    IWICBitmapClipper *host;
+};
+
 /* This is a reverse wrapper. */
 struct qemu_bitmap_source
 {
@@ -267,6 +285,7 @@ HRESULT ComponentFactory_CreateInstance(const IID *iid, void **obj);
 
 IWICBitmap *WICBitmap_init_guest(struct qemu_wic_bitmap *bitmap);
 void WICPalette_init_guest(struct qemu_wic_palette *palette);
+void WICBitmapClipper_init_guest(struct qemu_wic_clipper *clipper);
 
 struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
 
@@ -320,6 +339,15 @@ void qemu_IMILBitmapImpl_UnknownMethod1(struct qemu_syscall *call);
 void qemu_IMILUnknown1Impl_QueryInterface(struct qemu_syscall *call);
 void qemu_IMILUnknown2Impl_QueryInterface(struct qemu_syscall *call);
 void qemu_IMILUnknown2Impl_UnknownMethod1(struct qemu_syscall *call);
+void qemu_WICBitmapClipper_AddRef(struct qemu_syscall *call);
+void qemu_WICBitmapClipper_CopyPalette(struct qemu_syscall *call);
+void qemu_WICBitmapClipper_CopyPixels(struct qemu_syscall *call);
+void qemu_WICBitmapClipper_GetPixelFormat(struct qemu_syscall *call);
+void qemu_WICBitmapClipper_GetResolution(struct qemu_syscall *call);
+void qemu_WICBitmapClipper_GetSize(struct qemu_syscall *call);
+void qemu_WICBitmapClipper_Initialize(struct qemu_syscall *call);
+void qemu_WICBitmapClipper_QueryInterface(struct qemu_syscall *call);
+void qemu_WICBitmapClipper_Release(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_AddRef(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_CopyPalette(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_GetColorContexts(struct qemu_syscall *call);
@@ -412,6 +440,7 @@ void qemu_WICPalette_Release(struct qemu_syscall *call);
 
 struct qemu_wic_bitmap *WICBitmap_create_host(IWICBitmap *host);
 struct qemu_wic_palette *WICPalette_create_host(IWICPalette *host);
+struct qemu_wic_clipper *WICBitmapClipper_create_host(IWICBitmapClipper *host);
 
 struct qemu_bitmap_source *bitmap_source_wrapper_create(uint64_t guest);
 
