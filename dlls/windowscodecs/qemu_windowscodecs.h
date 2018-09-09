@@ -60,6 +60,13 @@ enum windowscodecs_calls
     CALL_COMPONENTFACTORY_CREATESTREAM,
     CALL_COMPONENTFACTORY_QUERYINTERFACE,
     CALL_COMPONENTFACTORY_RELEASE,
+    CALL_ENUMUNKNOWN_ADDREF,
+    CALL_ENUMUNKNOWN_CLONE,
+    CALL_ENUMUNKNOWN_NEXT,
+    CALL_ENUMUNKNOWN_QUERYINTERFACE,
+    CALL_ENUMUNKNOWN_RELEASE,
+    CALL_ENUMUNKNOWN_RESET,
+    CALL_ENUMUNKNOWN_SKIP,
     CALL_IMILBITMAPIMPL_COPYPALETTE,
     CALL_IMILBITMAPIMPL_COPYPIXELS,
     CALL_IMILBITMAPIMPL_GETPIXELFORMAT,
@@ -106,6 +113,21 @@ enum windowscodecs_calls
     CALL_WICBITMAPDECODER_QUERYCAPABILITY,
     CALL_WICBITMAPDECODER_QUERYINTERFACE,
     CALL_WICBITMAPDECODER_RELEASE,
+    CALL_WICBITMAPDECODERINFO_CREATEINSTANCE,
+    CALL_WICBITMAPDECODERINFO_DOESSUPPORTANIMATION,
+    CALL_WICBITMAPDECODERINFO_DOESSUPPORTCHROMAKEY,
+    CALL_WICBITMAPDECODERINFO_DOESSUPPORTLOSSLESS,
+    CALL_WICBITMAPDECODERINFO_DOESSUPPORTMULTIFRAME,
+    CALL_WICBITMAPDECODERINFO_GETCOLORMANAGEMENTVERSION,
+    CALL_WICBITMAPDECODERINFO_GETCONTAINERFORMAT,
+    CALL_WICBITMAPDECODERINFO_GETDEVICEMANUFACTURER,
+    CALL_WICBITMAPDECODERINFO_GETDEVICEMODELS,
+    CALL_WICBITMAPDECODERINFO_GETFILEEXTENSIONS,
+    CALL_WICBITMAPDECODERINFO_GETMIMETYPES,
+    CALL_WICBITMAPDECODERINFO_GETPATTERNS,
+    CALL_WICBITMAPDECODERINFO_GETPIXELFORMATS,
+    CALL_WICBITMAPDECODERINFO_MATCHESMIMETYPE,
+    CALL_WICBITMAPDECODERINFO_MATCHESPATTERN,
     CALL_WICBITMAPENCODER_ADDREF,
     CALL_WICBITMAPENCODER_COMMIT,
     CALL_WICBITMAPENCODER_CREATENEWFRAME,
@@ -119,6 +141,19 @@ enum windowscodecs_calls
     CALL_WICBITMAPENCODER_SETPALETTE,
     CALL_WICBITMAPENCODER_SETPREVIEW,
     CALL_WICBITMAPENCODER_SETTHUMBNAIL,
+    CALL_WICBITMAPENCODERINFO_CREATEINSTANCE,
+    CALL_WICBITMAPENCODERINFO_DOESSUPPORTANIMATION,
+    CALL_WICBITMAPENCODERINFO_DOESSUPPORTCHROMAKEY,
+    CALL_WICBITMAPENCODERINFO_DOESSUPPORTLOSSLESS,
+    CALL_WICBITMAPENCODERINFO_DOESSUPPORTMULTIFRAME,
+    CALL_WICBITMAPENCODERINFO_GETCOLORMANAGEMENTVERSION,
+    CALL_WICBITMAPENCODERINFO_GETCONTAINERFORMAT,
+    CALL_WICBITMAPENCODERINFO_GETDEVICEMANUFACTURER,
+    CALL_WICBITMAPENCODERINFO_GETDEVICEMODELS,
+    CALL_WICBITMAPENCODERINFO_GETFILEEXTENSIONS,
+    CALL_WICBITMAPENCODERINFO_GETMIMETYPES,
+    CALL_WICBITMAPENCODERINFO_GETPIXELFORMATS,
+    CALL_WICBITMAPENCODERINFO_MATCHESMIMETYPE,
     CALL_WICBITMAPFRAMEDECODE_ADDREF,
     CALL_WICBITMAPFRAMEDECODE_COPYPALETTE,
     CALL_WICBITMAPFRAMEDECODE_COPYPIXELS,
@@ -151,11 +186,34 @@ enum windowscodecs_calls
     CALL_WICBITMAPLOCK_GETSTRIDE,
     CALL_WICBITMAPLOCK_QUERYINTERFACE,
     CALL_WICBITMAPLOCK_RELEASE,
+    CALL_WICCOMPONENTINFO_ADDREF,
+    CALL_WICCOMPONENTINFO_GETAUTHOR,
+    CALL_WICCOMPONENTINFO_GETCLSID,
+    CALL_WICCOMPONENTINFO_GETCOMPONENTTYPE,
+    CALL_WICCOMPONENTINFO_GETFRIENDLYNAME,
+    CALL_WICCOMPONENTINFO_GETSIGNINGSTATUS,
+    CALL_WICCOMPONENTINFO_GETSPECVERSION,
+    CALL_WICCOMPONENTINFO_GETVENDORGUID,
+    CALL_WICCOMPONENTINFO_GETVERSION,
+    CALL_WICCOMPONENTINFO_QUERYINTERFACE,
+    CALL_WICCOMPONENTINFO_RELEASE,
     CALL_WICCONVERTBITMAPSOURCE,
     CALL_WICCREATEBITMAPFROMSECTIONEX,
+    CALL_WICFORMATCONVERTERINFO_CREATEINSTANCE,
+    CALL_WICFORMATCONVERTERINFO_GETPIXELFORMATS,
     CALL_WICMAPGUIDTOSHORTNAME,
     CALL_WICMAPSCHEMATONAME,
     CALL_WICMAPSHORTNAMETOGUID,
+    CALL_WICMETADATAREADERINFO_CREATEINSTANCE,
+    CALL_WICMETADATAREADERINFO_DOESREQUIREFIXEDSIZE,
+    CALL_WICMETADATAREADERINFO_DOESREQUIREFULLSTREAM,
+    CALL_WICMETADATAREADERINFO_DOESSUPPORTPADDING,
+    CALL_WICMETADATAREADERINFO_GETCONTAINERFORMATS,
+    CALL_WICMETADATAREADERINFO_GETDEVICEMANUFACTURER,
+    CALL_WICMETADATAREADERINFO_GETDEVICEMODELS,
+    CALL_WICMETADATAREADERINFO_GETMETADATAFORMAT,
+    CALL_WICMETADATAREADERINFO_GETPATTERNS,
+    CALL_WICMETADATAREADERINFO_MATCHESPATTERN,
     CALL_WICPALETTE_ADDREF,
     CALL_WICPALETTE_GETCOLORCOUNT,
     CALL_WICPALETTE_GETCOLORS,
@@ -169,6 +227,13 @@ enum windowscodecs_calls
     CALL_WICPALETTE_ISGRAYSCALE,
     CALL_WICPALETTE_QUERYINTERFACE,
     CALL_WICPALETTE_RELEASE,
+    CALL_WICPIXELFORMATINFO2_GETBITSPERPIXEL,
+    CALL_WICPIXELFORMATINFO2_GETCHANNELCOUNT,
+    CALL_WICPIXELFORMATINFO2_GETCHANNELMASK,
+    CALL_WICPIXELFORMATINFO2_GETCOLORCONTEXT,
+    CALL_WICPIXELFORMATINFO2_GETFORMATGUID,
+    CALL_WICPIXELFORMATINFO2_GETNUMERICREPRESENTATION,
+    CALL_WICPIXELFORMATINFO2_SUPPORTSTRANSPARENCY,
 };
 
 DEFINE_GUID(IID_IMILBitmapSource,0x7543696a,0xbc8d,0x46b0,0x5f,0x81,0x8d,0x95,0x72,0x89,0x72,0xbe);
@@ -309,6 +374,24 @@ struct qemu_wic_clipper
     struct qemu_wic_bitmap *source_bitmap;
 };
 
+struct qemu_wic_info
+{
+    /* Guest fields */
+    IWICComponentInfo IWICComponentInfo_iface;
+
+    /* Host fields */
+    IWICComponentInfo *host;
+};
+
+struct qemu_wic_enum
+{
+    /* Guest fields */
+    IEnumUnknown IEnumUnknown_iface;
+
+    /* Host fields */
+    IEnumUnknown *host;
+};
+
 /* This is a reverse wrapper. */
 struct qemu_bitmap_source
 {
@@ -392,6 +475,13 @@ void qemu_ComponentFactory_CreateStream(struct qemu_syscall *call);
 void qemu_ComponentFactory_QueryInterface(struct qemu_syscall *call);
 void qemu_ComponentFactory_Release(struct qemu_syscall *call);
 void qemu_ComponentFactory_create_host(struct qemu_syscall *call);
+void qemu_EnumUnknown_AddRef(struct qemu_syscall *call);
+void qemu_EnumUnknown_Clone(struct qemu_syscall *call);
+void qemu_EnumUnknown_Next(struct qemu_syscall *call);
+void qemu_EnumUnknown_QueryInterface(struct qemu_syscall *call);
+void qemu_EnumUnknown_Release(struct qemu_syscall *call);
+void qemu_EnumUnknown_Reset(struct qemu_syscall *call);
+void qemu_EnumUnknown_Skip(struct qemu_syscall *call);
 void qemu_IMILBitmapImpl_CopyPalette(struct qemu_syscall *call);
 void qemu_IMILBitmapImpl_CopyPixels(struct qemu_syscall *call);
 void qemu_IMILBitmapImpl_GetPixelFormat(struct qemu_syscall *call);
@@ -411,9 +501,23 @@ void qemu_WICBitmapClipper_GetSize(struct qemu_syscall *call);
 void qemu_WICBitmapClipper_Initialize(struct qemu_syscall *call);
 void qemu_WICBitmapClipper_QueryInterface(struct qemu_syscall *call);
 void qemu_WICBitmapClipper_Release(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_CreateInstance(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_DoesSupportAnimation(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_DoesSupportChromaKey(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_DoesSupportLossless(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_DoesSupportMultiframe(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_GetColorManagementVersion(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_GetContainerFormat(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_GetDeviceManufacturer(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_GetDeviceModels(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_GetFileExtensions(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_GetMimeTypes(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_GetPatterns(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_GetPixelFormats(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_MatchesMimeType(struct qemu_syscall *call);
+void qemu_WICBitmapDecoderInfo_MatchesPattern(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_AddRef(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_CopyPalette(struct qemu_syscall *call);
-void qemu_WICBitmapDecoder_create_host(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_GetColorContexts(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_GetContainerFormat(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_GetDecoderInfo(struct qemu_syscall *call);
@@ -426,6 +530,23 @@ void qemu_WICBitmapDecoder_Initialize(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_QueryCapability(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_QueryInterface(struct qemu_syscall *call);
 void qemu_WICBitmapDecoder_Release(struct qemu_syscall *call);
+void qemu_WICBitmapDecoder_create_host(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_AddRef(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_CreateInstance(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_DoesSupportAnimation(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_DoesSupportChromaKey(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_DoesSupportLossless(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_DoesSupportMultiframe(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_GetColorManagementVersion(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_GetContainerFormat(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_GetDeviceManufacturer(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_GetDeviceModels(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_GetFileExtensions(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_GetMimeTypes(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_GetPixelFormats(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_MatchesMimeType(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_QueryInterface(struct qemu_syscall *call);
+void qemu_WICBitmapEncoderInfo_Release(struct qemu_syscall *call);
 void qemu_WICBitmapEncoder_AddRef(struct qemu_syscall *call);
 void qemu_WICBitmapEncoder_Commit(struct qemu_syscall *call);
 void qemu_WICBitmapEncoder_CreateNewFrame(struct qemu_syscall *call);
@@ -482,11 +603,40 @@ void qemu_WICBitmap_QueryInterface(struct qemu_syscall *call);
 void qemu_WICBitmap_Release(struct qemu_syscall *call);
 void qemu_WICBitmap_SetPalette(struct qemu_syscall *call);
 void qemu_WICBitmap_SetResolution(struct qemu_syscall *call);
+void qemu_WICComponentInfo_AddRef(struct qemu_syscall *call);
+void qemu_WICComponentInfo_GetAuthor(struct qemu_syscall *call);
+void qemu_WICComponentInfo_GetCLSID(struct qemu_syscall *call);
+void qemu_WICComponentInfo_GetComponentType(struct qemu_syscall *call);
+void qemu_WICComponentInfo_GetFriendlyName(struct qemu_syscall *call);
+void qemu_WICComponentInfo_GetSigningStatus(struct qemu_syscall *call);
+void qemu_WICComponentInfo_GetSpecVersion(struct qemu_syscall *call);
+void qemu_WICComponentInfo_GetVendorGUID(struct qemu_syscall *call);
+void qemu_WICComponentInfo_GetVersion(struct qemu_syscall *call);
+void qemu_WICComponentInfo_QueryInterface(struct qemu_syscall *call);
+void qemu_WICComponentInfo_Release(struct qemu_syscall *call);
 void qemu_WICConvertBitmapSource(struct qemu_syscall *call);
 void qemu_WICCreateBitmapFromSectionEx(struct qemu_syscall *call);
+void qemu_WICFormatConverterInfo_AddRef(struct qemu_syscall *call);
+void qemu_WICFormatConverterInfo_CreateInstance(struct qemu_syscall *call);
+void qemu_WICFormatConverterInfo_GetPixelFormats(struct qemu_syscall *call);
+void qemu_WICFormatConverterInfo_QueryInterface(struct qemu_syscall *call);
+void qemu_WICFormatConverterInfo_Release(struct qemu_syscall *call);
 void qemu_WICMapGuidToShortName(struct qemu_syscall *call);
 void qemu_WICMapSchemaToName(struct qemu_syscall *call);
 void qemu_WICMapShortNameToGuid(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_AddRef(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_CreateInstance(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_DoesRequireFixedSize(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_DoesRequireFullStream(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_DoesSupportPadding(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_GetContainerFormats(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_GetDeviceManufacturer(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_GetDeviceModels(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_GetMetadataFormat(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_GetPatterns(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_MatchesPattern(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_QueryInterface(struct qemu_syscall *call);
+void qemu_WICMetadataReaderInfo_Release(struct qemu_syscall *call);
 void qemu_WICPalette_AddRef(struct qemu_syscall *call);
 void qemu_WICPalette_GetColorCount(struct qemu_syscall *call);
 void qemu_WICPalette_GetColors(struct qemu_syscall *call);
@@ -500,6 +650,13 @@ void qemu_WICPalette_IsBlackWhite(struct qemu_syscall *call);
 void qemu_WICPalette_IsGrayscale(struct qemu_syscall *call);
 void qemu_WICPalette_QueryInterface(struct qemu_syscall *call);
 void qemu_WICPalette_Release(struct qemu_syscall *call);
+void qemu_WICPixelFormatInfo2_GetBitsPerPixel(struct qemu_syscall *call);
+void qemu_WICPixelFormatInfo2_GetChannelCount(struct qemu_syscall *call);
+void qemu_WICPixelFormatInfo2_GetChannelMask(struct qemu_syscall *call);
+void qemu_WICPixelFormatInfo2_GetColorContext(struct qemu_syscall *call);
+void qemu_WICPixelFormatInfo2_GetFormatGUID(struct qemu_syscall *call);
+void qemu_WICPixelFormatInfo2_GetNumericRepresentation(struct qemu_syscall *call);
+void qemu_WICPixelFormatInfo2_SupportsTransparency(struct qemu_syscall *call);
 
 struct qemu_wic_bitmap *WICBitmap_create_host(IWICBitmap *host);
 struct qemu_wic_palette *WICPalette_create_host(IWICPalette *host);
