@@ -51,6 +51,7 @@ struct qemu_wic_lock
 
     /* Host fields */
     IWICBitmapLock *host;
+    struct qemu_wic_bitmap *bitmap;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -172,8 +173,12 @@ void qemu_WICBitmapLock_Release(struct qemu_syscall *call)
     WINE_TRACE("\n");
     lock = QEMU_G2H(c->iface);
 
-    /* FIXME: Make sure that the bitmap is released when the lock holds the last ref. */
+    IWICBitmap_AddRef(lock->bitmap->bitmap_host);
+
     c->super.iret = IWICBitmapLock_Release(lock->host);
+
+    qemu_WICBitmap_Release_internal(lock->bitmap);
+
     if (!c->super.iret)
     {
         WINE_TRACE("Destroying lock wrapper %p for host lock %p.\n", lock, lock->host);
@@ -747,6 +752,7 @@ void qemu_WICBitmap_Lock(struct qemu_syscall *call)
     }
 
     lock->host = host;
+    lock->bitmap = bitmap;
     c->ppILock = QEMU_H2G(lock);
 }
 
