@@ -405,7 +405,8 @@ struct qemu_WICPalette_GetColors
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICPalette_GetColors(IWICPalette *iface, UINT colorCount, WICColor *pColors, UINT *pcActualColors)
+static HRESULT WINAPI WICPalette_GetColors(IWICPalette *iface, UINT colorCount, WICColor *pColors,
+        UINT *pcActualColors)
 {
     struct qemu_WICPalette_GetColors call;
     struct qemu_wic_palette *palette = impl_from_IWICPalette(iface);
@@ -428,7 +429,8 @@ void qemu_WICPalette_GetColors(struct qemu_syscall *call)
     struct qemu_WICPalette_GetColors *c = (struct qemu_WICPalette_GetColors *)call;
     struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    /* WICColor has the same size on 32 and 64 bit. */
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IWICPalette_GetColors(palette->host, c->colorCount, QEMU_G2H(c->pColors), QEMU_G2H(c->pcActualColors));
