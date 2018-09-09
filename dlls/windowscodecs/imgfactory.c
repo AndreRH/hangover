@@ -859,7 +859,7 @@ struct qemu_ComponentFactory_CreateBitmapFromSource
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t piBitmapSource;
+    uint64_t clipper, bitmap, custom;
     uint64_t option;
     uint64_t ppIBitmap;
 };
@@ -875,7 +875,29 @@ static HRESULT WINAPI ComponentFactory_CreateBitmapFromSource(IWICComponentFacto
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATEBITMAPFROMSOURCE);
     call.iface = (ULONG_PTR)factory;
-    call.piBitmapSource = (ULONG_PTR)piBitmapSource;
+
+    if (!piBitmapSource)
+    {
+        call.bitmap = call.clipper = call.custom = 0;
+    }
+    else if (((IWICBitmap *)piBitmapSource)->lpVtbl == &WICBitmap_Vtbl)
+    {
+        struct qemu_wic_bitmap *bitmap = impl_from_IWICBitmap((IWICBitmap *)piBitmapSource);
+        call.bitmap = (ULONG_PTR)bitmap;
+        call.clipper = call.custom = 0;
+    }
+    else if (((IWICBitmapClipper *)piBitmapSource)->lpVtbl == &WICBitmapClipper_Vtbl)
+    {
+        struct qemu_wic_clipper *other = impl_from_IWICBitmapClipper((IWICBitmapClipper *)piBitmapSource);
+        call.clipper = (ULONG_PTR)other;
+        call.bitmap = call.custom = 0;
+    }
+    else
+    {
+        call.bitmap = call.clipper = 0;
+        call.custom = (ULONG_PTR)piBitmapSource;
+    }
+
     call.option = option;
     call.ppIBitmap = (ULONG_PTR)ppIBitmap;
 
@@ -896,32 +918,50 @@ void qemu_ComponentFactory_CreateBitmapFromSource(struct qemu_syscall *call)
     struct qemu_ComponentFactory_CreateBitmapFromSource *c =
             (struct qemu_ComponentFactory_CreateBitmapFromSource *)call;
     struct qemu_component_factory *factory;
-    struct qemu_bitmap_source *source_wrapper;
+    struct qemu_bitmap_source *source_wrapper = NULL;
     IWICBitmap *host;
-    struct qemu_wic_bitmap *bitmap;
+    IWICBitmapSource *host_source;
+    struct qemu_wic_bitmap *bitmap, *bitmap_src;
+    struct qemu_wic_clipper *clipper;
 
     WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    /* Note that piBitmapSource could point to one of our bitmaps. We don't care right now, but we could detect
-     * this situation and avoid jumping back and forth between host and guest. */
-    if (c->piBitmapSource)
+    if (c->bitmap)
     {
-        source_wrapper = bitmap_source_wrapper_create(c->piBitmapSource);
+        bitmap_src = QEMU_G2H(c->bitmap);
+        host_source = (IWICBitmapSource *)bitmap_src->bitmap_host;
+        WINE_TRACE("Found our bitmap %p, passing host %p.\n", bitmap_src, host_source);
+        IWICBitmapSource_AddRef(host_source);
+    }
+    else if (c->clipper)
+    {
+        clipper = QEMU_G2H(c->clipper);
+        host_source = (IWICBitmapSource *)clipper->host;
+        WINE_TRACE("Found our clipper %p, passing host %p.\n", clipper, host_source);
+        IWICBitmapSource_AddRef(host_source);
+    }
+    else if (c->custom)
+    {
+        WINE_TRACE("Creating a wrapper for unrecognized source %p.\n", (void *)c->custom);
+        source_wrapper = bitmap_source_wrapper_create(c->custom);
         if (!source_wrapper)
         {
             WINE_WARN("Out of memory.\n");
             c->super.iret = E_OUTOFMEMORY;
             return;
         }
+        host_source = &source_wrapper->IWICBitmapSource_iface;
+    }
+    else
+    {
+        host_source = NULL;
     }
 
     c->super.iret = IWICComponentFactory_CreateBitmapFromSource(factory->host,
-            source_wrapper ? &source_wrapper->IWICBitmapSource_iface : NULL,
-            c->option, c->ppIBitmap ? &host : NULL);
+            host_source, c->option, c->ppIBitmap ? &host : NULL);
 
-    if (source_wrapper)
-        IWICBitmapSource_Release(&source_wrapper->IWICBitmapSource_iface);
+    IWICBitmapSource_Release(host_source);
 
     if (FAILED(c->super.iret))
         return;
