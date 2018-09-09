@@ -202,7 +202,8 @@ struct qemu_WICBitmapFrameDecode_GetPixelFormat
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapFrameDecode_GetPixelFormat(IWICBitmapFrameDecode *iface, WICPixelFormatGUID *pPixelFormat)
+static HRESULT WINAPI WICBitmapFrameDecode_GetPixelFormat(IWICBitmapFrameDecode *iface,
+        WICPixelFormatGUID *pPixelFormat)
 {
     struct qemu_WICBitmapFrameDecode_GetPixelFormat call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
@@ -321,7 +322,8 @@ struct qemu_WICBitmapFrameDecode_CopyPixels
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapFrameDecode_CopyPixels(IWICBitmapFrameDecode *iface, const WICRect *prc, UINT cbStride, UINT cbBufferSize, BYTE *pbBuffer)
+static HRESULT WINAPI WICBitmapFrameDecode_CopyPixels(IWICBitmapFrameDecode *iface, const WICRect *prc, UINT cbStride,
+        UINT cbBufferSize, BYTE *pbBuffer)
 {
     struct qemu_WICBitmapFrameDecode_CopyPixels call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
@@ -348,7 +350,8 @@ void qemu_WICBitmapFrameDecode_CopyPixels(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_CopyPixels(decoder->host_frame, QEMU_G2H(c->prc), c->cbStride, c->cbBufferSize, QEMU_G2H(c->pbBuffer));
+    c->super.iret = IWICBitmapFrameDecode_CopyPixels(decoder->host_frame, QEMU_G2H(c->prc), c->cbStride,
+            c->cbBufferSize, QEMU_G2H(c->pbBuffer));
 }
 
 #endif
@@ -362,7 +365,8 @@ struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapFrameDecode_GetMetadataQueryReader(IWICBitmapFrameDecode *iface, IWICMetadataQueryReader **ppIMetadataQueryReader)
+static HRESULT WINAPI WICBitmapFrameDecode_GetMetadataQueryReader(IWICBitmapFrameDecode *iface,
+        IWICMetadataQueryReader **ppIMetadataQueryReader)
 {
     struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
@@ -380,13 +384,15 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetMetadataQueryReader(IWICBitmapFram
 
 void qemu_WICBitmapFrameDecode_GetMetadataQueryReader(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader *c = (struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader *)call;
+    struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader *c =
+            (struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader *)call;
     struct qemu_wic_decoder *decoder;
 
     WINE_FIXME("Unverified!\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_GetMetadataQueryReader(decoder->host_frame, QEMU_G2H(c->ppIMetadataQueryReader));
+    c->super.iret = IWICBitmapFrameDecode_GetMetadataQueryReader(decoder->host_frame,
+            QEMU_G2H(c->ppIMetadataQueryReader));
 }
 
 #endif
@@ -402,7 +408,8 @@ struct qemu_WICBitmapFrameDecode_GetColorContexts
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapFrameDecode_GetColorContexts(IWICBitmapFrameDecode *iface, UINT cCount, IWICColorContext **ppIColorContexts, UINT *pcActualCount)
+static HRESULT WINAPI WICBitmapFrameDecode_GetColorContexts(IWICBitmapFrameDecode *iface, UINT cCount,
+        IWICColorContext **ppIColorContexts, UINT *pcActualCount)
 {
     struct qemu_WICBitmapFrameDecode_GetColorContexts call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
@@ -428,7 +435,8 @@ void qemu_WICBitmapFrameDecode_GetColorContexts(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_GetColorContexts(decoder->host_frame, c->cCount, QEMU_G2H(c->ppIColorContexts), QEMU_G2H(c->pcActualCount));
+    c->super.iret = IWICBitmapFrameDecode_GetColorContexts(decoder->host_frame, c->cCount,
+            QEMU_G2H(c->ppIColorContexts), QEMU_G2H(c->pcActualCount));
 }
 
 #endif
@@ -640,7 +648,8 @@ void qemu_WICBitmapDecoder_QueryCapability(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_QueryCapability(decoder->host_bitmap, QEMU_G2H(c->stream), QEMU_G2H(c->capability));
+    c->super.iret = IWICBitmapDecoder_QueryCapability(decoder->host_bitmap, QEMU_G2H(c->stream),
+            QEMU_G2H(c->capability));
 }
 
 #endif
@@ -722,7 +731,7 @@ void qemu_WICBitmapDecoder_GetContainerFormat(struct qemu_syscall *call)
     struct qemu_WICBitmapDecoder_GetContainerFormat *c = (struct qemu_WICBitmapDecoder_GetContainerFormat *)call;
     struct qemu_wic_decoder *decoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapDecoder_GetContainerFormat(decoder->host_bitmap, QEMU_G2H(c->pguidContainerFormat));
@@ -815,7 +824,8 @@ struct qemu_WICBitmapDecoder_GetMetadataQueryReader
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoder_GetMetadataQueryReader(IWICBitmapDecoder *iface, IWICMetadataQueryReader **ppIMetadataQueryReader)
+static HRESULT WINAPI WICBitmapDecoder_GetMetadataQueryReader(IWICBitmapDecoder *iface,
+        IWICMetadataQueryReader **ppIMetadataQueryReader)
 {
     struct qemu_WICBitmapDecoder_GetMetadataQueryReader call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapDecoder(iface);
@@ -833,13 +843,15 @@ static HRESULT WINAPI WICBitmapDecoder_GetMetadataQueryReader(IWICBitmapDecoder 
 
 void qemu_WICBitmapDecoder_GetMetadataQueryReader(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapDecoder_GetMetadataQueryReader *c = (struct qemu_WICBitmapDecoder_GetMetadataQueryReader *)call;
+    struct qemu_WICBitmapDecoder_GetMetadataQueryReader *c =
+            (struct qemu_WICBitmapDecoder_GetMetadataQueryReader *)call;
     struct qemu_wic_decoder *decoder;
 
     WINE_FIXME("Unverified!\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetMetadataQueryReader(decoder->host_bitmap, QEMU_G2H(c->ppIMetadataQueryReader));
+    c->super.iret = IWICBitmapDecoder_GetMetadataQueryReader(decoder->host_bitmap,
+            QEMU_G2H(c->ppIMetadataQueryReader));
 }
 
 #endif
@@ -893,7 +905,8 @@ struct qemu_WICBitmapDecoder_GetColorContexts
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoder_GetColorContexts(IWICBitmapDecoder *iface, UINT cCount, IWICColorContext **ppIColorContexts, UINT *pcActualCount)
+static HRESULT WINAPI WICBitmapDecoder_GetColorContexts(IWICBitmapDecoder *iface, UINT cCount,
+        IWICColorContext **ppIColorContexts, UINT *pcActualCount)
 {
     struct qemu_WICBitmapDecoder_GetColorContexts call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapDecoder(iface);
@@ -919,7 +932,8 @@ void qemu_WICBitmapDecoder_GetColorContexts(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetColorContexts(decoder->host_bitmap, c->cCount, QEMU_G2H(c->ppIColorContexts), QEMU_G2H(c->pcActualCount));
+    c->super.iret = IWICBitmapDecoder_GetColorContexts(decoder->host_bitmap, c->cCount, QEMU_G2H(c->ppIColorContexts),
+            QEMU_G2H(c->pcActualCount));
 }
 
 #endif
@@ -992,7 +1006,7 @@ void qemu_WICBitmapDecoder_GetFrameCount(struct qemu_syscall *call)
     struct qemu_WICBitmapDecoder_GetFrameCount *c = (struct qemu_WICBitmapDecoder_GetFrameCount *)call;
     struct qemu_wic_decoder *decoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapDecoder_GetFrameCount(decoder->host_bitmap, QEMU_G2H(c->pCount));
@@ -1010,7 +1024,8 @@ struct qemu_WICBitmapDecoder_GetFrame
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoder_GetFrame(IWICBitmapDecoder *iface, UINT index, IWICBitmapFrameDecode **ppIBitmapFrame)
+static HRESULT WINAPI WICBitmapDecoder_GetFrame(IWICBitmapDecoder *iface, UINT index,
+        IWICBitmapFrameDecode **ppIBitmapFrame)
 {
     struct qemu_WICBitmapDecoder_GetFrame call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapDecoder(iface);
