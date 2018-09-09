@@ -668,12 +668,17 @@ void qemu_WICBitmapDecoder_QueryCapability(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoder_QueryCapability *c = (struct qemu_WICBitmapDecoder_QueryCapability *)call;
     struct qemu_wic_decoder *decoder;
+    struct istream_wrapper *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
+    stream = istream_wrapper_create(c->stream);
 
-    c->super.iret = IWICBitmapDecoder_QueryCapability(decoder->host_bitmap, QEMU_G2H(c->stream),
+    c->super.iret = IWICBitmapDecoder_QueryCapability(decoder->host_bitmap, istream_wrapper_host_iface(stream),
             QEMU_G2H(c->capability));
+
+    if (stream)
+        IStream_Release(istream_wrapper_host_iface(stream));
 }
 
 #endif
