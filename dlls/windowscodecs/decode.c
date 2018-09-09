@@ -476,7 +476,6 @@ struct qemu_WICBitmapDecoder_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t iid;
-    uint64_t ppv;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -485,15 +484,26 @@ static HRESULT WINAPI WICBitmapDecoder_QueryInterface(IWICBitmapDecoder *iface, 
 {
     struct qemu_WICBitmapDecoder_QueryInterface call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapDecoder(iface);
+    WINE_TRACE("(%p,%s,%p)\n", iface, wine_dbgstr_guid(iid), ppv);
+
+    if (!ppv) return E_INVALIDARG;
+
+    if (IsEqualIID(&IID_IUnknown, iid) ||
+            IsEqualIID(&IID_IWICBitmapDecoder, iid))
+    {
+        *ppv = &decoder->IWICBitmapDecoder_iface;
+        IUnknown_AddRef((IUnknown*)*ppv);
+        return S_OK;
+    }
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPDECODER_QUERYINTERFACE);
     call.iface = (ULONG_PTR)decoder;
     call.iid = (ULONG_PTR)iid;
-    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    *ppv = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -502,11 +512,18 @@ void qemu_WICBitmapDecoder_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoder_QueryInterface *c = (struct qemu_WICBitmapDecoder_QueryInterface *)call;
     struct qemu_wic_decoder *decoder;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_QueryInterface(decoder->host_bitmap, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
+    c->super.iret = IWICBitmapDecoder_QueryInterface(decoder->host_bitmap, QEMU_G2H(c->iid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->iid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
@@ -539,7 +556,7 @@ void qemu_WICBitmapDecoder_AddRef(struct qemu_syscall *call)
     struct qemu_WICBitmapDecoder_AddRef *c = (struct qemu_WICBitmapDecoder_AddRef *)call;
     struct qemu_wic_decoder *decoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapDecoder_AddRef(decoder->host_bitmap);
@@ -575,10 +592,15 @@ void qemu_WICBitmapDecoder_Release(struct qemu_syscall *call)
     struct qemu_WICBitmapDecoder_Release *c = (struct qemu_WICBitmapDecoder_Release *)call;
     struct qemu_wic_decoder *decoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapDecoder_Release(decoder->host_bitmap);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying decoder wrapper %p for host decoder %p.\n", decoder, decoder->host_bitmap);
+        HeapFree(GetProcessHeap(), 0, decoder);
+    }
 }
 
 #endif
