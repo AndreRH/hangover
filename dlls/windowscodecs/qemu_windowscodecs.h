@@ -267,7 +267,7 @@ struct qemu_wic_encode
     /* Put some stream wrapper vtable here */
 };
 
-struct qemu_wic_decode
+struct qemu_wic_decoder
 {
     /* Host fields */
     IWICBitmapDecoder IWICBitmapDecoder_iface;
