@@ -46,18 +46,18 @@ static inline struct qemu_wic_decoder *impl_from_IWICBitmapDecoder(IWICBitmapDec
     return CONTAINING_RECORD(iface, struct qemu_wic_decoder, IWICBitmapDecoder_iface);
 }
 
-static inline struct qemu_wic_decoder *impl_from_IWICBitmapFrameDecode(IWICBitmapFrameDecode *iface)
+static inline struct qemu_wic_frame_decode *impl_from_IWICBitmapFrameDecode(IWICBitmapFrameDecode *iface)
 {
-    return CONTAINING_RECORD(iface, struct qemu_wic_decoder, IWICBitmapFrameDecode_iface);
+    return CONTAINING_RECORD(iface, struct qemu_wic_frame_decode, IWICBitmapFrameDecode_iface);
 }
 
 static HRESULT WINAPI WICBitmapFrameDecode_QueryInterface(IWICBitmapFrameDecode *iface, REFIID iid, void **ppv)
 {
     struct qemu_WICBitmapFrameDecode_QueryInterface call;
-    struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)decoder;
+    call.iface = (ULONG_PTR)frame;
     call.iid = (ULONG_PTR)iid;
     call.ppv = (ULONG_PTR)ppv;
 
@@ -71,12 +71,12 @@ static HRESULT WINAPI WICBitmapFrameDecode_QueryInterface(IWICBitmapFrameDecode 
 void qemu_WICBitmapFrameDecode_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_QueryInterface *c = (struct qemu_WICBitmapFrameDecode_QueryInterface *)call;
-    struct qemu_wic_decoder *decoder;
+    struct qemu_wic_frame_decode *frame;
 
     WINE_FIXME("Unverified!\n");
-    decoder = QEMU_G2H(c->iface);
+    frame = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_QueryInterface(decoder->host_frame, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
+    c->super.iret = IWICBitmapFrameDecode_QueryInterface(frame->host, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
 }
 
 #endif
@@ -92,10 +92,10 @@ struct qemu_WICBitmapFrameDecode_AddRef
 static ULONG WINAPI WICBitmapFrameDecode_AddRef(IWICBitmapFrameDecode *iface)
 {
     struct qemu_WICBitmapFrameDecode_AddRef call;
-    struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_ADDREF);
-    call.iface = (ULONG_PTR)decoder;
+    call.iface = (ULONG_PTR)frame;
 
     qemu_syscall(&call.super);
 
@@ -107,12 +107,12 @@ static ULONG WINAPI WICBitmapFrameDecode_AddRef(IWICBitmapFrameDecode *iface)
 void qemu_WICBitmapFrameDecode_AddRef(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_AddRef *c = (struct qemu_WICBitmapFrameDecode_AddRef *)call;
-    struct qemu_wic_decoder *decoder;
+    struct qemu_wic_frame_decode *frame;
 
-    WINE_FIXME("Unverified!\n");
-    decoder = QEMU_G2H(c->iface);
+    WINE_TRACE("\n");
+    frame = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_AddRef(decoder->host_frame);
+    c->super.iret = IWICBitmapFrameDecode_AddRef(frame->host);
 }
 
 #endif
@@ -128,10 +128,10 @@ struct qemu_WICBitmapFrameDecode_Release
 static ULONG WINAPI WICBitmapFrameDecode_Release(IWICBitmapFrameDecode *iface)
 {
     struct qemu_WICBitmapFrameDecode_Release call;
-    struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_RELEASE);
-    call.iface = (ULONG_PTR)decoder;
+    call.iface = (ULONG_PTR)frame;
 
     qemu_syscall(&call.super);
 
@@ -140,15 +140,40 @@ static ULONG WINAPI WICBitmapFrameDecode_Release(IWICBitmapFrameDecode *iface)
 
 #else
 
+static ULONG qemu_WICBitmapDecoder_Release_internal(struct qemu_wic_decoder *decoder);
 void qemu_WICBitmapFrameDecode_Release(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_Release *c = (struct qemu_WICBitmapFrameDecode_Release *)call;
-    struct qemu_wic_decoder *decoder;
+    struct qemu_wic_frame_decode *frame;
 
-    WINE_FIXME("Unverified!\n");
-    decoder = QEMU_G2H(c->iface);
+    WINE_TRACE("\n");
+    frame = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_Release(decoder->host_frame);
+    if (frame->decoder)
+    {
+        /* GIF frames hold a reference to their parent decoders, ICO and TIFF frames do not. */
+        IWICBitmapDecoder_AddRef(frame->decoder->host);
+        c->super.iret = IWICBitmapFrameDecode_Release(frame->host);
+        qemu_WICBitmapDecoder_Release_internal(frame->decoder);
+
+        if (!c->super.iret)
+        {
+            /* Multi-frame decoder, destroy only the frame. */
+            WINE_TRACE("Destroying frame wrapper %p for host frame %p.\n", frame, frame->host);
+            HeapFree(GetProcessHeap(), 0, frame);
+        }
+    }
+    else
+    {
+        c->super.iret = IWICBitmapFrameDecode_Release(frame->host);
+        if (!c->super.iret)
+        {
+            /* Single-frame decoder, destroy the entire decoder. */
+            struct qemu_wic_decoder *decoder = CONTAINING_RECORD(frame, struct qemu_wic_decoder, static_frame);
+            WINE_TRACE("Destroying decoder wrapper %p for host decoder %p via frame %p.\n", decoder, decoder->host, frame);
+            HeapFree(GetProcessHeap(), 0, decoder);
+        }
+    }
 }
 
 #endif
@@ -166,10 +191,10 @@ struct qemu_WICBitmapFrameDecode_GetSize
 static HRESULT WINAPI WICBitmapFrameDecode_GetSize(IWICBitmapFrameDecode *iface, UINT *puiWidth, UINT *puiHeight)
 {
     struct qemu_WICBitmapFrameDecode_GetSize call;
-    struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_GETSIZE);
-    call.iface = (ULONG_PTR)decoder;
+    call.iface = (ULONG_PTR)frame;
     call.puiWidth = (ULONG_PTR)puiWidth;
     call.puiHeight = (ULONG_PTR)puiHeight;
 
@@ -183,12 +208,12 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetSize(IWICBitmapFrameDecode *iface,
 void qemu_WICBitmapFrameDecode_GetSize(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_GetSize *c = (struct qemu_WICBitmapFrameDecode_GetSize *)call;
-    struct qemu_wic_decoder *decoder;
+    struct qemu_wic_frame_decode *frame;
 
     WINE_TRACE("\n");
-    decoder = QEMU_G2H(c->iface);
+    frame = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_GetSize(decoder->host_frame, QEMU_G2H(c->puiWidth), QEMU_G2H(c->puiHeight));
+    c->super.iret = IWICBitmapFrameDecode_GetSize(frame->host, QEMU_G2H(c->puiWidth), QEMU_G2H(c->puiHeight));
 }
 
 #endif
@@ -206,10 +231,10 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetPixelFormat(IWICBitmapFrameDecode 
         WICPixelFormatGUID *pPixelFormat)
 {
     struct qemu_WICBitmapFrameDecode_GetPixelFormat call;
-    struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_GETPIXELFORMAT);
-    call.iface = (ULONG_PTR)decoder;
+    call.iface = (ULONG_PTR)frame;
     call.pPixelFormat = (ULONG_PTR)pPixelFormat;
 
     qemu_syscall(&call.super);
@@ -222,12 +247,12 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetPixelFormat(IWICBitmapFrameDecode 
 void qemu_WICBitmapFrameDecode_GetPixelFormat(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_GetPixelFormat *c = (struct qemu_WICBitmapFrameDecode_GetPixelFormat *)call;
-    struct qemu_wic_decoder *decoder;
+    struct qemu_wic_frame_decode *frame;
 
     WINE_TRACE("\n");
-    decoder = QEMU_G2H(c->iface);
+    frame = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_GetPixelFormat(decoder->host_frame, QEMU_G2H(c->pPixelFormat));
+    c->super.iret = IWICBitmapFrameDecode_GetPixelFormat(frame->host, QEMU_G2H(c->pPixelFormat));
 }
 
 #endif
@@ -245,10 +270,10 @@ struct qemu_WICBitmapFrameDecode_GetResolution
 static HRESULT WINAPI WICBitmapFrameDecode_GetResolution(IWICBitmapFrameDecode *iface, double *pDpiX, double *pDpiY)
 {
     struct qemu_WICBitmapFrameDecode_GetResolution call;
-    struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_GETRESOLUTION);
-    call.iface = (ULONG_PTR)decoder;
+    call.iface = (ULONG_PTR)frame;
     call.pDpiX = (ULONG_PTR)pDpiX;
     call.pDpiY = (ULONG_PTR)pDpiY;
 
@@ -262,12 +287,12 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetResolution(IWICBitmapFrameDecode *
 void qemu_WICBitmapFrameDecode_GetResolution(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_GetResolution *c = (struct qemu_WICBitmapFrameDecode_GetResolution *)call;
-    struct qemu_wic_decoder *decoder;
+    struct qemu_wic_frame_decode *frame;
 
     WINE_TRACE("\n");
-    decoder = QEMU_G2H(c->iface);
+    frame = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_GetResolution(decoder->host_frame, QEMU_G2H(c->pDpiX), QEMU_G2H(c->pDpiY));
+    c->super.iret = IWICBitmapFrameDecode_GetResolution(frame->host, QEMU_G2H(c->pDpiX), QEMU_G2H(c->pDpiY));
 }
 
 #endif
@@ -284,11 +309,11 @@ struct qemu_WICBitmapFrameDecode_CopyPalette
 static HRESULT WINAPI WICBitmapFrameDecode_CopyPalette(IWICBitmapFrameDecode *iface, IWICPalette *pIPalette)
 {
     struct qemu_WICBitmapFrameDecode_CopyPalette call;
-    struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
     struct qemu_wic_palette *palette = unsafe_impl_from_IWICPalette(pIPalette);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_COPYPALETTE);
-    call.iface = (ULONG_PTR)decoder;
+    call.iface = (ULONG_PTR)frame;
     call.pIPalette = (ULONG_PTR)palette;
 
     qemu_syscall(&call.super);
@@ -301,14 +326,14 @@ static HRESULT WINAPI WICBitmapFrameDecode_CopyPalette(IWICBitmapFrameDecode *if
 void qemu_WICBitmapFrameDecode_CopyPalette(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_CopyPalette *c = (struct qemu_WICBitmapFrameDecode_CopyPalette *)call;
-    struct qemu_wic_decoder *decoder;
+    struct qemu_wic_frame_decode *frame;
     struct qemu_wic_palette *palette;
 
     WINE_TRACE("\n");
-    decoder = QEMU_G2H(c->iface);
+    frame = QEMU_G2H(c->iface);
     palette = QEMU_G2H(c->pIPalette);
 
-    c->super.iret = IWICBitmapFrameDecode_CopyPalette(decoder->host_frame, palette ? palette->host : NULL);
+    c->super.iret = IWICBitmapFrameDecode_CopyPalette(frame->host, palette ? palette->host : NULL);
 }
 
 #endif
@@ -329,10 +354,10 @@ static HRESULT WINAPI WICBitmapFrameDecode_CopyPixels(IWICBitmapFrameDecode *ifa
         UINT cbBufferSize, BYTE *pbBuffer)
 {
     struct qemu_WICBitmapFrameDecode_CopyPixels call;
-    struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_COPYPIXELS);
-    call.iface = (ULONG_PTR)decoder;
+    call.iface = (ULONG_PTR)frame;
     call.prc = (ULONG_PTR)prc;
     call.cbStride = cbStride;
     call.cbBufferSize = cbBufferSize;
@@ -348,12 +373,12 @@ static HRESULT WINAPI WICBitmapFrameDecode_CopyPixels(IWICBitmapFrameDecode *ifa
 void qemu_WICBitmapFrameDecode_CopyPixels(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_CopyPixels *c = (struct qemu_WICBitmapFrameDecode_CopyPixels *)call;
-    struct qemu_wic_decoder *decoder;
+    struct qemu_wic_frame_decode *frame;
 
     WINE_TRACE("\n");
-    decoder = QEMU_G2H(c->iface);
+    frame = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_CopyPixels(decoder->host_frame, QEMU_G2H(c->prc), c->cbStride,
+    c->super.iret = IWICBitmapFrameDecode_CopyPixels(frame->host, QEMU_G2H(c->prc), c->cbStride,
             c->cbBufferSize, QEMU_G2H(c->pbBuffer));
 }
 
@@ -372,10 +397,10 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetMetadataQueryReader(IWICBitmapFram
         IWICMetadataQueryReader **ppIMetadataQueryReader)
 {
     struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader call;
-    struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_GETMETADATAQUERYREADER);
-    call.iface = (ULONG_PTR)decoder;
+    call.iface = (ULONG_PTR)frame;
     call.ppIMetadataQueryReader = (ULONG_PTR)ppIMetadataQueryReader;
 
     qemu_syscall(&call.super);
@@ -389,13 +414,13 @@ void qemu_WICBitmapFrameDecode_GetMetadataQueryReader(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader *c =
             (struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader *)call;
-    struct qemu_wic_decoder *decoder;
+    struct qemu_wic_frame_decode *frame;
     IWICMetadataQueryReader *host;
 
     WINE_TRACE("\n");
-    decoder = QEMU_G2H(c->iface);
+    frame = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_GetMetadataQueryReader(decoder->host_frame,
+    c->super.iret = IWICBitmapFrameDecode_GetMetadataQueryReader(frame->host,
             c->ppIMetadataQueryReader ? &host : NULL);
 
     if (SUCCEEDED(c->super.iret))
@@ -423,10 +448,10 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetColorContexts(IWICBitmapFrameDecod
         IWICColorContext **ppIColorContexts, UINT *pcActualCount)
 {
     struct qemu_WICBitmapFrameDecode_GetColorContexts call;
-    struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_GETCOLORCONTEXTS);
-    call.iface = (ULONG_PTR)decoder;
+    call.iface = (ULONG_PTR)frame;
     call.cCount = cCount;
     call.ppIColorContexts = (ULONG_PTR)ppIColorContexts;
     call.pcActualCount = (ULONG_PTR)pcActualCount;
@@ -441,13 +466,13 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetColorContexts(IWICBitmapFrameDecod
 void qemu_WICBitmapFrameDecode_GetColorContexts(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_GetColorContexts *c = (struct qemu_WICBitmapFrameDecode_GetColorContexts *)call;
-    struct qemu_wic_decoder *decoder;
+    struct qemu_wic_frame_decode *frame;
     IWICColorContext *host;
 
     WINE_TRACE("\n");
-    decoder = QEMU_G2H(c->iface);
+    frame = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_GetColorContexts(decoder->host_frame, c->cCount,
+    c->super.iret = IWICBitmapFrameDecode_GetColorContexts(frame->host, c->cCount,
             c->ppIColorContexts ? &host : NULL, QEMU_G2H(c->pcActualCount));
 
     if (SUCCEEDED(c->super.iret))
@@ -472,10 +497,10 @@ struct qemu_WICBitmapFrameDecode_GetThumbnail
 static HRESULT WINAPI WICBitmapFrameDecode_GetThumbnail(IWICBitmapFrameDecode *iface, IWICBitmapSource **ppIThumbnail)
 {
     struct qemu_WICBitmapFrameDecode_GetThumbnail call;
-    struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_GETTHUMBNAIL);
-    call.iface = (ULONG_PTR)decoder;
+    call.iface = (ULONG_PTR)frame;
     call.ppIThumbnail = (ULONG_PTR)ppIThumbnail;
 
     qemu_syscall(&call.super);
@@ -488,13 +513,13 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetThumbnail(IWICBitmapFrameDecode *i
 void qemu_WICBitmapFrameDecode_GetThumbnail(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_GetThumbnail *c = (struct qemu_WICBitmapFrameDecode_GetThumbnail *)call;
-    struct qemu_wic_decoder *decoder;
+    struct qemu_wic_frame_decode *frame;
     IWICBitmapSource *host;
 
     WINE_TRACE("\n");
-    decoder = QEMU_G2H(c->iface);
+    frame = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_GetThumbnail(decoder->host_frame, c->ppIThumbnail ? &host : NULL);
+    c->super.iret = IWICBitmapFrameDecode_GetThumbnail(frame->host, c->ppIThumbnail ? &host : NULL);
 
     if (SUCCEEDED(c->super.iret))
     {
@@ -552,7 +577,7 @@ void qemu_WICBitmapDecoder_QueryInterface(struct qemu_syscall *call)
     WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_QueryInterface(decoder->host_bitmap, QEMU_G2H(c->iid), (void **)&obj);
+    c->super.iret = IWICBitmapDecoder_QueryInterface(decoder->host, QEMU_G2H(c->iid), (void **)&obj);
     if (SUCCEEDED(c->super.iret))
     {
         WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
@@ -594,7 +619,7 @@ void qemu_WICBitmapDecoder_AddRef(struct qemu_syscall *call)
     WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_AddRef(decoder->host_bitmap);
+    c->super.iret = IWICBitmapDecoder_AddRef(decoder->host);
 }
 
 #endif
@@ -622,6 +647,19 @@ static ULONG WINAPI WICBitmapDecoder_Release(IWICBitmapDecoder *iface)
 
 #else
 
+static ULONG qemu_WICBitmapDecoder_Release_internal(struct qemu_wic_decoder *decoder)
+{
+    ULONG ref = IWICBitmapDecoder_Release(decoder->host);
+
+    if (!ref)
+    {
+        WINE_TRACE("Destroying decoder wrapper %p for host decoder %p.\n", decoder, decoder->host);
+        HeapFree(GetProcessHeap(), 0, decoder);
+    }
+
+    return ref;
+}
+
 void qemu_WICBitmapDecoder_Release(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoder_Release *c = (struct qemu_WICBitmapDecoder_Release *)call;
@@ -630,12 +668,7 @@ void qemu_WICBitmapDecoder_Release(struct qemu_syscall *call)
     WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_Release(decoder->host_bitmap);
-    if (!c->super.iret)
-    {
-        WINE_TRACE("Destroying decoder wrapper %p for host decoder %p.\n", decoder, decoder->host_bitmap);
-        HeapFree(GetProcessHeap(), 0, decoder);
-    }
+    c->super.iret = qemu_WICBitmapDecoder_Release_internal(decoder);
 }
 
 #endif
@@ -677,7 +710,7 @@ void qemu_WICBitmapDecoder_QueryCapability(struct qemu_syscall *call)
     decoder = QEMU_G2H(c->iface);
     stream = istream_wrapper_create(c->stream);
 
-    c->super.iret = IWICBitmapDecoder_QueryCapability(decoder->host_bitmap, istream_wrapper_host_iface(stream),
+    c->super.iret = IWICBitmapDecoder_QueryCapability(decoder->host, istream_wrapper_host_iface(stream),
             QEMU_G2H(c->capability));
 
     if (stream)
@@ -724,7 +757,7 @@ void qemu_WICBitmapDecoder_Initialize(struct qemu_syscall *call)
     decoder = QEMU_G2H(c->iface);
     stream = istream_wrapper_create(c->pIStream);
 
-    c->super.iret = IWICBitmapDecoder_Initialize(decoder->host_bitmap, istream_wrapper_host_iface(stream),
+    c->super.iret = IWICBitmapDecoder_Initialize(decoder->host, istream_wrapper_host_iface(stream),
             c->cacheOptions);
 
     if (stream)
@@ -766,7 +799,7 @@ void qemu_WICBitmapDecoder_GetContainerFormat(struct qemu_syscall *call)
     WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetContainerFormat(decoder->host_bitmap, QEMU_G2H(c->pguidContainerFormat));
+    c->super.iret = IWICBitmapDecoder_GetContainerFormat(decoder->host, QEMU_G2H(c->pguidContainerFormat));
 }
 
 #endif
@@ -804,7 +837,7 @@ void qemu_WICBitmapDecoder_GetDecoderInfo(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetDecoderInfo(decoder->host_bitmap, QEMU_G2H(c->ppIDecoderInfo));
+    c->super.iret = IWICBitmapDecoder_GetDecoderInfo(decoder->host, QEMU_G2H(c->ppIDecoderInfo));
 }
 
 #endif
@@ -845,7 +878,7 @@ void qemu_WICBitmapDecoder_CopyPalette(struct qemu_syscall *call)
     decoder = QEMU_G2H(c->iface);
     palette = QEMU_G2H(c->pIPalette);
 
-    c->super.iret = IWICBitmapDecoder_CopyPalette(decoder->host_bitmap, palette ? palette->host : NULL);
+    c->super.iret = IWICBitmapDecoder_CopyPalette(decoder->host, palette ? palette->host : NULL);
 }
 
 #endif
@@ -886,7 +919,7 @@ void qemu_WICBitmapDecoder_GetMetadataQueryReader(struct qemu_syscall *call)
     WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetMetadataQueryReader(decoder->host_bitmap,
+    c->super.iret = IWICBitmapDecoder_GetMetadataQueryReader(decoder->host,
             c->ppIMetadataQueryReader ? &host : NULL);
 
     if (SUCCEEDED(c->super.iret))
@@ -933,7 +966,7 @@ void qemu_WICBitmapDecoder_GetPreview(struct qemu_syscall *call)
     WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetPreview(decoder->host_bitmap, c->ppIBitmapSource ? &host : NULL);
+    c->super.iret = IWICBitmapDecoder_GetPreview(decoder->host, c->ppIBitmapSource ? &host : NULL);
     if (SUCCEEDED(c->super.iret))
     {
         WINE_FIXME("Host GetColorContexts succeeded, write a wrapper.\n");
@@ -983,7 +1016,7 @@ void qemu_WICBitmapDecoder_GetColorContexts(struct qemu_syscall *call)
     WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetColorContexts(decoder->host_bitmap, c->cCount,
+    c->super.iret = IWICBitmapDecoder_GetColorContexts(decoder->host, c->cCount,
             c->ppIColorContexts ? & host : NULL, QEMU_G2H(c->pcActualCount));
 
     if (SUCCEEDED(c->super.iret))
@@ -1030,7 +1063,7 @@ void qemu_WICBitmapDecoder_GetThumbnail(struct qemu_syscall *call)
     WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetThumbnail(decoder->host_bitmap, c->ppIThumbnail ? &host : NULL);
+    c->super.iret = IWICBitmapDecoder_GetThumbnail(decoder->host, c->ppIThumbnail ? &host : NULL);
 
     if (SUCCEEDED(c->super.iret))
     {
@@ -1075,7 +1108,7 @@ void qemu_WICBitmapDecoder_GetFrameCount(struct qemu_syscall *call)
     WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetFrameCount(decoder->host_bitmap, QEMU_G2H(c->pCount));
+    c->super.iret = IWICBitmapDecoder_GetFrameCount(decoder->host, QEMU_G2H(c->pCount));
 }
 
 #endif
@@ -1095,6 +1128,7 @@ static HRESULT WINAPI WICBitmapDecoder_GetFrame(IWICBitmapDecoder *iface, UINT i
 {
     struct qemu_WICBitmapDecoder_GetFrame call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapDecoder(iface);
+    struct qemu_wic_frame_decode *frame;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPDECODER_GETFRAME);
     call.iface = (ULONG_PTR)decoder;
@@ -1103,8 +1137,12 @@ static HRESULT WINAPI WICBitmapDecoder_GetFrame(IWICBitmapDecoder *iface, UINT i
 
     qemu_syscall(&call.super);
 
-    if (SUCCEEDED(call.super.iret))
-        *ppIBitmapFrame = &decoder->IWICBitmapFrameDecode_iface;
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    frame = (struct qemu_wic_frame_decode *)(ULONG_PTR)call.ppIBitmapFrame;
+    frame->IWICBitmapFrameDecode_iface.lpVtbl = &WICBitmapFrameDecode_FrameVtbl;
+    *ppIBitmapFrame = &frame->IWICBitmapFrameDecode_iface;
 
     return call.super.iret;
 }
@@ -1116,33 +1154,56 @@ void qemu_WICBitmapDecoder_GetFrame(struct qemu_syscall *call)
     struct qemu_WICBitmapDecoder_GetFrame *c = (struct qemu_WICBitmapDecoder_GetFrame *)call;
     struct qemu_wic_decoder *decoder;
     IWICBitmapFrameDecode *host, *host2;
+    struct qemu_wic_frame_decode *frame;
+    BOOL multi_obj;
 
     WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     /* Pass the reference to the app. */
-    c->super.iret = IWICBitmapDecoder_GetFrame(decoder->host_bitmap, c->index, 
+    c->super.iret = IWICBitmapDecoder_GetFrame(decoder->host, c->index, 
             c->ppIBitmapFrame ? &host : NULL);
 
     if (SUCCEEDED(c->super.iret))
     {
-        /* I based this off BmpDecoder, which probably wasn't the best idea. Gif supports more than one frame.
+        /* Some decoders (bitmap) always return the same frame interface when asked for the same frame number,
+         * others create a new interface all the time (gif). Note that the gif decoder will happily create a
+         * new interface when decoding a single-frame gif, so the count is a poor way to figure out what is
+         * what.
          *
-         * However, the bmp decoder returns the same interface on repeated calls to GetFrame for frame 0, while
-         * the gif decoder doesn't do that. This is something we may need to replicate. */
-        if (!c->index)
+         * Because we rely on the host refcount to free our own objects, we have to be careful here. When we
+         * have single-frame object and use multiple wrappers we won't free our wrappers properly. A single
+         * wrapper for multiple objects doesn't work anyway. */
+        if (c->index)
         {
-            c->super.iret = IWICBitmapDecoder_GetFrame(decoder->host_bitmap, 0, &host2);
-            if (host != host2)
-                WINE_FIXME("Different frames returned.\n");
-
-            decoder->host_frame = host;
-            IWICBitmapFrameDecode_Release(host2);
+            multi_obj = TRUE;
         }
         else
         {
-            WINE_FIXME("Only one frame supported so far.\n");
+            IWICBitmapDecoder_GetFrame(decoder->host, 0, &host2);
+            multi_obj = host != host2;
+            IWICBitmapFrameDecode_Release(host2);
         }
+
+        if (multi_obj)
+        {
+            frame = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*frame));
+            if (!frame)
+            {
+                WINE_WARN("Out of memory\n");
+                IWICBitmapFrameDecode_Release(host);
+                c->super.iret = E_OUTOFMEMORY;
+                return;
+            }
+            frame->decoder = decoder;
+        }
+        else
+        {
+            frame = &decoder->static_frame;
+        }
+
+        frame->host = host;
+        c->ppIBitmapFrame = QEMU_H2G(frame);
     }
 }
 
@@ -1175,7 +1236,7 @@ static const IWICBitmapDecoderVtbl WICBitmapDecoder_Vtbl =
     WICBitmapDecoder_GetFrame
 };
 
-static const IWICBitmapFrameDecodeVtbl WICBitmapFrameDecode_FrameVtbl =
+const IWICBitmapFrameDecodeVtbl WICBitmapFrameDecode_FrameVtbl =
 {
     WICBitmapFrameDecode_QueryInterface,
     WICBitmapFrameDecode_AddRef,
@@ -1209,7 +1270,6 @@ HRESULT Decoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 
     decoder = (struct qemu_wic_decoder *)(ULONG_PTR)call.decoder;
     decoder->IWICBitmapDecoder_iface.lpVtbl = &WICBitmapDecoder_Vtbl;
-    decoder->IWICBitmapFrameDecode_iface.lpVtbl = &WICBitmapFrameDecode_FrameVtbl;
 
     hr = IWICBitmapDecoder_QueryInterface(&decoder->IWICBitmapDecoder_iface, iid, obj);
     IWICBitmapDecoder_Release(&decoder->IWICBitmapDecoder_iface);
@@ -1242,7 +1302,7 @@ void qemu_WICBitmapDecoder_create_host(struct qemu_syscall *call)
     if (FAILED(hr))
         WINE_ERR("Cannot create class factory\n");
 
-    hr = IClassFactory_CreateInstance(host_factory, NULL, &IID_IWICBitmapDecoder, (void **)&decoder->host_bitmap);
+    hr = IClassFactory_CreateInstance(host_factory, NULL, &IID_IWICBitmapDecoder, (void **)&decoder->host);
     if (FAILED(hr))
     {
         WINE_WARN("Failed to create an IID_IWICBitmapDecoder object.\n");

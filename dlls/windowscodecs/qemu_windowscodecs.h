@@ -269,15 +269,24 @@ struct qemu_wic_encode
     /* Put some stream wrapper vtable here */
 };
 
-struct qemu_wic_decoder
+struct qemu_wic_frame_decode
 {
-    /* Host fields */
-    IWICBitmapDecoder IWICBitmapDecoder_iface;
+    /* Guest fields */
     IWICBitmapFrameDecode IWICBitmapFrameDecode_iface;
 
+    /* Host fields */
+    IWICBitmapFrameDecode *host;
+    struct qemu_wic_decoder *decoder;
+};
+
+struct qemu_wic_decoder
+{
     /* Guest fields */
-    IWICBitmapDecoder *host_bitmap;
-    IWICBitmapFrameDecode *host_frame;
+    IWICBitmapDecoder IWICBitmapDecoder_iface;
+
+    /* Host fields */
+    IWICBitmapDecoder *host;
+    struct qemu_wic_frame_decode static_frame;
 };
 
 struct qemu_wic_palette
@@ -330,6 +339,7 @@ struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
 /* For detection of our own IWICBitmapSource objects. */
 const IWICBitmapClipperVtbl WICBitmapClipper_Vtbl;
 const IWICBitmapVtbl WICBitmap_Vtbl;
+const IWICBitmapFrameDecodeVtbl WICBitmapFrameDecode_FrameVtbl;
 
 static inline struct qemu_wic_bitmap *impl_from_IWICBitmap(IWICBitmap *iface)
 {
