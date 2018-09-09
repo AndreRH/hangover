@@ -185,7 +185,7 @@ void qemu_WICBitmapFrameDecode_GetSize(struct qemu_syscall *call)
     struct qemu_WICBitmapFrameDecode_GetSize *c = (struct qemu_WICBitmapFrameDecode_GetSize *)call;
     struct qemu_wic_decoder *decoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapFrameDecode_GetSize(decoder->host_frame, QEMU_G2H(c->puiWidth), QEMU_G2H(c->puiHeight));
@@ -224,7 +224,7 @@ void qemu_WICBitmapFrameDecode_GetPixelFormat(struct qemu_syscall *call)
     struct qemu_WICBitmapFrameDecode_GetPixelFormat *c = (struct qemu_WICBitmapFrameDecode_GetPixelFormat *)call;
     struct qemu_wic_decoder *decoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapFrameDecode_GetPixelFormat(decoder->host_frame, QEMU_G2H(c->pPixelFormat));
@@ -264,7 +264,7 @@ void qemu_WICBitmapFrameDecode_GetResolution(struct qemu_syscall *call)
     struct qemu_WICBitmapFrameDecode_GetResolution *c = (struct qemu_WICBitmapFrameDecode_GetResolution *)call;
     struct qemu_wic_decoder *decoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapFrameDecode_GetResolution(decoder->host_frame, QEMU_G2H(c->pDpiX), QEMU_G2H(c->pDpiY));
@@ -347,7 +347,7 @@ void qemu_WICBitmapFrameDecode_CopyPixels(struct qemu_syscall *call)
     struct qemu_WICBitmapFrameDecode_CopyPixels *c = (struct qemu_WICBitmapFrameDecode_CopyPixels *)call;
     struct qemu_wic_decoder *decoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapFrameDecode_CopyPixels(decoder->host_frame, QEMU_G2H(c->prc), c->cbStride,
