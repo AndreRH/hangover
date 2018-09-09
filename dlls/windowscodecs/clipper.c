@@ -70,7 +70,7 @@ void qemu_WICBitmapClipper_QueryInterface(struct qemu_syscall *call)
     struct qemu_wic_clipper *clipper;
 
     WINE_FIXME("Unverified!\n");
-    clipper = QEMU_G2H(clipper);
+    clipper = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapClipper_QueryInterface(clipper->host, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
 }
@@ -106,7 +106,7 @@ void qemu_WICBitmapClipper_AddRef(struct qemu_syscall *call)
     struct qemu_wic_clipper *clipper;
 
     WINE_TRACE("\n");
-    clipper = QEMU_G2H(clipper);
+    clipper = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapClipper_AddRef(clipper->host);
 }
@@ -142,7 +142,7 @@ void qemu_WICBitmapClipper_Release(struct qemu_syscall *call)
     struct qemu_wic_clipper *clipper;
 
     WINE_TRACE("\n");
-    clipper = QEMU_G2H(clipper);
+    clipper = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapClipper_Release(clipper->host);
     if (!c->super.iret)
@@ -187,7 +187,7 @@ void qemu_WICBitmapClipper_GetSize(struct qemu_syscall *call)
     struct qemu_wic_clipper *clipper;
 
     WINE_TRACE("\n");
-    clipper = QEMU_G2H(clipper);
+    clipper = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapClipper_GetSize(clipper->host, QEMU_G2H(c->width), QEMU_G2H(c->height));
 }
@@ -225,7 +225,7 @@ void qemu_WICBitmapClipper_GetPixelFormat(struct qemu_syscall *call)
     struct qemu_wic_clipper *clipper;
 
     WINE_TRACE("\n");
-    clipper = QEMU_G2H(clipper);
+    clipper = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapClipper_GetPixelFormat(clipper->host, QEMU_G2H(c->format));
 }
@@ -265,7 +265,7 @@ void qemu_WICBitmapClipper_GetResolution(struct qemu_syscall *call)
     struct qemu_wic_clipper *clipper;
 
     WINE_TRACE("\n");
-    clipper = QEMU_G2H(clipper);
+    clipper = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapClipper_GetResolution(clipper->host, QEMU_G2H(c->dpiX), QEMU_G2H(c->dpiY));
 }
@@ -303,7 +303,7 @@ void qemu_WICBitmapClipper_CopyPalette(struct qemu_syscall *call)
     struct qemu_wic_clipper *clipper;
 
     WINE_FIXME("Unverified!\n");
-    clipper = QEMU_G2H(clipper);
+    clipper = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapClipper_CopyPalette(clipper->host, QEMU_G2H(c->palette));
 }
@@ -349,7 +349,7 @@ void qemu_WICBitmapClipper_CopyPixels(struct qemu_syscall *call)
 
     /* WICRect has the same size in 32 and 64 bit. */
     WINE_TRACE("\n");
-    clipper = QEMU_G2H(clipper);
+    clipper = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapClipper_CopyPixels(clipper->host, QEMU_G2H(c->rc), c->stride, c->buffer_size,
             QEMU_G2H(c->buffer));
@@ -389,11 +389,35 @@ void qemu_WICBitmapClipper_Initialize(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapClipper_Initialize *c = (struct qemu_WICBitmapClipper_Initialize *)call;
     struct qemu_wic_clipper *clipper;
+    struct qemu_bitmap_source *source_wrapper = NULL;
+    IWICBitmapSource *host_source;
 
-    WINE_FIXME("Unverified!\n");
-    clipper = QEMU_G2H(clipper);
+    WINE_TRACE("\n");
+    clipper = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapClipper_Initialize(clipper->host, QEMU_G2H(c->source), QEMU_G2H(c->rc));
+    /* Note that source could point to one of our bitmaps. We don't care right now, but we could detect
+     * this situation and avoid jumping back and forth between host and guest. */
+    if (c->source)
+    {
+        source_wrapper = bitmap_source_wrapper_create(c->source);
+        if (!source_wrapper)
+        {
+            WINE_WARN("Out of memory.\n");
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+        host_source = &source_wrapper->IWICBitmapSource_iface;
+    }
+    else
+    {
+        host_source = NULL;
+    }
+
+    c->super.iret = IWICBitmapClipper_Initialize(clipper->host, host_source, QEMU_G2H(c->rc));
+
+    /* Release our ref, the host clipper has its own if it wants one. */
+    if (host_source)
+        IWICBitmapSource_Release(host_source);
 }
 
 #endif
