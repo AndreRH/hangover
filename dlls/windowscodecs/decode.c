@@ -285,10 +285,11 @@ static HRESULT WINAPI WICBitmapFrameDecode_CopyPalette(IWICBitmapFrameDecode *if
 {
     struct qemu_WICBitmapFrameDecode_CopyPalette call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_palette *palette = unsafe_impl_from_IWICPalette(pIPalette);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_COPYPALETTE);
     call.iface = (ULONG_PTR)decoder;
-    call.pIPalette = (ULONG_PTR)pIPalette;
+    call.pIPalette = (ULONG_PTR)palette;
 
     qemu_syscall(&call.super);
 
@@ -301,11 +302,13 @@ void qemu_WICBitmapFrameDecode_CopyPalette(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_CopyPalette *c = (struct qemu_WICBitmapFrameDecode_CopyPalette *)call;
     struct qemu_wic_decoder *decoder;
+    struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
+    palette = QEMU_G2H(c->pIPalette);
 
-    c->super.iret = IWICBitmapFrameDecode_CopyPalette(decoder->host_frame, QEMU_G2H(c->pIPalette));
+    c->super.iret = IWICBitmapFrameDecode_CopyPalette(decoder->host_frame, palette ? palette->host : NULL);
 }
 
 #endif
@@ -819,10 +822,11 @@ static HRESULT WINAPI WICBitmapDecoder_CopyPalette(IWICBitmapDecoder *iface, IWI
 {
     struct qemu_WICBitmapDecoder_CopyPalette call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapDecoder(iface);
+    struct qemu_wic_palette *palette = unsafe_impl_from_IWICPalette(pIPalette);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPDECODER_COPYPALETTE);
     call.iface = (ULONG_PTR)decoder;
-    call.pIPalette = (ULONG_PTR)pIPalette;
+    call.pIPalette = (ULONG_PTR)palette;
 
     qemu_syscall(&call.super);
 
@@ -835,11 +839,13 @@ void qemu_WICBitmapDecoder_CopyPalette(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoder_CopyPalette *c = (struct qemu_WICBitmapDecoder_CopyPalette *)call;
     struct qemu_wic_decoder *decoder;
+    struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
+    palette = QEMU_G2H(c->pIPalette);
 
-    c->super.iret = IWICBitmapDecoder_CopyPalette(decoder->host_bitmap, QEMU_G2H(c->pIPalette));
+    c->super.iret = IWICBitmapDecoder_CopyPalette(decoder->host_bitmap, palette ? palette->host : NULL);
 }
 
 #endif
