@@ -25,7 +25,6 @@ struct istream_wrapper;
 
 struct istream_wrapper *istream_wrapper_create(uint64_t guest_iface);
 struct istream_wrapper *istream_wrapper_from_IStream(IStream *iface);
-void istream_wrapper_destroy(struct istream_wrapper *wrapper);
 uint64_t istream_wrapper_guest_iface(struct istream_wrapper *wrapper);
 IStream * istream_wrapper_host_iface(struct istream_wrapper *wrapper);
 

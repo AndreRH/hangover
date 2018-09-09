@@ -34,6 +34,8 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_wic);
 
+#include "istream_wrapper_impl.h"
+
 struct qemu_dll_init
 {
     struct qemu_syscall super;
@@ -45,6 +47,7 @@ struct qemu_dll_init
     uint64_t guest_bitmap_source_copypixels;
     uint64_t guest_bitmap_source_getresolution;
     uint64_t guest_bitmap_source_copypalette;
+    struct istream_wrapper_funcs istream;
 };
 
 struct guest_bitmap_source_getsize
@@ -138,6 +141,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
         call.guest_bitmap_source_copypixels = (ULONG_PTR)guest_bitmap_source_copypixels;
         call.guest_bitmap_source_getresolution = (ULONG_PTR)guest_bitmap_source_getresolution;
         call.guest_bitmap_source_copypalette = (ULONG_PTR)guest_bitmap_source_copypalette;
+        istream_wrapper_get_funcs(&call.istream);
         qemu_syscall(&call.super);
     }
     else if (reason == DLL_PROCESS_DETACH)
@@ -192,6 +196,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
             guest_bitmap_source_copypixels = c->guest_bitmap_source_copypixels;
             guest_bitmap_source_getresolution = c->guest_bitmap_source_getresolution;
             guest_bitmap_source_copypalette = c->guest_bitmap_source_copypalette;
+            istream_wrapper_set_funcs(&c->istream);
             break;
 
         case DLL_PROCESS_DETACH:

@@ -20,6 +20,8 @@
 #ifndef QEMU_WINDOWSCODECS_H
 #define QEMU_WINDOWSCODECS_H
 
+#include "istream_wrapper.h"
+
 enum windowscodecs_calls
 {
     CALL_COMPONENTFACTORY_ADDREF = 0,

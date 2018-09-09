@@ -22,10 +22,13 @@ struct istream_wrapper
 {
     IStream IStream_iface;
     uint64_t guest_iface;
+    LONG ref;
 };
 
 struct istream_wrapper_funcs
 {
+    uint64_t addref;
+    uint64_t release;
     uint64_t seek;
     uint64_t read;
     uint64_t write;
@@ -44,6 +47,16 @@ struct istream_wrapper_ReadWrite
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static ULONG __fastcall istream_wrapper_AddRef(IStream *stream)
+{
+    return stream->lpVtbl->AddRef(stream);
+}
+
+static ULONG __fastcall istream_wrapper_Release(IStream *stream)
+{
+    return stream->lpVtbl->Release(stream);
+}
 
 static HRESULT __fastcall istream_wrapper_Seek(struct istream_wrapper_Seek *call)
 {
@@ -67,6 +80,8 @@ static HRESULT __fastcall istream_wrapper_Write(struct istream_wrapper_ReadWrite
 
 static void istream_wrapper_get_funcs(struct istream_wrapper_funcs *funcs)
 {
+    funcs->addref = (ULONG_PTR)istream_wrapper_AddRef;
+    funcs->release = (ULONG_PTR)istream_wrapper_Release;
     funcs->seek = (ULONG_PTR)istream_wrapper_Seek;
     funcs->read = (ULONG_PTR)istream_wrapper_Read;
     funcs->write = (ULONG_PTR)istream_wrapper_Write;
@@ -74,6 +89,8 @@ static void istream_wrapper_get_funcs(struct istream_wrapper_funcs *funcs)
 
 #else
 
+static uint64_t istream_wrapper_AddRef_guest;
+static uint64_t istream_wrapper_Release_guest;
 static uint64_t istream_wrapper_Seek_guest;
 static uint64_t istream_wrapper_Read_guest;
 static uint64_t istream_wrapper_Write_guest;
@@ -82,12 +99,16 @@ static void istream_wrapper_set_funcs(const struct istream_wrapper_funcs *funcs)
 {
     if (funcs)
     {
+        istream_wrapper_AddRef_guest = funcs->addref;
+        istream_wrapper_Release_guest = funcs->release;
         istream_wrapper_Seek_guest = funcs->seek;
         istream_wrapper_Read_guest = funcs->read;
         istream_wrapper_Write_guest = funcs->write;
     }
     else
     {
+        istream_wrapper_AddRef_guest = 0;
+        istream_wrapper_Release_guest = 0;
         istream_wrapper_Seek_guest = 0;
         istream_wrapper_Read_guest = 0;
         istream_wrapper_Write_guest = 0;
@@ -108,14 +129,30 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_QueryInterface(IStream *iface, 
 
 static ULONG STDMETHODCALLTYPE istream_wrapper_AddRef(IStream *iface)
 {
-    WINE_FIXME("Not implemented.\n");
-    return 2;
+    struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
+    ULONG ref = InterlockedIncrement(&stream->ref);
+
+    WINE_TRACE("(%p) refcount=%u\n", stream, ref);
+
+    return ref;
 }
 
 static ULONG STDMETHODCALLTYPE istream_wrapper_Release(IStream *iface)
 {
-    WINE_FIXME("Not implemented.\n");
-    return 1;
+    struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
+    ULONG ref = InterlockedDecrement(&stream->ref), ref2;
+
+    WINE_TRACE("(%p) refcount=%u\n", stream, ref);
+    if (!ref)
+    {
+        WINE_TRACE("Calling guest Release %p.\n", (void *)istream_wrapper_Release_guest);
+        ref2 = qemu_ops->qemu_execute(QEMU_G2H(istream_wrapper_Release_guest), istream_wrapper_guest_iface(stream));
+        WINE_TRACE("Guest Release returned %u.\n", ref2);
+
+        HeapFree(GetProcessHeap(), 0, stream);
+    }
+
+    return ref;
 }
 
 static HRESULT STDMETHODCALLTYPE istream_wrapper_Read(IStream *iface, void *pv, ULONG cb,
@@ -260,6 +297,7 @@ static const IStreamVtbl istream_wrapper_Vtbl =
 struct istream_wrapper *istream_wrapper_create(uint64_t guest_iface)
 {
     struct istream_wrapper *ret;
+    ULONG ref;
 
     if (!guest_iface)
         return NULL;
@@ -268,15 +306,15 @@ struct istream_wrapper *istream_wrapper_create(uint64_t guest_iface)
     if (!ret)
         return NULL;
 
+    WINE_TRACE("Calling guest AddRef %p.\n", (void *)istream_wrapper_AddRef_guest);
+    ref = qemu_ops->qemu_execute(QEMU_G2H(istream_wrapper_AddRef_guest), guest_iface);
+    WINE_TRACE("Guest AddRef returned %u.\n", ref);
+
+    ret->ref = 1;
     ret->guest_iface = guest_iface;
     ret->IStream_iface.lpVtbl = &istream_wrapper_Vtbl;
 
     return ret;
-}
-
-void istream_wrapper_destroy(struct istream_wrapper *wrapper)
-{
-    HeapFree(GetProcessHeap(), 0, wrapper);
 }
 
 uint64_t istream_wrapper_guest_iface(struct istream_wrapper *wrapper)
