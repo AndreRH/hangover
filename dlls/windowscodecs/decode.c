@@ -1251,6 +1251,11 @@ const IWICBitmapFrameDecodeVtbl WICBitmapFrameDecode_FrameVtbl =
     WICBitmapFrameDecode_GetThumbnail
 };
 
+void WICBitmapDecoder_init_guest(struct qemu_wic_decoder *decoder)
+{
+    decoder->IWICBitmapDecoder_iface.lpVtbl = &WICBitmapDecoder_Vtbl;
+}
+
 HRESULT Decoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 {
     struct qemu_WICBitmapDecoder_create_host call;
@@ -1269,7 +1274,7 @@ HRESULT Decoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
         return call.super.iret;
 
     decoder = (struct qemu_wic_decoder *)(ULONG_PTR)call.decoder;
-    decoder->IWICBitmapDecoder_iface.lpVtbl = &WICBitmapDecoder_Vtbl;
+    WICBitmapDecoder_init_guest(decoder);
 
     hr = IWICBitmapDecoder_QueryInterface(&decoder->IWICBitmapDecoder_iface, iid, obj);
     IWICBitmapDecoder_Release(&decoder->IWICBitmapDecoder_iface);
@@ -1279,6 +1284,23 @@ HRESULT Decoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 
 #else
 
+struct qemu_wic_decoder *WICBitmapDecoder_create_host(IWICBitmapDecoder *host)
+{
+    struct qemu_wic_decoder *ret;
+    HRESULT hr;
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+    {
+        WINE_WARN("Out of memory\n");
+        return NULL;
+    }
+
+    ret->host = host;
+
+    return ret;
+}
+
 void qemu_WICBitmapDecoder_create_host(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoder_create_host *c = (struct qemu_WICBitmapDecoder_create_host *)call;
@@ -1287,13 +1309,7 @@ void qemu_WICBitmapDecoder_create_host(struct qemu_syscall *call)
     HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID riid, void **obj);
     IClassFactory *host_factory;
     HRESULT hr;
-
-    decoder = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*decoder));
-    if (!decoder)
-    {
-        c->super.iret = E_OUTOFMEMORY;
-        return;
-    }
+    IWICBitmapDecoder *host;
 
     lib = GetModuleHandleA("windowscodecs");
     p_DllGetClassObject = (void *)GetProcAddress(lib, "DllGetClassObject");
@@ -1302,14 +1318,21 @@ void qemu_WICBitmapDecoder_create_host(struct qemu_syscall *call)
     if (FAILED(hr))
         WINE_ERR("Cannot create class factory\n");
 
-    hr = IClassFactory_CreateInstance(host_factory, NULL, &IID_IWICBitmapDecoder, (void **)&decoder->host);
+    hr = IClassFactory_CreateInstance(host_factory, NULL, &IID_IWICBitmapDecoder, (void **)&host);
+    IClassFactory_Release(host_factory);
     if (FAILED(hr))
     {
         WINE_WARN("Failed to create an IID_IWICBitmapDecoder object.\n");
-        HeapFree(GetProcessHeap(), 0, decoder);
-        decoder = NULL;
+        c->super.iret = hr;
+        return;
     }
-    IClassFactory_Release(host_factory);
+
+    decoder = WICBitmapDecoder_create_host(host);
+    if (!decoder)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
 
     c->decoder = QEMU_H2G(decoder);
     c->super.iret = hr;

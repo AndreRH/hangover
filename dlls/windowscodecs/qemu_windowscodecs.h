@@ -333,6 +333,7 @@ HRESULT ComponentFactory_CreateInstance(const CLSID *clsid, const IID *iid, void
 IWICBitmap *WICBitmap_init_guest(struct qemu_wic_bitmap *bitmap);
 void WICPalette_init_guest(struct qemu_wic_palette *palette);
 void WICBitmapClipper_init_guest(struct qemu_wic_clipper *clipper);
+void WICBitmapDecoder_init_guest(struct qemu_wic_decoder *decoder);
 
 struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
 
@@ -503,6 +504,7 @@ void qemu_WICPalette_Release(struct qemu_syscall *call);
 struct qemu_wic_bitmap *WICBitmap_create_host(IWICBitmap *host);
 struct qemu_wic_palette *WICPalette_create_host(IWICPalette *host);
 struct qemu_wic_clipper *WICBitmapClipper_create_host(IWICBitmapClipper *host);
+struct qemu_wic_decoder *WICBitmapDecoder_create_host(IWICBitmapDecoder *host);
 
 ULONG qemu_WICBitmap_Release_internal(struct qemu_wic_bitmap *bitmap);
 

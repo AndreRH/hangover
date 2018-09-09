@@ -242,10 +242,12 @@ struct qemu_ComponentFactory_CreateDecoderFromStream
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateDecoderFromStream(IWICComponentFactory *iface, IStream *pIStream, const GUID *pguidVendor, WICDecodeOptions metadataOptions, IWICBitmapDecoder **ppIDecoder)
+static HRESULT WINAPI ComponentFactory_CreateDecoderFromStream(IWICComponentFactory *iface, IStream *pIStream,
+        const GUID *pguidVendor, WICDecodeOptions metadataOptions, IWICBitmapDecoder **ppIDecoder)
 {
     struct qemu_ComponentFactory_CreateDecoderFromStream call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_wic_decoder *decoder;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATEDECODERFROMSTREAM);
     call.iface = (ULONG_PTR)factory;
@@ -255,6 +257,12 @@ static HRESULT WINAPI ComponentFactory_CreateDecoderFromStream(IWICComponentFact
     call.ppIDecoder = (ULONG_PTR)ppIDecoder;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    decoder = (struct qemu_wic_decoder *)(ULONG_PTR)call.ppIDecoder;
+    WICBitmapDecoder_init_guest(decoder);
+    *ppIDecoder = &decoder->IWICBitmapDecoder_iface;
 
     return call.super.iret;
 }
@@ -265,11 +273,29 @@ void qemu_ComponentFactory_CreateDecoderFromStream(struct qemu_syscall *call)
 {
     struct qemu_ComponentFactory_CreateDecoderFromStream *c = (struct qemu_ComponentFactory_CreateDecoderFromStream *)call;
     struct qemu_component_factory *factory;
+    struct istream_wrapper *stream;
+    IWICBitmapDecoder *host;
+    struct qemu_wic_decoder *decoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
+    stream = istream_wrapper_create(c->pIStream);
 
-    c->super.iret = IWICComponentFactory_CreateDecoderFromStream(factory->host, QEMU_G2H(c->pIStream), QEMU_G2H(c->pguidVendor), c->metadataOptions, QEMU_G2H(c->ppIDecoder));
+    c->super.iret = IWICComponentFactory_CreateDecoderFromStream(factory->host, istream_wrapper_host_iface(stream),
+            QEMU_G2H(c->pguidVendor), c->metadataOptions, c->ppIDecoder ? &host : NULL);
+
+    if (stream)
+        IStream_Release(istream_wrapper_host_iface(stream));
+    if (FAILED(c->super.iret))
+        return;
+
+    decoder = WICBitmapDecoder_create_host(host);
+    if (!decoder)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    c->ppIDecoder = QEMU_H2G(decoder);
 }
 
 #endif
@@ -369,10 +395,12 @@ struct qemu_ComponentFactory_CreateDecoder
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateDecoder(IWICComponentFactory *iface, REFGUID guidContainerFormat, const GUID *pguidVendor, IWICBitmapDecoder **ppIDecoder)
+static HRESULT WINAPI ComponentFactory_CreateDecoder(IWICComponentFactory *iface, REFGUID guidContainerFormat,
+        const GUID *pguidVendor, IWICBitmapDecoder **ppIDecoder)
 {
     struct qemu_ComponentFactory_CreateDecoder call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_wic_decoder *decoder;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATEDECODER);
     call.iface = (ULONG_PTR)factory;
@@ -381,6 +409,12 @@ static HRESULT WINAPI ComponentFactory_CreateDecoder(IWICComponentFactory *iface
     call.ppIDecoder = (ULONG_PTR)ppIDecoder;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    decoder = (struct qemu_wic_decoder *)(ULONG_PTR)call.ppIDecoder;
+    WICBitmapDecoder_init_guest(decoder);
+    *ppIDecoder = &decoder->IWICBitmapDecoder_iface;
 
     return call.super.iret;
 }
@@ -391,11 +425,24 @@ void qemu_ComponentFactory_CreateDecoder(struct qemu_syscall *call)
 {
     struct qemu_ComponentFactory_CreateDecoder *c = (struct qemu_ComponentFactory_CreateDecoder *)call;
     struct qemu_component_factory *factory;
+    IWICBitmapDecoder *host;
+    struct qemu_wic_decoder *decoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentFactory_CreateDecoder(factory->host, QEMU_G2H(c->guidContainerFormat), QEMU_G2H(c->pguidVendor), QEMU_G2H(c->ppIDecoder));
+    c->super.iret = IWICComponentFactory_CreateDecoder(factory->host, QEMU_G2H(c->guidContainerFormat),
+            QEMU_G2H(c->pguidVendor), c->ppIDecoder ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    decoder = WICBitmapDecoder_create_host(host);
+    if (!decoder)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    c->ppIDecoder = QEMU_H2G(decoder);
 }
 
 #endif

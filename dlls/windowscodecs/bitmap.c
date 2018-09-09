@@ -1373,4 +1373,5 @@ struct qemu_wic_bitmap *WICBitmap_create_host(IWICBitmap *host)
 
     return ret;
 }
+
 #endif
