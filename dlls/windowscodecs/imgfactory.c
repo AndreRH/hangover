@@ -350,14 +350,17 @@ struct qemu_ComponentFactory_CreateComponentInfo
     uint64_t iface;
     uint64_t clsidComponent;
     uint64_t ppIInfo;
+    uint64_t type;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateComponentInfo(IWICComponentFactory *iface, REFCLSID clsidComponent, IWICComponentInfo **ppIInfo)
+static HRESULT WINAPI ComponentFactory_CreateComponentInfo(IWICComponentFactory *iface, REFCLSID clsidComponent,
+        IWICComponentInfo **ppIInfo)
 {
     struct qemu_ComponentFactory_CreateComponentInfo call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_wic_info *info;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATECOMPONENTINFO);
     call.iface = (ULONG_PTR)factory;
@@ -365,6 +368,12 @@ static HRESULT WINAPI ComponentFactory_CreateComponentInfo(IWICComponentFactory 
     call.ppIInfo = (ULONG_PTR)ppIInfo;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    info = (struct qemu_wic_info *)(ULONG_PTR)call.ppIInfo;
+    WICComponentInfo_init_guest(info, call.type);
+    *ppIInfo = &info->IWICComponentInfo_iface;
 
     return call.super.iret;
 }
@@ -375,11 +384,28 @@ void qemu_ComponentFactory_CreateComponentInfo(struct qemu_syscall *call)
 {
     struct qemu_ComponentFactory_CreateComponentInfo *c = (struct qemu_ComponentFactory_CreateComponentInfo *)call;
     struct qemu_component_factory *factory;
+    IWICComponentInfo *host;
+    struct qemu_wic_info *info;
+    enum component_info_type type;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentFactory_CreateComponentInfo(factory->host, QEMU_G2H(c->clsidComponent), QEMU_G2H(c->ppIInfo));
+    c->super.iret = IWICComponentFactory_CreateComponentInfo(factory->host, QEMU_G2H(c->clsidComponent),
+            c->ppIInfo ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    info = WICComponentInfo_create_host(host, &type);
+    if (!info)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        IWICComponentInfo_Release(host);
+        return;
+    }
+
+    c->type = type;
+    c->ppIInfo = QEMU_H2G(info);
 }
 
 #endif

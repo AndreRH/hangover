@@ -2680,3 +2680,183 @@ void qemu_WICConvertBitmapSource(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+static const IWICBitmapDecoderInfoVtbl WICBitmapDecoderInfo_Vtbl =
+{
+    (void *)WICComponentInfo_QueryInterface,
+    (void *)WICComponentInfo_AddRef,
+    (void *)WICComponentInfo_Release,
+    (void *)WICComponentInfo_GetComponentType,
+    (void *)WICComponentInfo_GetCLSID,
+    (void *)WICComponentInfo_GetSigningStatus,
+    (void *)WICComponentInfo_GetAuthor,
+    (void *)WICComponentInfo_GetVendorGUID,
+    (void *)WICComponentInfo_GetVersion,
+    (void *)WICComponentInfo_GetSpecVersion,
+    (void *)WICComponentInfo_GetFriendlyName,
+    WICBitmapDecoderInfo_GetContainerFormat,
+    WICBitmapDecoderInfo_GetPixelFormats,
+    WICBitmapDecoderInfo_GetColorManagementVersion,
+    WICBitmapDecoderInfo_GetDeviceManufacturer,
+    WICBitmapDecoderInfo_GetDeviceModels,
+    WICBitmapDecoderInfo_GetMimeTypes,
+    WICBitmapDecoderInfo_GetFileExtensions,
+    WICBitmapDecoderInfo_DoesSupportAnimation,
+    WICBitmapDecoderInfo_DoesSupportChromaKey,
+    WICBitmapDecoderInfo_DoesSupportLossless,
+    WICBitmapDecoderInfo_DoesSupportMultiframe,
+    WICBitmapDecoderInfo_MatchesMimeType,
+    WICBitmapDecoderInfo_GetPatterns,
+    WICBitmapDecoderInfo_MatchesPattern,
+    WICBitmapDecoderInfo_CreateInstance
+};
+
+static const IWICBitmapEncoderInfoVtbl WICBitmapEncoderInfo_Vtbl = {
+    (void *)WICComponentInfo_QueryInterface,
+    (void *)WICComponentInfo_AddRef,
+    (void *)WICComponentInfo_Release,
+    (void *)WICComponentInfo_GetComponentType,
+    (void *)WICComponentInfo_GetCLSID,
+    (void *)WICComponentInfo_GetSigningStatus,
+    (void *)WICComponentInfo_GetAuthor,
+    (void *)WICComponentInfo_GetVendorGUID,
+    (void *)WICComponentInfo_GetVersion,
+    (void *)WICComponentInfo_GetSpecVersion,
+    (void *)WICComponentInfo_GetFriendlyName,
+    WICBitmapEncoderInfo_GetContainerFormat,
+    WICBitmapEncoderInfo_GetPixelFormats,
+    WICBitmapEncoderInfo_GetColorManagementVersion,
+    WICBitmapEncoderInfo_GetDeviceManufacturer,
+    WICBitmapEncoderInfo_GetDeviceModels,
+    WICBitmapEncoderInfo_GetMimeTypes,
+    WICBitmapEncoderInfo_GetFileExtensions,
+    WICBitmapEncoderInfo_DoesSupportAnimation,
+    WICBitmapEncoderInfo_DoesSupportChromaKey,
+    WICBitmapEncoderInfo_DoesSupportLossless,
+    WICBitmapEncoderInfo_DoesSupportMultiframe,
+    WICBitmapEncoderInfo_MatchesMimeType,
+    WICBitmapEncoderInfo_CreateInstance
+};
+
+static const IWICFormatConverterInfoVtbl WICFormatConverterInfo_Vtbl =
+{
+    (void *)WICComponentInfo_QueryInterface,
+    (void *)WICComponentInfo_AddRef,
+    (void *)WICComponentInfo_Release,
+    (void *)WICComponentInfo_GetComponentType,
+    (void *)WICComponentInfo_GetCLSID,
+    (void *)WICComponentInfo_GetSigningStatus,
+    (void *)WICComponentInfo_GetAuthor,
+    (void *)WICComponentInfo_GetVendorGUID,
+    (void *)WICComponentInfo_GetVersion,
+    (void *)WICComponentInfo_GetSpecVersion,
+    (void *)WICComponentInfo_GetFriendlyName,
+    WICFormatConverterInfo_GetPixelFormats,
+    WICFormatConverterInfo_CreateInstance
+};
+
+static const IWICPixelFormatInfo2Vtbl WICPixelFormatInfo2_Vtbl = {
+    (void *)WICComponentInfo_QueryInterface,
+    (void *)WICComponentInfo_AddRef,
+    (void *)WICComponentInfo_Release,
+    (void *)WICComponentInfo_GetComponentType,
+    (void *)WICComponentInfo_GetCLSID,
+    (void *)WICComponentInfo_GetSigningStatus,
+    (void *)WICComponentInfo_GetAuthor,
+    (void *)WICComponentInfo_GetVendorGUID,
+    (void *)WICComponentInfo_GetVersion,
+    (void *)WICComponentInfo_GetSpecVersion,
+    (void *)WICComponentInfo_GetFriendlyName,
+    WICPixelFormatInfo2_GetFormatGUID,
+    WICPixelFormatInfo2_GetColorContext,
+    WICPixelFormatInfo2_GetBitsPerPixel,
+    WICPixelFormatInfo2_GetChannelCount,
+    WICPixelFormatInfo2_GetChannelMask,
+    WICPixelFormatInfo2_SupportsTransparency,
+    WICPixelFormatInfo2_GetNumericRepresentation
+};
+
+static const IWICMetadataReaderInfoVtbl WICMetadataReaderInfo_Vtbl = {
+    (void *)WICComponentInfo_QueryInterface,
+    (void *)WICComponentInfo_AddRef,
+    (void *)WICComponentInfo_Release,
+    (void *)WICComponentInfo_GetComponentType,
+    (void *)WICComponentInfo_GetCLSID,
+    (void *)WICComponentInfo_GetSigningStatus,
+    (void *)WICComponentInfo_GetAuthor,
+    (void *)WICComponentInfo_GetVendorGUID,
+    (void *)WICComponentInfo_GetVersion,
+    (void *)WICComponentInfo_GetSpecVersion,
+    (void *)WICComponentInfo_GetFriendlyName,
+    WICMetadataReaderInfo_GetMetadataFormat,
+    WICMetadataReaderInfo_GetContainerFormats,
+    WICMetadataReaderInfo_GetDeviceManufacturer,
+    WICMetadataReaderInfo_GetDeviceModels,
+    WICMetadataReaderInfo_DoesRequireFullStream,
+    WICMetadataReaderInfo_DoesSupportPadding,
+    WICMetadataReaderInfo_DoesRequireFixedSize,
+    WICMetadataReaderInfo_GetPatterns,
+    WICMetadataReaderInfo_MatchesPattern,
+    WICMetadataReaderInfo_CreateInstance
+};
+
+void WICComponentInfo_init_guest(struct qemu_wic_info *info, enum component_info_type type)
+{
+    switch (type)
+    {
+        case BITMAPDECODER_INFO:
+            info->IWICComponentInfo_iface.lpVtbl = (IWICComponentInfoVtbl *)&WICBitmapDecoderInfo_Vtbl;
+            break;
+
+        case BITMAPENCODER_INFO:
+            info->IWICComponentInfo_iface.lpVtbl = (IWICComponentInfoVtbl *)&WICBitmapEncoderInfo_Vtbl;
+            break;
+
+        case CONVERTER_INFO:
+            info->IWICComponentInfo_iface.lpVtbl = (IWICComponentInfoVtbl *)&WICFormatConverterInfo_Vtbl;
+            break;
+
+        case FORMAT_INFO:
+            info->IWICComponentInfo_iface.lpVtbl = (IWICComponentInfoVtbl *)&WICPixelFormatInfo2_Vtbl;
+            break;
+
+        case METADATA_INFO:
+            info->IWICComponentInfo_iface.lpVtbl = (IWICComponentInfoVtbl *)&WICMetadataReaderInfo_Vtbl;
+            break;
+    }
+}
+
+#else
+
+struct qemu_wic_info *WICComponentInfo_create_host(IWICComponentInfo *host, enum component_info_type *type)
+{
+    IUnknown *unk = NULL;
+    struct qemu_wic_info *ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+
+    if (!ret)
+    {
+        WINE_WARN("Out of memory\n");
+        return NULL;
+    }
+
+    if (SUCCEEDED(IWICComponentInfo_QueryInterface(host, &IID_IWICBitmapDecoderInfo, (void **)&unk)))
+        *type = BITMAPDECODER_INFO;
+    else if (SUCCEEDED(IWICComponentInfo_QueryInterface(host, &IID_IWICBitmapEncoderInfo, (void **)&unk)))
+        *type = BITMAPENCODER_INFO;
+    else if (SUCCEEDED(IWICComponentInfo_QueryInterface(host, &IID_IWICFormatConverterInfo, (void **)&unk)))
+        *type = CONVERTER_INFO;
+    else if (SUCCEEDED(IWICComponentInfo_QueryInterface(host, &IID_IWICPixelFormatInfo2, (void **)&unk)))
+        *type = FORMAT_INFO;
+    else if (SUCCEEDED(IWICComponentInfo_QueryInterface(host, &IID_IWICMetadataReaderInfo, (void **)&unk)))
+        *type = METADATA_INFO;
+    else
+        WINE_ERR("Got an unknown component info interface.\n");
+
+    IUnknown_Release(unk);
+
+    ret->host = host;
+    return ret;
+}
+
+#endif
