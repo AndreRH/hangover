@@ -230,7 +230,7 @@ void qemu_WICPalette_InitializeCustom(struct qemu_syscall *call)
     struct qemu_WICPalette_InitializeCustom *c = (struct qemu_WICPalette_InitializeCustom *)call;
     struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IWICPalette_InitializeCustom(palette->host, QEMU_G2H(c->pColors), c->colorCount);
