@@ -21,6 +21,7 @@
 #include <windows.h>
 #include <wincodec.h>
 #include <wincodecsdk.h>
+#include <assert.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -63,7 +64,14 @@ static HRESULT WINAPI WICComponentInfo_QueryInterface(IWICComponentInfo *iface, 
     call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        *ppv = NULL;
+        return call.super.iret;
+    }
 
+    *ppv = iface;
+    /* Already Addref'ed on the host side. */
     return call.super.iret;
 }
 
@@ -73,11 +81,17 @@ void qemu_WICComponentInfo_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_WICComponentInfo_QueryInterface *c = (struct qemu_WICComponentInfo_QueryInterface *)call;
     struct qemu_wic_info *info;
+    IUnknown *unk;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentInfo_QueryInterface(info->host, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
+    c->super.iret = IWICComponentInfo_QueryInterface(info->host, QEMU_G2H(c->iid), (void **)&unk);
+    if (FAILED(c->super.iret))
+        return;
+
+    assert(unk == (IUnknown *)info->host);
+    /* Forward the reference */
 }
 
 #endif
