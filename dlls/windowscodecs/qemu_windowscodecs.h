@@ -382,6 +382,7 @@ struct qemu_wic_clipper
     IWICBitmapClipper *host;
     struct qemu_wic_clipper *source_clipper;
     struct qemu_wic_bitmap *source_bitmap;
+    struct qemu_wic_converter *source_converter;
 };
 
 struct qemu_wic_info
@@ -418,6 +419,9 @@ struct qemu_wic_converter
 
     /* Host fields */
     IWICFormatConverter *host;
+    struct qemu_wic_clipper *source_clipper;
+    struct qemu_wic_bitmap *source_bitmap;
+    struct qemu_wic_converter *source_converter;
 };
 
 /* This is a reverse wrapper. */
@@ -446,6 +450,7 @@ void WICPalette_init_guest(struct qemu_wic_palette *palette);
 void WICBitmapClipper_init_guest(struct qemu_wic_clipper *clipper);
 void WICBitmapDecoder_init_guest(struct qemu_wic_decoder *decoder);
 void WICComponentInfo_init_guest(struct qemu_wic_info *info, enum component_info_type type);
+void WICFormatConverter_init_guest(struct qemu_wic_converter *converter);
 
 struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
 
@@ -708,8 +713,11 @@ struct qemu_wic_palette *WICPalette_create_host(IWICPalette *host);
 struct qemu_wic_clipper *WICBitmapClipper_create_host(IWICBitmapClipper *host);
 struct qemu_wic_decoder *WICBitmapDecoder_create_host(IWICBitmapDecoder *host);
 struct qemu_wic_info *WICComponentInfo_create_host(IWICComponentInfo *host, enum component_info_type *type);
+struct qemu_wic_converter *WICFormatConverter_create_host(IWICBitmapSource *host);
 
 ULONG qemu_WICBitmap_Release_internal(struct qemu_wic_bitmap *bitmap);
+ULONG qemu_WICFormatConverter_Release_internal(struct qemu_wic_converter *converter);
+ULONG qemu_WICBitmapClipper_Release_internal(struct qemu_wic_clipper *clipper);
 
 struct qemu_bitmap_source *bitmap_source_wrapper_create(uint64_t guest);
 

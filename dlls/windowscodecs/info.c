@@ -2725,8 +2725,9 @@ struct qemu_WICConvertBitmapSource
 {
     struct qemu_syscall super;
     uint64_t dstFormat;
-    uint64_t pISrc;
+    uint64_t bitmap, clipper, converter, custom;
     uint64_t ppIDst;
+    uint64_t no_convert;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -2735,12 +2736,55 @@ WINBASEAPI HRESULT WINAPI WICConvertBitmapSource(REFWICPixelFormatGUID dstFormat
         IWICBitmapSource **ppIDst)
 {
     struct qemu_WICConvertBitmapSource call;
+    struct qemu_wic_converter *converter;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_WICCONVERTBITMAPSOURCE);
     call.dstFormat = (ULONG_PTR)dstFormat;
-    call.pISrc = (ULONG_PTR)pISrc;
+
+    if (!pISrc)
+    {
+        call.bitmap = call.clipper = call.custom = call.converter = 0;
+    }
+    else if (((IWICBitmap *)pISrc)->lpVtbl == &WICBitmap_Vtbl)
+    {
+        struct qemu_wic_bitmap *bitmap = impl_from_IWICBitmap((IWICBitmap *)pISrc);
+        call.bitmap = (ULONG_PTR)bitmap;
+        call.clipper = call.custom = call.converter = 0;
+    }
+    else if (((IWICBitmapClipper *)pISrc)->lpVtbl == &WICBitmapClipper_Vtbl)
+    {
+        struct qemu_wic_clipper *clipper = impl_from_IWICBitmapClipper((IWICBitmapClipper *)pISrc);
+        call.clipper = (ULONG_PTR)clipper;
+        call.bitmap = call.custom = call.converter = 0;
+    }
+    else if (((IWICFormatConverter *)pISrc)->lpVtbl == &WICFormatConverter_Vtbl)
+    {
+        struct qemu_wic_converter *other = impl_from_IWICFormatConverter((IWICFormatConverter *)pISrc);
+        call.converter = (ULONG_PTR)other;
+        call.clipper = call.bitmap = call.custom = 0;
+    }
+    else
+    {
+        call.bitmap = call.clipper = call.converter = 0;
+        call.custom = (ULONG_PTR)pISrc;
+    }
     call.ppIDst = (ULONG_PTR)ppIDst;
 
     qemu_syscall(&call.super);
+
+    if (FAILED(call.super.iret))
+    {
+        return call.super.iret;
+    }
+    if (call.no_convert)
+    {
+        *ppIDst = pISrc;
+        return call.super.iret;
+    }
+
+    converter = (struct qemu_wic_converter *)(ULONG_PTR)call.ppIDst;
+    WICFormatConverter_init_guest(converter);
+    *ppIDst = (IWICBitmapSource *)&converter->IWICFormatConverter_iface;
 
     return call.super.iret;
 }
@@ -2750,8 +2794,88 @@ WINBASEAPI HRESULT WINAPI WICConvertBitmapSource(REFWICPixelFormatGUID dstFormat
 void qemu_WICConvertBitmapSource(struct qemu_syscall *call)
 {
     struct qemu_WICConvertBitmapSource *c = (struct qemu_WICConvertBitmapSource *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = WICConvertBitmapSource(QEMU_G2H(c->dstFormat), QEMU_G2H(c->pISrc), QEMU_G2H(c->ppIDst));
+    struct qemu_wic_converter *converter, *other = NULL;
+    IWICBitmapSource *host;
+    IWICBitmapSource *source;
+    struct qemu_wic_bitmap *bitmap = NULL;
+    struct qemu_wic_clipper *clipper = NULL;
+    struct qemu_bitmap_source *source_wrapper;
+
+    WINE_TRACE("\n");
+    if (c->bitmap)
+    {
+        bitmap = QEMU_G2H(c->bitmap);
+        source = (IWICBitmapSource *)bitmap->bitmap_host;
+        WINE_TRACE("Found our bitmap %p, passing host %p.\n", bitmap, source);
+        IWICBitmapSource_AddRef(source);
+    }
+    else if (c->clipper)
+    {
+        clipper = QEMU_G2H(c->clipper);
+        source = (IWICBitmapSource *)clipper->host;
+        WINE_TRACE("Found our clipper %p, passing host %p.\n", clipper, source);
+        IWICBitmapSource_AddRef(source);
+    }
+    else if (c->converter)
+    {
+        other = QEMU_G2H(c->converter);
+        source = (IWICBitmapSource *)other->host;
+        WINE_TRACE("Found our converter %p, passing host %p.\n", other, source);
+        IWICBitmapSource_AddRef(source);
+    }
+    else if (c->custom)
+    {
+        WINE_TRACE("Creating a wrapper for unrecognized source %p.\n", (void *)c->custom);
+        source_wrapper = bitmap_source_wrapper_create(c->custom);
+        if (!source_wrapper)
+        {
+            WINE_WARN("Out of memory.\n");
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+        source = &source_wrapper->IWICBitmapSource_iface;
+    }
+    else
+    {
+        source = NULL;
+    }
+
+    c->no_convert = 1;
+    c->super.iret = WICConvertBitmapSource(QEMU_G2H(c->dstFormat), source, c->ppIDst ? &host : NULL);
+
+    /* Release our ref, the host converter has its own if it wants one. */
+    if (source)
+        IWICBitmapSource_Release(source);
+
+    if (FAILED(c->super.iret))
+        return;
+
+    if (host == source)
+    {
+        WINE_TRACE("The source has been returned, no conversion is needed.\n");
+        /* If the interface was a custom provided interface, we now have a wrapper hanging around that
+         * won't be needed. It holds a reference to the guest interface, which is good because we need
+         * to AddRef the guest. Just HeapFree the wrapper, and the guest side will return the app's
+         * interface back to the app, without the wrapper being needed.
+         *
+         * Not exactly pretty though. */
+        if (source_wrapper)
+        {
+            WINE_TRACE("Stealing the guest reference from the bitmap source wrapper.\n");
+            HeapFree(GetProcessHeap(), 0, source_wrapper);
+        }
+
+        return;
+    }
+
+    c->no_convert = 0;
+    converter = WICFormatConverter_create_host(host);
+
+    converter->source_bitmap = bitmap;
+    converter->source_converter = other;
+    converter->source_clipper = clipper;
+
+    c->ppIDst = QEMU_H2G(converter);
 }
 
 #endif

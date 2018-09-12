@@ -101,7 +101,7 @@ void qemu_WICFormatConverter_AddRef(struct qemu_syscall *call)
     struct qemu_WICFormatConverter_AddRef *c = (struct qemu_WICFormatConverter_AddRef *)call;
     struct qemu_wic_converter *converter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     converter = QEMU_G2H(c->iface);
 
     c->super.iret = IWICFormatConverter_AddRef(converter->host);
@@ -132,15 +132,44 @@ static ULONG WINAPI WICFormatConverter_Release(IWICFormatConverter *iface)
 
 #else
 
+ULONG qemu_WICFormatConverter_Release_internal(struct qemu_wic_converter *converter)
+{
+    ULONG ref;
+
+    if (converter->source_clipper)
+        IWICBitmapClipper_AddRef(converter->source_clipper->host);
+    else if (converter->source_bitmap)
+        IWICBitmap_AddRef(converter->source_bitmap->bitmap_host);
+    else if (converter->source_converter)
+        IWICFormatConverter_AddRef(converter->source_converter->host);
+
+    ref = IWICFormatConverter_Release(converter->host);
+
+    if (converter->source_clipper)
+        qemu_WICBitmapClipper_Release_internal(converter->source_clipper);
+    else if (converter->source_bitmap)
+        qemu_WICBitmap_Release_internal(converter->source_bitmap);
+    else if (converter->source_converter)
+        qemu_WICFormatConverter_Release_internal(converter->source_converter);
+
+    if (!ref)
+    {
+        WINE_TRACE("Destroying converter wrapper %p for host converter %p.\n", converter, converter->host);
+        HeapFree(GetProcessHeap(), 0, converter);
+    }
+
+    return ref;
+}
+
 void qemu_WICFormatConverter_Release(struct qemu_syscall *call)
 {
     struct qemu_WICFormatConverter_Release *c = (struct qemu_WICFormatConverter_Release *)call;
     struct qemu_wic_converter *converter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     converter = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICFormatConverter_Release(converter->host);
+    c->super.iret = qemu_WICFormatConverter_Release_internal(converter);
 }
 
 #endif
@@ -451,7 +480,34 @@ const IWICFormatConverterVtbl WICFormatConverter_Vtbl =
     WICFormatConverter_CanConvert
 };
 
+void WICFormatConverter_init_guest(struct qemu_wic_converter *converter)
+{
+    converter->IWICFormatConverter_iface.lpVtbl = &WICFormatConverter_Vtbl;
+}
+
 #else
+
+struct qemu_wic_converter *WICFormatConverter_create_host(IWICBitmapSource *host)
+{
+    struct qemu_wic_converter *ret;
+    HRESULT hr;
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+    {
+        WINE_WARN("Out of memory\n");
+        return NULL;
+    }
+
+    hr = IWICBitmapSource_QueryInterface(host, &IID_IWICFormatConverter, (void **)&ret->host);
+    if (FAILED(hr))
+        WINE_ERR("Failed to QI IWICFormatConverter.\n");
+    /* Keep the refcount at 1. Ok, in theory the caller should release its ref, but consistency with
+     * other functions. And OK, the other functions should AddRef and the callers always release. */
+    IWICFormatConverter_Release(ret->host);
+
+    return ret;
+}
 
 #endif
 

@@ -131,7 +131,7 @@ static ULONG WINAPI WICBitmapClipper_Release(IWICBitmapClipper *iface)
 
 #else
 
-static ULONG qemu_WICBitmapClipper_Release_internal(struct qemu_wic_clipper *clipper)
+ULONG qemu_WICBitmapClipper_Release_internal(struct qemu_wic_clipper *clipper)
 {
     ULONG ref;
 
@@ -139,6 +139,8 @@ static ULONG qemu_WICBitmapClipper_Release_internal(struct qemu_wic_clipper *cli
         IWICBitmapClipper_AddRef(clipper->source_clipper->host);
     else if (clipper->source_bitmap)
         IWICBitmap_AddRef(clipper->source_bitmap->bitmap_host);
+    else if (clipper->source_converter)
+        IWICFormatConverter_AddRef(clipper->source_converter->host);
 
     ref = IWICBitmapClipper_Release(clipper->host);
 
@@ -146,6 +148,8 @@ static ULONG qemu_WICBitmapClipper_Release_internal(struct qemu_wic_clipper *cli
         qemu_WICBitmapClipper_Release_internal(clipper->source_clipper);
     else if (clipper->source_bitmap)
         qemu_WICBitmap_Release_internal(clipper->source_bitmap);
+    else if (clipper->source_converter)
+        qemu_WICFormatConverter_Release_internal(clipper->source_converter);
 
     if (!ref)
     {
@@ -434,7 +438,7 @@ void qemu_WICBitmapClipper_Initialize(struct qemu_syscall *call)
     struct qemu_bitmap_source *source_wrapper = NULL;
     IWICBitmapSource *host_source;
     struct qemu_wic_bitmap *bitmap = NULL;
-    struct qemu_wic_converter *converter;
+    struct qemu_wic_converter *converter = NULL;
 
     WINE_TRACE("\n");
     clipper = QEMU_G2H(c->iface);
@@ -486,6 +490,7 @@ void qemu_WICBitmapClipper_Initialize(struct qemu_syscall *call)
     if (SUCCEEDED(c->super.iret))
     {
         clipper->source_bitmap = bitmap;
+        clipper->source_converter = converter;
         clipper->source_clipper = other;
     }
 }
