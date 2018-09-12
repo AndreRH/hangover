@@ -201,7 +201,7 @@ void qemu_WICComponentInfo_GetComponentType(struct qemu_syscall *call)
     struct qemu_WICComponentInfo_GetComponentType *c = (struct qemu_WICComponentInfo_GetComponentType *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
     c->super.iret = IWICComponentInfo_GetComponentType(info->host, QEMU_G2H(c->pType));
