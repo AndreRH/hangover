@@ -203,6 +203,7 @@ enum windowscodecs_calls
     CALL_WICFORMATCONVERTER_CANCONVERT,
     CALL_WICFORMATCONVERTER_COPYPALETTE,
     CALL_WICFORMATCONVERTER_COPYPIXELS,
+    CALL_WICFORMATCONVERTER_CREATE_HOST,
     CALL_WICFORMATCONVERTER_GETPIXELFORMAT,
     CALL_WICFORMATCONVERTER_GETRESOLUTION,
     CALL_WICFORMATCONVERTER_GETSIZE,
@@ -443,6 +444,7 @@ DEFINE_GUID(GUID_VendorWine, 0xddf46da1,0x7dc1,0x404e,0x98,0xf2,0xef,0xa4,0x8d,0
 typedef HRESULT (*class_constructor)(const CLSID *, const IID *, void **);
 extern HRESULT Decoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj);
 extern HRESULT Encoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj);
+HRESULT FormatConverter_CreateInstance(const CLSID *clsid, const IID *iid, void **obj);
 HRESULT ComponentFactory_CreateInstance(const CLSID *clsid, const IID *iid, void **obj);
 
 IWICBitmap *WICBitmap_init_guest(struct qemu_wic_bitmap *bitmap);
@@ -671,6 +673,7 @@ void qemu_WICFormatConverter_GetSize(struct qemu_syscall *call);
 void qemu_WICFormatConverter_Initialize(struct qemu_syscall *call);
 void qemu_WICFormatConverter_QueryInterface(struct qemu_syscall *call);
 void qemu_WICFormatConverter_Release(struct qemu_syscall *call);
+void qemu_WICFormatConverter_create_host(struct qemu_syscall *call);
 void qemu_WICMapGuidToShortName(struct qemu_syscall *call);
 void qemu_WICMapSchemaToName(struct qemu_syscall *call);
 void qemu_WICMapShortNameToGuid(struct qemu_syscall *call);

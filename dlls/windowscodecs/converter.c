@@ -38,7 +38,6 @@ struct qemu_WICFormatConverter_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t iid;
-    uint64_t ppv;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -48,14 +47,28 @@ static HRESULT WINAPI WICFormatConverter_QueryInterface(IWICFormatConverter *ifa
     struct qemu_WICFormatConverter_QueryInterface call;
     struct qemu_wic_converter *converter = impl_from_IWICFormatConverter(iface);
 
+    WINE_TRACE("(%p,%s,%p)\n", iface, wine_dbgstr_guid(iid), ppv);
+
+    if (!ppv)
+        return E_INVALIDARG;
+
+    if (IsEqualIID(&IID_IUnknown, iid)
+            || IsEqualIID(&IID_IWICBitmapSource, iid)
+            || IsEqualIID(&IID_IWICFormatConverter, iid))
+    {
+        *ppv = &converter->IWICFormatConverter_iface;
+        IUnknown_AddRef((IUnknown*)*ppv);
+        return S_OK;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_WICFORMATCONVERTER_QUERYINTERFACE);
     call.iface = (ULONG_PTR)converter;
     call.iid = (ULONG_PTR)iid;
-    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    *ppv = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -64,11 +77,18 @@ void qemu_WICFormatConverter_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_WICFormatConverter_QueryInterface *c = (struct qemu_WICFormatConverter_QueryInterface *)call;
     struct qemu_wic_converter *converter;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     converter = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICFormatConverter_QueryInterface(converter->host, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
+    c->super.iret = IWICFormatConverter_QueryInterface(converter->host, QEMU_G2H(c->iid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->iid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
@@ -471,6 +491,13 @@ void qemu_WICFormatConverter_CanConvert(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_WICFormatConverter_create_host
+{
+    struct qemu_syscall super;
+    uint64_t clsid;
+    uint64_t converter;
+};
+
 #ifdef QEMU_DLL_GUEST
 
 const IWICFormatConverterVtbl WICFormatConverter_Vtbl =
@@ -490,6 +517,32 @@ const IWICFormatConverterVtbl WICFormatConverter_Vtbl =
 void WICFormatConverter_init_guest(struct qemu_wic_converter *converter)
 {
     converter->IWICFormatConverter_iface.lpVtbl = &WICFormatConverter_Vtbl;
+}
+
+HRESULT FormatConverter_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
+{
+    struct qemu_WICFormatConverter_create_host call;
+    struct qemu_wic_converter *converter;
+    HRESULT hr;
+
+    WINE_TRACE("(%s,%p)\n", wine_dbgstr_guid(iid), obj);
+
+    *obj = NULL;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICFORMATCONVERTER_CREATE_HOST);
+    call.clsid = (ULONG_PTR)clsid;
+
+    qemu_syscall(&call.super);
+
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    converter = (struct qemu_wic_converter *)(ULONG_PTR)call.converter;
+    WICFormatConverter_init_guest(converter);
+
+    hr = IWICFormatConverter_QueryInterface(&converter->IWICFormatConverter_iface, iid, obj);
+    IWICFormatConverter_Release(&converter->IWICFormatConverter_iface);
+
+    return hr;
 }
 
 #else
@@ -514,6 +567,43 @@ struct qemu_wic_converter *WICFormatConverter_create_host(IWICBitmapSource *host
     IWICFormatConverter_Release(ret->host);
 
     return ret;
+}
+
+void qemu_WICFormatConverter_create_host(struct qemu_syscall *call)
+{
+    struct qemu_WICFormatConverter_create_host *c = (struct qemu_WICFormatConverter_create_host *)call;
+    struct qemu_wic_converter *converter;
+    HMODULE lib;
+    HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID riid, void **obj);
+    IClassFactory *host_factory;
+    HRESULT hr;
+    IWICBitmapSource *host;
+
+    lib = GetModuleHandleA("windowscodecs");
+    p_DllGetClassObject = (void *)GetProcAddress(lib, "DllGetClassObject");
+
+    hr = p_DllGetClassObject(QEMU_G2H(c->clsid), &IID_IClassFactory, (void *)&host_factory);
+    if (FAILED(hr))
+        WINE_ERR("Cannot create class factory\n");
+
+    hr = IClassFactory_CreateInstance(host_factory, NULL, &IID_IWICBitmapSource, (void **)&host);
+    IClassFactory_Release(host_factory);
+    if (FAILED(hr))
+    {
+        WINE_WARN("Failed to create an IWICFormatConverter object.\n");
+        c->super.iret = hr;
+        return;
+    }
+
+    converter = WICFormatConverter_create_host(host);
+    if (!converter)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->converter = QEMU_H2G(converter);
+    c->super.iret = hr;
 }
 
 #endif

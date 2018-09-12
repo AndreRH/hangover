@@ -37,12 +37,6 @@ typedef struct {
     class_constructor constructor;
 } classinfo;
 
-static HRESULT FormatConverter_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
-{
-    WINE_FIXME("Stub\n");
-    return E_FAIL;
-}
-
 static HRESULT MetadataReader_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 {
     WINE_FIXME("Stub\n");

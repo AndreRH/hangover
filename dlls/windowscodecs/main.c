@@ -387,6 +387,7 @@ static const syscall_handler dll_functions[] =
     qemu_WICFormatConverter_CanConvert,
     qemu_WICFormatConverter_CopyPalette,
     qemu_WICFormatConverter_CopyPixels,
+    qemu_WICFormatConverter_create_host,
     qemu_WICFormatConverter_GetPixelFormat,
     qemu_WICFormatConverter_GetResolution,
     qemu_WICFormatConverter_GetSize,
