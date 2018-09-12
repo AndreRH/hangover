@@ -26,6 +26,9 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_wincodec.h"
+
 #include <wine/debug.h>
 #include <wine/list.h>
 
@@ -983,7 +986,8 @@ struct qemu_WICBitmapDecoderInfo_GetPatterns
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoderInfo_GetPatterns(IWICBitmapDecoderInfo *iface, UINT cbSizePatterns, WICBitmapPattern *pPatterns, UINT *pcPatterns, UINT *pcbPatternsActual)
+static HRESULT WINAPI WICBitmapDecoderInfo_GetPatterns(IWICBitmapDecoderInfo *iface, UINT cbSizePatterns,
+        WICBitmapPattern *pPatterns, UINT *pcPatterns, UINT *pcbPatternsActual)
 {
     struct qemu_WICBitmapDecoderInfo_GetPatterns call;
     struct qemu_wic_info *info = impl_from_IWICBitmapDecoderInfo(iface);
@@ -1006,11 +1010,35 @@ void qemu_WICBitmapDecoderInfo_GetPatterns(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoderInfo_GetPatterns *c = (struct qemu_WICBitmapDecoderInfo_GetPatterns *)call;
     struct qemu_wic_info *info;
+    WICBitmapPattern *patterns;
+    UINT i, *count;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
+    patterns = QEMU_G2H(c->pPatterns);
+    count = QEMU_G2H(c->pcPatterns);
 
-    c->super.iret = IWICBitmapDecoderInfo_GetPatterns((IWICBitmapDecoderInfo *)info->host, c->cbSizePatterns, QEMU_G2H(c->pPatterns), QEMU_G2H(c->pcPatterns), QEMU_G2H(c->pcbPatternsActual));
+    c->super.iret = IWICBitmapDecoderInfo_GetPatterns((IWICBitmapDecoderInfo *)info->host, c->cbSizePatterns, 
+            patterns, count, QEMU_G2H(c->pcbPatternsActual));
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret) && patterns)
+    {
+        struct qemu_WICBitmapPattern *p32 = (struct qemu_WICBitmapPattern *)patterns;
+
+        /* So it seems that the size contains extra data for variable-lengths Patterns and Mask arrays. So
+         * I guess we get away with just forwarding the 64 bit size request to the app.
+         *
+         * The Patterns and Mask pointers seem to be absolute pointers, so we don't have to adjust them to
+         * account for the unexpected size of the WICBitmapPattern structure. */
+        for (i = 0; i < *count; ++i)
+            WICBitmapPattern_h2g(&p32[i], &patterns[i]);
+    }
+    else if (SUCCEEDED(c->super.iret) == WINCODEC_ERR_INSUFFICIENTBUFFER)
+    {
+        WINE_FIXME("The host returned WINCODEC_ERR_INSUFFICIENTBUFFER.\n");
+    }
+#endif
 }
 
 #endif

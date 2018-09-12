@@ -266,17 +266,14 @@ struct qemu_MMIOINFO
     qemu_ptr    hmmio;
 };
 
+#ifndef QEMU_DLL_GUEST
 static inline void MMIOINFO_g2h(MMIOINFO *host, const struct qemu_MMIOINFO *guest)
 {
     host->dwFlags = guest->dwFlags;
     host->fccIOProc = guest->fccIOProc;
     host->pIOProc = (LPMMIOPROC)(ULONG_PTR)guest->pIOProc;
     host->wErrorRet = guest->wErrorRet;
-#ifdef QEMU_DLL_GUEST
-    host->htask = (HTASK)(ULONG_PTR)guest->hTask;
-#else
     host->hTask = (HTASK)(ULONG_PTR)guest->hTask;
-#endif
     host->cchBuffer = guest->cchBuffer;
     host->pchBuffer = (HPSTR)(ULONG_PTR)guest->pchBuffer;
     host->pchNext = (HPSTR)(ULONG_PTR)guest->pchNext;
@@ -298,11 +295,7 @@ static inline void MMIOINFO_h2g(struct qemu_MMIOINFO *guest, const MMIOINFO *hos
     guest->fccIOProc = host->fccIOProc;
     guest->pIOProc = (ULONG_PTR)host->pIOProc;
     guest->wErrorRet = host->wErrorRet;
-#ifdef QEMU_DLL_GUEST
-    guest->hTask = (ULONG_PTR)host->htask;
-#else
     guest->hTask = (ULONG_PTR)host->hTask;
-#endif
     guest->cchBuffer = host->cchBuffer;
     guest->pchBuffer = (ULONG_PTR)host->pchBuffer;
     guest->pchNext = (ULONG_PTR)host->pchNext;
@@ -317,6 +310,7 @@ static inline void MMIOINFO_h2g(struct qemu_MMIOINFO *guest, const MMIOINFO *hos
     guest->dwReserved2 = host->dwReserved2;
     guest->hmmio = (ULONG_PTR)host->hmmio;
 }
+#endif
 
 struct qemu_MCI_GETDEVCAPS_PARMS
 {
