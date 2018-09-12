@@ -130,6 +130,7 @@ enum windowscodecs_calls
     CALL_WICBITMAPDECODERINFO_MATCHESPATTERN,
     CALL_WICBITMAPENCODER_ADDREF,
     CALL_WICBITMAPENCODER_COMMIT,
+    CALL_WICBITMAPENCODER_CREATE_HOST,
     CALL_WICBITMAPENCODER_CREATENEWFRAME,
     CALL_WICBITMAPENCODER_GETCONTAINERFORMAT,
     CALL_WICBITMAPENCODER_GETENCODERINFO,
@@ -453,6 +454,7 @@ void WICBitmapClipper_init_guest(struct qemu_wic_clipper *clipper);
 void WICBitmapDecoder_init_guest(struct qemu_wic_decoder *decoder);
 void WICComponentInfo_init_guest(struct qemu_wic_info *info, enum component_info_type type);
 void WICFormatConverter_init_guest(struct qemu_wic_converter *converter);
+void WICBitmapEncoder_init_guest(struct qemu_wic_encoder *encoder);
 
 struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
 
@@ -602,6 +604,7 @@ void qemu_WICBitmapEncoder_SetColorContexts(struct qemu_syscall *call);
 void qemu_WICBitmapEncoder_SetPalette(struct qemu_syscall *call);
 void qemu_WICBitmapEncoder_SetPreview(struct qemu_syscall *call);
 void qemu_WICBitmapEncoder_SetThumbnail(struct qemu_syscall *call);
+void qemu_WICBitmapEncoder_create_host(struct qemu_syscall *call);
 void qemu_WICBitmapFrameDecode_AddRef(struct qemu_syscall *call);
 void qemu_WICBitmapFrameDecode_CopyPalette(struct qemu_syscall *call);
 void qemu_WICBitmapFrameDecode_CopyPixels(struct qemu_syscall *call);
@@ -717,6 +720,7 @@ struct qemu_wic_clipper *WICBitmapClipper_create_host(IWICBitmapClipper *host);
 struct qemu_wic_decoder *WICBitmapDecoder_create_host(IWICBitmapDecoder *host);
 struct qemu_wic_info *WICComponentInfo_create_host(IWICComponentInfo *host, enum component_info_type *type);
 struct qemu_wic_converter *WICFormatConverter_create_host(IWICBitmapSource *host);
+struct qemu_wic_encoder *WICBitmapEncoder_create_host(IWICBitmapEncoder *host);
 
 ULONG qemu_WICBitmap_Release_internal(struct qemu_wic_bitmap *bitmap);
 ULONG qemu_WICFormatConverter_Release_internal(struct qemu_wic_converter *converter);

@@ -314,6 +314,7 @@ static const syscall_handler dll_functions[] =
     qemu_WICBitmapDecoderInfo_MatchesPattern,
     qemu_WICBitmapEncoder_AddRef,
     qemu_WICBitmapEncoder_Commit,
+    qemu_WICBitmapEncoder_create_host,
     qemu_WICBitmapEncoder_CreateNewFrame,
     qemu_WICBitmapEncoder_GetContainerFormat,
     qemu_WICBitmapEncoder_GetEncoderInfo,

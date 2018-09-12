@@ -571,7 +571,6 @@ struct qemu_WICBitmapEncoder_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t iid;
-    uint64_t ppv;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -586,14 +585,27 @@ static HRESULT WINAPI WICBitmapEncoder_QueryInterface(IWICBitmapEncoder *iface, 
     struct qemu_WICBitmapEncoder_QueryInterface call;
     struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
+    WINE_TRACE("(%p,%s,%p)\n", iface, wine_dbgstr_guid(iid), ppv);
+
+    if (!ppv)
+        return E_INVALIDARG;
+
+    if (IsEqualIID(&IID_IUnknown, iid) || IsEqualIID(&IID_IWICBitmapEncoder, iid))
+    {
+        *ppv = &wic_encoder->IWICBitmapEncoder_iface;
+        IUnknown_AddRef((IUnknown*)*ppv);
+        return S_OK;
+    }
+
+
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_QUERYINTERFACE);
     call.iface = (ULONG_PTR)wic_encoder;
     call.iid = (ULONG_PTR)iid;
-    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    *ppv = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -602,11 +614,18 @@ void qemu_WICBitmapEncoder_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_QueryInterface *c = (struct qemu_WICBitmapEncoder_QueryInterface *)call;
     struct qemu_wic_encoder *wic_encoder;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_QueryInterface(wic_encoder->host, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
+    c->super.iret = IWICBitmapEncoder_QueryInterface(wic_encoder->host, QEMU_G2H(c->iid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->iid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
@@ -963,6 +982,25 @@ struct qemu_WICBitmapEncoder_CreateNewFrame
 
 #ifdef QEMU_DLL_GUEST
 
+static const IWICBitmapFrameEncodeVtbl WICBitmapFrameEncode_Vtbl =
+{
+    WICBitmapFrameEncode_QueryInterface,
+    WICBitmapFrameEncode_AddRef,
+    WICBitmapFrameEncode_Release,
+    WICBitmapFrameEncode_Initialize,
+    WICBitmapFrameEncode_SetSize,
+    WICBitmapFrameEncode_SetResolution,
+    WICBitmapFrameEncode_SetPixelFormat,
+    WICBitmapFrameEncode_SetColorContexts,
+    WICBitmapFrameEncode_SetPalette,
+    WICBitmapFrameEncode_SetThumbnail,
+    WICBitmapFrameEncode_WritePixels,
+    WICBitmapFrameEncode_WriteSource,
+    WICBitmapFrameEncode_Commit,
+    WICBitmapFrameEncode_GetMetadataQueryWriter
+};
+
+
 static HRESULT WINAPI WICBitmapEncoder_CreateNewFrame(IWICBitmapEncoder *iface, IWICBitmapFrameEncode **ppIFrameEncode, IPropertyBag2 **ppIEncoderOptions)
 {
     struct qemu_WICBitmapEncoder_CreateNewFrame call;
@@ -1067,33 +1105,117 @@ void qemu_WICBitmapEncoder_GetMetadataQueryWriter(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_WICBitmapEncoder_create_host
+{
+    struct qemu_syscall super;
+    uint64_t clsid;
+    uint64_t encoder;
+};
+
 #ifdef QEMU_DLL_GUEST
+
+static const IWICBitmapEncoderVtbl WICBitmapEncoder_Vtbl =
+{
+    WICBitmapEncoder_QueryInterface,
+    WICBitmapEncoder_AddRef,
+    WICBitmapEncoder_Release,
+    WICBitmapEncoder_Initialize,
+    WICBitmapEncoder_GetContainerFormat,
+    WICBitmapEncoder_GetEncoderInfo,
+    WICBitmapEncoder_SetColorContexts,
+    WICBitmapEncoder_SetPalette,
+    WICBitmapEncoder_SetThumbnail,
+    WICBitmapEncoder_SetPreview,
+    WICBitmapEncoder_CreateNewFrame,
+    WICBitmapEncoder_Commit,
+    WICBitmapEncoder_GetMetadataQueryWriter
+};
+
+void WICBitmapEncoder_init_guest(struct qemu_wic_encoder *encoder)
+{
+    encoder->IWICBitmapEncoder_iface.lpVtbl = &WICBitmapEncoder_Vtbl;
+}
 
 HRESULT Encoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
 {
-#if 0
-    BmpEncoder *This;
-    HRESULT ret;
+    struct qemu_WICBitmapEncoder_create_host call;
+    struct qemu_wic_encoder *encoder;
+    HRESULT hr;
 
-    TRACE("(%s,%p)\n", debugstr_guid(iid), ppv);
+    WINE_TRACE("(%s,%p)\n", wine_dbgstr_guid(iid), obj);
 
-    *ppv = NULL;
+    *obj = NULL;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_CREATE_HOST);
+    call.clsid = (ULONG_PTR)clsid;
 
-    This = HeapAlloc(GetProcessHeap(), 0, sizeof(BmpEncoder));
-    if (!This) return E_OUTOFMEMORY;
+    qemu_syscall(&call.super);
 
-    This->IWICBitmapEncoder_iface.lpVtbl = &BmpEncoder_Vtbl;
-    This->ref = 1;
-    This->stream = NULL;
-    This->frame = NULL;
+    if (FAILED(call.super.iret))
+        return call.super.iret;
 
-    ret = IWICBitmapEncoder_QueryInterface(&This->IWICBitmapEncoder_iface, iid, ppv);
-    IWICBitmapEncoder_Release(&This->IWICBitmapEncoder_iface);
+    encoder = (struct qemu_wic_encoder *)(ULONG_PTR)call.encoder;
+    WICBitmapEncoder_init_guest(encoder);
+
+    hr = IWICBitmapEncoder_QueryInterface(&encoder->IWICBitmapEncoder_iface, iid, obj);
+    IWICBitmapEncoder_Release(&encoder->IWICBitmapEncoder_iface);
+
+    return hr;
+}
+
+#else
+
+struct qemu_wic_encoder *WICBitmapEncoder_create_host(IWICBitmapEncoder *host)
+{
+    struct qemu_wic_encoder *ret;
+    HRESULT hr;
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+    {
+        WINE_WARN("Out of memory\n");
+        return NULL;
+    }
+
+    ret->host = host;
 
     return ret;
-#endif
-    WINE_FIXME("Stub\n");
-    return E_FAIL;
+}
+
+void qemu_WICBitmapEncoder_create_host(struct qemu_syscall *call)
+{
+    struct qemu_WICBitmapEncoder_create_host *c = (struct qemu_WICBitmapEncoder_create_host *)call;
+    struct qemu_wic_encoder *encoder;
+    HMODULE lib;
+    HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID riid, void **obj);
+    IClassFactory *host_factory;
+    HRESULT hr;
+    IWICBitmapEncoder *host;
+
+    lib = GetModuleHandleA("windowscodecs");
+    p_DllGetClassObject = (void *)GetProcAddress(lib, "DllGetClassObject");
+
+    hr = p_DllGetClassObject(QEMU_G2H(c->clsid), &IID_IClassFactory, (void *)&host_factory);
+    if (FAILED(hr))
+        WINE_ERR("Cannot create class factory\n");
+
+    hr = IClassFactory_CreateInstance(host_factory, NULL, &IID_IWICBitmapEncoder, (void **)&host);
+    IClassFactory_Release(host_factory);
+    if (FAILED(hr))
+    {
+        WINE_WARN("Failed to create an IID_IWICBitmapEncoder object.\n");
+        c->super.iret = hr;
+        return;
+    }
+
+    encoder = WICBitmapEncoder_create_host(host);
+    if (!encoder)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->encoder = QEMU_H2G(encoder);
+    c->super.iret = hr;
 }
 
 #endif
