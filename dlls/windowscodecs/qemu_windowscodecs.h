@@ -199,6 +199,16 @@ enum windowscodecs_calls
     CALL_WICCOMPONENTINFO_RELEASE,
     CALL_WICCONVERTBITMAPSOURCE,
     CALL_WICCREATEBITMAPFROMSECTIONEX,
+    CALL_WICFORMATCONVERTER_ADDREF,
+    CALL_WICFORMATCONVERTER_CANCONVERT,
+    CALL_WICFORMATCONVERTER_COPYPALETTE,
+    CALL_WICFORMATCONVERTER_COPYPIXELS,
+    CALL_WICFORMATCONVERTER_GETPIXELFORMAT,
+    CALL_WICFORMATCONVERTER_GETRESOLUTION,
+    CALL_WICFORMATCONVERTER_GETSIZE,
+    CALL_WICFORMATCONVERTER_INITIALIZE,
+    CALL_WICFORMATCONVERTER_QUERYINTERFACE,
+    CALL_WICFORMATCONVERTER_RELEASE,
     CALL_WICFORMATCONVERTERINFO_CREATEINSTANCE,
     CALL_WICFORMATCONVERTERINFO_GETPIXELFORMATS,
     CALL_WICMAPGUIDTOSHORTNAME,
@@ -401,6 +411,15 @@ struct qemu_wic_enum
     IEnumUnknown *host;
 };
 
+struct qemu_wic_converter
+{
+    /* Guest fields */
+    IWICFormatConverter IWICFormatConverter_iface;
+
+    /* Host fields */
+    IWICFormatConverter *host;
+};
+
 /* This is a reverse wrapper. */
 struct qemu_bitmap_source
 {
@@ -431,9 +450,10 @@ void WICComponentInfo_init_guest(struct qemu_wic_info *info, enum component_info
 struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
 
 /* For detection of our own IWICBitmapSource objects. */
-const IWICBitmapClipperVtbl WICBitmapClipper_Vtbl;
-const IWICBitmapVtbl WICBitmap_Vtbl;
-const IWICBitmapFrameDecodeVtbl WICBitmapFrameDecode_FrameVtbl;
+extern const IWICBitmapClipperVtbl WICBitmapClipper_Vtbl;
+extern const IWICBitmapVtbl WICBitmap_Vtbl;
+extern const IWICBitmapFrameDecodeVtbl WICBitmapFrameDecode_FrameVtbl;
+extern const IWICFormatConverterVtbl WICFormatConverter_Vtbl;
 
 static inline struct qemu_wic_bitmap *impl_from_IWICBitmap(IWICBitmap *iface)
 {
@@ -443,6 +463,11 @@ static inline struct qemu_wic_bitmap *impl_from_IWICBitmap(IWICBitmap *iface)
 static inline struct qemu_wic_clipper *impl_from_IWICBitmapClipper(IWICBitmapClipper *iface)
 {
     return CONTAINING_RECORD(iface, struct qemu_wic_clipper, IWICBitmapClipper_iface);
+}
+
+static inline struct qemu_wic_converter *impl_from_IWICFormatConverter(IWICFormatConverter *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_wic_converter, IWICFormatConverter_iface);
 }
 
 #else
@@ -631,6 +656,16 @@ void qemu_WICFormatConverterInfo_CreateInstance(struct qemu_syscall *call);
 void qemu_WICFormatConverterInfo_GetPixelFormats(struct qemu_syscall *call);
 void qemu_WICFormatConverterInfo_QueryInterface(struct qemu_syscall *call);
 void qemu_WICFormatConverterInfo_Release(struct qemu_syscall *call);
+void qemu_WICFormatConverter_AddRef(struct qemu_syscall *call);
+void qemu_WICFormatConverter_CanConvert(struct qemu_syscall *call);
+void qemu_WICFormatConverter_CopyPalette(struct qemu_syscall *call);
+void qemu_WICFormatConverter_CopyPixels(struct qemu_syscall *call);
+void qemu_WICFormatConverter_GetPixelFormat(struct qemu_syscall *call);
+void qemu_WICFormatConverter_GetResolution(struct qemu_syscall *call);
+void qemu_WICFormatConverter_GetSize(struct qemu_syscall *call);
+void qemu_WICFormatConverter_Initialize(struct qemu_syscall *call);
+void qemu_WICFormatConverter_QueryInterface(struct qemu_syscall *call);
+void qemu_WICFormatConverter_Release(struct qemu_syscall *call);
 void qemu_WICMapGuidToShortName(struct qemu_syscall *call);
 void qemu_WICMapSchemaToName(struct qemu_syscall *call);
 void qemu_WICMapShortNameToGuid(struct qemu_syscall *call);

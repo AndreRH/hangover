@@ -375,7 +375,7 @@ struct qemu_WICBitmapClipper_Initialize
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t bitmap, clipper, custom;
+    uint64_t bitmap, clipper, converter, custom;
     uint64_t rc;
 };
 
@@ -392,23 +392,29 @@ static HRESULT WINAPI WICBitmapClipper_Initialize(IWICBitmapClipper *iface, IWIC
 
     if (!source)
     {
-        call.bitmap = call.clipper = call.custom = 0;
+        call.bitmap = call.clipper = call.custom = call.converter = 0;
     }
     else if (((IWICBitmap *)source)->lpVtbl == &WICBitmap_Vtbl)
     {
         struct qemu_wic_bitmap *bitmap = impl_from_IWICBitmap((IWICBitmap *)source);
         call.bitmap = (ULONG_PTR)bitmap;
-        call.clipper = call.custom = 0;
+        call.clipper = call.custom = call.converter = 0;
     }
     else if (((IWICBitmapClipper *)source)->lpVtbl == &WICBitmapClipper_Vtbl)
     {
         struct qemu_wic_clipper *other = impl_from_IWICBitmapClipper((IWICBitmapClipper *)source);
         call.clipper = (ULONG_PTR)other;
-        call.bitmap = call.custom = 0;
+        call.bitmap = call.custom = call.converter = 0;
+    }
+    else if (((IWICFormatConverter *)source)->lpVtbl == &WICFormatConverter_Vtbl)
+    {
+        struct qemu_wic_converter *converter = impl_from_IWICFormatConverter((IWICFormatConverter *)source);
+        call.converter = (ULONG_PTR)converter;
+        call.clipper = call.bitmap = call.custom = 0;
     }
     else
     {
-        call.bitmap = call.clipper = 0;
+        call.bitmap = call.clipper = call.converter = 0;
         call.custom = (ULONG_PTR)source;
     }
 
@@ -428,6 +434,7 @@ void qemu_WICBitmapClipper_Initialize(struct qemu_syscall *call)
     struct qemu_bitmap_source *source_wrapper = NULL;
     IWICBitmapSource *host_source;
     struct qemu_wic_bitmap *bitmap = NULL;
+    struct qemu_wic_converter *converter;
 
     WINE_TRACE("\n");
     clipper = QEMU_G2H(c->iface);
@@ -444,6 +451,13 @@ void qemu_WICBitmapClipper_Initialize(struct qemu_syscall *call)
         other = QEMU_G2H(c->clipper);
         host_source = (IWICBitmapSource *)other->host;
         WINE_TRACE("Found our clipper %p, passing host %p.\n", other, host_source);
+        IWICBitmapSource_AddRef(host_source);
+    }
+    else if (c->converter)
+    {
+        converter = QEMU_G2H(c->converter);
+        host_source = (IWICBitmapSource *)converter->host;
+        WINE_TRACE("Found our converter %p, passing host %p.\n", converter, host_source);
         IWICBitmapSource_AddRef(host_source);
     }
     else if (c->custom)

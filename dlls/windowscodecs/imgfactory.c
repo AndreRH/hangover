@@ -932,7 +932,7 @@ struct qemu_ComponentFactory_CreateBitmapFromSource
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t clipper, bitmap, custom;
+    uint64_t clipper, bitmap, converter, custom;
     uint64_t option;
     uint64_t ppIBitmap;
 };
@@ -951,23 +951,29 @@ static HRESULT WINAPI ComponentFactory_CreateBitmapFromSource(IWICComponentFacto
 
     if (!piBitmapSource)
     {
-        call.bitmap = call.clipper = call.custom = 0;
+        call.bitmap = call.clipper = call.custom = call.converter = 0;
     }
     else if (((IWICBitmap *)piBitmapSource)->lpVtbl == &WICBitmap_Vtbl)
     {
         struct qemu_wic_bitmap *bitmap = impl_from_IWICBitmap((IWICBitmap *)piBitmapSource);
         call.bitmap = (ULONG_PTR)bitmap;
-        call.clipper = call.custom = 0;
+        call.clipper = call.custom = call.converter = 0;
     }
     else if (((IWICBitmapClipper *)piBitmapSource)->lpVtbl == &WICBitmapClipper_Vtbl)
     {
         struct qemu_wic_clipper *other = impl_from_IWICBitmapClipper((IWICBitmapClipper *)piBitmapSource);
         call.clipper = (ULONG_PTR)other;
-        call.bitmap = call.custom = 0;
+        call.bitmap = call.custom = call.converter = 0;
+    }
+    else if (((IWICFormatConverter *)piBitmapSource)->lpVtbl == &WICFormatConverter_Vtbl)
+    {
+        struct qemu_wic_converter *converter = impl_from_IWICFormatConverter((IWICFormatConverter *)piBitmapSource);
+        call.converter = (ULONG_PTR)converter;
+        call.clipper = call.bitmap = call.custom = 0;
     }
     else
     {
-        call.bitmap = call.clipper = 0;
+        call.bitmap = call.clipper = call.converter = 0;
         call.custom = (ULONG_PTR)piBitmapSource;
     }
 
@@ -996,6 +1002,7 @@ void qemu_ComponentFactory_CreateBitmapFromSource(struct qemu_syscall *call)
     IWICBitmapSource *host_source;
     struct qemu_wic_bitmap *bitmap, *bitmap_src;
     struct qemu_wic_clipper *clipper;
+    struct qemu_wic_converter *converter;
 
     WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
@@ -1012,6 +1019,13 @@ void qemu_ComponentFactory_CreateBitmapFromSource(struct qemu_syscall *call)
         clipper = QEMU_G2H(c->clipper);
         host_source = (IWICBitmapSource *)clipper->host;
         WINE_TRACE("Found our clipper %p, passing host %p.\n", clipper, host_source);
+        IWICBitmapSource_AddRef(host_source);
+    }
+    else if (c->converter)
+    {
+        converter = QEMU_G2H(c->converter);
+        host_source = (IWICBitmapSource *)converter->host;
+        WINE_TRACE("Found our converter %p, passing host %p.\n", converter, host_source);
         IWICBitmapSource_AddRef(host_source);
     }
     else if (c->custom)

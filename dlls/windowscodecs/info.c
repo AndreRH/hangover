@@ -2731,7 +2731,8 @@ struct qemu_WICConvertBitmapSource
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HRESULT WINAPI WICConvertBitmapSource(REFWICPixelFormatGUID dstFormat, IWICBitmapSource *pISrc, IWICBitmapSource **ppIDst)
+WINBASEAPI HRESULT WINAPI WICConvertBitmapSource(REFWICPixelFormatGUID dstFormat, IWICBitmapSource *pISrc,
+        IWICBitmapSource **ppIDst)
 {
     struct qemu_WICConvertBitmapSource call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WICCONVERTBITMAPSOURCE);
