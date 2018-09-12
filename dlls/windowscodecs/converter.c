@@ -206,7 +206,7 @@ void qemu_WICFormatConverter_GetSize(struct qemu_syscall *call)
     struct qemu_WICFormatConverter_GetSize *c = (struct qemu_WICFormatConverter_GetSize *)call;
     struct qemu_wic_converter *converter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     converter = QEMU_G2H(c->iface);
 
     c->super.iret = IWICFormatConverter_GetSize(converter->host, QEMU_G2H(c->puiWidth), QEMU_G2H(c->puiHeight));
@@ -244,7 +244,7 @@ void qemu_WICFormatConverter_GetPixelFormat(struct qemu_syscall *call)
     struct qemu_WICFormatConverter_GetPixelFormat *c = (struct qemu_WICFormatConverter_GetPixelFormat *)call;
     struct qemu_wic_converter *converter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     converter = QEMU_G2H(c->iface);
 
     c->super.iret = IWICFormatConverter_GetPixelFormat(converter->host, QEMU_G2H(c->pPixelFormat));
@@ -284,7 +284,7 @@ void qemu_WICFormatConverter_GetResolution(struct qemu_syscall *call)
     struct qemu_WICFormatConverter_GetResolution *c = (struct qemu_WICFormatConverter_GetResolution *)call;
     struct qemu_wic_converter *converter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     converter = QEMU_G2H(c->iface);
 
     c->super.iret = IWICFormatConverter_GetResolution(converter->host, QEMU_G2H(c->pDpiX), QEMU_G2H(c->pDpiY));
@@ -342,7 +342,8 @@ struct qemu_WICFormatConverter_CopyPixels
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICFormatConverter_CopyPixels(IWICFormatConverter *iface, const WICRect *prc, UINT cbStride, UINT cbBufferSize, BYTE *pbBuffer)
+static HRESULT WINAPI WICFormatConverter_CopyPixels(IWICFormatConverter *iface, const WICRect *prc, UINT cbStride,
+        UINT cbBufferSize, BYTE *pbBuffer)
 {
     struct qemu_WICFormatConverter_CopyPixels call;
     struct qemu_wic_converter *converter = impl_from_IWICFormatConverter(iface);
@@ -366,10 +367,11 @@ void qemu_WICFormatConverter_CopyPixels(struct qemu_syscall *call)
     struct qemu_WICFormatConverter_CopyPixels *c = (struct qemu_WICFormatConverter_CopyPixels *)call;
     struct qemu_wic_converter *converter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     converter = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICFormatConverter_CopyPixels(converter->host, QEMU_G2H(c->prc), c->cbStride, c->cbBufferSize, QEMU_G2H(c->pbBuffer));
+    c->super.iret = IWICFormatConverter_CopyPixels(converter->host, QEMU_G2H(c->prc), c->cbStride, c->cbBufferSize,
+            QEMU_G2H(c->pbBuffer));
 }
 
 #endif
@@ -388,7 +390,9 @@ struct qemu_WICFormatConverter_Initialize
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICFormatConverter_Initialize(IWICFormatConverter *iface, IWICBitmapSource *pISource, REFWICPixelFormatGUID dstFormat, WICBitmapDitherType dither, IWICPalette *pIPalette, double alphaThresholdPercent, WICBitmapPaletteType paletteTranslate)
+static HRESULT WINAPI WICFormatConverter_Initialize(IWICFormatConverter *iface, IWICBitmapSource *pISource,
+        REFWICPixelFormatGUID dstFormat, WICBitmapDitherType dither, IWICPalette *pIPalette,
+        double alphaThresholdPercent, WICBitmapPaletteType paletteTranslate)
 {
     struct qemu_WICFormatConverter_Initialize call;
     struct qemu_wic_converter *converter = impl_from_IWICFormatConverter(iface);
@@ -417,7 +421,8 @@ void qemu_WICFormatConverter_Initialize(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     converter = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICFormatConverter_Initialize(converter->host, QEMU_G2H(c->pISource), QEMU_G2H(c->dstFormat), c->dither, QEMU_G2H(c->pIPalette), c->alphaThresholdPercent, c->paletteTranslate);
+    c->super.iret = IWICFormatConverter_Initialize(converter->host, QEMU_G2H(c->pISource), QEMU_G2H(c->dstFormat),
+            c->dither, QEMU_G2H(c->pIPalette), c->alphaThresholdPercent, c->paletteTranslate);
 }
 
 #endif
@@ -433,7 +438,8 @@ struct qemu_WICFormatConverter_CanConvert
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICFormatConverter_CanConvert(IWICFormatConverter *iface, REFWICPixelFormatGUID srcPixelFormat, REFWICPixelFormatGUID dstPixelFormat, BOOL *pfCanConvert)
+static HRESULT WINAPI WICFormatConverter_CanConvert(IWICFormatConverter *iface, REFWICPixelFormatGUID srcPixelFormat,
+        REFWICPixelFormatGUID dstPixelFormat, BOOL *pfCanConvert)
 {
     struct qemu_WICFormatConverter_CanConvert call;
     struct qemu_wic_converter *converter = impl_from_IWICFormatConverter(iface);
@@ -459,7 +465,8 @@ void qemu_WICFormatConverter_CanConvert(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     converter = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICFormatConverter_CanConvert(converter->host, QEMU_G2H(c->srcPixelFormat), QEMU_G2H(c->dstPixelFormat), QEMU_G2H(c->pfCanConvert));
+    c->super.iret = IWICFormatConverter_CanConvert(converter->host, QEMU_G2H(c->srcPixelFormat),
+            QEMU_G2H(c->dstPixelFormat), QEMU_G2H(c->pfCanConvert));
 }
 
 #endif
