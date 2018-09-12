@@ -127,7 +127,7 @@ void qemu_WICComponentInfo_AddRef(struct qemu_syscall *call)
     struct qemu_WICComponentInfo_AddRef *c = (struct qemu_WICComponentInfo_AddRef *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
     c->super.iret = IWICComponentInfo_AddRef(info->host);
@@ -163,10 +163,15 @@ void qemu_WICComponentInfo_Release(struct qemu_syscall *call)
     struct qemu_WICComponentInfo_Release *c = (struct qemu_WICComponentInfo_Release *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
     c->super.iret = IWICComponentInfo_Release(info->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying component component info wrapper %p for host info %p.\n", info, info->host);
+        HeapFree(GetProcessHeap(), 0, info);
+    }
 }
 
 #endif
