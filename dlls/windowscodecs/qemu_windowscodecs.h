@@ -332,7 +332,7 @@ struct qemu_wic_frame_encode
     IWICBitmapFrameEncode *host;
 };
 
-struct qemu_wic_encode
+struct qemu_wic_encoder
 {
     /* Guest fields */
     IWICBitmapEncoder IWICBitmapEncoder_iface;

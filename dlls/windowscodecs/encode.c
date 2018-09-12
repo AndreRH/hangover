@@ -576,18 +576,18 @@ struct qemu_WICBitmapEncoder_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct qemu_wic_encode *impl_from_IWICBitmapEncoder(IWICBitmapEncoder *iface)
+static inline struct qemu_wic_encoder *impl_from_IWICBitmapEncoder(IWICBitmapEncoder *iface)
 {
-    return CONTAINING_RECORD(iface, struct qemu_wic_encode, IWICBitmapEncoder_iface);
+    return CONTAINING_RECORD(iface, struct qemu_wic_encoder, IWICBitmapEncoder_iface);
 }
 
 static HRESULT WINAPI WICBitmapEncoder_QueryInterface(IWICBitmapEncoder *iface, REFIID iid, void **ppv)
 {
     struct qemu_WICBitmapEncoder_QueryInterface call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
     call.iid = (ULONG_PTR)iid;
     call.ppv = (ULONG_PTR)ppv;
 
@@ -601,12 +601,12 @@ static HRESULT WINAPI WICBitmapEncoder_QueryInterface(IWICBitmapEncoder *iface, 
 void qemu_WICBitmapEncoder_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_QueryInterface *c = (struct qemu_WICBitmapEncoder_QueryInterface *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_QueryInterface(wic_encode->host, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
+    c->super.iret = IWICBitmapEncoder_QueryInterface(wic_encoder->host, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
 }
 
 #endif
@@ -622,10 +622,10 @@ struct qemu_WICBitmapEncoder_AddRef
 static ULONG WINAPI WICBitmapEncoder_AddRef(IWICBitmapEncoder *iface)
 {
     struct qemu_WICBitmapEncoder_AddRef call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_ADDREF);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
 
     qemu_syscall(&call.super);
 
@@ -637,12 +637,12 @@ static ULONG WINAPI WICBitmapEncoder_AddRef(IWICBitmapEncoder *iface)
 void qemu_WICBitmapEncoder_AddRef(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_AddRef *c = (struct qemu_WICBitmapEncoder_AddRef *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_AddRef(wic_encode->host);
+    c->super.iret = IWICBitmapEncoder_AddRef(wic_encoder->host);
 }
 
 #endif
@@ -658,10 +658,10 @@ struct qemu_WICBitmapEncoder_Release
 static ULONG WINAPI WICBitmapEncoder_Release(IWICBitmapEncoder *iface)
 {
     struct qemu_WICBitmapEncoder_Release call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_RELEASE);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
 
     qemu_syscall(&call.super);
 
@@ -673,12 +673,12 @@ static ULONG WINAPI WICBitmapEncoder_Release(IWICBitmapEncoder *iface)
 void qemu_WICBitmapEncoder_Release(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_Release *c = (struct qemu_WICBitmapEncoder_Release *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_Release(wic_encode->host);
+    c->super.iret = IWICBitmapEncoder_Release(wic_encoder->host);
 }
 
 #endif
@@ -696,10 +696,10 @@ struct qemu_WICBitmapEncoder_Initialize
 static HRESULT WINAPI WICBitmapEncoder_Initialize(IWICBitmapEncoder *iface, IStream *pIStream, WICBitmapEncoderCacheOption cacheOption)
 {
     struct qemu_WICBitmapEncoder_Initialize call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_INITIALIZE);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
     call.pIStream = (ULONG_PTR)pIStream;
     call.cacheOption = cacheOption;
 
@@ -713,12 +713,12 @@ static HRESULT WINAPI WICBitmapEncoder_Initialize(IWICBitmapEncoder *iface, IStr
 void qemu_WICBitmapEncoder_Initialize(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_Initialize *c = (struct qemu_WICBitmapEncoder_Initialize *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_Initialize(wic_encode->host, QEMU_G2H(c->pIStream), c->cacheOption);
+    c->super.iret = IWICBitmapEncoder_Initialize(wic_encoder->host, QEMU_G2H(c->pIStream), c->cacheOption);
 }
 
 #endif
@@ -735,10 +735,10 @@ struct qemu_WICBitmapEncoder_GetContainerFormat
 static HRESULT WINAPI WICBitmapEncoder_GetContainerFormat(IWICBitmapEncoder *iface, GUID *pguidContainerFormat)
 {
     struct qemu_WICBitmapEncoder_GetContainerFormat call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_GETCONTAINERFORMAT);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
     call.pguidContainerFormat = (ULONG_PTR)pguidContainerFormat;
 
     qemu_syscall(&call.super);
@@ -751,12 +751,12 @@ static HRESULT WINAPI WICBitmapEncoder_GetContainerFormat(IWICBitmapEncoder *ifa
 void qemu_WICBitmapEncoder_GetContainerFormat(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_GetContainerFormat *c = (struct qemu_WICBitmapEncoder_GetContainerFormat *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_GetContainerFormat(wic_encode->host, QEMU_G2H(c->pguidContainerFormat));
+    c->super.iret = IWICBitmapEncoder_GetContainerFormat(wic_encoder->host, QEMU_G2H(c->pguidContainerFormat));
 }
 
 #endif
@@ -773,10 +773,10 @@ struct qemu_WICBitmapEncoder_GetEncoderInfo
 static HRESULT WINAPI WICBitmapEncoder_GetEncoderInfo(IWICBitmapEncoder *iface, IWICBitmapEncoderInfo **ppIEncoderInfo)
 {
     struct qemu_WICBitmapEncoder_GetEncoderInfo call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_GETENCODERINFO);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
     call.ppIEncoderInfo = (ULONG_PTR)ppIEncoderInfo;
 
     qemu_syscall(&call.super);
@@ -789,12 +789,12 @@ static HRESULT WINAPI WICBitmapEncoder_GetEncoderInfo(IWICBitmapEncoder *iface, 
 void qemu_WICBitmapEncoder_GetEncoderInfo(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_GetEncoderInfo *c = (struct qemu_WICBitmapEncoder_GetEncoderInfo *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_GetEncoderInfo(wic_encode->host, QEMU_G2H(c->ppIEncoderInfo));
+    c->super.iret = IWICBitmapEncoder_GetEncoderInfo(wic_encoder->host, QEMU_G2H(c->ppIEncoderInfo));
 }
 
 #endif
@@ -812,10 +812,10 @@ struct qemu_WICBitmapEncoder_SetColorContexts
 static HRESULT WINAPI WICBitmapEncoder_SetColorContexts(IWICBitmapEncoder *iface, UINT cCount, IWICColorContext **ppIColorContext)
 {
     struct qemu_WICBitmapEncoder_SetColorContexts call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_SETCOLORCONTEXTS);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
     call.cCount = cCount;
     call.ppIColorContext = (ULONG_PTR)ppIColorContext;
 
@@ -829,12 +829,12 @@ static HRESULT WINAPI WICBitmapEncoder_SetColorContexts(IWICBitmapEncoder *iface
 void qemu_WICBitmapEncoder_SetColorContexts(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_SetColorContexts *c = (struct qemu_WICBitmapEncoder_SetColorContexts *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_SetColorContexts(wic_encode->host, c->cCount, QEMU_G2H(c->ppIColorContext));
+    c->super.iret = IWICBitmapEncoder_SetColorContexts(wic_encoder->host, c->cCount, QEMU_G2H(c->ppIColorContext));
 }
 
 #endif
@@ -851,10 +851,10 @@ struct qemu_WICBitmapEncoder_SetPalette
 static HRESULT WINAPI WICBitmapEncoder_SetPalette(IWICBitmapEncoder *iface, IWICPalette *palette)
 {
     struct qemu_WICBitmapEncoder_SetPalette call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_SETPALETTE);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
     call.palette = (ULONG_PTR)palette;
 
     qemu_syscall(&call.super);
@@ -867,12 +867,12 @@ static HRESULT WINAPI WICBitmapEncoder_SetPalette(IWICBitmapEncoder *iface, IWIC
 void qemu_WICBitmapEncoder_SetPalette(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_SetPalette *c = (struct qemu_WICBitmapEncoder_SetPalette *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_SetPalette(wic_encode->host, QEMU_G2H(c->palette));
+    c->super.iret = IWICBitmapEncoder_SetPalette(wic_encoder->host, QEMU_G2H(c->palette));
 }
 
 #endif
@@ -889,10 +889,10 @@ struct qemu_WICBitmapEncoder_SetThumbnail
 static HRESULT WINAPI WICBitmapEncoder_SetThumbnail(IWICBitmapEncoder *iface, IWICBitmapSource *pIThumbnail)
 {
     struct qemu_WICBitmapEncoder_SetThumbnail call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_SETTHUMBNAIL);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
     call.pIThumbnail = (ULONG_PTR)pIThumbnail;
 
     qemu_syscall(&call.super);
@@ -905,12 +905,12 @@ static HRESULT WINAPI WICBitmapEncoder_SetThumbnail(IWICBitmapEncoder *iface, IW
 void qemu_WICBitmapEncoder_SetThumbnail(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_SetThumbnail *c = (struct qemu_WICBitmapEncoder_SetThumbnail *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_SetThumbnail(wic_encode->host, QEMU_G2H(c->pIThumbnail));
+    c->super.iret = IWICBitmapEncoder_SetThumbnail(wic_encoder->host, QEMU_G2H(c->pIThumbnail));
 }
 
 #endif
@@ -927,10 +927,10 @@ struct qemu_WICBitmapEncoder_SetPreview
 static HRESULT WINAPI WICBitmapEncoder_SetPreview(IWICBitmapEncoder *iface, IWICBitmapSource *pIPreview)
 {
     struct qemu_WICBitmapEncoder_SetPreview call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_SETPREVIEW);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
     call.pIPreview = (ULONG_PTR)pIPreview;
 
     qemu_syscall(&call.super);
@@ -943,12 +943,12 @@ static HRESULT WINAPI WICBitmapEncoder_SetPreview(IWICBitmapEncoder *iface, IWIC
 void qemu_WICBitmapEncoder_SetPreview(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_SetPreview *c = (struct qemu_WICBitmapEncoder_SetPreview *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_SetPreview(wic_encode->host, QEMU_G2H(c->pIPreview));
+    c->super.iret = IWICBitmapEncoder_SetPreview(wic_encoder->host, QEMU_G2H(c->pIPreview));
 }
 
 #endif
@@ -966,10 +966,10 @@ struct qemu_WICBitmapEncoder_CreateNewFrame
 static HRESULT WINAPI WICBitmapEncoder_CreateNewFrame(IWICBitmapEncoder *iface, IWICBitmapFrameEncode **ppIFrameEncode, IPropertyBag2 **ppIEncoderOptions)
 {
     struct qemu_WICBitmapEncoder_CreateNewFrame call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_CREATENEWFRAME);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
     call.ppIFrameEncode = (ULONG_PTR)ppIFrameEncode;
     call.ppIEncoderOptions = (ULONG_PTR)ppIEncoderOptions;
 
@@ -983,12 +983,12 @@ static HRESULT WINAPI WICBitmapEncoder_CreateNewFrame(IWICBitmapEncoder *iface, 
 void qemu_WICBitmapEncoder_CreateNewFrame(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_CreateNewFrame *c = (struct qemu_WICBitmapEncoder_CreateNewFrame *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_CreateNewFrame(wic_encode->host, QEMU_G2H(c->ppIFrameEncode), QEMU_G2H(c->ppIEncoderOptions));
+    c->super.iret = IWICBitmapEncoder_CreateNewFrame(wic_encoder->host, QEMU_G2H(c->ppIFrameEncode), QEMU_G2H(c->ppIEncoderOptions));
 }
 
 #endif
@@ -1004,10 +1004,10 @@ struct qemu_WICBitmapEncoder_Commit
 static HRESULT WINAPI WICBitmapEncoder_Commit(IWICBitmapEncoder *iface)
 {
     struct qemu_WICBitmapEncoder_Commit call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_COMMIT);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
 
     qemu_syscall(&call.super);
 
@@ -1019,12 +1019,12 @@ static HRESULT WINAPI WICBitmapEncoder_Commit(IWICBitmapEncoder *iface)
 void qemu_WICBitmapEncoder_Commit(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_Commit *c = (struct qemu_WICBitmapEncoder_Commit *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_Commit(wic_encode->host);
+    c->super.iret = IWICBitmapEncoder_Commit(wic_encoder->host);
 }
 
 #endif
@@ -1041,10 +1041,10 @@ struct qemu_WICBitmapEncoder_GetMetadataQueryWriter
 static HRESULT WINAPI WICBitmapEncoder_GetMetadataQueryWriter(IWICBitmapEncoder *iface, IWICMetadataQueryWriter **ppIMetadataQueryWriter)
 {
     struct qemu_WICBitmapEncoder_GetMetadataQueryWriter call;
-    struct qemu_wic_encode *wic_encode = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_GETMETADATAQUERYWRITER);
-    call.iface = (ULONG_PTR)wic_encode;
+    call.iface = (ULONG_PTR)wic_encoder;
     call.ppIMetadataQueryWriter = (ULONG_PTR)ppIMetadataQueryWriter;
 
     qemu_syscall(&call.super);
@@ -1057,12 +1057,12 @@ static HRESULT WINAPI WICBitmapEncoder_GetMetadataQueryWriter(IWICBitmapEncoder 
 void qemu_WICBitmapEncoder_GetMetadataQueryWriter(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_GetMetadataQueryWriter *c = (struct qemu_WICBitmapEncoder_GetMetadataQueryWriter *)call;
-    struct qemu_wic_encode *wic_encode;
+    struct qemu_wic_encoder *wic_encoder;
 
     WINE_FIXME("Unverified!\n");
-    wic_encode = QEMU_G2H(c->iface);
+    wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_GetMetadataQueryWriter(wic_encode->host, QEMU_G2H(c->ppIMetadataQueryWriter));
+    c->super.iret = IWICBitmapEncoder_GetMetadataQueryWriter(wic_encoder->host, QEMU_G2H(c->ppIMetadataQueryWriter));
 }
 
 #endif
