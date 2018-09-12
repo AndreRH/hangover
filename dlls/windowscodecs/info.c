@@ -1092,16 +1092,24 @@ struct qemu_WICBitmapDecoderInfo_CreateInstance
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoderInfo_CreateInstance(IWICBitmapDecoderInfo *iface, IWICBitmapDecoder **ppIBitmapDecoder)
+static HRESULT WINAPI WICBitmapDecoderInfo_CreateInstance(IWICBitmapDecoderInfo *iface,
+        IWICBitmapDecoder **ppIBitmapDecoder)
 {
     struct qemu_WICBitmapDecoderInfo_CreateInstance call;
     struct qemu_wic_info *info = impl_from_IWICBitmapDecoderInfo(iface);
+    struct qemu_wic_decoder *decoder;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPDECODERINFO_CREATEINSTANCE);
     call.iface = (ULONG_PTR)info;
     call.ppIBitmapDecoder = (ULONG_PTR)ppIBitmapDecoder;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    decoder = (struct qemu_wic_decoder *)(ULONG_PTR)call.ppIBitmapDecoder;
+    WICBitmapDecoder_init_guest(decoder);
+    *ppIBitmapDecoder = &decoder->IWICBitmapDecoder_iface;
 
     return call.super.iret;
 }
@@ -1112,11 +1120,24 @@ void qemu_WICBitmapDecoderInfo_CreateInstance(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoderInfo_CreateInstance *c = (struct qemu_WICBitmapDecoderInfo_CreateInstance *)call;
     struct qemu_wic_info *info;
+    IWICBitmapDecoder *host;
+    struct qemu_wic_decoder *decoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoderInfo_CreateInstance((IWICBitmapDecoderInfo *)info->host, QEMU_G2H(c->ppIBitmapDecoder));
+    c->super.iret = IWICBitmapDecoderInfo_CreateInstance((IWICBitmapDecoderInfo *)info->host, 
+            c->ppIBitmapDecoder ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    decoder = WICBitmapDecoder_create_host(host);
+    if (!decoder)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    c->ppIBitmapDecoder = QEMU_H2G(decoder);
 }
 
 #endif
