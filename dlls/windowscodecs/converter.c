@@ -482,7 +482,7 @@ void qemu_WICFormatConverter_CanConvert(struct qemu_syscall *call)
     struct qemu_WICFormatConverter_CanConvert *c = (struct qemu_WICFormatConverter_CanConvert *)call;
     struct qemu_wic_converter *converter;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     converter = QEMU_G2H(c->iface);
 
     c->super.iret = IWICFormatConverter_CanConvert(converter->host, QEMU_G2H(c->srcPixelFormat),
