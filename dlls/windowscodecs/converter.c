@@ -400,11 +400,11 @@ struct qemu_WICFormatConverter_Initialize
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t pISource;
+    uint64_t bitmap, clipper, converter, custom;
     uint64_t dstFormat;
     uint64_t dither;
     uint64_t pIPalette;
-    uint64_t alphaThresholdPercent;
+    double alphaThresholdPercent;
     uint64_t paletteTranslate;
 };
 
@@ -416,13 +416,40 @@ static HRESULT WINAPI WICFormatConverter_Initialize(IWICFormatConverter *iface, 
 {
     struct qemu_WICFormatConverter_Initialize call;
     struct qemu_wic_converter *converter = impl_from_IWICFormatConverter(iface);
+    struct qemu_wic_palette *palette = unsafe_impl_from_IWICPalette(pIPalette);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICFORMATCONVERTER_INITIALIZE);
     call.iface = (ULONG_PTR)converter;
-    call.pISource = (ULONG_PTR)pISource;
+    if (!pISource)
+    {
+        call.bitmap = call.clipper = call.custom = call.converter = 0;
+    }
+    else if (((IWICBitmap *)pISource)->lpVtbl == &WICBitmap_Vtbl)
+    {
+        struct qemu_wic_bitmap *bitmap = impl_from_IWICBitmap((IWICBitmap *)pISource);
+        call.bitmap = (ULONG_PTR)bitmap;
+        call.clipper = call.custom = call.converter = 0;
+    }
+    else if (((IWICBitmapClipper *)pISource)->lpVtbl == &WICBitmapClipper_Vtbl)
+    {
+        struct qemu_wic_clipper *other = impl_from_IWICBitmapClipper((IWICBitmapClipper *)pISource);
+        call.clipper = (ULONG_PTR)other;
+        call.bitmap = call.custom = call.converter = 0;
+    }
+    else if (((IWICFormatConverter *)pISource)->lpVtbl == &WICFormatConverter_Vtbl)
+    {
+        struct qemu_wic_converter *converter = impl_from_IWICFormatConverter((IWICFormatConverter *)pISource);
+        call.converter = (ULONG_PTR)converter;
+        call.clipper = call.bitmap = call.custom = 0;
+    }
+    else
+    {
+        call.bitmap = call.clipper = call.converter = 0;
+        call.custom = (ULONG_PTR)pISource;
+    }
     call.dstFormat = (ULONG_PTR)dstFormat;
     call.dither = dither;
-    call.pIPalette = (ULONG_PTR)pIPalette;
+    call.pIPalette = (ULONG_PTR)palette;
     call.alphaThresholdPercent = alphaThresholdPercent;
     call.paletteTranslate = paletteTranslate;
 
@@ -436,13 +463,68 @@ static HRESULT WINAPI WICFormatConverter_Initialize(IWICFormatConverter *iface, 
 void qemu_WICFormatConverter_Initialize(struct qemu_syscall *call)
 {
     struct qemu_WICFormatConverter_Initialize *c = (struct qemu_WICFormatConverter_Initialize *)call;
-    struct qemu_wic_converter *converter;
+    struct qemu_wic_converter *converter, *other = NULL;
+    struct qemu_bitmap_source *source_wrapper = NULL;
+    IWICBitmapSource *host_source;
+    struct qemu_wic_bitmap *bitmap = NULL;
+    struct qemu_wic_clipper *clipper = NULL;
+    struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     converter = QEMU_G2H(c->iface);
+    palette = QEMU_G2H(c->pIPalette);
 
-    c->super.iret = IWICFormatConverter_Initialize(converter->host, QEMU_G2H(c->pISource), QEMU_G2H(c->dstFormat),
-            c->dither, QEMU_G2H(c->pIPalette), c->alphaThresholdPercent, c->paletteTranslate);
+    if (c->bitmap)
+    {
+        bitmap = QEMU_G2H(c->bitmap);
+        host_source = (IWICBitmapSource *)bitmap->bitmap_host;
+        WINE_TRACE("Found our bitmap %p, passing host %p.\n", bitmap, host_source);
+        IWICBitmapSource_AddRef(host_source);
+    }
+    else if (c->clipper)
+    {
+        clipper = QEMU_G2H(c->clipper);
+        host_source = (IWICBitmapSource *)clipper->host;
+        WINE_TRACE("Found our clipper %p, passing host %p.\n", clipper, host_source);
+        IWICBitmapSource_AddRef(host_source);
+    }
+    else if (c->converter)
+    {
+        other = QEMU_G2H(c->converter);
+        host_source = (IWICBitmapSource *)other->host;
+        WINE_TRACE("Found our converter %p, passing host %p.\n", other, host_source);
+        IWICBitmapSource_AddRef(host_source);
+    }
+    else if (c->custom)
+    {
+        WINE_TRACE("Creating a wrapper for unrecognized source %p.\n", (void *)c->custom);
+        source_wrapper = bitmap_source_wrapper_create(c->custom);
+        if (!source_wrapper)
+        {
+            WINE_WARN("Out of memory.\n");
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+        host_source = &source_wrapper->IWICBitmapSource_iface;
+    }
+    else
+    {
+        host_source = NULL;
+    }
+
+    c->super.iret = IWICFormatConverter_Initialize(converter->host, host_source, QEMU_G2H(c->dstFormat),
+            c->dither, palette ? palette->host : NULL, c->alphaThresholdPercent, c->paletteTranslate);
+
+    /* Release our ref, the host clipper has its own if it wants one. */
+    if (host_source)
+        IWICBitmapSource_Release(host_source);
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        converter->source_bitmap = bitmap;
+        converter->source_converter = other;
+        converter->source_clipper = clipper;
+    }
 }
 
 #endif
