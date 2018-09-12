@@ -1053,7 +1053,8 @@ struct qemu_WICBitmapDecoderInfo_MatchesPattern
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoderInfo_MatchesPattern(IWICBitmapDecoderInfo *iface, IStream *pIStream, BOOL *pfMatches)
+static HRESULT WINAPI WICBitmapDecoderInfo_MatchesPattern(IWICBitmapDecoderInfo *iface,
+        IStream *pIStream, BOOL *pfMatches)
 {
     struct qemu_WICBitmapDecoderInfo_MatchesPattern call;
     struct qemu_wic_info *info = impl_from_IWICBitmapDecoderInfo(iface);
@@ -1074,11 +1075,17 @@ void qemu_WICBitmapDecoderInfo_MatchesPattern(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoderInfo_MatchesPattern *c = (struct qemu_WICBitmapDecoderInfo_MatchesPattern *)call;
     struct qemu_wic_info *info;
+    struct istream_wrapper *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
+    stream = istream_wrapper_create(c->pIStream);
 
-    c->super.iret = IWICBitmapDecoderInfo_MatchesPattern((IWICBitmapDecoderInfo *)info->host, QEMU_G2H(c->pIStream), QEMU_G2H(c->pfMatches));
+    c->super.iret = IWICBitmapDecoderInfo_MatchesPattern((IWICBitmapDecoderInfo *)info->host,
+            istream_wrapper_host_iface(stream), QEMU_G2H(c->pfMatches));
+
+    if (stream)
+        IStream_Release(istream_wrapper_host_iface(stream));
 }
 
 #endif
