@@ -1,6 +1,8 @@
 #ifndef HAVE_QEMU_THUNK_WINCODEC_H
 #define HAVE_QEMU_THUNK_WINCODEC_H
 
+#include "thunk/qemu_ocidl.h"
+
 struct qemu_WICBitmapPattern
 {
     ULARGE_INTEGER Position;

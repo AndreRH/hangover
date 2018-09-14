@@ -25,6 +25,9 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_wincodec.h"
+
 #include <wine/debug.h>
 #include <wine/list.h>
 
@@ -275,7 +278,7 @@ void qemu_PropertyBag_CountProperties(struct qemu_syscall *call)
     struct qemu_PropertyBag_CountProperties *c = (struct qemu_PropertyBag_CountProperties *)call;
     struct qemu_propery_bag *bag;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bag = QEMU_G2H(c->iface);
 
     c->super.iret = IPropertyBag2_CountProperties(bag->host, QEMU_G2H(c->pcProperties));
@@ -319,12 +322,43 @@ void qemu_PropertyBag_GetPropertyInfo(struct qemu_syscall *call)
 {
     struct qemu_PropertyBag_GetPropertyInfo *c = (struct qemu_PropertyBag_GetPropertyInfo *)call;
     struct qemu_propery_bag *bag;
+    PROPBAG2 *info;
+    ULONG *count, i;
+    struct qemu_PROPBAG2 *info32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bag = QEMU_G2H(c->iface);
+    count = QEMU_G2H(c->pcProperties);
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pPropBag);
+#else
+    info32 = QEMU_G2H(c->pPropBag);
+    if (info32)
+    {
+        info = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*info) * c->cProperties);
+        if (!info)
+        {
+            WINE_WARN("Out of memory\n");
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+    }
+    else
+    {
+        info = NULL;
+    }
+#endif
 
-    c->super.iret = IPropertyBag2_GetPropertyInfo(bag->host, c->iProperty, c->cProperties, QEMU_G2H(c->pPropBag),
-            QEMU_G2H(c->pcProperties));
+    c->super.iret = IPropertyBag2_GetPropertyInfo(bag->host, c->iProperty, c->cProperties, info, count);
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+    {
+        for (i = 0; i < *count; ++i)
+            PROPBAG2_h2g(&info32[i], &info[i]);
+    }
+    HeapFree(GetProcessHeap(), 0, info);
+#endif
 }
 
 #endif
