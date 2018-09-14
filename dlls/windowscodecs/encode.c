@@ -480,20 +480,47 @@ struct qemu_WICBitmapFrameEncode_WriteSource
 {
     struct qemu_syscall super;
     uint64_t iface;
-    uint64_t pIBitmapSource;
+    uint64_t bitmap, clipper, converter, custom;
     uint64_t prc;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapFrameEncode_WriteSource(IWICBitmapFrameEncode *iface, IWICBitmapSource *pIBitmapSource, WICRect *prc)
+static HRESULT WINAPI WICBitmapFrameEncode_WriteSource(IWICBitmapFrameEncode *iface,
+        IWICBitmapSource *pIBitmapSource, WICRect *prc)
 {
     struct qemu_WICBitmapFrameEncode_WriteSource call;
     struct qemu_wic_frame_encode *frame_encode = impl_from_IWICBitmapFrameEncode(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEENCODE_WRITESOURCE);
     call.iface = (ULONG_PTR)frame_encode;
-    call.pIBitmapSource = (ULONG_PTR)pIBitmapSource;
+    if (!pIBitmapSource)
+    {
+        call.bitmap = call.clipper = call.custom = call.converter = 0;
+    }
+    else if (((IWICBitmap *)pIBitmapSource)->lpVtbl == &WICBitmap_Vtbl)
+    {
+        struct qemu_wic_bitmap *bitmap = impl_from_IWICBitmap((IWICBitmap *)pIBitmapSource);
+        call.bitmap = (ULONG_PTR)bitmap;
+        call.clipper = call.custom = call.converter = 0;
+    }
+    else if (((IWICBitmapClipper *)pIBitmapSource)->lpVtbl == &WICBitmapClipper_Vtbl)
+    {
+        struct qemu_wic_clipper *clipper = impl_from_IWICBitmapClipper((IWICBitmapClipper *)pIBitmapSource);
+        call.clipper = (ULONG_PTR)clipper;
+        call.bitmap = call.custom = call.converter = 0;
+    }
+    else if (((IWICFormatConverter *)pIBitmapSource)->lpVtbl == &WICFormatConverter_Vtbl)
+    {
+        struct qemu_wic_converter *converter = impl_from_IWICFormatConverter((IWICFormatConverter *)pIBitmapSource);
+        call.converter = (ULONG_PTR)converter;
+        call.clipper = call.bitmap = call.custom = 0;
+    }
+    else
+    {
+        call.bitmap = call.clipper = call.converter = 0;
+        call.custom = (ULONG_PTR)pIBitmapSource;
+    }
     call.prc = (ULONG_PTR)prc;
 
     qemu_syscall(&call.super);
@@ -507,11 +534,54 @@ void qemu_WICBitmapFrameEncode_WriteSource(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameEncode_WriteSource *c = (struct qemu_WICBitmapFrameEncode_WriteSource *)call;
     struct qemu_wic_frame_encode *frame_encode;
+    struct qemu_bitmap_source *source_wrapper = NULL;
+    IWICBitmapSource *host_source;
+    struct qemu_wic_bitmap *bitmap = NULL;
+    struct qemu_wic_converter *converter = NULL;
+    struct qemu_wic_clipper *clipper = NULL;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     frame_encode = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameEncode_WriteSource(frame_encode->host, QEMU_G2H(c->pIBitmapSource), QEMU_G2H(c->prc));
+    if (c->bitmap)
+    {
+        bitmap = QEMU_G2H(c->bitmap);
+        host_source = (IWICBitmapSource *)bitmap->bitmap_host;
+        WINE_TRACE("Found our bitmap %p, passing host %p.\n", bitmap, host_source);
+    }
+    else if (c->clipper)
+    {
+        clipper = QEMU_G2H(c->clipper);
+        host_source = (IWICBitmapSource *)clipper->host;
+        WINE_TRACE("Found our clipper %p, passing host %p.\n", clipper, host_source);
+    }
+    else if (c->converter)
+    {
+        converter = QEMU_G2H(c->converter);
+        host_source = (IWICBitmapSource *)converter->host;
+        WINE_TRACE("Found our converter %p, passing host %p.\n", converter, host_source);
+    }
+    else if (c->custom)
+    {
+        WINE_TRACE("Creating a wrapper for unrecognized source %p.\n", (void *)c->custom);
+        source_wrapper = bitmap_source_wrapper_create(c->custom);
+        if (!source_wrapper)
+        {
+            WINE_WARN("Out of memory.\n");
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+        host_source = &source_wrapper->IWICBitmapSource_iface;
+    }
+    else
+    {
+        host_source = NULL;
+    }
+
+    c->super.iret = IWICBitmapFrameEncode_WriteSource(frame_encode->host, host_source, QEMU_G2H(c->prc));
+
+    if (source_wrapper)
+        IWICBitmapSource_Release(&source_wrapper->IWICBitmapSource_iface);
 }
 
 #endif
