@@ -46,11 +46,6 @@ struct qemu_PropertyBag_QueryInterface
 
 #ifdef QEMU_DLL_GUEST
 
-static inline struct qemu_propery_bag *impl_from_IPropertyBag2(IPropertyBag2 *iface)
-{
-    return CONTAINING_RECORD(iface, struct qemu_propery_bag, IPropertyBag2_iface);
-}
-
 static HRESULT WINAPI PropertyBag_QueryInterface(IPropertyBag2 *iface, REFIID iid, void **ppv)
 {
     struct qemu_PropertyBag_QueryInterface call;
@@ -470,7 +465,7 @@ void qemu_PropertyBag_LoadObject(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-static const IPropertyBag2Vtbl PropertyBag_Vtbl =
+const IPropertyBag2Vtbl PropertyBag_Vtbl =
 {
     PropertyBag_QueryInterface,
     PropertyBag_AddRef,

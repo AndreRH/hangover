@@ -482,6 +482,7 @@ extern const IWICBitmapClipperVtbl WICBitmapClipper_Vtbl;
 extern const IWICBitmapVtbl WICBitmap_Vtbl;
 extern const IWICBitmapFrameDecodeVtbl WICBitmapFrameDecode_FrameVtbl;
 extern const IWICFormatConverterVtbl WICFormatConverter_Vtbl;
+extern const IPropertyBag2Vtbl PropertyBag_Vtbl;
 
 static inline struct qemu_wic_bitmap *impl_from_IWICBitmap(IWICBitmap *iface)
 {
@@ -496,6 +497,11 @@ static inline struct qemu_wic_clipper *impl_from_IWICBitmapClipper(IWICBitmapCli
 static inline struct qemu_wic_converter *impl_from_IWICFormatConverter(IWICFormatConverter *iface)
 {
     return CONTAINING_RECORD(iface, struct qemu_wic_converter, IWICFormatConverter_iface);
+}
+
+static inline struct qemu_propery_bag *impl_from_IPropertyBag2(IPropertyBag2 *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_propery_bag, IPropertyBag2_iface);
 }
 
 #else

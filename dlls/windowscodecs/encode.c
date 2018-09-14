@@ -169,9 +169,26 @@ static HRESULT WINAPI WICBitmapFrameEncode_Initialize(IWICBitmapFrameEncode *ifa
 {
     struct qemu_WICBitmapFrameEncode_Initialize call;
     struct qemu_wic_frame_encode *frame_encode = impl_from_IWICBitmapFrameEncode(iface);
+    struct qemu_propery_bag *bag;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEENCODE_INITIALIZE);
     call.iface = (ULONG_PTR)frame_encode;
+
+    if (!pIEncoderOptions)
+    {
+        call.pIEncoderOptions = 0;
+    }
+    else if (pIEncoderOptions->lpVtbl == &PropertyBag_Vtbl)
+    {
+        call.pIEncoderOptions = (ULONG_PTR)impl_from_IPropertyBag2(pIEncoderOptions);
+    }
+    else
+    {
+        /* I totally expect apps to pass custom bags. */
+        WINE_FIXME("Write a reverse IPropertyBag2 wrapper.\n");
+        call.pIEncoderOptions = 0;
+    }
+
     call.pIEncoderOptions = (ULONG_PTR)pIEncoderOptions;
 
     qemu_syscall(&call.super);
@@ -185,11 +202,13 @@ void qemu_WICBitmapFrameEncode_Initialize(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameEncode_Initialize *c = (struct qemu_WICBitmapFrameEncode_Initialize *)call;
     struct qemu_wic_frame_encode *frame_encode;
+    struct qemu_propery_bag *bag;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     frame_encode = QEMU_G2H(c->iface);
+    bag = QEMU_G2H(c->pIEncoderOptions);
 
-    c->super.iret = IWICBitmapFrameEncode_Initialize(frame_encode->host, QEMU_G2H(c->pIEncoderOptions));
+    c->super.iret = IWICBitmapFrameEncode_Initialize(frame_encode->host, bag ? bag->host : NULL);
 }
 
 #endif
