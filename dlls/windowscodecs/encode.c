@@ -717,7 +717,8 @@ struct qemu_WICBitmapEncoder_Initialize
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapEncoder_Initialize(IWICBitmapEncoder *iface, IStream *pIStream, WICBitmapEncoderCacheOption cacheOption)
+static HRESULT WINAPI WICBitmapEncoder_Initialize(IWICBitmapEncoder *iface, IStream *pIStream,
+        WICBitmapEncoderCacheOption cacheOption)
 {
     struct qemu_WICBitmapEncoder_Initialize call;
     struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
@@ -738,11 +739,16 @@ void qemu_WICBitmapEncoder_Initialize(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_Initialize *c = (struct qemu_WICBitmapEncoder_Initialize *)call;
     struct qemu_wic_encoder *wic_encoder;
+    struct istream_wrapper *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     wic_encoder = QEMU_G2H(c->iface);
+    stream = istream_wrapper_create(c->pIStream);
 
-    c->super.iret = IWICBitmapEncoder_Initialize(wic_encoder->host, QEMU_G2H(c->pIStream), c->cacheOption);
+    c->super.iret = IWICBitmapEncoder_Initialize(wic_encoder->host, istream_wrapper_host_iface(stream),
+            c->cacheOption);
+    if (stream)
+        IStream_Release(istream_wrapper_host_iface(stream));
 }
 
 #endif
