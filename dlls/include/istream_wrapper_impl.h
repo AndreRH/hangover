@@ -161,6 +161,7 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_Read(IStream *iface, void *pv, 
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
     struct istream_wrapper_ReadWrite call;
     HRESULT hr;
+    void *bounce_buffer = NULL;
 
     WINE_TRACE("\n");
     call.iface = istream_wrapper_guest_iface(stream);
@@ -168,9 +169,26 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_Read(IStream *iface, void *pv, 
     call.cb = cb;
     call.count = QEMU_H2G(read);
 
+    /* Sigh. Windowscodecs passes pointers allocated by libpng, which somehow manages to allocate something > 4GB.
+     * Or they just pass static data, I can't check right now because the libpng servers are down. */
+#if GUEST_BIT != HOST_BIT
+    if (call.pv > ~0U)
+    {
+        bounce_buffer = HeapAlloc(GetProcessHeap(), 0, cb);
+        call.pv = QEMU_H2G(bounce_buffer);
+    }
+#endif
+
     WINE_TRACE("Calling guest callback %p.\n", (void *)istream_wrapper_Read_guest);
     hr = qemu_ops->qemu_execute(QEMU_G2H(istream_wrapper_Read_guest), QEMU_H2G(&call));
     WINE_TRACE("Guest CB returned 0x%x.\n", hr);
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(hr) && bounce_buffer)
+        memcpy(pv, bounce_buffer, *read);
+
+    HeapFree(GetProcessHeap(), 0, bounce_buffer);
+#endif
 
     return hr;
 }
@@ -181,16 +199,29 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_Write(IStream *iface, const voi
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
     struct istream_wrapper_ReadWrite call;
     HRESULT hr;
+    void *bounce_buffer = NULL;
 
     WINE_TRACE("\n");
     call.iface = istream_wrapper_guest_iface(stream);
     call.pv = QEMU_H2G(pv);
     call.cb = cb;
     call.count = QEMU_H2G(written);
+#if GUEST_BIT != HOST_BIT
+    if (call.pv > ~0U)
+    {
+        bounce_buffer = HeapAlloc(GetProcessHeap(), 0, cb);
+        memcpy(bounce_buffer, pv, cb);
+        call.pv = QEMU_H2G(bounce_buffer);
+    }
+#endif
 
     WINE_TRACE("Calling guest callback %p.\n", (void *)istream_wrapper_Write_guest);
     hr = qemu_ops->qemu_execute(QEMU_G2H(istream_wrapper_Write_guest), QEMU_H2G(&call));
     WINE_TRACE("Guest CB returned 0x%x.\n", hr);
+
+#if GUEST_BIT != HOST_BIT
+    HeapFree(GetProcessHeap(), 0, bounce_buffer);
+#endif
 
     return hr;
 }
