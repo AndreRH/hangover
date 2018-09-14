@@ -78,6 +78,14 @@ enum windowscodecs_calls
     CALL_IMILUNKNOWN2IMPL_QUERYINTERFACE,
     CALL_IMILUNKNOWN2IMPL_UNKNOWNMETHOD1,
     CALL_INIT_DLL,
+    CALL_PROPERTYBAG_ADDREF,
+    CALL_PROPERTYBAG_COUNTPROPERTIES,
+    CALL_PROPERTYBAG_GETPROPERTYINFO,
+    CALL_PROPERTYBAG_LOADOBJECT,
+    CALL_PROPERTYBAG_QUERYINTERFACE,
+    CALL_PROPERTYBAG_READ,
+    CALL_PROPERTYBAG_RELEASE,
+    CALL_PROPERTYBAG_WRITE,
     CALL_WICBITMAP_ADDREF,
     CALL_WICBITMAP_COPYPALETTE,
     CALL_WICBITMAP_COPYPIXELS,
@@ -427,6 +435,15 @@ struct qemu_wic_converter
     struct qemu_wic_converter *source_converter;
 };
 
+struct qemu_propery_bag
+{
+    /* Guest fields */
+    IPropertyBag2 IPropertyBag2_iface;
+
+    /* Host fields */
+    IPropertyBag2 *host;
+};
+
 /* This is a reverse wrapper. */
 struct qemu_bitmap_source
 {
@@ -456,6 +473,7 @@ void WICBitmapDecoder_init_guest(struct qemu_wic_decoder *decoder);
 void WICComponentInfo_init_guest(struct qemu_wic_info *info, enum component_info_type type);
 void WICFormatConverter_init_guest(struct qemu_wic_converter *converter);
 void WICBitmapEncoder_init_guest(struct qemu_wic_encoder *encoder);
+void PropertyBag_init_guest(struct qemu_propery_bag *bag);
 
 struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
 
@@ -537,6 +555,14 @@ void qemu_IMILBitmapImpl_UnknownMethod1(struct qemu_syscall *call);
 void qemu_IMILUnknown1Impl_QueryInterface(struct qemu_syscall *call);
 void qemu_IMILUnknown2Impl_QueryInterface(struct qemu_syscall *call);
 void qemu_IMILUnknown2Impl_UnknownMethod1(struct qemu_syscall *call);
+void qemu_PropertyBag_AddRef(struct qemu_syscall *call);
+void qemu_PropertyBag_CountProperties(struct qemu_syscall *call);
+void qemu_PropertyBag_GetPropertyInfo(struct qemu_syscall *call);
+void qemu_PropertyBag_LoadObject(struct qemu_syscall *call);
+void qemu_PropertyBag_QueryInterface(struct qemu_syscall *call);
+void qemu_PropertyBag_Read(struct qemu_syscall *call);
+void qemu_PropertyBag_Release(struct qemu_syscall *call);
+void qemu_PropertyBag_Write(struct qemu_syscall *call);
 void qemu_WICBitmapClipper_AddRef(struct qemu_syscall *call);
 void qemu_WICBitmapClipper_CopyPalette(struct qemu_syscall *call);
 void qemu_WICBitmapClipper_CopyPixels(struct qemu_syscall *call);
@@ -722,6 +748,7 @@ struct qemu_wic_decoder *WICBitmapDecoder_create_host(IWICBitmapDecoder *host);
 struct qemu_wic_info *WICComponentInfo_create_host(IWICComponentInfo *host, enum component_info_type *type);
 struct qemu_wic_converter *WICFormatConverter_create_host(IWICBitmapSource *host);
 struct qemu_wic_encoder *WICBitmapEncoder_create_host(IWICBitmapEncoder *host);
+struct qemu_propery_bag *PropertyBag_create_host(IPropertyBag2 *host);
 
 ULONG qemu_WICBitmap_Release_internal(struct qemu_wic_bitmap *bitmap);
 ULONG qemu_WICFormatConverter_Release_internal(struct qemu_wic_converter *converter);

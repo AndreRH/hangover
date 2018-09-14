@@ -1121,6 +1121,7 @@ static HRESULT WINAPI WICBitmapEncoder_CreateNewFrame(IWICBitmapEncoder *iface, 
     struct qemu_WICBitmapEncoder_CreateNewFrame call;
     struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
     struct qemu_wic_frame_encode *frame_encode;
+    struct qemu_propery_bag *bag;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_CREATENEWFRAME);
     call.iface = (ULONG_PTR)wic_encoder;
@@ -1135,6 +1136,19 @@ static HRESULT WINAPI WICBitmapEncoder_CreateNewFrame(IWICBitmapEncoder *iface, 
     frame_encode->IWICBitmapFrameEncode_iface.lpVtbl = &WICBitmapFrameEncode_Vtbl;
     *ppIFrameEncode = &frame_encode->IWICBitmapFrameEncode_iface;
 
+    if (ppIEncoderOptions)
+    {
+        bag = (struct qemu_propery_bag *)(ULONG_PTR)call.ppIEncoderOptions;
+        if (bag)
+        {
+            PropertyBag_init_guest(bag);
+            *ppIEncoderOptions = &bag->IPropertyBag2_iface;
+        }
+        else
+        {
+            *ppIEncoderOptions = NULL;
+        }
+    }
     return call.super.iret;
 }
 
@@ -1146,13 +1160,14 @@ void qemu_WICBitmapEncoder_CreateNewFrame(struct qemu_syscall *call)
     struct qemu_wic_encoder *wic_encoder;
     struct qemu_wic_frame_encode *frame_encode;
     IWICBitmapFrameEncode *host;
+    IPropertyBag2 *host_bag = NULL;
+    struct qemu_propery_bag *bag = NULL;
 
     WINE_TRACE("\n");
     wic_encoder = QEMU_G2H(c->iface);
-    if (c->ppIEncoderOptions)
-        WINE_FIXME("Encoder options not supported yet.\n");
 
-    c->super.iret = IWICBitmapEncoder_CreateNewFrame(wic_encoder->host, c->ppIFrameEncode ? &host : NULL, NULL);
+    c->super.iret = IWICBitmapEncoder_CreateNewFrame(wic_encoder->host, c->ppIFrameEncode ? &host : NULL,
+            c->ppIEncoderOptions ? &host_bag : NULL);
     if (FAILED(c->super.iret))
         return;
 
@@ -1161,6 +1176,8 @@ void qemu_WICBitmapEncoder_CreateNewFrame(struct qemu_syscall *call)
     {
         WINE_WARN("Out of memory\n");
         c->super.iret = E_OUTOFMEMORY;
+        if (host_bag)
+            IPropertyBag2_Release(host_bag);
         IWICBitmapFrameEncode_Release(host);
         return;
     }
@@ -1168,6 +1185,14 @@ void qemu_WICBitmapEncoder_CreateNewFrame(struct qemu_syscall *call)
     frame_encode->host = host;
     frame_encode->encoder = wic_encoder;
     c->ppIFrameEncode = QEMU_H2G(frame_encode);
+
+    if (host_bag)
+    {
+        bag = PropertyBag_create_host(host_bag);
+        if (!bag)
+            IPropertyBag2_Release(host_bag);
+    }
+    c->ppIEncoderOptions = QEMU_H2G(bag);
 }
 
 #endif
