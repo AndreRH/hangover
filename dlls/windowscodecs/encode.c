@@ -658,7 +658,7 @@ void qemu_WICBitmapEncoder_AddRef(struct qemu_syscall *call)
     struct qemu_WICBitmapEncoder_AddRef *c = (struct qemu_WICBitmapEncoder_AddRef *)call;
     struct qemu_wic_encoder *wic_encoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     wic_encoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapEncoder_AddRef(wic_encoder->host);
@@ -694,10 +694,15 @@ void qemu_WICBitmapEncoder_Release(struct qemu_syscall *call)
     struct qemu_WICBitmapEncoder_Release *c = (struct qemu_WICBitmapEncoder_Release *)call;
     struct qemu_wic_encoder *wic_encoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     wic_encoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapEncoder_Release(wic_encoder->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying decoder wrapper %p for host decoder %p.\n", wic_encoder, wic_encoder->host);
+        HeapFree(GetProcessHeap(), 0, wic_encoder);
+    }
 }
 
 #endif
