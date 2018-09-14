@@ -134,15 +134,24 @@ static ULONG WINAPI WICBitmapFrameEncode_Release(IWICBitmapFrameEncode *iface)
 
 #else
 
+static ULONG qemu_WICBitmapEncoder_Release_internal(struct qemu_wic_encoder *wic_encoder);
 void qemu_WICBitmapFrameEncode_Release(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameEncode_Release *c = (struct qemu_WICBitmapFrameEncode_Release *)call;
     struct qemu_wic_frame_encode *frame_encode;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     frame_encode = QEMU_G2H(c->iface);
 
+    IWICBitmapEncoder_AddRef(frame_encode->encoder->host);
     c->super.iret = IWICBitmapFrameEncode_Release(frame_encode->host);
+    qemu_WICBitmapEncoder_Release_internal(frame_encode->encoder);
+
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying frame encoder wrapper %p for host frame %p.\n", frame_encode, frame_encode->host);
+        HeapFree(GetProcessHeap(), 0, frame_encode);
+    }
 }
 
 #endif
@@ -689,6 +698,18 @@ static ULONG WINAPI WICBitmapEncoder_Release(IWICBitmapEncoder *iface)
 
 #else
 
+static ULONG qemu_WICBitmapEncoder_Release_internal(struct qemu_wic_encoder *wic_encoder)
+{
+    ULONG ref = IWICBitmapEncoder_Release(wic_encoder->host);
+    if (!ref)
+    {
+        WINE_TRACE("Destroying encoder wrapper %p for host encoder %p.\n", wic_encoder, wic_encoder->host);
+        HeapFree(GetProcessHeap(), 0, wic_encoder);
+    }
+
+    return ref;
+}
+
 void qemu_WICBitmapEncoder_Release(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_Release *c = (struct qemu_WICBitmapEncoder_Release *)call;
@@ -697,12 +718,7 @@ void qemu_WICBitmapEncoder_Release(struct qemu_syscall *call)
     WINE_TRACE("\n");
     wic_encoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoder_Release(wic_encoder->host);
-    if (!c->super.iret)
-    {
-        WINE_TRACE("Destroying decoder wrapper %p for host decoder %p.\n", wic_encoder, wic_encoder->host);
-        HeapFree(GetProcessHeap(), 0, wic_encoder);
-    }
+    c->super.iret = qemu_WICBitmapEncoder_Release_internal(wic_encoder);
 }
 
 #endif
@@ -1012,10 +1028,12 @@ static const IWICBitmapFrameEncodeVtbl WICBitmapFrameEncode_Vtbl =
 };
 
 
-static HRESULT WINAPI WICBitmapEncoder_CreateNewFrame(IWICBitmapEncoder *iface, IWICBitmapFrameEncode **ppIFrameEncode, IPropertyBag2 **ppIEncoderOptions)
+static HRESULT WINAPI WICBitmapEncoder_CreateNewFrame(IWICBitmapEncoder *iface, IWICBitmapFrameEncode **ppIFrameEncode,
+        IPropertyBag2 **ppIEncoderOptions)
 {
     struct qemu_WICBitmapEncoder_CreateNewFrame call;
     struct qemu_wic_encoder *wic_encoder = impl_from_IWICBitmapEncoder(iface);
+    struct qemu_wic_frame_encode *frame_encode;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPENCODER_CREATENEWFRAME);
     call.iface = (ULONG_PTR)wic_encoder;
@@ -1023,6 +1041,12 @@ static HRESULT WINAPI WICBitmapEncoder_CreateNewFrame(IWICBitmapEncoder *iface, 
     call.ppIEncoderOptions = (ULONG_PTR)ppIEncoderOptions;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    frame_encode = (struct qemu_wic_frame_encode *)(ULONG_PTR)call.ppIFrameEncode;
+    frame_encode->IWICBitmapFrameEncode_iface.lpVtbl = &WICBitmapFrameEncode_Vtbl;
+    *ppIFrameEncode = &frame_encode->IWICBitmapFrameEncode_iface;
 
     return call.super.iret;
 }
@@ -1033,11 +1057,30 @@ void qemu_WICBitmapEncoder_CreateNewFrame(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapEncoder_CreateNewFrame *c = (struct qemu_WICBitmapEncoder_CreateNewFrame *)call;
     struct qemu_wic_encoder *wic_encoder;
+    struct qemu_wic_frame_encode *frame_encode;
+    IWICBitmapFrameEncode *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     wic_encoder = QEMU_G2H(c->iface);
+    if (c->ppIEncoderOptions)
+        WINE_FIXME("Encoder options not supported yet.\n");
 
-    c->super.iret = IWICBitmapEncoder_CreateNewFrame(wic_encoder->host, QEMU_G2H(c->ppIFrameEncode), QEMU_G2H(c->ppIEncoderOptions));
+    c->super.iret = IWICBitmapEncoder_CreateNewFrame(wic_encoder->host, c->ppIFrameEncode ? &host : NULL, NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    frame_encode = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*frame_encode));
+    if (!frame_encode)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = E_OUTOFMEMORY;
+        IWICBitmapFrameEncode_Release(host);
+        return;
+    }
+
+    frame_encode->host = host;
+    frame_encode->encoder = wic_encoder;
+    c->ppIFrameEncode = QEMU_H2G(frame_encode);
 }
 
 #endif

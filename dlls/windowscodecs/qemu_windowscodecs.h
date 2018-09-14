@@ -331,6 +331,7 @@ struct qemu_wic_frame_encode
 
     /* Host fields */
     IWICBitmapFrameEncode *host;
+    struct qemu_wic_encoder *encoder;
 };
 
 struct qemu_wic_encoder
