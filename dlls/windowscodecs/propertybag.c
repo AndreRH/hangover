@@ -27,6 +27,7 @@
 
 #include "thunk/qemu_windows.h"
 #include "thunk/qemu_wincodec.h"
+#include "thunk/qemu_oaidl.h"
 
 #include <wine/debug.h>
 #include <wine/list.h>
@@ -195,12 +196,70 @@ void qemu_PropertyBag_Read(struct qemu_syscall *call)
 {
     struct qemu_PropertyBag_Read *c = (struct qemu_PropertyBag_Read *)call;
     struct qemu_propery_bag *bag;
+    PROPBAG2 *info;
+    struct qemu_PROPBAG2 *info32;
+    ULONG i;
+    struct qemu_VARIANT *var32;
+    VARIANT *values;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bag = QEMU_G2H(c->iface);
+    if (c->pErrLog)
+        WINE_FIXME("Error log not supported yet.\n");
 
-    c->super.iret = IPropertyBag2_Read(bag->host, c->cProperties, QEMU_G2H(c->pPropBag), QEMU_G2H(c->pErrLog),
-            QEMU_G2H(c->pvarValue), QEMU_G2H(c->phrError));
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pPropBag);
+    values = QEMU_G2H(c->pvarValue);
+#else
+    info32 = QEMU_G2H(c->pPropBag);
+    if (info32)
+    {
+        info = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*info) * c->cProperties);
+        if (!info)
+        {
+            WINE_WARN("Out of memory\n");
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+
+        for (i = 0; i < c->cProperties; ++i)
+            PROPBAG2_g2h(&info[i], &info32[i]);
+    }
+    else
+    {
+        info = NULL;
+    }
+
+    var32 = QEMU_G2H(c->pvarValue);
+    if (var32)
+    {
+        values = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*values) * c->cProperties);
+        if (!values)
+        {
+            WINE_WARN("Out of memory\n");
+            HeapFree(GetProcessHeap(), 0, info);
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+    }
+    else
+    {
+        var32 = NULL;
+    }
+#endif
+
+    c->super.iret = IPropertyBag2_Read(bag->host, c->cProperties, info, NULL, values, QEMU_G2H(c->phrError));
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+    {
+        for (i = 0; i < c->cProperties; ++i)
+            VARIANT_h2g(&var32[i], &values[i]);
+    }
+
+    HeapFree(GetProcessHeap(), 0, info);
+    HeapFree(GetProcessHeap(), 0, values);
+#endif
 }
 
 #endif

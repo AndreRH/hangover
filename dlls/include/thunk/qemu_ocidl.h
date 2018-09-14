@@ -21,4 +21,14 @@ static inline void PROPBAG2_h2g(struct qemu_PROPBAG2 *guest, const PROPBAG2 *hos
     guest->clsid = host->clsid;
 }
 
+static inline void PROPBAG2_g2h(PROPBAG2 *host, const struct qemu_PROPBAG2 *guest)
+{
+    host->dwType = guest->dwType;
+    host->vt = guest->vt;
+    host->cfType = guest->cfType;
+    host->dwHint = guest->dwHint;
+    host->pstrName = (LPOLESTR)(ULONG_PTR)guest->pstrName;
+    host->clsid = guest->clsid;
+}
+
 #endif
