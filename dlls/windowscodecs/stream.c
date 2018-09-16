@@ -188,7 +188,7 @@ void qemu_WICStream_Read(struct qemu_syscall *call)
     struct qemu_WICStream_Read *c = (struct qemu_WICStream_Read *)call;
     struct qemu_wic_stream *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
 
     c->super.iret = IWICStream_Read(stream->host, QEMU_G2H(c->pv), c->cb, QEMU_G2H(c->pcbRead));
@@ -230,7 +230,7 @@ void qemu_WICStream_Write(struct qemu_syscall *call)
     struct qemu_WICStream_Write *c = (struct qemu_WICStream_Write *)call;
     struct qemu_wic_stream *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
 
     c->super.iret = IWICStream_Write(stream->host, QEMU_G2H(c->pv), c->cb, QEMU_G2H(c->pcbWritten));
@@ -274,7 +274,7 @@ void qemu_WICStream_Seek(struct qemu_syscall *call)
     struct qemu_wic_stream *stream;
     LARGE_INTEGER dlibMove;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
     dlibMove.QuadPart = c->dlibMove;
 
@@ -314,7 +314,7 @@ void qemu_WICStream_SetSize(struct qemu_syscall *call)
     struct qemu_wic_stream *stream;
     ULARGE_INTEGER libNewSize;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
     libNewSize.QuadPart = c->libNewSize;
 
@@ -401,7 +401,7 @@ void qemu_WICStream_Commit(struct qemu_syscall *call)
     struct qemu_WICStream_Commit *c = (struct qemu_WICStream_Commit *)call;
     struct qemu_wic_stream *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
 
     c->super.iret = IWICStream_Commit(stream->host, c->grfCommitFlags);
@@ -437,7 +437,7 @@ void qemu_WICStream_Revert(struct qemu_syscall *call)
     struct qemu_WICStream_Revert *c = (struct qemu_WICStream_Revert *)call;
     struct qemu_wic_stream *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
 
     c->super.iret = IWICStream_Revert(stream->host);
@@ -481,7 +481,7 @@ void qemu_WICStream_LockRegion(struct qemu_syscall *call)
     struct qemu_wic_stream *stream;
     ULARGE_INTEGER libOffset, cb;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
     libOffset.QuadPart = c->libOffset;
     cb.QuadPart = c->cb;
@@ -502,7 +502,8 @@ struct qemu_WICStream_UnlockRegion
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICStream_UnlockRegion(IWICStream *iface, ULARGE_INTEGER libOffset, ULARGE_INTEGER cb, DWORD dwLockType)
+static HRESULT WINAPI WICStream_UnlockRegion(IWICStream *iface, ULARGE_INTEGER libOffset, ULARGE_INTEGER cb,
+        DWORD dwLockType)
 {
     struct qemu_WICStream_UnlockRegion call;
     struct qemu_wic_stream *stream = impl_from_IWICStream(iface);
@@ -526,7 +527,7 @@ void qemu_WICStream_UnlockRegion(struct qemu_syscall *call)
     struct qemu_wic_stream *stream;
     ULARGE_INTEGER libOffset, cb;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
     libOffset.QuadPart = c->libOffset;
     cb.QuadPart = c->cb;
@@ -684,7 +685,7 @@ void qemu_WICStream_InitializeFromFilename(struct qemu_syscall *call)
     struct qemu_WICStream_InitializeFromFilename *c = (struct qemu_WICStream_InitializeFromFilename *)call;
     struct qemu_wic_stream *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
 
     c->super.iret = IWICStream_InitializeFromFilename(stream->host, QEMU_G2H(c->wzFileName), c->dwDesiredAccess);
@@ -724,7 +725,7 @@ void qemu_WICStream_InitializeFromMemory(struct qemu_syscall *call)
     struct qemu_WICStream_InitializeFromMemory *c = (struct qemu_WICStream_InitializeFromMemory *)call;
     struct qemu_wic_stream *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
 
     c->super.iret = IWICStream_InitializeFromMemory(stream->host, QEMU_G2H(c->pbBuffer), c->cbBufferSize);
