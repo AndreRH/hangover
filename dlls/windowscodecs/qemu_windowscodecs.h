@@ -501,6 +501,7 @@ void WICComponentInfo_init_guest(struct qemu_wic_info *info, enum component_info
 void WICFormatConverter_init_guest(struct qemu_wic_converter *converter);
 void WICBitmapEncoder_init_guest(struct qemu_wic_encoder *encoder);
 void PropertyBag_init_guest(struct qemu_propery_bag *bag);
+void WICStream_init_guest(struct qemu_wic_stream *stream);
 
 struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
 
@@ -800,6 +801,7 @@ struct qemu_wic_info *WICComponentInfo_create_host(IWICComponentInfo *host, enum
 struct qemu_wic_converter *WICFormatConverter_create_host(IWICBitmapSource *host);
 struct qemu_wic_encoder *WICBitmapEncoder_create_host(IWICBitmapEncoder *host);
 struct qemu_propery_bag *PropertyBag_create_host(IPropertyBag2 *host);
+struct qemu_wic_stream *WICStream_create_host(IWICStream *host);
 
 ULONG qemu_WICBitmap_Release_internal(struct qemu_wic_bitmap *bitmap);
 ULONG qemu_WICFormatConverter_Release_internal(struct qemu_wic_converter *converter);

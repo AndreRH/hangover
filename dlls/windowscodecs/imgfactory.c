@@ -760,12 +760,19 @@ static HRESULT WINAPI ComponentFactory_CreateStream(IWICComponentFactory *iface,
 {
     struct qemu_ComponentFactory_CreateStream call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_wic_stream *stream;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATESTREAM);
     call.iface = (ULONG_PTR)factory;
     call.ppIWICStream = (ULONG_PTR)ppIWICStream;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    stream = (struct qemu_wic_stream *)(ULONG_PTR)call.ppIWICStream;
+    WICStream_init_guest(stream);
+    *ppIWICStream = &stream->IWICStream_iface;
 
     return call.super.iret;
 }
@@ -776,11 +783,25 @@ void qemu_ComponentFactory_CreateStream(struct qemu_syscall *call)
 {
     struct qemu_ComponentFactory_CreateStream *c = (struct qemu_ComponentFactory_CreateStream *)call;
     struct qemu_component_factory *factory;
+    IWICStream *host;
+    struct qemu_wic_stream *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentFactory_CreateStream(factory->host, QEMU_G2H(c->ppIWICStream));
+    c->super.iret = IWICComponentFactory_CreateStream(factory->host, c->ppIWICStream ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    stream = WICStream_create_host(host);
+    if (!stream)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        IWICStream_Release(host);
+        return;
+    }
+
+    c->ppIWICStream = QEMU_H2G(stream);
 }
 
 #endif

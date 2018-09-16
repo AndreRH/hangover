@@ -105,7 +105,7 @@ void qemu_WICStream_AddRef(struct qemu_syscall *call)
     struct qemu_WICStream_AddRef *c = (struct qemu_WICStream_AddRef *)call;
     struct qemu_wic_stream *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
 
     c->super.iret = IWICStream_AddRef(stream->host);
@@ -141,10 +141,15 @@ void qemu_WICStream_Release(struct qemu_syscall *call)
     struct qemu_WICStream_Release *c = (struct qemu_WICStream_Release *)call;
     struct qemu_wic_stream *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
 
     c->super.iret = IWICStream_Release(stream->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying WIC stream wrapper %p for host stream %p.\n", stream, stream->host);
+        HeapFree(GetProcessHeap(), 0, stream);
+    }
 }
 
 #endif
@@ -773,3 +778,55 @@ void qemu_WICStream_InitializeFromIStreamRegion(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+static const IWICStreamVtbl WICStream_Vtbl =
+{
+    /*** IUnknown methods ***/
+    WICStream_QueryInterface,
+    WICStream_AddRef,
+    WICStream_Release,
+    /*** ISequentialStream methods ***/
+    WICStream_Read,
+    WICStream_Write,
+    /*** IStream methods ***/
+    WICStream_Seek,
+    WICStream_SetSize,
+    WICStream_CopyTo,
+    WICStream_Commit,
+    WICStream_Revert,
+    WICStream_LockRegion,
+    WICStream_UnlockRegion,
+    WICStream_Stat,
+    WICStream_Clone,
+    /*** IWICStream methods ***/
+    WICStream_InitializeFromIStream,
+    WICStream_InitializeFromFilename,
+    WICStream_InitializeFromMemory,
+    WICStream_InitializeFromIStreamRegion,
+};
+
+void WICStream_init_guest(struct qemu_wic_stream *stream)
+{
+    stream->IWICStream_iface.lpVtbl = &WICStream_Vtbl;
+}
+
+#else
+
+struct qemu_wic_stream *WICStream_create_host(IWICStream *host)
+{
+    struct qemu_wic_stream *ret;
+    HRESULT hr;
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+    {
+        WINE_WARN("Out of memory\n");
+        return NULL;
+    }
+
+    ret->host = host;
+
+}
+
+#endif
