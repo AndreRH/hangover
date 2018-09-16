@@ -3040,6 +3040,10 @@ struct qemu_wic_info *WICComponentInfo_create_host(IWICComponentInfo *host, enum
         return NULL;
     }
 
+    /* FIXME: The host library caches info objects, so we need to do this too. Otherwise if we create
+     * a 2nd wrapper for the same objects one of them won't be released properly. The tests also
+     * check for this. */
+
     if (SUCCEEDED(IWICComponentInfo_QueryInterface(host, &IID_IWICBitmapDecoderInfo, (void **)&unk)))
         *type = BITMAPDECODER_INFO;
     else if (SUCCEEDED(IWICComponentInfo_QueryInterface(host, &IID_IWICBitmapEncoderInfo, (void **)&unk)))

@@ -831,6 +831,7 @@ struct qemu_WICBitmapDecoder_GetDecoderInfo
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t ppIDecoderInfo;
+    uint64_t type;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -839,12 +840,19 @@ static HRESULT WINAPI WICBitmapDecoder_GetDecoderInfo(IWICBitmapDecoder *iface, 
 {
     struct qemu_WICBitmapDecoder_GetDecoderInfo call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapDecoder(iface);
+    struct qemu_wic_info *info;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPDECODER_GETDECODERINFO);
     call.iface = (ULONG_PTR)decoder;
     call.ppIDecoderInfo = (ULONG_PTR)ppIDecoderInfo;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    info = (struct qemu_wic_info *)(ULONG_PTR)call.ppIDecoderInfo;
+    WICComponentInfo_init_guest(info, call.type);
+    *ppIDecoderInfo = (IWICBitmapDecoderInfo *)&info->IWICComponentInfo_iface;
 
     return call.super.iret;
 }
@@ -855,11 +863,27 @@ void qemu_WICBitmapDecoder_GetDecoderInfo(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapDecoder_GetDecoderInfo *c = (struct qemu_WICBitmapDecoder_GetDecoderInfo *)call;
     struct qemu_wic_decoder *decoder;
+    IWICBitmapDecoderInfo *host;
+    struct qemu_wic_info *info;
+    enum component_info_type type;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoder_GetDecoderInfo(decoder->host, QEMU_G2H(c->ppIDecoderInfo));
+    c->super.iret = IWICBitmapDecoder_GetDecoderInfo(decoder->host, c->ppIDecoderInfo ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    info = WICComponentInfo_create_host((IWICComponentInfo *)host, &type);
+    if (!info)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        IWICComponentInfo_Release(host);
+        return;
+    }
+
+    c->type = type;
+    c->ppIDecoderInfo = QEMU_H2G(info);
 }
 
 #endif
