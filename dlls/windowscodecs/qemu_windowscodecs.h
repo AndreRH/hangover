@@ -254,6 +254,24 @@ enum windowscodecs_calls
     CALL_WICPIXELFORMATINFO2_GETFORMATGUID,
     CALL_WICPIXELFORMATINFO2_GETNUMERICREPRESENTATION,
     CALL_WICPIXELFORMATINFO2_SUPPORTSTRANSPARENCY,
+    CALL_WICSTREAM_ADDREF,
+    CALL_WICSTREAM_CLONE,
+    CALL_WICSTREAM_COMMIT,
+    CALL_WICSTREAM_COPYTO,
+    CALL_WICSTREAM_INITIALIZEFROMFILENAME,
+    CALL_WICSTREAM_INITIALIZEFROMISTREAM,
+    CALL_WICSTREAM_INITIALIZEFROMISTREAMREGION,
+    CALL_WICSTREAM_INITIALIZEFROMMEMORY,
+    CALL_WICSTREAM_LOCKREGION,
+    CALL_WICSTREAM_QUERYINTERFACE,
+    CALL_WICSTREAM_READ,
+    CALL_WICSTREAM_RELEASE,
+    CALL_WICSTREAM_REVERT,
+    CALL_WICSTREAM_SEEK,
+    CALL_WICSTREAM_SETSIZE,
+    CALL_WICSTREAM_STAT,
+    CALL_WICSTREAM_UNLOCKREGION,
+    CALL_WICSTREAM_WRITE,
 };
 
 DEFINE_GUID(IID_IMILBitmapSource,0x7543696a,0xbc8d,0x46b0,0x5f,0x81,0x8d,0x95,0x72,0x89,0x72,0xbe);
@@ -442,6 +460,15 @@ struct qemu_propery_bag
 
     /* Host fields */
     IPropertyBag2 *host;
+};
+
+struct qemu_wic_stream
+{
+    /* Guest fields */
+    IWICStream IWICStream_iface;
+
+    /* Host fields */
+    IWICStream *host;
 };
 
 /* This is a reverse wrapper. */
@@ -746,6 +773,24 @@ void qemu_WICPixelFormatInfo2_GetColorContext(struct qemu_syscall *call);
 void qemu_WICPixelFormatInfo2_GetFormatGUID(struct qemu_syscall *call);
 void qemu_WICPixelFormatInfo2_GetNumericRepresentation(struct qemu_syscall *call);
 void qemu_WICPixelFormatInfo2_SupportsTransparency(struct qemu_syscall *call);
+void qemu_WICStream_AddRef(struct qemu_syscall *call);
+void qemu_WICStream_Clone(struct qemu_syscall *call);
+void qemu_WICStream_Commit(struct qemu_syscall *call);
+void qemu_WICStream_CopyTo(struct qemu_syscall *call);
+void qemu_WICStream_InitializeFromFilename(struct qemu_syscall *call);
+void qemu_WICStream_InitializeFromIStream(struct qemu_syscall *call);
+void qemu_WICStream_InitializeFromIStreamRegion(struct qemu_syscall *call);
+void qemu_WICStream_InitializeFromMemory(struct qemu_syscall *call);
+void qemu_WICStream_LockRegion(struct qemu_syscall *call);
+void qemu_WICStream_QueryInterface(struct qemu_syscall *call);
+void qemu_WICStream_Read(struct qemu_syscall *call);
+void qemu_WICStream_Release(struct qemu_syscall *call);
+void qemu_WICStream_Revert(struct qemu_syscall *call);
+void qemu_WICStream_Seek(struct qemu_syscall *call);
+void qemu_WICStream_SetSize(struct qemu_syscall *call);
+void qemu_WICStream_Stat(struct qemu_syscall *call);
+void qemu_WICStream_UnlockRegion(struct qemu_syscall *call);
+void qemu_WICStream_Write(struct qemu_syscall *call);
 
 struct qemu_wic_bitmap *WICBitmap_create_host(IWICBitmap *host);
 struct qemu_wic_palette *WICPalette_create_host(IWICPalette *host);
