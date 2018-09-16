@@ -16,6 +16,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_objidl.h"
+
 #include "istream_wrapper.h"
 
 struct istream_wrapper
@@ -32,6 +35,7 @@ struct istream_wrapper_funcs
     uint64_t seek;
     uint64_t read;
     uint64_t write;
+    uint64_t stat;
 };
 
 struct istream_wrapper_Seek
@@ -44,6 +48,13 @@ struct istream_wrapper_ReadWrite
 {
     uint64_t iface;
     uint64_t pv, cb, count;
+};
+
+struct istream_wrapper_Stat
+{
+    uint64_t iface;
+    uint64_t statstg;
+    uint64_t flags;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -78,6 +89,12 @@ static HRESULT __fastcall istream_wrapper_Write(struct istream_wrapper_ReadWrite
     return stream->lpVtbl->Write(stream, (void *)(ULONG_PTR)call->pv, call->cb, (ULONG *)(ULONG_PTR)call->count);
 }
 
+static HRESULT __fastcall istream_wrapper_Stat(struct istream_wrapper_Stat *call)
+{
+    IStream *stream = (IStream *)(ULONG_PTR)call->iface;
+    return stream->lpVtbl->Stat(stream, (void *)(ULONG_PTR)call->statstg, call->flags);
+}
+
 static void istream_wrapper_get_funcs(struct istream_wrapper_funcs *funcs)
 {
     funcs->addref = (ULONG_PTR)istream_wrapper_AddRef;
@@ -85,6 +102,7 @@ static void istream_wrapper_get_funcs(struct istream_wrapper_funcs *funcs)
     funcs->seek = (ULONG_PTR)istream_wrapper_Seek;
     funcs->read = (ULONG_PTR)istream_wrapper_Read;
     funcs->write = (ULONG_PTR)istream_wrapper_Write;
+    funcs->stat = (ULONG_PTR)istream_wrapper_Stat;
 }
 
 #else
@@ -94,6 +112,7 @@ static uint64_t istream_wrapper_Release_guest;
 static uint64_t istream_wrapper_Seek_guest;
 static uint64_t istream_wrapper_Read_guest;
 static uint64_t istream_wrapper_Write_guest;
+static uint64_t istream_wrapper_Stat_guest;
 
 static void istream_wrapper_set_funcs(const struct istream_wrapper_funcs *funcs)
 {
@@ -104,6 +123,7 @@ static void istream_wrapper_set_funcs(const struct istream_wrapper_funcs *funcs)
         istream_wrapper_Seek_guest = funcs->seek;
         istream_wrapper_Read_guest = funcs->read;
         istream_wrapper_Write_guest = funcs->write;
+        istream_wrapper_Stat_guest = funcs->stat;
     }
     else
     {
@@ -112,6 +132,7 @@ static void istream_wrapper_set_funcs(const struct istream_wrapper_funcs *funcs)
         istream_wrapper_Seek_guest = 0;
         istream_wrapper_Read_guest = 0;
         istream_wrapper_Write_guest = 0;
+        istream_wrapper_Stat_guest = 0;
     }
 }
 
@@ -293,11 +314,33 @@ static HRESULT STDMETHODCALLTYPE istream_wrapper_UnlockRegion(IStream *iface, UL
 }
 
 static HRESULT STDMETHODCALLTYPE istream_wrapper_Stat(IStream *iface, STATSTG *pstatstg,
-                                                  DWORD grfStatFlag)
+        DWORD flags)
 {
     struct istream_wrapper *stream = istream_wrapper_from_IStream(iface);
-    WINE_FIXME("Not implemented.\n");
-    return E_FAIL;
+    struct istream_wrapper_Stat call;
+    HRESULT hr;
+    struct qemu_STATSTG stat32;
+
+    WINE_TRACE("\n");
+    call.iface = istream_wrapper_guest_iface(stream);
+    call.flags = flags;
+
+#if GUEST_BIT == HOST_BIT
+    call.statstg = QEMU_H2G(pstatstg);
+#else
+    STATSTG_h2g(&stat32, pstatstg);
+    call.statstg = QEMU_H2G(&stat32);
+#endif
+
+    WINE_TRACE("Calling guest callback %p.\n", (void *)istream_wrapper_Stat_guest);
+    hr = qemu_ops->qemu_execute(QEMU_G2H(istream_wrapper_Stat_guest), QEMU_H2G(&call));
+    WINE_TRACE("Guest CB returned 0x%x.\n", hr);
+
+#if GUEST_BIT != HOST_BIT
+    STATSTG_g2h(pstatstg, &stat32);
+#endif
+
+    return hr;
 }
 
 static HRESULT STDMETHODCALLTYPE istream_wrapper_Clone(IStream *iface, IStream **ppstm)
