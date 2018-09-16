@@ -244,7 +244,7 @@ void qemu_WICComponentInfo_GetCLSID(struct qemu_syscall *call)
     struct qemu_WICComponentInfo_GetCLSID *c = (struct qemu_WICComponentInfo_GetCLSID *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
     c->super.iret = IWICComponentInfo_GetCLSID(info->host, QEMU_G2H(c->pclsid));
@@ -282,7 +282,7 @@ void qemu_WICComponentInfo_GetSigningStatus(struct qemu_syscall *call)
     struct qemu_WICComponentInfo_GetSigningStatus *c = (struct qemu_WICComponentInfo_GetSigningStatus *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
     c->super.iret = IWICComponentInfo_GetSigningStatus(info->host, QEMU_G2H(c->pStatus));
@@ -301,7 +301,8 @@ struct qemu_WICComponentInfo_GetAuthor
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICComponentInfo_GetAuthor(IWICComponentInfo *iface, UINT cchAuthor, WCHAR *wzAuthor, UINT *pcchActual)
+static HRESULT WINAPI WICComponentInfo_GetAuthor(IWICComponentInfo *iface, UINT cchAuthor, WCHAR *wzAuthor,
+        UINT *pcchActual)
 {
     struct qemu_WICComponentInfo_GetAuthor call;
     struct qemu_wic_info *info = impl_from_IWICComponentInfo(iface);
@@ -324,10 +325,11 @@ void qemu_WICComponentInfo_GetAuthor(struct qemu_syscall *call)
     struct qemu_WICComponentInfo_GetAuthor *c = (struct qemu_WICComponentInfo_GetAuthor *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentInfo_GetAuthor(info->host, c->cchAuthor, QEMU_G2H(c->wzAuthor), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICComponentInfo_GetAuthor(info->host, c->cchAuthor, QEMU_G2H(c->wzAuthor),
+            QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -362,7 +364,7 @@ void qemu_WICComponentInfo_GetVendorGUID(struct qemu_syscall *call)
     struct qemu_WICComponentInfo_GetVendorGUID *c = (struct qemu_WICComponentInfo_GetVendorGUID *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
     c->super.iret = IWICComponentInfo_GetVendorGUID(info->host, QEMU_G2H(c->pguidVendor));
@@ -381,7 +383,8 @@ struct qemu_WICComponentInfo_GetVersion
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICComponentInfo_GetVersion(IWICComponentInfo *iface, UINT cchVersion, WCHAR *wzVersion, UINT *pcchActual)
+static HRESULT WINAPI WICComponentInfo_GetVersion(IWICComponentInfo *iface, UINT cchVersion,
+        WCHAR *wzVersion, UINT *pcchActual)
 {
     struct qemu_WICComponentInfo_GetVersion call;
     struct qemu_wic_info *info = impl_from_IWICComponentInfo(iface);
@@ -404,10 +407,11 @@ void qemu_WICComponentInfo_GetVersion(struct qemu_syscall *call)
     struct qemu_WICComponentInfo_GetVersion *c = (struct qemu_WICComponentInfo_GetVersion *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentInfo_GetVersion(info->host, c->cchVersion, QEMU_G2H(c->wzVersion), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICComponentInfo_GetVersion(info->host, c->cchVersion, QEMU_G2H(c->wzVersion),
+            QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -423,7 +427,8 @@ struct qemu_WICComponentInfo_GetSpecVersion
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICComponentInfo_GetSpecVersion(IWICComponentInfo *iface, UINT cchSpecVersion, WCHAR *wzSpecVersion, UINT *pcchActual)
+static HRESULT WINAPI WICComponentInfo_GetSpecVersion(IWICComponentInfo *iface, UINT cchSpecVersion,
+        WCHAR *wzSpecVersion, UINT *pcchActual)
 {
     struct qemu_WICComponentInfo_GetSpecVersion call;
     struct qemu_wic_info *info = impl_from_IWICComponentInfo(iface);
@@ -446,10 +451,11 @@ void qemu_WICComponentInfo_GetSpecVersion(struct qemu_syscall *call)
     struct qemu_WICComponentInfo_GetSpecVersion *c = (struct qemu_WICComponentInfo_GetSpecVersion *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentInfo_GetSpecVersion(info->host, c->cchSpecVersion, QEMU_G2H(c->wzSpecVersion), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICComponentInfo_GetSpecVersion(info->host, c->cchSpecVersion, QEMU_G2H(c->wzSpecVersion),
+            QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -465,7 +471,8 @@ struct qemu_WICComponentInfo_GetFriendlyName
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICComponentInfo_GetFriendlyName(IWICComponentInfo *iface, UINT cchFriendlyName, WCHAR *wzFriendlyName, UINT *pcchActual)
+static HRESULT WINAPI WICComponentInfo_GetFriendlyName(IWICComponentInfo *iface, UINT cchFriendlyName,
+        WCHAR *wzFriendlyName, UINT *pcchActual)
 {
     struct qemu_WICComponentInfo_GetFriendlyName call;
     struct qemu_wic_info *info = impl_from_IWICComponentInfo(iface);
@@ -488,10 +495,11 @@ void qemu_WICComponentInfo_GetFriendlyName(struct qemu_syscall *call)
     struct qemu_WICComponentInfo_GetFriendlyName *c = (struct qemu_WICComponentInfo_GetFriendlyName *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentInfo_GetFriendlyName(info->host, c->cchFriendlyName, QEMU_G2H(c->wzFriendlyName), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICComponentInfo_GetFriendlyName(info->host, c->cchFriendlyName,
+            QEMU_G2H(c->wzFriendlyName), QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -546,7 +554,8 @@ struct qemu_WICBitmapDecoderInfo_GetPixelFormats
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoderInfo_GetPixelFormats(IWICBitmapDecoderInfo *iface, UINT cFormats, GUID *pguidPixelFormats, UINT *pcActual)
+static HRESULT WINAPI WICBitmapDecoderInfo_GetPixelFormats(IWICBitmapDecoderInfo *iface, UINT cFormats,
+        GUID *pguidPixelFormats, UINT *pcActual)
 {
     struct qemu_WICBitmapDecoderInfo_GetPixelFormats call;
     struct qemu_wic_info *info = impl_from_IWICBitmapDecoderInfo(iface);
@@ -569,10 +578,11 @@ void qemu_WICBitmapDecoderInfo_GetPixelFormats(struct qemu_syscall *call)
     struct qemu_WICBitmapDecoderInfo_GetPixelFormats *c = (struct qemu_WICBitmapDecoderInfo_GetPixelFormats *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoderInfo_GetPixelFormats((IWICBitmapDecoderInfo *)info->host, c->cFormats, QEMU_G2H(c->pguidPixelFormats), QEMU_G2H(c->pcActual));
+    c->super.iret = IWICBitmapDecoderInfo_GetPixelFormats((IWICBitmapDecoderInfo *)info->host, c->cFormats,
+            QEMU_G2H(c->pguidPixelFormats), QEMU_G2H(c->pcActual));
 }
 
 #endif
@@ -588,7 +598,8 @@ struct qemu_WICBitmapDecoderInfo_GetColorManagementVersion
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoderInfo_GetColorManagementVersion(IWICBitmapDecoderInfo *iface, UINT cchColorManagementVersion, WCHAR *wzColorManagementVersion, UINT *pcchActual)
+static HRESULT WINAPI WICBitmapDecoderInfo_GetColorManagementVersion(IWICBitmapDecoderInfo *iface,
+        UINT cchColorManagementVersion, WCHAR *wzColorManagementVersion, UINT *pcchActual)
 {
     struct qemu_WICBitmapDecoderInfo_GetColorManagementVersion call;
     struct qemu_wic_info *info = impl_from_IWICBitmapDecoderInfo(iface);
@@ -608,13 +619,15 @@ static HRESULT WINAPI WICBitmapDecoderInfo_GetColorManagementVersion(IWICBitmapD
 
 void qemu_WICBitmapDecoderInfo_GetColorManagementVersion(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapDecoderInfo_GetColorManagementVersion *c = (struct qemu_WICBitmapDecoderInfo_GetColorManagementVersion *)call;
+    struct qemu_WICBitmapDecoderInfo_GetColorManagementVersion *c =
+            (struct qemu_WICBitmapDecoderInfo_GetColorManagementVersion *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoderInfo_GetColorManagementVersion((IWICBitmapDecoderInfo *)info->host, c->cchColorManagementVersion, QEMU_G2H(c->wzColorManagementVersion), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICBitmapDecoderInfo_GetColorManagementVersion((IWICBitmapDecoderInfo *)info->host,
+            c->cchColorManagementVersion, QEMU_G2H(c->wzColorManagementVersion), QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -630,7 +643,8 @@ struct qemu_WICBitmapDecoderInfo_GetDeviceManufacturer
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoderInfo_GetDeviceManufacturer(IWICBitmapDecoderInfo *iface, UINT cchDeviceManufacturer, WCHAR *wzDeviceManufacturer, UINT *pcchActual)
+static HRESULT WINAPI WICBitmapDecoderInfo_GetDeviceManufacturer(IWICBitmapDecoderInfo *iface,
+        UINT cchDeviceManufacturer, WCHAR *wzDeviceManufacturer, UINT *pcchActual)
 {
     struct qemu_WICBitmapDecoderInfo_GetDeviceManufacturer call;
     struct qemu_wic_info *info = impl_from_IWICBitmapDecoderInfo(iface);
@@ -650,13 +664,15 @@ static HRESULT WINAPI WICBitmapDecoderInfo_GetDeviceManufacturer(IWICBitmapDecod
 
 void qemu_WICBitmapDecoderInfo_GetDeviceManufacturer(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapDecoderInfo_GetDeviceManufacturer *c = (struct qemu_WICBitmapDecoderInfo_GetDeviceManufacturer *)call;
+    struct qemu_WICBitmapDecoderInfo_GetDeviceManufacturer *c =
+            (struct qemu_WICBitmapDecoderInfo_GetDeviceManufacturer *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoderInfo_GetDeviceManufacturer((IWICBitmapDecoderInfo *)info->host, c->cchDeviceManufacturer, QEMU_G2H(c->wzDeviceManufacturer), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICBitmapDecoderInfo_GetDeviceManufacturer((IWICBitmapDecoderInfo *)info->host,
+            c->cchDeviceManufacturer, QEMU_G2H(c->wzDeviceManufacturer), QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -672,7 +688,8 @@ struct qemu_WICBitmapDecoderInfo_GetDeviceModels
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoderInfo_GetDeviceModels(IWICBitmapDecoderInfo *iface, UINT cchDeviceModels, WCHAR *wzDeviceModels, UINT *pcchActual)
+static HRESULT WINAPI WICBitmapDecoderInfo_GetDeviceModels(IWICBitmapDecoderInfo *iface, UINT cchDeviceModels,
+        WCHAR *wzDeviceModels, UINT *pcchActual)
 {
     struct qemu_WICBitmapDecoderInfo_GetDeviceModels call;
     struct qemu_wic_info *info = impl_from_IWICBitmapDecoderInfo(iface);
@@ -698,7 +715,8 @@ void qemu_WICBitmapDecoderInfo_GetDeviceModels(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoderInfo_GetDeviceModels((IWICBitmapDecoderInfo *)info->host, c->cchDeviceModels, QEMU_G2H(c->wzDeviceModels), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICBitmapDecoderInfo_GetDeviceModels((IWICBitmapDecoderInfo *)info->host, c->cchDeviceModels,
+            QEMU_G2H(c->wzDeviceModels), QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -714,7 +732,8 @@ struct qemu_WICBitmapDecoderInfo_GetMimeTypes
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoderInfo_GetMimeTypes(IWICBitmapDecoderInfo *iface, UINT cchMimeTypes, WCHAR *wzMimeTypes, UINT *pcchActual)
+static HRESULT WINAPI WICBitmapDecoderInfo_GetMimeTypes(IWICBitmapDecoderInfo *iface, UINT cchMimeTypes,
+        WCHAR *wzMimeTypes, UINT *pcchActual)
 {
     struct qemu_WICBitmapDecoderInfo_GetMimeTypes call;
     struct qemu_wic_info *info = impl_from_IWICBitmapDecoderInfo(iface);
@@ -737,10 +756,11 @@ void qemu_WICBitmapDecoderInfo_GetMimeTypes(struct qemu_syscall *call)
     struct qemu_WICBitmapDecoderInfo_GetMimeTypes *c = (struct qemu_WICBitmapDecoderInfo_GetMimeTypes *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoderInfo_GetMimeTypes((IWICBitmapDecoderInfo *)info->host, c->cchMimeTypes, QEMU_G2H(c->wzMimeTypes), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICBitmapDecoderInfo_GetMimeTypes((IWICBitmapDecoderInfo *)info->host, c->cchMimeTypes,
+            QEMU_G2H(c->wzMimeTypes), QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -756,7 +776,8 @@ struct qemu_WICBitmapDecoderInfo_GetFileExtensions
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoderInfo_GetFileExtensions(IWICBitmapDecoderInfo *iface, UINT cchFileExtensions, WCHAR *wzFileExtensions, UINT *pcchActual)
+static HRESULT WINAPI WICBitmapDecoderInfo_GetFileExtensions(IWICBitmapDecoderInfo *iface, UINT cchFileExtensions,
+        WCHAR *wzFileExtensions, UINT *pcchActual)
 {
     struct qemu_WICBitmapDecoderInfo_GetFileExtensions call;
     struct qemu_wic_info *info = impl_from_IWICBitmapDecoderInfo(iface);
@@ -779,10 +800,11 @@ void qemu_WICBitmapDecoderInfo_GetFileExtensions(struct qemu_syscall *call)
     struct qemu_WICBitmapDecoderInfo_GetFileExtensions *c = (struct qemu_WICBitmapDecoderInfo_GetFileExtensions *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoderInfo_GetFileExtensions((IWICBitmapDecoderInfo *)info->host, c->cchFileExtensions, QEMU_G2H(c->wzFileExtensions), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICBitmapDecoderInfo_GetFileExtensions((IWICBitmapDecoderInfo *)info->host,
+            c->cchFileExtensions, QEMU_G2H(c->wzFileExtensions), QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -814,13 +836,15 @@ static HRESULT WINAPI WICBitmapDecoderInfo_DoesSupportAnimation(IWICBitmapDecode
 
 void qemu_WICBitmapDecoderInfo_DoesSupportAnimation(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapDecoderInfo_DoesSupportAnimation *c = (struct qemu_WICBitmapDecoderInfo_DoesSupportAnimation *)call;
+    struct qemu_WICBitmapDecoderInfo_DoesSupportAnimation *c =
+            (struct qemu_WICBitmapDecoderInfo_DoesSupportAnimation *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoderInfo_DoesSupportAnimation((IWICBitmapDecoderInfo *)info->host, QEMU_G2H(c->pfSupportAnimation));
+    c->super.iret = IWICBitmapDecoderInfo_DoesSupportAnimation((IWICBitmapDecoderInfo *)info->host,
+            QEMU_G2H(c->pfSupportAnimation));
 }
 
 #endif
@@ -852,13 +876,15 @@ static HRESULT WINAPI WICBitmapDecoderInfo_DoesSupportChromaKey(IWICBitmapDecode
 
 void qemu_WICBitmapDecoderInfo_DoesSupportChromaKey(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapDecoderInfo_DoesSupportChromaKey *c = (struct qemu_WICBitmapDecoderInfo_DoesSupportChromaKey *)call;
+    struct qemu_WICBitmapDecoderInfo_DoesSupportChromaKey *c =
+            (struct qemu_WICBitmapDecoderInfo_DoesSupportChromaKey *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoderInfo_DoesSupportChromaKey((IWICBitmapDecoderInfo *)info->host, QEMU_G2H(c->pfSupportChromaKey));
+    c->super.iret = IWICBitmapDecoderInfo_DoesSupportChromaKey((IWICBitmapDecoderInfo *)info->host,
+            QEMU_G2H(c->pfSupportChromaKey));
 }
 
 #endif
@@ -890,13 +916,15 @@ static HRESULT WINAPI WICBitmapDecoderInfo_DoesSupportLossless(IWICBitmapDecoder
 
 void qemu_WICBitmapDecoderInfo_DoesSupportLossless(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapDecoderInfo_DoesSupportLossless *c = (struct qemu_WICBitmapDecoderInfo_DoesSupportLossless *)call;
+    struct qemu_WICBitmapDecoderInfo_DoesSupportLossless *c =
+            (struct qemu_WICBitmapDecoderInfo_DoesSupportLossless *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoderInfo_DoesSupportLossless((IWICBitmapDecoderInfo *)info->host, QEMU_G2H(c->pfSupportLossless));
+    c->super.iret = IWICBitmapDecoderInfo_DoesSupportLossless((IWICBitmapDecoderInfo *)info->host,
+            QEMU_G2H(c->pfSupportLossless));
 }
 
 #endif
@@ -910,7 +938,8 @@ struct qemu_WICBitmapDecoderInfo_DoesSupportMultiframe
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoderInfo_DoesSupportMultiframe(IWICBitmapDecoderInfo *iface, BOOL *pfSupportMultiframe)
+static HRESULT WINAPI WICBitmapDecoderInfo_DoesSupportMultiframe(IWICBitmapDecoderInfo *iface,
+        BOOL *pfSupportMultiframe)
 {
     struct qemu_WICBitmapDecoderInfo_DoesSupportMultiframe call;
     struct qemu_wic_info *info = impl_from_IWICBitmapDecoderInfo(iface);
@@ -928,13 +957,15 @@ static HRESULT WINAPI WICBitmapDecoderInfo_DoesSupportMultiframe(IWICBitmapDecod
 
 void qemu_WICBitmapDecoderInfo_DoesSupportMultiframe(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapDecoderInfo_DoesSupportMultiframe *c = (struct qemu_WICBitmapDecoderInfo_DoesSupportMultiframe *)call;
+    struct qemu_WICBitmapDecoderInfo_DoesSupportMultiframe *c =
+            (struct qemu_WICBitmapDecoderInfo_DoesSupportMultiframe *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoderInfo_DoesSupportMultiframe((IWICBitmapDecoderInfo *)info->host, QEMU_G2H(c->pfSupportMultiframe));
+    c->super.iret = IWICBitmapDecoderInfo_DoesSupportMultiframe((IWICBitmapDecoderInfo *)info->host,
+            QEMU_G2H(c->pfSupportMultiframe));
 }
 
 #endif
@@ -949,7 +980,8 @@ struct qemu_WICBitmapDecoderInfo_MatchesMimeType
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapDecoderInfo_MatchesMimeType(IWICBitmapDecoderInfo *iface, LPCWSTR wzMimeType, BOOL *pfMatches)
+static HRESULT WINAPI WICBitmapDecoderInfo_MatchesMimeType(IWICBitmapDecoderInfo *iface, LPCWSTR wzMimeType,
+        BOOL *pfMatches)
 {
     struct qemu_WICBitmapDecoderInfo_MatchesMimeType call;
     struct qemu_wic_info *info = impl_from_IWICBitmapDecoderInfo(iface);
@@ -974,7 +1006,8 @@ void qemu_WICBitmapDecoderInfo_MatchesMimeType(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapDecoderInfo_MatchesMimeType((IWICBitmapDecoderInfo *)info->host, QEMU_G2H(c->wzMimeType), QEMU_G2H(c->pfMatches));
+    c->super.iret = IWICBitmapDecoderInfo_MatchesMimeType((IWICBitmapDecoderInfo *)info->host,
+            QEMU_G2H(c->wzMimeType), QEMU_G2H(c->pfMatches));
 }
 
 #endif
@@ -1186,13 +1219,15 @@ static HRESULT WINAPI WICBitmapEncoderInfo_GetContainerFormat(IWICBitmapEncoderI
 
 void qemu_WICBitmapEncoderInfo_GetContainerFormat(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapEncoderInfo_GetContainerFormat *c = (struct qemu_WICBitmapEncoderInfo_GetContainerFormat *)call;
+    struct qemu_WICBitmapEncoderInfo_GetContainerFormat *c =
+            (struct qemu_WICBitmapEncoderInfo_GetContainerFormat *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_GetContainerFormat((IWICBitmapEncoderInfo *)info->host, QEMU_G2H(c->pguidContainerFormat));
+    c->super.iret = IWICBitmapEncoderInfo_GetContainerFormat((IWICBitmapEncoderInfo *)info->host,
+            QEMU_G2H(c->pguidContainerFormat));
 }
 
 #endif
@@ -1208,7 +1243,8 @@ struct qemu_WICBitmapEncoderInfo_GetPixelFormats
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapEncoderInfo_GetPixelFormats(IWICBitmapEncoderInfo *iface, UINT cFormats, GUID *pguidPixelFormats, UINT *pcActual)
+static HRESULT WINAPI WICBitmapEncoderInfo_GetPixelFormats(IWICBitmapEncoderInfo *iface, UINT cFormats,
+        GUID *pguidPixelFormats, UINT *pcActual)
 {
     struct qemu_WICBitmapEncoderInfo_GetPixelFormats call;
     struct qemu_wic_info *info = impl_from_IWICBitmapEncoderInfo(iface);
@@ -1231,10 +1267,11 @@ void qemu_WICBitmapEncoderInfo_GetPixelFormats(struct qemu_syscall *call)
     struct qemu_WICBitmapEncoderInfo_GetPixelFormats *c = (struct qemu_WICBitmapEncoderInfo_GetPixelFormats *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_GetPixelFormats((IWICBitmapEncoderInfo *)info->host, c->cFormats, QEMU_G2H(c->pguidPixelFormats), QEMU_G2H(c->pcActual));
+    c->super.iret = IWICBitmapEncoderInfo_GetPixelFormats((IWICBitmapEncoderInfo *)info->host,
+            c->cFormats, QEMU_G2H(c->pguidPixelFormats), QEMU_G2H(c->pcActual));
 }
 
 #endif
@@ -1250,7 +1287,8 @@ struct qemu_WICBitmapEncoderInfo_GetColorManagementVersion
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapEncoderInfo_GetColorManagementVersion(IWICBitmapEncoderInfo *iface, UINT cchColorManagementVersion, WCHAR *wzColorManagementVersion, UINT *pcchActual)
+static HRESULT WINAPI WICBitmapEncoderInfo_GetColorManagementVersion(IWICBitmapEncoderInfo *iface,
+        UINT cchColorManagementVersion, WCHAR *wzColorManagementVersion, UINT *pcchActual)
 {
     struct qemu_WICBitmapEncoderInfo_GetColorManagementVersion call;
     struct qemu_wic_info *info = impl_from_IWICBitmapEncoderInfo(iface);
@@ -1270,13 +1308,15 @@ static HRESULT WINAPI WICBitmapEncoderInfo_GetColorManagementVersion(IWICBitmapE
 
 void qemu_WICBitmapEncoderInfo_GetColorManagementVersion(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapEncoderInfo_GetColorManagementVersion *c = (struct qemu_WICBitmapEncoderInfo_GetColorManagementVersion *)call;
+    struct qemu_WICBitmapEncoderInfo_GetColorManagementVersion *c =
+            (struct qemu_WICBitmapEncoderInfo_GetColorManagementVersion *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_GetColorManagementVersion((IWICBitmapEncoderInfo *)info->host, c->cchColorManagementVersion, QEMU_G2H(c->wzColorManagementVersion), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICBitmapEncoderInfo_GetColorManagementVersion((IWICBitmapEncoderInfo *)info->host,
+            c->cchColorManagementVersion, QEMU_G2H(c->wzColorManagementVersion), QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -1292,7 +1332,8 @@ struct qemu_WICBitmapEncoderInfo_GetDeviceManufacturer
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapEncoderInfo_GetDeviceManufacturer(IWICBitmapEncoderInfo *iface, UINT cchDeviceManufacturer, WCHAR *wzDeviceManufacturer, UINT *pcchActual)
+static HRESULT WINAPI WICBitmapEncoderInfo_GetDeviceManufacturer(IWICBitmapEncoderInfo *iface,
+        UINT cchDeviceManufacturer, WCHAR *wzDeviceManufacturer, UINT *pcchActual)
 {
     struct qemu_WICBitmapEncoderInfo_GetDeviceManufacturer call;
     struct qemu_wic_info *info = impl_from_IWICBitmapEncoderInfo(iface);
@@ -1312,13 +1353,15 @@ static HRESULT WINAPI WICBitmapEncoderInfo_GetDeviceManufacturer(IWICBitmapEncod
 
 void qemu_WICBitmapEncoderInfo_GetDeviceManufacturer(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapEncoderInfo_GetDeviceManufacturer *c = (struct qemu_WICBitmapEncoderInfo_GetDeviceManufacturer *)call;
+    struct qemu_WICBitmapEncoderInfo_GetDeviceManufacturer *c =
+            (struct qemu_WICBitmapEncoderInfo_GetDeviceManufacturer *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_GetDeviceManufacturer((IWICBitmapEncoderInfo *)info->host, c->cchDeviceManufacturer, QEMU_G2H(c->wzDeviceManufacturer), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICBitmapEncoderInfo_GetDeviceManufacturer((IWICBitmapEncoderInfo *)info->host,
+            c->cchDeviceManufacturer, QEMU_G2H(c->wzDeviceManufacturer), QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -1334,7 +1377,8 @@ struct qemu_WICBitmapEncoderInfo_GetDeviceModels
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapEncoderInfo_GetDeviceModels(IWICBitmapEncoderInfo *iface, UINT cchDeviceModels, WCHAR *wzDeviceModels, UINT *pcchActual)
+static HRESULT WINAPI WICBitmapEncoderInfo_GetDeviceModels(IWICBitmapEncoderInfo *iface, UINT cchDeviceModels,
+        WCHAR *wzDeviceModels, UINT *pcchActual)
 {
     struct qemu_WICBitmapEncoderInfo_GetDeviceModels call;
     struct qemu_wic_info *info = impl_from_IWICBitmapEncoderInfo(iface);
@@ -1360,7 +1404,8 @@ void qemu_WICBitmapEncoderInfo_GetDeviceModels(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_GetDeviceModels((IWICBitmapEncoderInfo *)info->host, c->cchDeviceModels, QEMU_G2H(c->wzDeviceModels), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICBitmapEncoderInfo_GetDeviceModels((IWICBitmapEncoderInfo *)info->host, c->cchDeviceModels,
+            QEMU_G2H(c->wzDeviceModels), QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -1376,7 +1421,8 @@ struct qemu_WICBitmapEncoderInfo_GetMimeTypes
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapEncoderInfo_GetMimeTypes(IWICBitmapEncoderInfo *iface, UINT cchMimeTypes, WCHAR *wzMimeTypes, UINT *pcchActual)
+static HRESULT WINAPI WICBitmapEncoderInfo_GetMimeTypes(IWICBitmapEncoderInfo *iface, UINT cchMimeTypes,
+        WCHAR *wzMimeTypes, UINT *pcchActual)
 {
     struct qemu_WICBitmapEncoderInfo_GetMimeTypes call;
     struct qemu_wic_info *info = impl_from_IWICBitmapEncoderInfo(iface);
@@ -1399,10 +1445,11 @@ void qemu_WICBitmapEncoderInfo_GetMimeTypes(struct qemu_syscall *call)
     struct qemu_WICBitmapEncoderInfo_GetMimeTypes *c = (struct qemu_WICBitmapEncoderInfo_GetMimeTypes *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_GetMimeTypes((IWICBitmapEncoderInfo *)info->host, c->cchMimeTypes, QEMU_G2H(c->wzMimeTypes), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICBitmapEncoderInfo_GetMimeTypes((IWICBitmapEncoderInfo *)info->host, c->cchMimeTypes,
+            QEMU_G2H(c->wzMimeTypes), QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -1418,7 +1465,8 @@ struct qemu_WICBitmapEncoderInfo_GetFileExtensions
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapEncoderInfo_GetFileExtensions(IWICBitmapEncoderInfo *iface, UINT cchFileExtensions, WCHAR *wzFileExtensions, UINT *pcchActual)
+static HRESULT WINAPI WICBitmapEncoderInfo_GetFileExtensions(IWICBitmapEncoderInfo *iface, UINT cchFileExtensions,
+        WCHAR *wzFileExtensions, UINT *pcchActual)
 {
     struct qemu_WICBitmapEncoderInfo_GetFileExtensions call;
     struct qemu_wic_info *info = impl_from_IWICBitmapEncoderInfo(iface);
@@ -1441,10 +1489,11 @@ void qemu_WICBitmapEncoderInfo_GetFileExtensions(struct qemu_syscall *call)
     struct qemu_WICBitmapEncoderInfo_GetFileExtensions *c = (struct qemu_WICBitmapEncoderInfo_GetFileExtensions *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_GetFileExtensions((IWICBitmapEncoderInfo *)info->host, c->cchFileExtensions, QEMU_G2H(c->wzFileExtensions), QEMU_G2H(c->pcchActual));
+    c->super.iret = IWICBitmapEncoderInfo_GetFileExtensions((IWICBitmapEncoderInfo *)info->host,
+            c->cchFileExtensions, QEMU_G2H(c->wzFileExtensions), QEMU_G2H(c->pcchActual));
 }
 
 #endif
@@ -1476,13 +1525,15 @@ static HRESULT WINAPI WICBitmapEncoderInfo_DoesSupportAnimation(IWICBitmapEncode
 
 void qemu_WICBitmapEncoderInfo_DoesSupportAnimation(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapEncoderInfo_DoesSupportAnimation *c = (struct qemu_WICBitmapEncoderInfo_DoesSupportAnimation *)call;
+    struct qemu_WICBitmapEncoderInfo_DoesSupportAnimation *c =
+            (struct qemu_WICBitmapEncoderInfo_DoesSupportAnimation *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_DoesSupportAnimation((IWICBitmapEncoderInfo *)info->host, QEMU_G2H(c->pfSupportAnimation));
+    c->super.iret = IWICBitmapEncoderInfo_DoesSupportAnimation((IWICBitmapEncoderInfo *)info->host,
+            QEMU_G2H(c->pfSupportAnimation));
 }
 
 #endif
@@ -1514,13 +1565,15 @@ static HRESULT WINAPI WICBitmapEncoderInfo_DoesSupportChromaKey(IWICBitmapEncode
 
 void qemu_WICBitmapEncoderInfo_DoesSupportChromaKey(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapEncoderInfo_DoesSupportChromaKey *c = (struct qemu_WICBitmapEncoderInfo_DoesSupportChromaKey *)call;
+    struct qemu_WICBitmapEncoderInfo_DoesSupportChromaKey *c =
+            (struct qemu_WICBitmapEncoderInfo_DoesSupportChromaKey *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_DoesSupportChromaKey((IWICBitmapEncoderInfo *)info->host, QEMU_G2H(c->pfSupportChromaKey));
+    c->super.iret = IWICBitmapEncoderInfo_DoesSupportChromaKey((IWICBitmapEncoderInfo *)info->host,
+            QEMU_G2H(c->pfSupportChromaKey));
 }
 
 #endif
@@ -1552,13 +1605,15 @@ static HRESULT WINAPI WICBitmapEncoderInfo_DoesSupportLossless(IWICBitmapEncoder
 
 void qemu_WICBitmapEncoderInfo_DoesSupportLossless(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapEncoderInfo_DoesSupportLossless *c = (struct qemu_WICBitmapEncoderInfo_DoesSupportLossless *)call;
+    struct qemu_WICBitmapEncoderInfo_DoesSupportLossless *c =
+            (struct qemu_WICBitmapEncoderInfo_DoesSupportLossless *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_DoesSupportLossless((IWICBitmapEncoderInfo *)info->host, QEMU_G2H(c->pfSupportLossless));
+    c->super.iret = IWICBitmapEncoderInfo_DoesSupportLossless((IWICBitmapEncoderInfo *)info->host,
+            QEMU_G2H(c->pfSupportLossless));
 }
 
 #endif
@@ -1572,7 +1627,8 @@ struct qemu_WICBitmapEncoderInfo_DoesSupportMultiframe
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapEncoderInfo_DoesSupportMultiframe(IWICBitmapEncoderInfo *iface, BOOL *pfSupportMultiframe)
+static HRESULT WINAPI WICBitmapEncoderInfo_DoesSupportMultiframe(IWICBitmapEncoderInfo *iface,
+        BOOL *pfSupportMultiframe)
 {
     struct qemu_WICBitmapEncoderInfo_DoesSupportMultiframe call;
     struct qemu_wic_info *info = impl_from_IWICBitmapEncoderInfo(iface);
@@ -1590,13 +1646,15 @@ static HRESULT WINAPI WICBitmapEncoderInfo_DoesSupportMultiframe(IWICBitmapEncod
 
 void qemu_WICBitmapEncoderInfo_DoesSupportMultiframe(struct qemu_syscall *call)
 {
-    struct qemu_WICBitmapEncoderInfo_DoesSupportMultiframe *c = (struct qemu_WICBitmapEncoderInfo_DoesSupportMultiframe *)call;
+    struct qemu_WICBitmapEncoderInfo_DoesSupportMultiframe *c =
+        (struct qemu_WICBitmapEncoderInfo_DoesSupportMultiframe *)call;
     struct qemu_wic_info *info;
 
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_DoesSupportMultiframe((IWICBitmapEncoderInfo *)info->host, QEMU_G2H(c->pfSupportMultiframe));
+    c->super.iret = IWICBitmapEncoderInfo_DoesSupportMultiframe((IWICBitmapEncoderInfo *)info->host, 
+            QEMU_G2H(c->pfSupportMultiframe));
 }
 
 #endif
@@ -1611,7 +1669,8 @@ struct qemu_WICBitmapEncoderInfo_MatchesMimeType
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapEncoderInfo_MatchesMimeType(IWICBitmapEncoderInfo *iface, LPCWSTR wzMimeType, BOOL *pfMatches)
+static HRESULT WINAPI WICBitmapEncoderInfo_MatchesMimeType(IWICBitmapEncoderInfo *iface, LPCWSTR wzMimeType,
+        BOOL *pfMatches)
 {
     struct qemu_WICBitmapEncoderInfo_MatchesMimeType call;
     struct qemu_wic_info *info = impl_from_IWICBitmapEncoderInfo(iface);
@@ -1636,7 +1695,8 @@ void qemu_WICBitmapEncoderInfo_MatchesMimeType(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_MatchesMimeType((IWICBitmapEncoderInfo *)info->host, QEMU_G2H(c->wzMimeType), QEMU_G2H(c->pfMatches));
+    c->super.iret = IWICBitmapEncoderInfo_MatchesMimeType((IWICBitmapEncoderInfo *)info->host, QEMU_G2H(c->wzMimeType),
+            QEMU_G2H(c->pfMatches));
 }
 
 #endif
@@ -1650,7 +1710,8 @@ struct qemu_WICBitmapEncoderInfo_CreateInstance
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapEncoderInfo_CreateInstance(IWICBitmapEncoderInfo *iface, IWICBitmapEncoder **ppIBitmapEncoder)
+static HRESULT WINAPI WICBitmapEncoderInfo_CreateInstance(IWICBitmapEncoderInfo *iface,
+        IWICBitmapEncoder **ppIBitmapEncoder)
 {
     struct qemu_WICBitmapEncoderInfo_CreateInstance call;
     struct qemu_wic_info *info = impl_from_IWICBitmapEncoderInfo(iface);
@@ -1674,7 +1735,8 @@ void qemu_WICBitmapEncoderInfo_CreateInstance(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapEncoderInfo_CreateInstance((IWICBitmapEncoderInfo *)info->host, QEMU_G2H(c->ppIBitmapEncoder));
+    c->super.iret = IWICBitmapEncoderInfo_CreateInstance((IWICBitmapEncoderInfo *)info->host,
+            QEMU_G2H(c->ppIBitmapEncoder));
 }
 
 #endif
@@ -1695,7 +1757,8 @@ static inline struct qemu_wic_info *impl_from_IWICFormatConverterInfo(IWICFormat
     return CONTAINING_RECORD(iface, struct qemu_wic_info, IWICComponentInfo_iface);
 }
 
-static HRESULT WINAPI WICFormatConverterInfo_GetPixelFormats(IWICFormatConverterInfo *iface, UINT cFormats, GUID *pguidPixelFormats, UINT *pcActual)
+static HRESULT WINAPI WICFormatConverterInfo_GetPixelFormats(IWICFormatConverterInfo *iface, UINT cFormats,
+        GUID *pguidPixelFormats, UINT *pcActual)
 {
     struct qemu_WICFormatConverterInfo_GetPixelFormats call;
     struct qemu_wic_info *info = impl_from_IWICFormatConverterInfo(iface);
@@ -1718,10 +1781,11 @@ void qemu_WICFormatConverterInfo_GetPixelFormats(struct qemu_syscall *call)
     struct qemu_WICFormatConverterInfo_GetPixelFormats *c = (struct qemu_WICFormatConverterInfo_GetPixelFormats *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICFormatConverterInfo_GetPixelFormats((IWICFormatConverterInfo *)info->host, c->cFormats, QEMU_G2H(c->pguidPixelFormats), QEMU_G2H(c->pcActual));
+    c->super.iret = IWICFormatConverterInfo_GetPixelFormats((IWICFormatConverterInfo *)info->host,
+            c->cFormats, QEMU_G2H(c->pguidPixelFormats), QEMU_G2H(c->pcActual));
 }
 
 #endif
@@ -1735,7 +1799,8 @@ struct qemu_WICFormatConverterInfo_CreateInstance
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICFormatConverterInfo_CreateInstance(IWICFormatConverterInfo *iface, IWICFormatConverter **ppIFormatConverter)
+static HRESULT WINAPI WICFormatConverterInfo_CreateInstance(IWICFormatConverterInfo *iface,
+        IWICFormatConverter **ppIFormatConverter)
 {
     struct qemu_WICFormatConverterInfo_CreateInstance call;
     struct qemu_wic_info *info = impl_from_IWICFormatConverterInfo(iface);
@@ -1759,7 +1824,8 @@ void qemu_WICFormatConverterInfo_CreateInstance(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICFormatConverterInfo_CreateInstance((IWICFormatConverterInfo *)info->host, QEMU_G2H(c->ppIFormatConverter));
+    c->super.iret = IWICFormatConverterInfo_CreateInstance((IWICFormatConverterInfo *)info->host,
+            QEMU_G2H(c->ppIFormatConverter));
 }
 
 #endif
@@ -1799,7 +1865,7 @@ void qemu_WICPixelFormatInfo2_GetFormatGUID(struct qemu_syscall *call)
     struct qemu_WICPixelFormatInfo2_GetFormatGUID *c = (struct qemu_WICPixelFormatInfo2_GetFormatGUID *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
     c->super.iret = IWICPixelFormatInfo2_GetFormatGUID((IWICPixelFormatInfo2 *)info->host, QEMU_G2H(c->pFormat));
@@ -1816,7 +1882,8 @@ struct qemu_WICPixelFormatInfo2_GetColorContext
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICPixelFormatInfo2_GetColorContext(IWICPixelFormatInfo2 *iface, IWICColorContext **ppIColorContext)
+static HRESULT WINAPI WICPixelFormatInfo2_GetColorContext(IWICPixelFormatInfo2 *iface,
+        IWICColorContext **ppIColorContext)
 {
     struct qemu_WICPixelFormatInfo2_GetColorContext call;
     struct qemu_wic_info *info = impl_from_IWICPixelFormatInfo2(iface);
@@ -1840,7 +1907,8 @@ void qemu_WICPixelFormatInfo2_GetColorContext(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICPixelFormatInfo2_GetColorContext((IWICPixelFormatInfo2 *)info->host, QEMU_G2H(c->ppIColorContext));
+    c->super.iret = IWICPixelFormatInfo2_GetColorContext((IWICPixelFormatInfo2 *)info->host,
+        QEMU_G2H(c->ppIColorContext));
 }
 
 #endif
@@ -1875,10 +1943,11 @@ void qemu_WICPixelFormatInfo2_GetBitsPerPixel(struct qemu_syscall *call)
     struct qemu_WICPixelFormatInfo2_GetBitsPerPixel *c = (struct qemu_WICPixelFormatInfo2_GetBitsPerPixel *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICPixelFormatInfo2_GetBitsPerPixel((IWICPixelFormatInfo2 *)info->host, QEMU_G2H(c->puiBitsPerPixel));
+    c->super.iret = IWICPixelFormatInfo2_GetBitsPerPixel((IWICPixelFormatInfo2 *)info->host,
+            QEMU_G2H(c->puiBitsPerPixel));
 }
 
 #endif
@@ -1913,10 +1982,11 @@ void qemu_WICPixelFormatInfo2_GetChannelCount(struct qemu_syscall *call)
     struct qemu_WICPixelFormatInfo2_GetChannelCount *c = (struct qemu_WICPixelFormatInfo2_GetChannelCount *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICPixelFormatInfo2_GetChannelCount((IWICPixelFormatInfo2 *)info->host, QEMU_G2H(c->puiChannelCount));
+    c->super.iret = IWICPixelFormatInfo2_GetChannelCount((IWICPixelFormatInfo2 *)info->host,
+            QEMU_G2H(c->puiChannelCount));
 }
 
 #endif
@@ -1933,7 +2003,8 @@ struct qemu_WICPixelFormatInfo2_GetChannelMask
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICPixelFormatInfo2_GetChannelMask(IWICPixelFormatInfo2 *iface, UINT uiChannelIndex, UINT cbMaskBuffer, BYTE *pbMaskBuffer, UINT *pcbActual)
+static HRESULT WINAPI WICPixelFormatInfo2_GetChannelMask(IWICPixelFormatInfo2 *iface, UINT uiChannelIndex,
+        UINT cbMaskBuffer, BYTE *pbMaskBuffer, UINT *pcbActual)
 {
     struct qemu_WICPixelFormatInfo2_GetChannelMask call;
     struct qemu_wic_info *info = impl_from_IWICPixelFormatInfo2(iface);
@@ -1957,10 +2028,11 @@ void qemu_WICPixelFormatInfo2_GetChannelMask(struct qemu_syscall *call)
     struct qemu_WICPixelFormatInfo2_GetChannelMask *c = (struct qemu_WICPixelFormatInfo2_GetChannelMask *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICPixelFormatInfo2_GetChannelMask((IWICPixelFormatInfo2 *)info->host, c->uiChannelIndex, c->cbMaskBuffer, QEMU_G2H(c->pbMaskBuffer), QEMU_G2H(c->pcbActual));
+    c->super.iret = IWICPixelFormatInfo2_GetChannelMask((IWICPixelFormatInfo2 *)info->host, c->uiChannelIndex,
+            c->cbMaskBuffer, QEMU_G2H(c->pbMaskBuffer), QEMU_G2H(c->pcbActual));
 }
 
 #endif
@@ -1974,7 +2046,8 @@ struct qemu_WICPixelFormatInfo2_SupportsTransparency
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICPixelFormatInfo2_SupportsTransparency(IWICPixelFormatInfo2 *iface, BOOL *pfSupportsTransparency)
+static HRESULT WINAPI WICPixelFormatInfo2_SupportsTransparency(IWICPixelFormatInfo2 *iface,
+        BOOL *pfSupportsTransparency)
 {
     struct qemu_WICPixelFormatInfo2_SupportsTransparency call;
     struct qemu_wic_info *info = impl_from_IWICPixelFormatInfo2(iface);
@@ -1995,10 +2068,11 @@ void qemu_WICPixelFormatInfo2_SupportsTransparency(struct qemu_syscall *call)
     struct qemu_WICPixelFormatInfo2_SupportsTransparency *c = (struct qemu_WICPixelFormatInfo2_SupportsTransparency *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICPixelFormatInfo2_SupportsTransparency((IWICPixelFormatInfo2 *)info->host, QEMU_G2H(c->pfSupportsTransparency));
+    c->super.iret = IWICPixelFormatInfo2_SupportsTransparency((IWICPixelFormatInfo2 *)info->host,
+            QEMU_G2H(c->pfSupportsTransparency));
 }
 
 #endif
@@ -2012,7 +2086,8 @@ struct qemu_WICPixelFormatInfo2_GetNumericRepresentation
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICPixelFormatInfo2_GetNumericRepresentation(IWICPixelFormatInfo2 *iface, WICPixelFormatNumericRepresentation *pNumericRepresentation)
+static HRESULT WINAPI WICPixelFormatInfo2_GetNumericRepresentation(IWICPixelFormatInfo2 *iface,
+        WICPixelFormatNumericRepresentation *pNumericRepresentation)
 {
     struct qemu_WICPixelFormatInfo2_GetNumericRepresentation call;
     struct qemu_wic_info *info = impl_from_IWICPixelFormatInfo2(iface);
@@ -2030,13 +2105,15 @@ static HRESULT WINAPI WICPixelFormatInfo2_GetNumericRepresentation(IWICPixelForm
 
 void qemu_WICPixelFormatInfo2_GetNumericRepresentation(struct qemu_syscall *call)
 {
-    struct qemu_WICPixelFormatInfo2_GetNumericRepresentation *c = (struct qemu_WICPixelFormatInfo2_GetNumericRepresentation *)call;
+    struct qemu_WICPixelFormatInfo2_GetNumericRepresentation *c =
+            (struct qemu_WICPixelFormatInfo2_GetNumericRepresentation *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICPixelFormatInfo2_GetNumericRepresentation((IWICPixelFormatInfo2 *)info->host, QEMU_G2H(c->pNumericRepresentation));
+    c->super.iret = IWICPixelFormatInfo2_GetNumericRepresentation((IWICPixelFormatInfo2 *)info->host,
+            QEMU_G2H(c->pNumericRepresentation));
 }
 
 #endif
@@ -2076,7 +2153,7 @@ void qemu_WICMetadataReaderInfo_GetMetadataFormat(struct qemu_syscall *call)
     struct qemu_WICMetadataReaderInfo_GetMetadataFormat *c = (struct qemu_WICMetadataReaderInfo_GetMetadataFormat *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
     c->super.iret = IWICMetadataReaderInfo_GetMetadataFormat((IWICMetadataReaderInfo *)info->host, QEMU_G2H(c->format));
@@ -2095,7 +2172,8 @@ struct qemu_WICMetadataReaderInfo_GetContainerFormats
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICMetadataReaderInfo_GetContainerFormats(IWICMetadataReaderInfo *iface, UINT length, GUID *formats, UINT *actual_length)
+static HRESULT WINAPI WICMetadataReaderInfo_GetContainerFormats(IWICMetadataReaderInfo *iface, UINT length,
+        GUID *formats, UINT *actual_length)
 {
     struct qemu_WICMetadataReaderInfo_GetContainerFormats call;
     struct qemu_wic_info *info = impl_from_IWICMetadataReaderInfo(iface);
@@ -2118,10 +2196,11 @@ void qemu_WICMetadataReaderInfo_GetContainerFormats(struct qemu_syscall *call)
     struct qemu_WICMetadataReaderInfo_GetContainerFormats *c = (struct qemu_WICMetadataReaderInfo_GetContainerFormats *)call;
     struct qemu_wic_info *info;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICMetadataReaderInfo_GetContainerFormats((IWICMetadataReaderInfo *)info->host, c->length, QEMU_G2H(c->formats), QEMU_G2H(c->actual_length));
+    c->super.iret = IWICMetadataReaderInfo_GetContainerFormats((IWICMetadataReaderInfo *)info->host, c->length,
+            QEMU_G2H(c->formats), QEMU_G2H(c->actual_length));
 }
 
 #endif
@@ -2337,7 +2416,8 @@ struct qemu_WICMetadataReaderInfo_GetPatterns
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICMetadataReaderInfo_GetPatterns(IWICMetadataReaderInfo *iface, REFGUID container_guid, UINT length, WICMetadataPattern *patterns, UINT *count, UINT *actual_length)
+static HRESULT WINAPI WICMetadataReaderInfo_GetPatterns(IWICMetadataReaderInfo *iface, REFGUID container_guid,
+        UINT length, WICMetadataPattern *patterns, UINT *count, UINT *actual_length)
 {
     struct qemu_WICMetadataReaderInfo_GetPatterns call;
     struct qemu_wic_info *info = impl_from_IWICMetadataReaderInfo(iface);
@@ -2365,7 +2445,9 @@ void qemu_WICMetadataReaderInfo_GetPatterns(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     info = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICMetadataReaderInfo_GetPatterns((IWICMetadataReaderInfo *)info->host, QEMU_G2H(c->container_guid), c->length, QEMU_G2H(c->patterns), QEMU_G2H(c->count), QEMU_G2H(c->actual_length));
+    c->super.iret = IWICMetadataReaderInfo_GetPatterns((IWICMetadataReaderInfo *)info->host,
+            QEMU_G2H(c->container_guid), c->length, QEMU_G2H(c->patterns), QEMU_G2H(c->count),
+            QEMU_G2H(c->actual_length));
 }
 
 #endif
