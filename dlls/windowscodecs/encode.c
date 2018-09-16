@@ -134,7 +134,6 @@ static ULONG WINAPI WICBitmapFrameEncode_Release(IWICBitmapFrameEncode *iface)
 
 #else
 
-static ULONG qemu_WICBitmapEncoder_Release_internal(struct qemu_wic_encoder *wic_encoder);
 void qemu_WICBitmapFrameEncode_Release(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameEncode_Release *c = (struct qemu_WICBitmapFrameEncode_Release *)call;
@@ -143,9 +142,8 @@ void qemu_WICBitmapFrameEncode_Release(struct qemu_syscall *call)
     WINE_TRACE("\n");
     frame_encode = QEMU_G2H(c->iface);
 
-    IWICBitmapEncoder_AddRef(frame_encode->encoder->host);
+    /* A frame does not hold a reference to its encoder. */
     c->super.iret = IWICBitmapFrameEncode_Release(frame_encode->host);
-    qemu_WICBitmapEncoder_Release_internal(frame_encode->encoder);
 
     if (!c->super.iret)
     {
