@@ -293,11 +293,65 @@ void qemu_PropertyBag_Write(struct qemu_syscall *call)
 {
     struct qemu_PropertyBag_Write *c = (struct qemu_PropertyBag_Write *)call;
     struct qemu_propery_bag *bag;
+    PROPBAG2 *info;
+    struct qemu_PROPBAG2 *info32;
+    ULONG i;
+    struct qemu_VARIANT *var32;
+    VARIANT *values;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     bag = QEMU_G2H(c->iface);
 
-    c->super.iret = IPropertyBag2_Write(bag->host, c->cProperties, QEMU_G2H(c->pPropBag), QEMU_G2H(c->pvarValue));
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pPropBag);
+    values = QEMU_G2H(c->pvarValue);
+#else
+    info32 = QEMU_G2H(c->pPropBag);
+    if (info32)
+    {
+        info = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*info) * c->cProperties);
+        if (!info)
+        {
+            WINE_WARN("Out of memory\n");
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+
+        for (i = 0; i < c->cProperties; ++i)
+            PROPBAG2_g2h(&info[i], &info32[i]);
+    }
+    else
+    {
+        info = NULL;
+    }
+
+    var32 = QEMU_G2H(c->pvarValue);
+    if (var32)
+    {
+        values = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*values) * c->cProperties);
+        if (!values)
+        {
+            WINE_WARN("Out of memory\n");
+            HeapFree(GetProcessHeap(), 0, info);
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+
+        for (i = 0; i < c->cProperties; ++i)
+            VARIANT_g2h(&values[i], &var32[i]);
+    }
+    else
+    {
+        var32 = NULL;
+    }
+#endif
+
+    c->super.iret = IPropertyBag2_Write(bag->host, c->cProperties, info, values);
+
+#if GUEST_BIT != HOST_BIT
+    HeapFree(GetProcessHeap(), 0, info);
+    HeapFree(GetProcessHeap(), 0, values);
+#endif
 }
 
 #endif
