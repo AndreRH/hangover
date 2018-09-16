@@ -37,7 +37,6 @@ struct qemu_WICBitmapFrameDecode_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t iid;
-    uint64_t ppv;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -57,14 +56,27 @@ static HRESULT WINAPI WICBitmapFrameDecode_QueryInterface(IWICBitmapFrameDecode 
     struct qemu_WICBitmapFrameDecode_QueryInterface call;
     struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
 
+    WINE_TRACE("(%p,%s,%p)\n", iface, wine_dbgstr_guid(iid), ppv);
+
+    if (!ppv)
+        return E_INVALIDARG;
+
+    if (IsEqualIID(&IID_IUnknown, iid) || IsEqualIID(&IID_IWICBitmapSource, iid)
+            || IsEqualIID(&IID_IWICBitmapFrameDecode, iid))
+    {
+        *ppv = &frame->IWICBitmapFrameDecode_iface;
+        IUnknown_AddRef((IUnknown*)*ppv);
+        return S_OK;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_QUERYINTERFACE);
     call.iface = (ULONG_PTR)frame;
     call.iid = (ULONG_PTR)iid;
-    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    *ppv = NULL;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -73,11 +85,18 @@ void qemu_WICBitmapFrameDecode_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_QueryInterface *c = (struct qemu_WICBitmapFrameDecode_QueryInterface *)call;
     struct qemu_wic_frame_decode *frame;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     frame = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameDecode_QueryInterface(frame->host, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
+    c->super.iret = IWICBitmapFrameDecode_QueryInterface(frame->host, QEMU_G2H(c->iid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->iid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
@@ -505,8 +524,10 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetThumbnail(IWICBitmapFrameDecode *i
     call.ppIThumbnail = (ULONG_PTR)ppIThumbnail;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
 
-    return call.super.iret;
+    return IWICBitmapFrameDecode_QueryInterface(iface, &IID_IWICBitmapSource, (void **)ppIThumbnail);
 }
 
 #else
@@ -524,9 +545,9 @@ void qemu_WICBitmapFrameDecode_GetThumbnail(struct qemu_syscall *call)
 
     if (SUCCEEDED(c->super.iret))
     {
-        WINE_FIXME("Host GetColorContexts succeeded, write a wrapper.\n");
+        if (host != (IWICBitmapSource *)frame->host)
+            WINE_FIXME("Expected the thumbnail to be myself.\n");
         IWICBitmapSource_Release(host);
-        c->super.iret = E_FAIL;
     }
 }
 
