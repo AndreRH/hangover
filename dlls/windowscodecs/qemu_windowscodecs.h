@@ -195,6 +195,15 @@ enum windowscodecs_calls
     CALL_WICBITMAPLOCK_GETSTRIDE,
     CALL_WICBITMAPLOCK_QUERYINTERFACE,
     CALL_WICBITMAPLOCK_RELEASE,
+    CALL_WICCOLORCONTEXT_ADDREF,
+    CALL_WICCOLORCONTEXT_GETEXIFCOLORSPACE,
+    CALL_WICCOLORCONTEXT_GETPROFILEBYTES,
+    CALL_WICCOLORCONTEXT_GETTYPE,
+    CALL_WICCOLORCONTEXT_INITIALIZEFROMEXIFCOLORSPACE,
+    CALL_WICCOLORCONTEXT_INITIALIZEFROMFILENAME,
+    CALL_WICCOLORCONTEXT_INITIALIZEFROMMEMORY,
+    CALL_WICCOLORCONTEXT_QUERYINTERFACE,
+    CALL_WICCOLORCONTEXT_RELEASE,
     CALL_WICCOMPONENTINFO_ADDREF,
     CALL_WICCOMPONENTINFO_GETAUTHOR,
     CALL_WICCOMPONENTINFO_GETCLSID,
@@ -471,6 +480,15 @@ struct qemu_wic_stream
     IWICStream *host;
 };
 
+struct qemu_wic_color_context
+{
+    /* Guest fields */
+    IWICColorContext IWICColorContext_iface;
+
+    /* Host fields */
+    IWICColorContext *host;
+};
+
 /* This is a reverse wrapper. */
 struct qemu_bitmap_source
 {
@@ -502,6 +520,7 @@ void WICFormatConverter_init_guest(struct qemu_wic_converter *converter);
 void WICBitmapEncoder_init_guest(struct qemu_wic_encoder *encoder);
 void PropertyBag_init_guest(struct qemu_propery_bag *bag);
 void WICStream_init_guest(struct qemu_wic_stream *stream);
+void WICColorContext_init_guest(struct qemu_wic_color_context *context);
 
 struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
 
@@ -709,6 +728,15 @@ void qemu_WICBitmap_QueryInterface(struct qemu_syscall *call);
 void qemu_WICBitmap_Release(struct qemu_syscall *call);
 void qemu_WICBitmap_SetPalette(struct qemu_syscall *call);
 void qemu_WICBitmap_SetResolution(struct qemu_syscall *call);
+void qemu_WICColorContext_AddRef(struct qemu_syscall *call);
+void qemu_WICColorContext_GetExifColorSpace(struct qemu_syscall *call);
+void qemu_WICColorContext_GetProfileBytes(struct qemu_syscall *call);
+void qemu_WICColorContext_GetType(struct qemu_syscall *call);
+void qemu_WICColorContext_InitializeFromExifColorSpace(struct qemu_syscall *call);
+void qemu_WICColorContext_InitializeFromFilename(struct qemu_syscall *call);
+void qemu_WICColorContext_InitializeFromMemory(struct qemu_syscall *call);
+void qemu_WICColorContext_QueryInterface(struct qemu_syscall *call);
+void qemu_WICColorContext_Release(struct qemu_syscall *call);
 void qemu_WICComponentInfo_AddRef(struct qemu_syscall *call);
 void qemu_WICComponentInfo_GetAuthor(struct qemu_syscall *call);
 void qemu_WICComponentInfo_GetCLSID(struct qemu_syscall *call);
@@ -802,6 +830,7 @@ struct qemu_wic_converter *WICFormatConverter_create_host(IWICBitmapSource *host
 struct qemu_wic_encoder *WICBitmapEncoder_create_host(IWICBitmapEncoder *host);
 struct qemu_propery_bag *PropertyBag_create_host(IPropertyBag2 *host);
 struct qemu_wic_stream *WICStream_create_host(IWICStream *host);
+struct qemu_wic_color_context *WICColorContext_create_host(IWICColorContext *host);
 
 ULONG qemu_WICBitmap_Release_internal(struct qemu_wic_bitmap *bitmap);
 ULONG qemu_WICFormatConverter_Release_internal(struct qemu_wic_converter *converter);

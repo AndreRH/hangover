@@ -469,6 +469,7 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetColorContexts(IWICBitmapFrameDecod
 {
     struct qemu_WICBitmapFrameDecode_GetColorContexts call;
     struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_color_context *context;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_GETCOLORCONTEXTS);
     call.iface = (ULONG_PTR)frame;
@@ -477,6 +478,12 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetColorContexts(IWICBitmapFrameDecod
     call.pcActualCount = (ULONG_PTR)pcActualCount;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret) || !ppIColorContexts)
+        return call.super.iret;
+
+    context = (struct qemu_wic_color_context *)(ULONG_PTR)call.ppIColorContexts;
+    WICColorContext_init_guest(context);
+    *ppIColorContexts = &context->IWICColorContext_iface;
 
     return call.super.iret;
 }
@@ -488,19 +495,34 @@ void qemu_WICBitmapFrameDecode_GetColorContexts(struct qemu_syscall *call)
     struct qemu_WICBitmapFrameDecode_GetColorContexts *c = (struct qemu_WICBitmapFrameDecode_GetColorContexts *)call;
     struct qemu_wic_frame_decode *frame;
     IWICColorContext *host;
+    DWORD count;
+    struct qemu_wic_color_context *context;
 
     WINE_TRACE("\n");
     frame = QEMU_G2H(c->iface);
+    count = c->cCount;
 
-    c->super.iret = IWICBitmapFrameDecode_GetColorContexts(frame->host, c->cCount,
+    if (count > 1)
+    {
+        WINE_FIXME("Support more than one color context.\n");
+        count = 1;
+    }
+
+    c->super.iret = IWICBitmapFrameDecode_GetColorContexts(frame->host, count,
             c->ppIColorContexts ? &host : NULL, QEMU_G2H(c->pcActualCount));
 
-    if (SUCCEEDED(c->super.iret))
+    if (FAILED(c->super.iret) || !c->ppIColorContexts)
+        return;
+
+    context = WICColorContext_create_host(host);
+    if (!context)
     {
-        WINE_FIXME("Host GetColorContexts succeeded, write a wrapper.\n");
+        c->super.iret = E_OUTOFMEMORY;
         IWICColorContext_Release(host);
-        c->super.iret = E_FAIL;
+        return;
     }
+
+    c->ppIColorContexts = QEMU_H2G(context);
 }
 
 #endif

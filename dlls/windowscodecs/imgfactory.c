@@ -815,16 +815,24 @@ struct qemu_ComponentFactory_CreateColorContext
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateColorContext(IWICComponentFactory *iface, IWICColorContext **ppIColorContext)
+static HRESULT WINAPI ComponentFactory_CreateColorContext(IWICComponentFactory *iface,
+        IWICColorContext **ppIColorContext)
 {
     struct qemu_ComponentFactory_CreateColorContext call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_wic_color_context *context;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATECOLORCONTEXT);
     call.iface = (ULONG_PTR)factory;
     call.ppIColorContext = (ULONG_PTR)ppIColorContext;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    context = (struct qemu_wic_color_context *)(ULONG_PTR)call.ppIColorContext;
+    WICColorContext_init_guest(context);
+    *ppIColorContext = &context->IWICColorContext_iface;
 
     return call.super.iret;
 }
@@ -835,11 +843,25 @@ void qemu_ComponentFactory_CreateColorContext(struct qemu_syscall *call)
 {
     struct qemu_ComponentFactory_CreateColorContext *c = (struct qemu_ComponentFactory_CreateColorContext *)call;
     struct qemu_component_factory *factory;
+    IWICColorContext *host;
+    struct qemu_wic_color_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentFactory_CreateColorContext(factory->host, QEMU_G2H(c->ppIColorContext));
+    c->super.iret = IWICComponentFactory_CreateColorContext(factory->host, c->ppIColorContext ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    context = WICColorContext_create_host(host);
+    if (!context)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        IWICColorContext_Release(host);
+        return;
+    }
+
+    c->ppIColorContext = QEMU_H2G(context);
 }
 
 #endif
