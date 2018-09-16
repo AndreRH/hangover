@@ -630,7 +630,7 @@ void qemu_WICBitmapFrameEncode_Commit(struct qemu_syscall *call)
     struct qemu_WICBitmapFrameEncode_Commit *c = (struct qemu_WICBitmapFrameEncode_Commit *)call;
     struct qemu_wic_frame_encode *frame_encode;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     frame_encode = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapFrameEncode_Commit(frame_encode->host);
@@ -1242,7 +1242,7 @@ void qemu_WICBitmapEncoder_Commit(struct qemu_syscall *call)
     struct qemu_WICBitmapEncoder_Commit *c = (struct qemu_WICBitmapEncoder_Commit *)call;
     struct qemu_wic_encoder *wic_encoder;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     wic_encoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapEncoder_Commit(wic_encoder->host);
