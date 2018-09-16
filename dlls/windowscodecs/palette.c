@@ -249,7 +249,8 @@ struct qemu_WICPalette_InitializeFromBitmap
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICPalette_InitializeFromBitmap(IWICPalette *iface, IWICBitmapSource *pISurface, UINT colorCount, BOOL fAddTransparentColor)
+static HRESULT WINAPI WICPalette_InitializeFromBitmap(IWICPalette *iface, IWICBitmapSource *pISurface,
+        UINT colorCount, BOOL fAddTransparentColor)
 {
     struct qemu_WICPalette_InitializeFromBitmap call;
     struct qemu_wic_palette *palette = impl_from_IWICPalette(iface);
@@ -275,7 +276,8 @@ void qemu_WICPalette_InitializeFromBitmap(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     palette = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICPalette_InitializeFromBitmap(palette->host, QEMU_G2H(c->pISurface), c->colorCount, c->fAddTransparentColor);
+    c->super.iret = IWICPalette_InitializeFromBitmap(palette->host, QEMU_G2H(c->pISurface), c->colorCount,
+            c->fAddTransparentColor);
 }
 
 #endif
@@ -293,10 +295,11 @@ static HRESULT WINAPI WICPalette_InitializeFromPalette(IWICPalette *iface, IWICP
 {
     struct qemu_WICPalette_InitializeFromPalette call;
     struct qemu_wic_palette *palette = impl_from_IWICPalette(iface);
+    struct qemu_wic_palette *src = unsafe_impl_from_IWICPalette(source);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICPALETTE_INITIALIZEFROMPALETTE);
     call.iface = (ULONG_PTR)iface;
-    call.source = (ULONG_PTR)source;
+    call.source = (ULONG_PTR)src;
 
     qemu_syscall(&call.super);
 
@@ -308,12 +311,13 @@ static HRESULT WINAPI WICPalette_InitializeFromPalette(IWICPalette *iface, IWICP
 void qemu_WICPalette_InitializeFromPalette(struct qemu_syscall *call)
 {
     struct qemu_WICPalette_InitializeFromPalette *c = (struct qemu_WICPalette_InitializeFromPalette *)call;
-    struct qemu_wic_palette *palette;
+    struct qemu_wic_palette *palette, *source;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
+    source = QEMU_G2H(c->source);
 
-    c->super.iret = IWICPalette_InitializeFromPalette(palette->host, QEMU_G2H(c->source));
+    c->super.iret = IWICPalette_InitializeFromPalette(palette->host, source ? source->host : NULL);
 }
 
 #endif
@@ -433,7 +437,8 @@ void qemu_WICPalette_GetColors(struct qemu_syscall *call)
     WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICPalette_GetColors(palette->host, c->colorCount, QEMU_G2H(c->pColors), QEMU_G2H(c->pcActualColors));
+    c->super.iret = IWICPalette_GetColors(palette->host, c->colorCount, QEMU_G2H(c->pColors),
+            QEMU_G2H(c->pcActualColors));
 }
 
 #endif
@@ -468,7 +473,7 @@ void qemu_WICPalette_IsBlackWhite(struct qemu_syscall *call)
     struct qemu_WICPalette_IsBlackWhite *c = (struct qemu_WICPalette_IsBlackWhite *)call;
     struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IWICPalette_IsBlackWhite(palette->host, QEMU_G2H(c->pfIsBlackWhite));
@@ -506,7 +511,7 @@ void qemu_WICPalette_IsGrayscale(struct qemu_syscall *call)
     struct qemu_WICPalette_IsGrayscale *c = (struct qemu_WICPalette_IsGrayscale *)call;
     struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IWICPalette_IsGrayscale(palette->host, QEMU_G2H(c->pfIsGrayscale));
@@ -544,7 +549,7 @@ void qemu_WICPalette_HasAlpha(struct qemu_syscall *call)
     struct qemu_WICPalette_HasAlpha *c = (struct qemu_WICPalette_HasAlpha *)call;
     struct qemu_wic_palette *palette;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     palette = QEMU_G2H(c->iface);
 
     c->super.iret = IWICPalette_HasAlpha(palette->host, QEMU_G2H(c->pfHasAlpha));
