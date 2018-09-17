@@ -233,6 +233,13 @@ enum windowscodecs_calls
     CALL_WICMAPGUIDTOSHORTNAME,
     CALL_WICMAPSCHEMATONAME,
     CALL_WICMAPSHORTNAMETOGUID,
+    CALL_WICMETADATAQUERYREADER_ADDREF,
+    CALL_WICMETADATAQUERYREADER_GETCONTAINERFORMAT,
+    CALL_WICMETADATAQUERYREADER_GETENUMERATOR,
+    CALL_WICMETADATAQUERYREADER_GETLOCATION,
+    CALL_WICMETADATAQUERYREADER_GETMETADATABYNAME,
+    CALL_WICMETADATAQUERYREADER_QUERYINTERFACE,
+    CALL_WICMETADATAQUERYREADER_RELEASE,
     CALL_WICMETADATAREADERINFO_CREATEINSTANCE,
     CALL_WICMETADATAREADERINFO_DOESREQUIREFIXEDSIZE,
     CALL_WICMETADATAREADERINFO_DOESREQUIREFULLSTREAM,
@@ -487,6 +494,15 @@ struct qemu_wic_color_context
 
     /* Host fields */
     IWICColorContext *host;
+};
+
+struct qemu_wic_query_reader
+{
+    /* Guest fields */
+    IWICMetadataQueryReader IWICMetadataQueryReader_iface;
+
+    /* Host fields */
+    IWICMetadataQueryReader *host;
 };
 
 /* This is a reverse wrapper. */
@@ -770,6 +786,13 @@ void qemu_WICFormatConverter_create_host(struct qemu_syscall *call);
 void qemu_WICMapGuidToShortName(struct qemu_syscall *call);
 void qemu_WICMapSchemaToName(struct qemu_syscall *call);
 void qemu_WICMapShortNameToGuid(struct qemu_syscall *call);
+void qemu_WICMetadataQueryReader_AddRef(struct qemu_syscall *call);
+void qemu_WICMetadataQueryReader_GetContainerFormat(struct qemu_syscall *call);
+void qemu_WICMetadataQueryReader_GetEnumerator(struct qemu_syscall *call);
+void qemu_WICMetadataQueryReader_GetLocation(struct qemu_syscall *call);
+void qemu_WICMetadataQueryReader_GetMetadataByName(struct qemu_syscall *call);
+void qemu_WICMetadataQueryReader_QueryInterface(struct qemu_syscall *call);
+void qemu_WICMetadataQueryReader_Release(struct qemu_syscall *call);
 void qemu_WICMetadataReaderInfo_AddRef(struct qemu_syscall *call);
 void qemu_WICMetadataReaderInfo_CreateInstance(struct qemu_syscall *call);
 void qemu_WICMetadataReaderInfo_DoesRequireFixedSize(struct qemu_syscall *call);

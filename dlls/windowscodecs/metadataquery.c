@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <wincodec.h>
+#include <wincodecsdk.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -30,6 +31,279 @@
 #include "qemu_windowscodecs.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_wic);
+
+struct qemu_WICMetadataQueryReader_QueryInterface
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t riid;
+    uint64_t ppvObject;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static inline struct qemu_wic_query_reader *impl_from_IWICMetadataQueryReader(IWICMetadataQueryReader *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_wic_query_reader, IWICMetadataQueryReader_iface);
+}
+
+static HRESULT WINAPI WICMetadataQueryReader_QueryInterface(IWICMetadataQueryReader *iface, REFIID riid, void **ppvObject)
+{
+    struct qemu_WICMetadataQueryReader_QueryInterface call;
+    struct qemu_wic_query_reader *reader = impl_from_IWICMetadataQueryReader(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATAQUERYREADER_QUERYINTERFACE);
+    call.iface = (ULONG_PTR)reader;
+    call.riid = (ULONG_PTR)riid;
+    call.ppvObject = (ULONG_PTR)ppvObject;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WICMetadataQueryReader_QueryInterface(struct qemu_syscall *call)
+{
+    struct qemu_WICMetadataQueryReader_QueryInterface *c = (struct qemu_WICMetadataQueryReader_QueryInterface *)call;
+    struct qemu_wic_query_reader *reader;
+
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = IWICMetadataQueryReader_QueryInterface(reader->host, QEMU_G2H(c->riid), QEMU_G2H(c->ppvObject));
+}
+
+#endif
+
+struct qemu_WICMetadataQueryReader_AddRef
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static ULONG WINAPI WICMetadataQueryReader_AddRef(IWICMetadataQueryReader *iface)
+{
+    struct qemu_WICMetadataQueryReader_AddRef call;
+    struct qemu_wic_query_reader *reader = impl_from_IWICMetadataQueryReader(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATAQUERYREADER_ADDREF);
+    call.iface = (ULONG_PTR)reader;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WICMetadataQueryReader_AddRef(struct qemu_syscall *call)
+{
+    struct qemu_WICMetadataQueryReader_AddRef *c = (struct qemu_WICMetadataQueryReader_AddRef *)call;
+    struct qemu_wic_query_reader *reader;
+
+    WINE_FIXME("Unverified!\n");
+    reader = QEMU_G2H(c->iface);
+
+    c->super.iret = IWICMetadataQueryReader_AddRef(reader->host);
+}
+
+#endif
+
+struct qemu_WICMetadataQueryReader_Release
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static ULONG WINAPI WICMetadataQueryReader_Release(IWICMetadataQueryReader *iface)
+{
+    struct qemu_WICMetadataQueryReader_Release call;
+    struct qemu_wic_query_reader *reader = impl_from_IWICMetadataQueryReader(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATAQUERYREADER_RELEASE);
+    call.iface = (ULONG_PTR)reader;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WICMetadataQueryReader_Release(struct qemu_syscall *call)
+{
+    struct qemu_WICMetadataQueryReader_Release *c = (struct qemu_WICMetadataQueryReader_Release *)call;
+    struct qemu_wic_query_reader *reader;
+
+    WINE_FIXME("Unverified!\n");
+    reader = QEMU_G2H(c->iface);
+
+    c->super.iret = IWICMetadataQueryReader_Release(reader->host);
+}
+
+#endif
+
+struct qemu_WICMetadataQueryReader_GetContainerFormat
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t format;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static HRESULT WINAPI WICMetadataQueryReader_GetContainerFormat(IWICMetadataQueryReader *iface, GUID *format)
+{
+    struct qemu_WICMetadataQueryReader_GetContainerFormat call;
+    struct qemu_wic_query_reader *reader = impl_from_IWICMetadataQueryReader(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATAQUERYREADER_GETCONTAINERFORMAT);
+    call.iface = (ULONG_PTR)reader;
+    call.format = (ULONG_PTR)format;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WICMetadataQueryReader_GetContainerFormat(struct qemu_syscall *call)
+{
+    struct qemu_WICMetadataQueryReader_GetContainerFormat *c = (struct qemu_WICMetadataQueryReader_GetContainerFormat *)call;
+    struct qemu_wic_query_reader *reader;
+
+    WINE_FIXME("Unverified!\n");
+    reader = QEMU_G2H(c->iface);
+
+    c->super.iret = IWICMetadataQueryReader_GetContainerFormat(reader->host, QEMU_G2H(c->format));
+}
+
+#endif
+
+struct qemu_WICMetadataQueryReader_GetLocation
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t len;
+    uint64_t location;
+    uint64_t ret_len;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static HRESULT WINAPI WICMetadataQueryReader_GetLocation(IWICMetadataQueryReader *iface, UINT len, WCHAR *location, UINT *ret_len)
+{
+    struct qemu_WICMetadataQueryReader_GetLocation call;
+    struct qemu_wic_query_reader *reader = impl_from_IWICMetadataQueryReader(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATAQUERYREADER_GETLOCATION);
+    call.iface = (ULONG_PTR)reader;
+    call.len = len;
+    call.location = (ULONG_PTR)location;
+    call.ret_len = (ULONG_PTR)ret_len;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WICMetadataQueryReader_GetLocation(struct qemu_syscall *call)
+{
+    struct qemu_WICMetadataQueryReader_GetLocation *c = (struct qemu_WICMetadataQueryReader_GetLocation *)call;
+    struct qemu_wic_query_reader *reader;
+
+    WINE_FIXME("Unverified!\n");
+    reader = QEMU_G2H(c->iface);
+
+    c->super.iret = IWICMetadataQueryReader_GetLocation(reader->host, c->len, QEMU_G2H(c->location), QEMU_G2H(c->ret_len));
+}
+
+#endif
+
+struct qemu_WICMetadataQueryReader_GetMetadataByName
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t query;
+    uint64_t value;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static HRESULT WINAPI WICMetadataQueryReader_GetMetadataByName(IWICMetadataQueryReader *iface, LPCWSTR query, PROPVARIANT *value)
+{
+    struct qemu_WICMetadataQueryReader_GetMetadataByName call;
+    struct qemu_wic_query_reader *reader = impl_from_IWICMetadataQueryReader(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATAQUERYREADER_GETMETADATABYNAME);
+    call.iface = (ULONG_PTR)reader;
+    call.query = (ULONG_PTR)query;
+    call.value = (ULONG_PTR)value;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WICMetadataQueryReader_GetMetadataByName(struct qemu_syscall *call)
+{
+    struct qemu_WICMetadataQueryReader_GetMetadataByName *c = (struct qemu_WICMetadataQueryReader_GetMetadataByName *)call;
+    struct qemu_wic_query_reader *reader;
+
+    WINE_FIXME("Unverified!\n");
+    reader = QEMU_G2H(c->iface);
+
+    c->super.iret = IWICMetadataQueryReader_GetMetadataByName(reader->host, QEMU_G2H(c->query), QEMU_G2H(c->value));
+}
+
+#endif
+
+struct qemu_WICMetadataQueryReader_GetEnumerator
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t ppIEnumString;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static HRESULT WINAPI WICMetadataQueryReader_GetEnumerator(IWICMetadataQueryReader *iface, IEnumString **ppIEnumString)
+{
+    struct qemu_WICMetadataQueryReader_GetEnumerator call;
+    struct qemu_wic_query_reader *reader = impl_from_IWICMetadataQueryReader(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATAQUERYREADER_GETENUMERATOR);
+    call.iface = (ULONG_PTR)reader;
+    call.ppIEnumString = (ULONG_PTR)ppIEnumString;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WICMetadataQueryReader_GetEnumerator(struct qemu_syscall *call)
+{
+    struct qemu_WICMetadataQueryReader_GetEnumerator *c = (struct qemu_WICMetadataQueryReader_GetEnumerator *)call;
+    struct qemu_wic_query_reader *reader;
+
+    WINE_FIXME("Unverified!\n");
+    reader = QEMU_G2H(c->iface);
+
+    c->super.iret = IWICMetadataQueryReader_GetEnumerator(reader->host, QEMU_G2H(c->ppIEnumString));
+}
+
+#endif
 
 struct qemu_WICMapGuidToShortName
 {
@@ -138,3 +412,19 @@ void qemu_WICMapSchemaToName(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+
+static IWICMetadataQueryReaderVtbl WICMetadataQueryReader_vtbl =
+{
+    WICMetadataQueryReader_QueryInterface,
+    WICMetadataQueryReader_AddRef,
+    WICMetadataQueryReader_Release,
+    WICMetadataQueryReader_GetContainerFormat,
+    WICMetadataQueryReader_GetLocation,
+    WICMetadataQueryReader_GetMetadataByName,
+    WICMetadataQueryReader_GetEnumerator
+};
+
+#else
+
+#endif
