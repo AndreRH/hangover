@@ -142,10 +142,15 @@ void qemu_WICColorContext_Release(struct qemu_syscall *call)
     struct qemu_WICColorContext_Release *c = (struct qemu_WICColorContext_Release *)call;
     struct qemu_wic_color_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     c->super.iret = IWICColorContext_Release(context->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying color context wrapper %p for host context %p.\n", context, context->host);
+        HeapFree(GetProcessHeap(), 0, context);
+    }
 }
 
 #endif
