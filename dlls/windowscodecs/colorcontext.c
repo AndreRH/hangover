@@ -106,7 +106,7 @@ void qemu_WICColorContext_AddRef(struct qemu_syscall *call)
     struct qemu_WICColorContext_AddRef *c = (struct qemu_WICColorContext_AddRef *)call;
     struct qemu_wic_color_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     c->super.iret = IWICColorContext_AddRef(context->host);
@@ -185,7 +185,7 @@ void qemu_WICColorContext_InitializeFromFilename(struct qemu_syscall *call)
     struct qemu_WICColorContext_InitializeFromFilename *c = (struct qemu_WICColorContext_InitializeFromFilename *)call;
     struct qemu_wic_color_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     c->super.iret = IWICColorContext_InitializeFromFilename(context->host, QEMU_G2H(c->wzFilename));
@@ -225,7 +225,7 @@ void qemu_WICColorContext_InitializeFromMemory(struct qemu_syscall *call)
     struct qemu_WICColorContext_InitializeFromMemory *c = (struct qemu_WICColorContext_InitializeFromMemory *)call;
     struct qemu_wic_color_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     c->super.iret = IWICColorContext_InitializeFromMemory(context->host, QEMU_G2H(c->pbBuffer), c->cbBufferSize);
