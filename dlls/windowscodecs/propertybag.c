@@ -196,11 +196,15 @@ void qemu_PropertyBag_Read(struct qemu_syscall *call)
     ULONG i;
     struct qemu_VARIANT *var32;
     VARIANT *values;
+    HRESULT *results;
 
     WINE_TRACE("\n");
     bag = QEMU_G2H(c->iface);
+    results = QEMU_G2H(c->phrError);
     if (c->pErrLog)
         WINE_FIXME("Error log not supported yet.\n");
+    if (!results)
+        WINE_FIXME("Result hr array is NULL.\n");
 
 #if GUEST_BIT == HOST_BIT
     info = QEMU_G2H(c->pPropBag);
@@ -243,15 +247,14 @@ void qemu_PropertyBag_Read(struct qemu_syscall *call)
     }
 #endif
 
-    c->super.iret = IPropertyBag2_Read(bag->host, c->cProperties, info, NULL, values, QEMU_G2H(c->phrError));
+    c->super.iret = IPropertyBag2_Read(bag->host, c->cProperties, info, NULL, values, results);
 
 #if GUEST_BIT != HOST_BIT
-    if (SUCCEEDED(c->super.iret))
+    for (i = 0; i < c->cProperties; ++i)
     {
-        for (i = 0; i < c->cProperties; ++i)
+        if (SUCCEEDED(results[i]))
             VARIANT_h2g(&var32[i], &values[i]);
     }
-
     HeapFree(GetProcessHeap(), 0, info);
     HeapFree(GetProcessHeap(), 0, values);
 #endif
