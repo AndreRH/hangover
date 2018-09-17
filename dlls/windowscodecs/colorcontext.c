@@ -254,10 +254,11 @@ static HRESULT WINAPI WICColorContext_InitializeFromExifColorSpace(IWICColorCont
 
 void qemu_WICColorContext_InitializeFromExifColorSpace(struct qemu_syscall *call)
 {
-    struct qemu_WICColorContext_InitializeFromExifColorSpace *c = (struct qemu_WICColorContext_InitializeFromExifColorSpace *)call;
+    struct qemu_WICColorContext_InitializeFromExifColorSpace *c =
+            (struct qemu_WICColorContext_InitializeFromExifColorSpace *)call;
     struct qemu_wic_color_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     c->super.iret = IWICColorContext_InitializeFromExifColorSpace(context->host, c->value);
@@ -295,7 +296,7 @@ void qemu_WICColorContext_GetType(struct qemu_syscall *call)
     struct qemu_WICColorContext_GetType *c = (struct qemu_WICColorContext_GetType *)call;
     struct qemu_wic_color_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     c->super.iret = IWICColorContext_GetType(context->host, QEMU_G2H(c->pType));
@@ -314,7 +315,8 @@ struct qemu_WICColorContext_GetProfileBytes
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICColorContext_GetProfileBytes(IWICColorContext *iface, UINT cbBuffer, BYTE *pbBuffer, UINT *pcbActual)
+static HRESULT WINAPI WICColorContext_GetProfileBytes(IWICColorContext *iface, UINT cbBuffer,
+        BYTE *pbBuffer, UINT *pcbActual)
 {
     struct qemu_WICColorContext_GetProfileBytes call;
     struct qemu_wic_color_context *context = impl_from_IWICColorContext(iface);
@@ -337,10 +339,11 @@ void qemu_WICColorContext_GetProfileBytes(struct qemu_syscall *call)
     struct qemu_WICColorContext_GetProfileBytes *c = (struct qemu_WICColorContext_GetProfileBytes *)call;
     struct qemu_wic_color_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICColorContext_GetProfileBytes(context->host, c->cbBuffer, QEMU_G2H(c->pbBuffer), QEMU_G2H(c->pcbActual));
+    c->super.iret = IWICColorContext_GetProfileBytes(context->host, c->cbBuffer, QEMU_G2H(c->pbBuffer),
+            QEMU_G2H(c->pcbActual));
 }
 
 #endif
@@ -375,7 +378,7 @@ void qemu_WICColorContext_GetExifColorSpace(struct qemu_syscall *call)
     struct qemu_WICColorContext_GetExifColorSpace *c = (struct qemu_WICColorContext_GetExifColorSpace *)call;
     struct qemu_wic_color_context *context;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     context = QEMU_G2H(c->iface);
 
     c->super.iret = IWICColorContext_GetExifColorSpace(context->host, QEMU_G2H(c->pValue));
