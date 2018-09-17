@@ -461,7 +461,8 @@ struct qemu_WICBitmapFrameEncode_WritePixels
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICBitmapFrameEncode_WritePixels(IWICBitmapFrameEncode *iface, UINT lineCount, UINT cbStride, UINT cbBufferSize, BYTE *pbPixels)
+static HRESULT WINAPI WICBitmapFrameEncode_WritePixels(IWICBitmapFrameEncode *iface, UINT lineCount, UINT cbStride,
+        UINT cbBufferSize, BYTE *pbPixels)
 {
     struct qemu_WICBitmapFrameEncode_WritePixels call;
     struct qemu_wic_frame_encode *frame_encode = impl_from_IWICBitmapFrameEncode(iface);
@@ -485,10 +486,11 @@ void qemu_WICBitmapFrameEncode_WritePixels(struct qemu_syscall *call)
     struct qemu_WICBitmapFrameEncode_WritePixels *c = (struct qemu_WICBitmapFrameEncode_WritePixels *)call;
     struct qemu_wic_frame_encode *frame_encode;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     frame_encode = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICBitmapFrameEncode_WritePixels(frame_encode->host, c->lineCount, c->cbStride, c->cbBufferSize, QEMU_G2H(c->pbPixels));
+    c->super.iret = IWICBitmapFrameEncode_WritePixels(frame_encode->host, c->lineCount, c->cbStride,
+            c->cbBufferSize, QEMU_G2H(c->pbPixels));
 }
 
 #endif
