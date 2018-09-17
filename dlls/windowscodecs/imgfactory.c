@@ -25,6 +25,10 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_wincodec.h"
+#include "thunk/qemu_oaidl.h"
+
 #include <wine/debug.h>
 #include <wine/list.h>
 
@@ -1833,10 +1837,12 @@ struct qemu_ComponentFactory_CreateEncoderPropertyBag
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateEncoderPropertyBag(IWICComponentFactory *iface, PROPBAG2 *options, UINT count, IPropertyBag2 **property)
+static HRESULT WINAPI ComponentFactory_CreateEncoderPropertyBag(IWICComponentFactory *iface,
+        PROPBAG2 *options, UINT count, IPropertyBag2 **property)
 {
     struct qemu_ComponentFactory_CreateEncoderPropertyBag call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_propery_bag *bag;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATEENCODERPROPERTYBAG);
     call.iface = (ULONG_PTR)factory;
@@ -1845,6 +1851,12 @@ static HRESULT WINAPI ComponentFactory_CreateEncoderPropertyBag(IWICComponentFac
     call.property = (ULONG_PTR)property;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    bag = (struct qemu_propery_bag *)(ULONG_PTR)call.property;
+    PropertyBag_init_guest(bag);
+    *property = &bag->IPropertyBag2_iface;
 
     return call.super.iret;
 }
@@ -1853,13 +1865,58 @@ static HRESULT WINAPI ComponentFactory_CreateEncoderPropertyBag(IWICComponentFac
 
 void qemu_ComponentFactory_CreateEncoderPropertyBag(struct qemu_syscall *call)
 {
-    struct qemu_ComponentFactory_CreateEncoderPropertyBag *c = (struct qemu_ComponentFactory_CreateEncoderPropertyBag *)call;
+    struct qemu_ComponentFactory_CreateEncoderPropertyBag *c =
+            (struct qemu_ComponentFactory_CreateEncoderPropertyBag *)call;
     struct qemu_component_factory *factory;
+    struct qemu_propery_bag *bag;
+    IPropertyBag2 *host;
+    PROPBAG2 *options;
+    struct qemu_PROPBAG2 *options32;
+    UINT i;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    options = QEMU_G2H(c->options);
+#else
+    options32 = QEMU_G2H(c->options);
+    if (options32)
+    {
+        options = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*options) * c->count);
+        if (!options)
+        {
+            WINE_WARN("Out of memory\n");
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
 
-    c->super.iret = IWICComponentFactory_CreateEncoderPropertyBag(factory->host, QEMU_G2H(c->options), c->count, QEMU_G2H(c->property));
+        for (i = 0; i < c->count; ++i)
+            PROPBAG2_g2h(&options[i], &options32[i]);
+    }
+    else
+    {
+        options = NULL;
+    }
+#endif
+
+    c->super.iret = IWICComponentFactory_CreateEncoderPropertyBag(factory->host, options,
+            c->count, c->property ? &host : NULL);
+
+#if GUEST_BIT != HOST_BIT
+    HeapFree(GetProcessHeap(), 0, options);
+#endif
+
+    if (FAILED(c->super.iret))
+        return;
+
+    bag = PropertyBag_create_host(host);
+    if (!bag)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        IPropertyBag2_Release(host);
+        return;
+    }
+    c->property = QEMU_H2G(bag);
 }
 
 #endif
