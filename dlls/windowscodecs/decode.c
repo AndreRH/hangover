@@ -469,21 +469,18 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetColorContexts(IWICBitmapFrameDecod
 {
     struct qemu_WICBitmapFrameDecode_GetColorContexts call;
     struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
-    struct qemu_wic_color_context *context;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_GETCOLORCONTEXTS);
     call.iface = (ULONG_PTR)frame;
     call.cCount = cCount;
-    call.ppIColorContexts = (ULONG_PTR)ppIColorContexts;
     call.pcActualCount = (ULONG_PTR)pcActualCount;
 
-    qemu_syscall(&call.super);
-    if (FAILED(call.super.iret) || !ppIColorContexts)
-        return call.super.iret;
+    if (ppIColorContexts)
+        call.ppIColorContexts = (ULONG_PTR)unsafe_impl_from_IWICColorContext(ppIColorContexts[0]);
+    else
+        call.ppIColorContexts = 0;
 
-    context = (struct qemu_wic_color_context *)(ULONG_PTR)call.ppIColorContexts;
-    WICColorContext_init_guest(context);
-    *ppIColorContexts = &context->IWICColorContext_iface;
+    qemu_syscall(&call.super);
 
     return call.super.iret;
 }
@@ -501,6 +498,7 @@ void qemu_WICBitmapFrameDecode_GetColorContexts(struct qemu_syscall *call)
     WINE_TRACE("\n");
     frame = QEMU_G2H(c->iface);
     count = c->cCount;
+    context = QEMU_G2H(c->ppIColorContexts);
 
     if (count > 1)
     {
@@ -509,20 +507,7 @@ void qemu_WICBitmapFrameDecode_GetColorContexts(struct qemu_syscall *call)
     }
 
     c->super.iret = IWICBitmapFrameDecode_GetColorContexts(frame->host, count,
-            c->ppIColorContexts ? &host : NULL, QEMU_G2H(c->pcActualCount));
-
-    if (FAILED(c->super.iret) || !c->ppIColorContexts)
-        return;
-
-    context = WICColorContext_create_host(host);
-    if (!context)
-    {
-        c->super.iret = E_OUTOFMEMORY;
-        IWICColorContext_Release(host);
-        return;
-    }
-
-    c->ppIColorContexts = QEMU_H2G(context);
+            context ? &context->host : NULL, QEMU_G2H(c->pcActualCount));
 }
 
 #endif

@@ -21,6 +21,7 @@
 #include <windows.h>
 #include <wincodec.h>
 #include <wincodecsdk.h>
+#include <assert.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -388,7 +389,7 @@ void qemu_WICColorContext_GetExifColorSpace(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-static const IWICColorContextVtbl ColorContext_Vtbl =
+static const IWICColorContextVtbl WICColorContext_Vtbl =
 {
     WICColorContext_QueryInterface,
     WICColorContext_AddRef,
@@ -403,7 +404,18 @@ static const IWICColorContextVtbl ColorContext_Vtbl =
 
 void WICColorContext_init_guest(struct qemu_wic_color_context *context)
 {
-    context->IWICColorContext_iface.lpVtbl = &ColorContext_Vtbl;
+    context->IWICColorContext_iface.lpVtbl = &WICColorContext_Vtbl;
+}
+
+struct qemu_wic_color_context *unsafe_impl_from_IWICColorContext(IWICColorContext *iface)
+{
+    if (!iface)
+        return NULL;
+
+    /* TODO: We might have to be able to deal with custom color context implementations. */
+    assert(iface->lpVtbl == &WICColorContext_Vtbl);
+
+    return CONTAINING_RECORD(iface, struct qemu_wic_color_context, IWICColorContext_iface);
 }
 
 #else

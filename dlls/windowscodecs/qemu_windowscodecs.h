@@ -523,6 +523,7 @@ void WICStream_init_guest(struct qemu_wic_stream *stream);
 void WICColorContext_init_guest(struct qemu_wic_color_context *context);
 
 struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
+struct qemu_wic_color_context *unsafe_impl_from_IWICColorContext(IWICColorContext *iface);
 
 /* For detection of our own IWICBitmapSource objects. */
 extern const IWICBitmapClipperVtbl WICBitmapClipper_Vtbl;
