@@ -40,8 +40,8 @@ struct qemu_dll_init
 {
     struct qemu_syscall super;
     uint64_t reason;
-    uint64_t guest_bitmap_source_addref;
-    uint64_t guest_bitmap_source_release;
+    uint64_t guest_iunknown_addref;
+    uint64_t guest_iunknown_release;
     uint64_t guest_bitmap_source_getsize;
     uint64_t guest_bitmap_source_getpixelformat;
     uint64_t guest_bitmap_source_copypixels;
@@ -82,14 +82,14 @@ struct guest_bitmap_source_copypalette
 
 #ifdef QEMU_DLL_GUEST
 
-static ULONG __fastcall guest_bitmap_source_addref(IWICBitmapSource *source)
+static ULONG __fastcall guest_iunknown_addref(IUnknown *source)
 {
-    return IWICBitmapSource_AddRef(source);
+    return IUnknown_AddRef(source);
 }
 
-static ULONG __fastcall guest_bitmap_source_release(IWICBitmapSource *source)
+static ULONG __fastcall guest_iunknown_release(IUnknown *source)
 {
-    return IWICBitmapSource_Release(source);
+    return IUnknown_Release(source);
 }
 
 static ULONG __fastcall guest_bitmap_source_getsize(struct guest_bitmap_source_getsize *call)
@@ -134,8 +134,8 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
     {
         call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
         call.reason = DLL_PROCESS_ATTACH;
-        call.guest_bitmap_source_addref = (ULONG_PTR)guest_bitmap_source_addref;
-        call.guest_bitmap_source_release = (ULONG_PTR)guest_bitmap_source_release;
+        call.guest_iunknown_addref = (ULONG_PTR)guest_iunknown_addref;
+        call.guest_iunknown_release = (ULONG_PTR)guest_iunknown_release;
         call.guest_bitmap_source_getsize = (ULONG_PTR)guest_bitmap_source_getsize;
         call.guest_bitmap_source_getpixelformat = (ULONG_PTR)guest_bitmap_source_getpixelformat;
         call.guest_bitmap_source_copypixels = (ULONG_PTR)guest_bitmap_source_copypixels;
@@ -174,8 +174,8 @@ HRESULT WINAPI DllUnregisterServer(void)
 
 #else
 
-static uint64_t guest_bitmap_source_addref;
-static uint64_t guest_bitmap_source_release;
+static uint64_t guest_iunknown_addref;
+static uint64_t guest_iunknown_release;
 static uint64_t guest_bitmap_source_getsize;
 static uint64_t guest_bitmap_source_getpixelformat;
 static uint64_t guest_bitmap_source_copypixels;
@@ -189,8 +189,8 @@ static void qemu_init_dll(struct qemu_syscall *call)
     switch (c->reason)
     {
         case DLL_PROCESS_ATTACH:
-            guest_bitmap_source_addref = c->guest_bitmap_source_addref;
-            guest_bitmap_source_release = c->guest_bitmap_source_release;
+            guest_iunknown_addref = c->guest_iunknown_addref;
+            guest_iunknown_release = c->guest_iunknown_release;
             guest_bitmap_source_getsize = c->guest_bitmap_source_getsize;
             guest_bitmap_source_getpixelformat = c->guest_bitmap_source_getpixelformat;
             guest_bitmap_source_copypixels = c->guest_bitmap_source_copypixels;
@@ -529,7 +529,7 @@ static ULONG WINAPI qemu_bitmap_source_Release(IWICBitmapSource *iface)
     if (ref == 0)
     {
         WINE_TRACE("Calling guest release method.\n");
-        ref2 = qemu_ops->qemu_execute(QEMU_G2H(guest_bitmap_source_release), source->guest);
+        ref2 = qemu_ops->qemu_execute(QEMU_G2H(guest_iunknown_release), source->guest);
         WINE_TRACE("Guest release method returned %u.\n", ref2);
         HeapFree(GetProcessHeap(), 0, source);
     }
@@ -649,7 +649,101 @@ struct qemu_bitmap_source *bitmap_source_wrapper_create(uint64_t guest)
     ret->ref = 1;
 
     WINE_TRACE("Calling guest addref method.\n");
-    ref = qemu_ops->qemu_execute(QEMU_G2H(guest_bitmap_source_addref), guest);
+    ref = qemu_ops->qemu_execute(QEMU_G2H(guest_iunknown_addref), guest);
+    WINE_TRACE("Guest addref returned %u.\n", ref);
+
+    return ret;
+}
+
+static HRESULT WINAPI mdbr_QueryInterface(IWICMetadataBlockReader *iface, REFIID iid, void **out)
+{
+    WINE_FIXME("Stub!\n");
+    return E_NOINTERFACE;
+}
+
+static inline struct qemu_mdbr *impl_from_IWICMetadataBlockReader(IWICMetadataBlockReader *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_mdbr, IWICMetadataBlockReader_iface);
+}
+
+static ULONG WINAPI mdbr_AddRef(IWICMetadataBlockReader *iface)
+{
+    struct qemu_mdbr *mdbr = impl_from_IWICMetadataBlockReader(iface);
+    ULONG ref = InterlockedIncrement(&mdbr->ref);
+
+    WINE_TRACE("(%p) refcount=%u\n", iface, ref);
+
+    return ref;
+}
+
+static ULONG WINAPI mdbr_Release(IWICMetadataBlockReader *iface)
+{
+    struct qemu_mdbr *mdbr = impl_from_IWICMetadataBlockReader(iface);
+    ULONG ref = InterlockedDecrement(&mdbr->ref), ref2;
+
+    WINE_TRACE("(%p) refcount=%u\n", iface, ref);
+
+    if (ref == 0)
+    {
+        WINE_TRACE("Calling guest release method.\n");
+        ref2 = qemu_ops->qemu_execute(QEMU_G2H(guest_iunknown_release), mdbr->guest);
+        WINE_TRACE("Guest release method returned %u.\n", ref2);
+        HeapFree(GetProcessHeap(), 0, mdbr);
+    }
+
+    return ref;
+}
+
+static HRESULT WINAPI mdbr_GetContainerFormat(IWICMetadataBlockReader *iface, GUID *format)
+{
+    WINE_FIXME("Stub!\n");
+    return S_OK;
+}
+
+static HRESULT WINAPI mdbr_GetCount(IWICMetadataBlockReader *iface, UINT *count)
+{
+    WINE_FIXME("Stub!\n");
+    return S_OK;
+}
+
+static HRESULT WINAPI mdbr_GetReaderByIndex(IWICMetadataBlockReader *iface, UINT index, IWICMetadataReader **out)
+{
+    WINE_FIXME("Stub!\n");
+    return E_INVALIDARG;
+}
+
+static HRESULT WINAPI mdbr_GetEnumerator(IWICMetadataBlockReader *iface, IEnumUnknown **enumerator)
+{
+    WINE_FIXME("Stub!\n");
+    return E_NOTIMPL;
+}
+
+static const IWICMetadataBlockReaderVtbl mdbr_wrapper_vtbl =
+{
+    mdbr_QueryInterface,
+    mdbr_AddRef,
+    mdbr_Release,
+    mdbr_GetContainerFormat,
+    mdbr_GetCount,
+    mdbr_GetReaderByIndex,
+    mdbr_GetEnumerator
+};
+
+struct qemu_mdbr *mdbr_wrapper_create(uint64_t guest)
+{
+    struct qemu_mdbr *ret;
+    ULONG ref;
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+        return NULL;
+
+    ret->IWICMetadataBlockReader_iface.lpVtbl = &mdbr_wrapper_vtbl;
+    ret->guest = guest;
+    ret->ref = 1;
+
+    WINE_TRACE("Calling guest addref method.\n");
+    ref = qemu_ops->qemu_execute(QEMU_G2H(guest_iunknown_addref), guest);
     WINE_TRACE("Guest addref returned %u.\n", ref);
 
     return ret;

@@ -139,10 +139,15 @@ void qemu_WICMetadataQueryReader_Release(struct qemu_syscall *call)
     struct qemu_WICMetadataQueryReader_Release *c = (struct qemu_WICMetadataQueryReader_Release *)call;
     struct qemu_wic_query_reader *reader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     reader = QEMU_G2H(c->iface);
 
     c->super.iret = IWICMetadataQueryReader_Release(reader->host);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying query reader wrapper %p for host reader %p.\n", reader, reader->host);
+        HeapFree(GetProcessHeap(), 0, reader);
+    }
 }
 
 #endif
@@ -425,6 +430,28 @@ static IWICMetadataQueryReaderVtbl WICMetadataQueryReader_vtbl =
     WICMetadataQueryReader_GetEnumerator
 };
 
+void WICMetadataQueryReader_init_guest(struct qemu_wic_query_reader *reader)
+{
+    reader->IWICMetadataQueryReader_iface.lpVtbl = &WICMetadataQueryReader_vtbl;
+}
+
 #else
+
+struct qemu_wic_query_reader *WICMetadataQueryReader_create_host(IWICMetadataQueryReader *host)
+{
+    struct qemu_wic_query_reader *ret;
+    HRESULT hr;
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+    {
+        WINE_WARN("Out of memory\n");
+        return NULL;
+    }
+
+    ret->host = host;
+
+    return ret;
+}
 
 #endif

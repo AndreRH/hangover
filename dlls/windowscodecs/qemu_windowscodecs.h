@@ -520,6 +520,15 @@ struct qemu_bitmap_source
     LONG ref;
 };
 
+/* This is a reverse wrapper. */
+struct qemu_mdbr
+{
+    /* Host fields. */
+    IWICMetadataBlockReader IWICMetadataBlockReader_iface;
+    uint64_t guest;
+    LONG ref;
+};
+
 DEFINE_GUID(CLSID_WineTgaDecoder, 0xb11fc79a,0x67cc,0x43e6,0xa9,0xce,0xe3,0xd5,0x49,0x45,0xd3,0x04);
 DEFINE_GUID(CLSID_WICIcnsEncoder, 0x312fb6f1,0xb767,0x409d,0x8a,0x6d,0x0f,0xc1,0x54,0xd4,0xf0,0x5c);
 DEFINE_GUID(GUID_WineContainerFormatTga, 0x0c44fda1,0xa5c5,0x4298,0x96,0x85,0x47,0x3f,0xc1,0x7c,0xd3,0x22);
@@ -543,6 +552,7 @@ void WICBitmapEncoder_init_guest(struct qemu_wic_encoder *encoder);
 void PropertyBag_init_guest(struct qemu_propery_bag *bag);
 void WICStream_init_guest(struct qemu_wic_stream *stream);
 void WICColorContext_init_guest(struct qemu_wic_color_context *context);
+void WICMetadataQueryReader_init_guest(struct qemu_wic_query_reader *reader);
 
 struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
 struct qemu_wic_color_context *unsafe_impl_from_IWICColorContext(IWICColorContext *iface);
@@ -866,12 +876,14 @@ struct qemu_wic_encoder *WICBitmapEncoder_create_host(IWICBitmapEncoder *host);
 struct qemu_propery_bag *PropertyBag_create_host(IPropertyBag2 *host);
 struct qemu_wic_stream *WICStream_create_host(IWICStream *host);
 struct qemu_wic_color_context *WICColorContext_create_host(IWICColorContext *host);
+struct qemu_wic_query_reader *WICMetadataQueryReader_create_host(IWICMetadataQueryReader *host);
 
 ULONG qemu_WICBitmap_Release_internal(struct qemu_wic_bitmap *bitmap);
 ULONG qemu_WICFormatConverter_Release_internal(struct qemu_wic_converter *converter);
 ULONG qemu_WICBitmapClipper_Release_internal(struct qemu_wic_clipper *clipper);
 
 struct qemu_bitmap_source *bitmap_source_wrapper_create(uint64_t guest);
+struct qemu_mdbr *mdbr_wrapper_create(uint64_t guest);
 
 #endif
 

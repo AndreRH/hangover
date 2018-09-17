@@ -1756,10 +1756,12 @@ struct qemu_ComponentFactory_CreateQueryReaderFromBlockReader
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateQueryReaderFromBlockReader(IWICComponentFactory *iface, IWICMetadataBlockReader *block_reader, IWICMetadataQueryReader **query_reader)
+static HRESULT WINAPI ComponentFactory_CreateQueryReaderFromBlockReader(IWICComponentFactory *iface,
+        IWICMetadataBlockReader *block_reader, IWICMetadataQueryReader **query_reader)
 {
     struct qemu_ComponentFactory_CreateQueryReaderFromBlockReader call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_wic_query_reader *reader;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATEQUERYREADERFROMBLOCKREADER);
     call.iface = (ULONG_PTR)factory;
@@ -1767,6 +1769,12 @@ static HRESULT WINAPI ComponentFactory_CreateQueryReaderFromBlockReader(IWICComp
     call.query_reader = (ULONG_PTR)query_reader;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    reader = (struct qemu_wic_query_reader *)(ULONG_PTR)call.query_reader;
+    WICMetadataQueryReader_init_guest(reader);
+    *query_reader = &reader->IWICMetadataQueryReader_iface;
 
     return call.super.iret;
 }
@@ -1775,13 +1783,34 @@ static HRESULT WINAPI ComponentFactory_CreateQueryReaderFromBlockReader(IWICComp
 
 void qemu_ComponentFactory_CreateQueryReaderFromBlockReader(struct qemu_syscall *call)
 {
-    struct qemu_ComponentFactory_CreateQueryReaderFromBlockReader *c = (struct qemu_ComponentFactory_CreateQueryReaderFromBlockReader *)call;
+    struct qemu_ComponentFactory_CreateQueryReaderFromBlockReader *c =
+            (struct qemu_ComponentFactory_CreateQueryReaderFromBlockReader *)call;
     struct qemu_component_factory *factory;
+    struct qemu_mdbr *wrapper;
+    IWICMetadataQueryReader *host;
+    struct qemu_wic_query_reader *reader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
+    wrapper = mdbr_wrapper_create(c->block_reader);
 
-    c->super.iret = IWICComponentFactory_CreateQueryReaderFromBlockReader(factory->host, QEMU_G2H(c->block_reader), QEMU_G2H(c->query_reader));
+    c->super.iret = IWICComponentFactory_CreateQueryReaderFromBlockReader(factory->host,
+            wrapper ? &wrapper->IWICMetadataBlockReader_iface : NULL, c->query_reader ? &host : NULL);
+
+    if (wrapper)
+        IWICMetadataBlockReader_Release(&wrapper->IWICMetadataBlockReader_iface);
+
+    if (FAILED(c->super.iret))
+        return;
+
+    reader = WICMetadataQueryReader_create_host(host);
+    if (!reader)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        IWICMetadataQueryReader_Release(host);
+        return;
+    }
+    c->query_reader = QEMU_H2G(reader);
 }
 
 #endif
