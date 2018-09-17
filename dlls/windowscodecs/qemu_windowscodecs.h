@@ -553,6 +553,7 @@ extern const IWICBitmapVtbl WICBitmap_Vtbl;
 extern const IWICBitmapFrameDecodeVtbl WICBitmapFrameDecode_FrameVtbl;
 extern const IWICFormatConverterVtbl WICFormatConverter_Vtbl;
 extern const IPropertyBag2Vtbl PropertyBag_Vtbl;
+extern const IWICMetadataBlockReaderVtbl IWICMetadataBlockReader_BlockVtbl;
 
 static inline struct qemu_wic_bitmap *impl_from_IWICBitmap(IWICBitmap *iface)
 {

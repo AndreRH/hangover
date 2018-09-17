@@ -51,7 +51,7 @@ static inline struct qemu_wic_frame_decode *impl_from_IWICBitmapFrameDecode(IWIC
     return CONTAINING_RECORD(iface, struct qemu_wic_frame_decode, IWICBitmapFrameDecode_iface);
 }
 
-static inline struct qemu_wic_frame_decode *impl_from_IWICMetadataBlockReader(IWICMetadataBlockReader *iface)
+static inline struct qemu_wic_frame_decode *frame_from_IWICMetadataBlockReader(IWICMetadataBlockReader *iface)
 {
     return CONTAINING_RECORD(iface, struct qemu_wic_frame_decode, IWICMetadataBlockReader_iface);
 }
@@ -66,22 +66,44 @@ static HRESULT WINAPI WICBitmapFrameDecode_QueryInterface(IWICBitmapFrameDecode 
     if (!ppv)
         return E_INVALIDARG;
 
-    if (IsEqualIID(&IID_IUnknown, iid) || IsEqualIID(&IID_IWICBitmapSource, iid)
-            || IsEqualIID(&IID_IWICBitmapFrameDecode, iid))
-    {
-        *ppv = &frame->IWICBitmapFrameDecode_iface;
-        IUnknown_AddRef((IUnknown*)*ppv);
-        return S_OK;
-    }
-
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_QUERYINTERFACE);
     call.iface = (ULONG_PTR)frame;
     call.iid = (ULONG_PTR)iid;
 
     qemu_syscall(&call.super);
 
-    *ppv = NULL;
-    return E_NOINTERFACE;
+    if (FAILED(call.super.iret))
+    {
+        *ppv = NULL;
+        return call.super.iret;
+    }
+
+    if (IsEqualIID(&IID_IUnknown, iid)
+            || IsEqualIID(&IID_IWICBitmapSource, iid)
+            || IsEqualIID(&IID_IWICBitmapSource, iid)
+            || IsEqualIID(&IID_IWICBitmapFrameDecode, iid))
+    {
+        *ppv = &frame->IWICBitmapFrameDecode_iface;
+    }
+    else if (IsEqualIID(&IID_IWICMetadataBlockReader, iid))
+    {
+        *ppv = &frame->IWICMetadataBlockReader_iface;
+    }
+    else
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(iid));
+        *ppv = NULL;
+
+        /* For the AddRef done on the host side. Luckily host and guest share a refcount, and there's
+         * only one refcount for all interfaces. */
+        IWICBitmapFrameDecode_Release(&frame->IWICBitmapFrameDecode_iface);
+        return E_NOINTERFACE;
+    }
+
+    /* AddRef already taken care of on the host side. */
+    return S_OK;
+
 }
 
 #else
@@ -96,12 +118,7 @@ void qemu_WICBitmapFrameDecode_QueryInterface(struct qemu_syscall *call)
     frame = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapFrameDecode_QueryInterface(frame->host, QEMU_G2H(c->iid), (void **)&obj);
-    if (SUCCEEDED(c->super.iret))
-    {
-        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
-                wine_dbgstr_guid(QEMU_G2H(c->iid)));
-        IUnknown_Release(obj);
-    }
+    /* Pass the reference to the guest. */
 }
 
 #endif
@@ -569,19 +586,19 @@ void qemu_WICBitmapFrameDecode_GetThumbnail(struct qemu_syscall *call)
 
 static HRESULT WINAPI WICMetadataBlockReader_QueryInterface(IWICMetadataBlockReader *iface, REFIID iid, void **ppv)
 {
-    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+    struct qemu_wic_frame_decode *frame = frame_from_IWICMetadataBlockReader(iface);
     return IWICBitmapFrameDecode_QueryInterface(&frame->IWICBitmapFrameDecode_iface, iid, ppv);
 }
 
 static ULONG WINAPI WICMetadataBlockReader_AddRef(IWICMetadataBlockReader *iface)
 {
-    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+    struct qemu_wic_frame_decode *frame = frame_from_IWICMetadataBlockReader(iface);
     return IWICBitmapFrameDecode_AddRef(&frame->IWICBitmapFrameDecode_iface);
 }
 
 static ULONG WINAPI WICMetadataBlockReader_Release(IWICMetadataBlockReader *iface)
 {
-    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+    struct qemu_wic_frame_decode *frame = frame_from_IWICMetadataBlockReader(iface);
     return IWICBitmapFrameDecode_Release(&frame->IWICBitmapFrameDecode_iface);
 }
 
@@ -599,7 +616,7 @@ struct qemu_WICMetadataBlockReader_GetContainerFormat
 static HRESULT WINAPI WICMetadataBlockReader_GetContainerFormat(IWICMetadataBlockReader *iface, GUID *guid)
 {
     struct qemu_WICMetadataBlockReader_GetContainerFormat call;
-    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+    struct qemu_wic_frame_decode *frame = frame_from_IWICMetadataBlockReader(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATABLOCKREADER_GETCONTAINERFORMAT);
     call.iface = (ULONG_PTR)frame;
@@ -637,7 +654,7 @@ struct qemu_WICMetadataBlockReader_GetCount
 static HRESULT WINAPI WICMetadataBlockReader_GetCount(IWICMetadataBlockReader *iface, UINT *count)
 {
     struct qemu_WICMetadataBlockReader_GetCount call;
-    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+    struct qemu_wic_frame_decode *frame = frame_from_IWICMetadataBlockReader(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATABLOCKREADER_GETCOUNT);
     call.iface = (ULONG_PTR)frame;
@@ -676,7 +693,7 @@ struct qemu_WICMetadataBlockReader_GetReaderByIndex
 static HRESULT WINAPI WICMetadataBlockReader_GetReaderByIndex(IWICMetadataBlockReader *iface, UINT index, IWICMetadataReader **reader)
 {
     struct qemu_WICMetadataBlockReader_GetReaderByIndex call;
-    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+    struct qemu_wic_frame_decode *frame = frame_from_IWICMetadataBlockReader(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATABLOCKREADER_GETREADERBYINDEX);
     call.iface = (ULONG_PTR)frame;
@@ -715,7 +732,7 @@ struct qemu_WICMetadataBlockReader_GetEnumerator
 static HRESULT WINAPI WICMetadataBlockReader_GetEnumerator(IWICMetadataBlockReader *iface, IEnumUnknown **enumerator)
 {
     struct qemu_WICMetadataBlockReader_GetEnumerator call;
-    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+    struct qemu_wic_frame_decode *frame = frame_from_IWICMetadataBlockReader(iface);
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATABLOCKREADER_GETENUMERATOR);
     call.iface = (ULONG_PTR)frame;
@@ -725,17 +742,6 @@ static HRESULT WINAPI WICMetadataBlockReader_GetEnumerator(IWICMetadataBlockRead
 
     return call.super.iret;
 }
-
-static const IWICMetadataBlockReaderVtbl IWICMetadataBlockReader_BlockVtbl =
-{
-    WICMetadataBlockReader_QueryInterface,
-    WICMetadataBlockReader_AddRef,
-    WICMetadataBlockReader_Release,
-    WICMetadataBlockReader_GetContainerFormat,
-    WICMetadataBlockReader_GetCount,
-    WICMetadataBlockReader_GetReaderByIndex,
-    WICMetadataBlockReader_GetEnumerator
-};
 
 #else
 
@@ -1495,6 +1501,17 @@ const IWICBitmapFrameDecodeVtbl WICBitmapFrameDecode_FrameVtbl =
     WICBitmapFrameDecode_GetMetadataQueryReader,
     WICBitmapFrameDecode_GetColorContexts,
     WICBitmapFrameDecode_GetThumbnail
+};
+
+const IWICMetadataBlockReaderVtbl IWICMetadataBlockReader_BlockVtbl =
+{
+    WICMetadataBlockReader_QueryInterface,
+    WICMetadataBlockReader_AddRef,
+    WICMetadataBlockReader_Release,
+    WICMetadataBlockReader_GetContainerFormat,
+    WICMetadataBlockReader_GetCount,
+    WICMetadataBlockReader_GetReaderByIndex,
+    WICMetadataBlockReader_GetEnumerator
 };
 
 void WICBitmapDecoder_init_guest(struct qemu_wic_decoder *decoder)
