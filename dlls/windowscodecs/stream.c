@@ -25,6 +25,9 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_objidl.h"
+
 #include <wine/debug.h>
 #include <wine/list.h>
 
@@ -571,11 +574,25 @@ void qemu_WICStream_Stat(struct qemu_syscall *call)
 {
     struct qemu_WICStream_Stat *c = (struct qemu_WICStream_Stat *)call;
     struct qemu_wic_stream *stream;
+    struct qemu_STATSTG *stat32;
+    STATSTG stack, *stat = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    stat = QEMU_G2H(c->pstatstg);
+#else
+    stat32 = QEMU_G2H(c->pstatstg);
+    if (!stat32)
+        stat = NULL;
+#endif
 
-    c->super.iret = IWICStream_Stat(stream->host, QEMU_G2H(c->pstatstg), c->grfStatFlag);
+    c->super.iret = IWICStream_Stat(stream->host, stat, c->grfStatFlag);
+
+#if GUEST_BIT != HOST_BIT
+    if (stat32)
+        STATSTG_h2g(stat32, stat);
+#endif
 }
 
 #endif
