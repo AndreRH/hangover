@@ -233,6 +233,10 @@ enum windowscodecs_calls
     CALL_WICMAPGUIDTOSHORTNAME,
     CALL_WICMAPSCHEMATONAME,
     CALL_WICMAPSHORTNAMETOGUID,
+    CALL_WICMETADATABLOCKREADER_GETCONTAINERFORMAT,
+    CALL_WICMETADATABLOCKREADER_GETCOUNT,
+    CALL_WICMETADATABLOCKREADER_GETENUMERATOR,
+    CALL_WICMETADATABLOCKREADER_GETREADERBYINDEX,
     CALL_WICMETADATAQUERYREADER_ADDREF,
     CALL_WICMETADATAQUERYREADER_GETCONTAINERFORMAT,
     CALL_WICMETADATAQUERYREADER_GETENUMERATOR,
@@ -393,9 +397,11 @@ struct qemu_wic_frame_decode
 {
     /* Guest fields */
     IWICBitmapFrameDecode IWICBitmapFrameDecode_iface;
+    IWICMetadataBlockReader IWICMetadataBlockReader_iface;
 
     /* Host fields */
     IWICBitmapFrameDecode *host;
+    IWICMetadataBlockReader *host_block_reader;
     struct qemu_wic_decoder *decoder;
 };
 
@@ -786,6 +792,10 @@ void qemu_WICFormatConverter_create_host(struct qemu_syscall *call);
 void qemu_WICMapGuidToShortName(struct qemu_syscall *call);
 void qemu_WICMapSchemaToName(struct qemu_syscall *call);
 void qemu_WICMapShortNameToGuid(struct qemu_syscall *call);
+void qemu_WICMetadataBlockReader_GetContainerFormat(struct qemu_syscall *call);
+void qemu_WICMetadataBlockReader_GetCount(struct qemu_syscall *call);
+void qemu_WICMetadataBlockReader_GetEnumerator(struct qemu_syscall *call);
+void qemu_WICMetadataBlockReader_GetReaderByIndex(struct qemu_syscall *call);
 void qemu_WICMetadataQueryReader_AddRef(struct qemu_syscall *call);
 void qemu_WICMetadataQueryReader_GetContainerFormat(struct qemu_syscall *call);
 void qemu_WICMetadataQueryReader_GetEnumerator(struct qemu_syscall *call);

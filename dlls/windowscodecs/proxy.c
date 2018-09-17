@@ -23,6 +23,7 @@
 #define COBJMACROS
 #include <windows.h>
 #include <wincodec.h>
+#include <wincodecsdk.h>
 #include <wine/debug.h>
 #include <wine/list.h>
 

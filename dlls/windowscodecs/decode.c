@@ -51,6 +51,11 @@ static inline struct qemu_wic_frame_decode *impl_from_IWICBitmapFrameDecode(IWIC
     return CONTAINING_RECORD(iface, struct qemu_wic_frame_decode, IWICBitmapFrameDecode_iface);
 }
 
+static inline struct qemu_wic_frame_decode *impl_from_IWICMetadataBlockReader(IWICMetadataBlockReader *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_wic_frame_decode, IWICMetadataBlockReader_iface);
+}
+
 static HRESULT WINAPI WICBitmapFrameDecode_QueryInterface(IWICBitmapFrameDecode *iface, REFIID iid, void **ppv)
 {
     struct qemu_WICBitmapFrameDecode_QueryInterface call;
@@ -556,6 +561,193 @@ void qemu_WICBitmapFrameDecode_GetThumbnail(struct qemu_syscall *call)
             WINE_FIXME("Expected the thumbnail to be myself.\n");
         IWICBitmapSource_Release(host);
     }
+}
+
+#endif
+
+#ifdef QEMU_DLL_GUEST
+
+static HRESULT WINAPI WICMetadataBlockReader_QueryInterface(IWICMetadataBlockReader *iface, REFIID iid, void **ppv)
+{
+    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+    return IWICBitmapFrameDecode_QueryInterface(&frame->IWICBitmapFrameDecode_iface, iid, ppv);
+}
+
+static ULONG WINAPI WICMetadataBlockReader_AddRef(IWICMetadataBlockReader *iface)
+{
+    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+    return IWICBitmapFrameDecode_AddRef(&frame->IWICBitmapFrameDecode_iface);
+}
+
+static ULONG WINAPI WICMetadataBlockReader_Release(IWICMetadataBlockReader *iface)
+{
+    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+    return IWICBitmapFrameDecode_Release(&frame->IWICBitmapFrameDecode_iface);
+}
+
+#endif
+
+struct qemu_WICMetadataBlockReader_GetContainerFormat
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t guid;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static HRESULT WINAPI WICMetadataBlockReader_GetContainerFormat(IWICMetadataBlockReader *iface, GUID *guid)
+{
+    struct qemu_WICMetadataBlockReader_GetContainerFormat call;
+    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATABLOCKREADER_GETCONTAINERFORMAT);
+    call.iface = (ULONG_PTR)frame;
+    call.guid = (ULONG_PTR)guid;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WICMetadataBlockReader_GetContainerFormat(struct qemu_syscall *call)
+{
+    struct qemu_WICMetadataBlockReader_GetContainerFormat *c = (struct qemu_WICMetadataBlockReader_GetContainerFormat *)call;
+    struct qemu_wic_frame_decode *frame;
+
+    WINE_FIXME("Unverified!\n");
+    frame = QEMU_G2H(c->iface);
+
+    c->super.iret = IWICMetadataBlockReader_GetContainerFormat(frame->host_block_reader, QEMU_G2H(c->guid));
+}
+
+#endif
+
+struct qemu_WICMetadataBlockReader_GetCount
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t count;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static HRESULT WINAPI WICMetadataBlockReader_GetCount(IWICMetadataBlockReader *iface, UINT *count)
+{
+    struct qemu_WICMetadataBlockReader_GetCount call;
+    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATABLOCKREADER_GETCOUNT);
+    call.iface = (ULONG_PTR)frame;
+    call.count = (ULONG_PTR)count;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WICMetadataBlockReader_GetCount(struct qemu_syscall *call)
+{
+    struct qemu_WICMetadataBlockReader_GetCount *c = (struct qemu_WICMetadataBlockReader_GetCount *)call;
+    struct qemu_wic_frame_decode *frame;
+
+    WINE_FIXME("Unverified!\n");
+    frame = QEMU_G2H(c->iface);
+
+    c->super.iret = IWICMetadataBlockReader_GetCount(frame->host_block_reader, QEMU_G2H(c->count));
+}
+
+#endif
+
+struct qemu_WICMetadataBlockReader_GetReaderByIndex
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t index;
+    uint64_t reader;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static HRESULT WINAPI WICMetadataBlockReader_GetReaderByIndex(IWICMetadataBlockReader *iface, UINT index, IWICMetadataReader **reader)
+{
+    struct qemu_WICMetadataBlockReader_GetReaderByIndex call;
+    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATABLOCKREADER_GETREADERBYINDEX);
+    call.iface = (ULONG_PTR)frame;
+    call.index = index;
+    call.reader = (ULONG_PTR)reader;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_WICMetadataBlockReader_GetReaderByIndex(struct qemu_syscall *call)
+{
+    struct qemu_WICMetadataBlockReader_GetReaderByIndex *c = (struct qemu_WICMetadataBlockReader_GetReaderByIndex *)call;
+    struct qemu_wic_frame_decode *frame;
+
+    WINE_FIXME("Unverified!\n");
+    frame = QEMU_G2H(c->iface);
+
+    c->super.iret = IWICMetadataBlockReader_GetReaderByIndex(frame->host_block_reader, c->index, QEMU_G2H(c->reader));
+}
+
+#endif
+
+struct qemu_WICMetadataBlockReader_GetEnumerator
+{
+    struct qemu_syscall super;
+    uint64_t iface;
+    uint64_t enumerator;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static HRESULT WINAPI WICMetadataBlockReader_GetEnumerator(IWICMetadataBlockReader *iface, IEnumUnknown **enumerator)
+{
+    struct qemu_WICMetadataBlockReader_GetEnumerator call;
+    struct qemu_wic_frame_decode *frame = impl_from_IWICMetadataBlockReader(iface);
+
+    call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATABLOCKREADER_GETENUMERATOR);
+    call.iface = (ULONG_PTR)frame;
+    call.enumerator = (ULONG_PTR)enumerator;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+static const IWICMetadataBlockReaderVtbl IWICMetadataBlockReader_BlockVtbl =
+{
+    WICMetadataBlockReader_QueryInterface,
+    WICMetadataBlockReader_AddRef,
+    WICMetadataBlockReader_Release,
+    WICMetadataBlockReader_GetContainerFormat,
+    WICMetadataBlockReader_GetCount,
+    WICMetadataBlockReader_GetReaderByIndex,
+    WICMetadataBlockReader_GetEnumerator
+};
+
+#else
+
+void qemu_WICMetadataBlockReader_GetEnumerator(struct qemu_syscall *call)
+{
+    struct qemu_WICMetadataBlockReader_GetEnumerator *c = (struct qemu_WICMetadataBlockReader_GetEnumerator *)call;
+    struct qemu_wic_frame_decode *frame;
+
+    WINE_FIXME("Unverified!\n");
+    frame = QEMU_G2H(c->iface);
+
+    c->super.iret = IWICMetadataBlockReader_GetEnumerator(frame->host_block_reader, QEMU_G2H(c->enumerator));
 }
 
 #endif
@@ -1195,6 +1387,7 @@ static HRESULT WINAPI WICBitmapDecoder_GetFrame(IWICBitmapDecoder *iface, UINT i
 
     frame = (struct qemu_wic_frame_decode *)(ULONG_PTR)call.ppIBitmapFrame;
     frame->IWICBitmapFrameDecode_iface.lpVtbl = &WICBitmapFrameDecode_FrameVtbl;
+    frame->IWICMetadataBlockReader_iface.lpVtbl = &IWICMetadataBlockReader_BlockVtbl;
     *ppIBitmapFrame = &frame->IWICBitmapFrameDecode_iface;
 
     return call.super.iret;
