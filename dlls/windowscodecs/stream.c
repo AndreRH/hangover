@@ -361,12 +361,15 @@ void qemu_WICStream_CopyTo(struct qemu_syscall *call)
     struct qemu_wic_stream *stream;
     ULARGE_INTEGER cb;
 
-    WINE_FIXME("Unverified!\n");
+    /* According to the tests this just returns E_NOTIMPL on Windows (and thus Wine). */
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
     cb.QuadPart = c->cb;
 
     c->super.iret = IWICStream_CopyTo(stream->host, QEMU_G2H(c->pstm), cb, QEMU_G2H(c->pcbRead),
             QEMU_G2H(c->pcbWritten));
+    if (c->super.iret != E_NOTIMPL)
+        WINE_FIXME("Host implements IWICStream::CopyTo.\n");
 }
 
 #endif
@@ -607,10 +610,13 @@ void qemu_WICStream_Clone(struct qemu_syscall *call)
     struct qemu_WICStream_Clone *c = (struct qemu_WICStream_Clone *)call;
     struct qemu_wic_stream *stream;
 
-    WINE_FIXME("Unverified!\n");
+    /* According to the tests this just returns E_NOTIMPL on Windows (and thus Wine). */
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
 
     c->super.iret = IWICStream_Clone(stream->host, QEMU_G2H(c->ppstm));
+    if (c->super.iret != E_NOTIMPL)
+        WINE_FIXME("Host implements IWICStream::Clone.\n");
 }
 
 #endif
@@ -768,13 +774,19 @@ void qemu_WICStream_InitializeFromIStreamRegion(struct qemu_syscall *call)
     struct qemu_WICStream_InitializeFromIStreamRegion *c = (struct qemu_WICStream_InitializeFromIStreamRegion *)call;
     struct qemu_wic_stream *stream;
     ULARGE_INTEGER ulOffset, ulMaxSize;
+    struct istream_wrapper *src;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     stream = QEMU_G2H(c->iface);
     ulOffset.QuadPart = c->ulOffset;
     ulMaxSize.QuadPart = c->ulMaxSize;
+    src = istream_wrapper_create(c->pIStream);
 
-    c->super.iret = IWICStream_InitializeFromIStreamRegion(stream->host, QEMU_G2H(c->pIStream), ulOffset, ulMaxSize);
+    c->super.iret = IWICStream_InitializeFromIStreamRegion(stream->host,
+            istream_wrapper_host_iface(src), ulOffset, ulMaxSize);
+
+    if (src)
+        IStream_Release(istream_wrapper_host_iface(src));
 }
 
 #endif
