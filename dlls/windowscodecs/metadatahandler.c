@@ -265,7 +265,7 @@ void qemu_MetadataHandler_GetMetadataFormat(struct qemu_syscall *call)
     struct qemu_MetadataHandler_GetMetadataFormat *c = (struct qemu_MetadataHandler_GetMetadataFormat *)call;
     struct qemu_wic_metadata_handler *handler;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     handler = QEMU_G2H(c->iface);
 
     c->super.iret = IWICMetadataWriter_GetMetadataFormat(handler->host_writer, QEMU_G2H(c->pguidMetadataFormat));
@@ -303,7 +303,7 @@ void qemu_MetadataHandler_GetCount(struct qemu_syscall *call)
     struct qemu_MetadataHandler_GetCount *c = (struct qemu_MetadataHandler_GetCount *)call;
     struct qemu_wic_metadata_handler *handler;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     handler = QEMU_G2H(c->iface);
 
     c->super.iret = IWICMetadataWriter_GetCount(handler->host_writer, QEMU_G2H(c->pcCount));
@@ -323,7 +323,8 @@ struct qemu_MetadataHandler_GetValueByIndex
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI MetadataHandler_GetValueByIndex(IWICMetadataWriter *iface, UINT index, PROPVARIANT *schema, PROPVARIANT *id, PROPVARIANT *value)
+static HRESULT WINAPI MetadataHandler_GetValueByIndex(IWICMetadataWriter *iface, UINT index,
+        PROPVARIANT *schema, PROPVARIANT *id, PROPVARIANT *value)
 {
     struct qemu_MetadataHandler_GetValueByIndex call;
     struct qemu_wic_metadata_handler *handler = impl_from_IWICMetadataWriter(iface);
@@ -346,11 +347,48 @@ void qemu_MetadataHandler_GetValueByIndex(struct qemu_syscall *call)
 {
     struct qemu_MetadataHandler_GetValueByIndex *c = (struct qemu_MetadataHandler_GetValueByIndex *)call;
     struct qemu_wic_metadata_handler *handler;
+    PROPVARIANT s_stack, id_stack, v_stack, *schema = &s_stack, *id = &id_stack, *value = &v_stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     handler = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICMetadataWriter_GetValueByIndex(handler->host_writer, c->index, QEMU_G2H(c->schema), QEMU_G2H(c->id), QEMU_G2H(c->value));
+#if GUEST_BIT == HOST_BIT
+    schema = QEMU_G2H(c->schema);
+    id = QEMU_G2H(c->id);
+    value = QEMU_G2H(c->value);
+#else
+    if (c->schema)
+        PROPVARIANT_g2h(schema, QEMU_G2H(c->schema));
+    else
+        schema = NULL;
+
+    if (c->id)
+        PROPVARIANT_g2h(id, QEMU_G2H(c->id));
+    else
+        id = NULL;
+
+    if (c->value)
+        PROPVARIANT_g2h(value, QEMU_G2H(c->value));
+    else
+        value = NULL;
+#endif
+
+    c->super.iret = IWICMetadataWriter_GetValueByIndex(handler->host_writer, c->index, schema, id, value);
+
+    if (value && value->vt == VT_UNKNOWN)
+        WINE_FIXME("Handle IUnknown values.\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+    {
+        if (schema)
+            PROPVARIANT_h2g(QEMU_G2H(c->schema), schema);
+        if (id)
+            PROPVARIANT_h2g(QEMU_G2H(c->id), id);
+        if (value)
+            PROPVARIANT_h2g(QEMU_G2H(c->value), value);
+    }
+#endif
 }
 
 #endif
@@ -366,7 +404,8 @@ struct qemu_MetadataHandler_GetValue
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI MetadataHandler_GetValue(IWICMetadataWriter *iface, const PROPVARIANT *schema, const PROPVARIANT *id, PROPVARIANT *value)
+static HRESULT WINAPI MetadataHandler_GetValue(IWICMetadataWriter *iface, const PROPVARIANT *schema,
+        const PROPVARIANT *id, PROPVARIANT *value)
 {
     struct qemu_MetadataHandler_GetValue call;
     struct qemu_wic_metadata_handler *handler = impl_from_IWICMetadataWriter(iface);
@@ -388,11 +427,41 @@ void qemu_MetadataHandler_GetValue(struct qemu_syscall *call)
 {
     struct qemu_MetadataHandler_GetValue *c = (struct qemu_MetadataHandler_GetValue *)call;
     struct qemu_wic_metadata_handler *handler;
+    PROPVARIANT s_stack, id_stack, v_stack, *schema = &s_stack, *id = &id_stack, *value = &v_stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     handler = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICMetadataWriter_GetValue(handler->host_writer, QEMU_G2H(c->schema), QEMU_G2H(c->id), QEMU_G2H(c->value));
+#if GUEST_BIT == HOST_BIT
+    schema = QEMU_G2H(c->schema);
+    id = QEMU_G2H(c->id);
+    value = QEMU_G2H(c->value);
+#else
+    if (c->schema)
+        PROPVARIANT_g2h(schema, QEMU_G2H(c->schema));
+    else
+        schema = NULL;
+
+    if (c->id)
+        PROPVARIANT_g2h(id, QEMU_G2H(c->id));
+    else
+        id = NULL;
+
+    if (c->value)
+        PROPVARIANT_g2h(value, QEMU_G2H(c->value));
+    else
+        value = NULL;
+#endif
+
+    c->super.iret = IWICMetadataWriter_GetValue(handler->host_writer, schema, id, value);
+
+    if (value && value->vt == VT_UNKNOWN)
+        WINE_FIXME("Handle IUnknown values.\n");
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret) && value)
+        PROPVARIANT_h2g(QEMU_G2H(c->value), value);
+#endif
 }
 
 #endif
