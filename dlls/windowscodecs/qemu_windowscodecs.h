@@ -91,9 +91,6 @@ enum windowscodecs_calls
     CALL_METADATAHANDLER_ISDIRTY,
     CALL_METADATAHANDLER_LOAD,
     CALL_METADATAHANDLER_LOADEX,
-    CALL_METADATAHANDLER_PERSISTSTREAM_ADDREF,
-    CALL_METADATAHANDLER_PERSISTSTREAM_QUERYINTERFACE,
-    CALL_METADATAHANDLER_PERSISTSTREAM_RELEASE,
     CALL_METADATAHANDLER_QUERYINTERFACE,
     CALL_METADATAHANDLER_RELEASE,
     CALL_METADATAHANDLER_REMOVEVALUE,
@@ -715,9 +712,6 @@ void qemu_MetadataHandler_GetValueByIndex(struct qemu_syscall *call);
 void qemu_MetadataHandler_IsDirty(struct qemu_syscall *call);
 void qemu_MetadataHandler_Load(struct qemu_syscall *call);
 void qemu_MetadataHandler_LoadEx(struct qemu_syscall *call);
-void qemu_MetadataHandler_PersistStream_AddRef(struct qemu_syscall *call);
-void qemu_MetadataHandler_PersistStream_QueryInterface(struct qemu_syscall *call);
-void qemu_MetadataHandler_PersistStream_Release(struct qemu_syscall *call);
 void qemu_MetadataHandler_QueryInterface(struct qemu_syscall *call);
 void qemu_MetadataHandler_Release(struct qemu_syscall *call);
 void qemu_MetadataHandler_RemoveValue(struct qemu_syscall *call);

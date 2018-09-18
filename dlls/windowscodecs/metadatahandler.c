@@ -588,114 +588,25 @@ void qemu_MetadataHandler_RemoveValueByIndex(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_MetadataHandler_PersistStream_QueryInterface
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-    uint64_t iid;
-    uint64_t ppv;
-};
-
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI MetadataHandler_PersistStream_QueryInterface(IWICPersistStream *iface, REFIID iid, void **ppv)
+static HRESULT WINAPI MetadataHandler_PersistStream_QueryInterface(IWICPersistStream *iface,
+    REFIID iid, void **ppv)
 {
-    struct qemu_MetadataHandler_PersistStream_QueryInterface call;
     struct qemu_wic_metadata_handler *handler = impl_from_IWICPersistStream(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_METADATAHANDLER_PERSISTSTREAM_QUERYINTERFACE);
-    call.iface = (ULONG_PTR)handler;
-    call.iid = (ULONG_PTR)iid;
-    call.ppv = (ULONG_PTR)ppv;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IWICMetadataWriter_QueryInterface(&handler->IWICMetadataWriter_iface, iid, ppv);
 }
-
-#else
-
-void qemu_MetadataHandler_PersistStream_QueryInterface(struct qemu_syscall *call)
-{
-    struct qemu_MetadataHandler_PersistStream_QueryInterface *c = (struct qemu_MetadataHandler_PersistStream_QueryInterface *)call;
-    struct qemu_wic_metadata_handler *handler;
-
-    WINE_FIXME("Unverified!\n");
-    handler = QEMU_G2H(c->iface);
-
-    c->super.iret = IWICPersistStream_QueryInterface(handler->host_stream, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
-}
-
-#endif
-
-struct qemu_MetadataHandler_PersistStream_AddRef
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI MetadataHandler_PersistStream_AddRef(IWICPersistStream *iface)
 {
-    struct qemu_MetadataHandler_PersistStream_AddRef call;
     struct qemu_wic_metadata_handler *handler = impl_from_IWICPersistStream(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_METADATAHANDLER_PERSISTSTREAM_ADDREF);
-    call.iface = (ULONG_PTR)handler;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
+    return IWICMetadataWriter_AddRef(&handler->IWICMetadataWriter_iface);
 }
-
-#else
-
-void qemu_MetadataHandler_PersistStream_AddRef(struct qemu_syscall *call)
-{
-    struct qemu_MetadataHandler_PersistStream_AddRef *c = (struct qemu_MetadataHandler_PersistStream_AddRef *)call;
-    struct qemu_wic_metadata_handler *handler;
-
-    WINE_FIXME("Unverified!\n");
-    handler = QEMU_G2H(c->iface);
-
-    c->super.iret = IWICPersistStream_AddRef(handler->host_stream);
-}
-
-#endif
-
-struct qemu_MetadataHandler_PersistStream_Release
-{
-    struct qemu_syscall super;
-    uint64_t iface;
-};
-
-#ifdef QEMU_DLL_GUEST
 
 static ULONG WINAPI MetadataHandler_PersistStream_Release(IWICPersistStream *iface)
 {
-    struct qemu_MetadataHandler_PersistStream_Release call;
     struct qemu_wic_metadata_handler *handler = impl_from_IWICPersistStream(iface);
-
-    call.super.id = QEMU_SYSCALL_ID(CALL_METADATAHANDLER_PERSISTSTREAM_RELEASE);
-    call.iface = (ULONG_PTR)handler;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_MetadataHandler_PersistStream_Release(struct qemu_syscall *call)
-{
-    struct qemu_MetadataHandler_PersistStream_Release *c = (struct qemu_MetadataHandler_PersistStream_Release *)call;
-    struct qemu_wic_metadata_handler *handler;
-
-    WINE_FIXME("Unverified!\n");
-    handler = QEMU_G2H(c->iface);
-
-    c->super.iret = IWICPersistStream_Release(handler->host_stream);
+    return IWICMetadataWriter_Release(&handler->IWICMetadataWriter_iface);
 }
 
 #endif
