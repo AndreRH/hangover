@@ -40,7 +40,6 @@ struct qemu_WICMetadataQueryReader_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t riid;
-    uint64_t ppvObject;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -50,19 +49,31 @@ static inline struct qemu_wic_query_reader *impl_from_IWICMetadataQueryReader(IW
     return CONTAINING_RECORD(iface, struct qemu_wic_query_reader, IWICMetadataQueryReader_iface);
 }
 
-static HRESULT WINAPI WICMetadataQueryReader_QueryInterface(IWICMetadataQueryReader *iface, REFIID riid, void **ppvObject)
+static HRESULT WINAPI WICMetadataQueryReader_QueryInterface(IWICMetadataQueryReader *iface, REFIID riid, void **obj)
 {
     struct qemu_WICMetadataQueryReader_QueryInterface call;
     struct qemu_wic_query_reader *reader = impl_from_IWICMetadataQueryReader(iface);
 
+    WINE_TRACE("(%p,%s,%p)\n", reader, wine_dbgstr_guid(riid), obj);
+
+    if (IsEqualGUID(riid, &IID_IUnknown) || IsEqualGUID(riid, &IID_IWICMetadataQueryReader))
+        *obj = &reader->IWICMetadataQueryReader_iface;
+    else
+        *obj = NULL;
+
+    if (*obj)
+    {
+        IUnknown_AddRef((IUnknown*)*obj);
+        return S_OK;
+    }
+
     call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATAQUERYREADER_QUERYINTERFACE);
     call.iface = (ULONG_PTR)reader;
     call.riid = (ULONG_PTR)riid;
-    call.ppvObject = (ULONG_PTR)ppvObject;
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    return E_NOINTERFACE;
 }
 
 #else
@@ -71,9 +82,16 @@ void qemu_WICMetadataQueryReader_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_WICMetadataQueryReader_QueryInterface *c = (struct qemu_WICMetadataQueryReader_QueryInterface *)call;
     struct qemu_wic_query_reader *reader;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = IWICMetadataQueryReader_QueryInterface(reader->host, QEMU_G2H(c->riid), QEMU_G2H(c->ppvObject));
+    WINE_TRACE("\n");
+    c->super.iret = IWICMetadataQueryReader_QueryInterface(reader->host, QEMU_G2H(c->riid), (void **)&obj);
+    if (SUCCEEDED(c->super.iret))
+    {
+        WINE_FIXME("Host returned an interface for %s which this wrapper does not know about.\n",
+                wine_dbgstr_guid(QEMU_G2H(c->riid)));
+        IUnknown_Release(obj);
+    }
 }
 
 #endif
@@ -106,7 +124,7 @@ void qemu_WICMetadataQueryReader_AddRef(struct qemu_syscall *call)
     struct qemu_WICMetadataQueryReader_AddRef *c = (struct qemu_WICMetadataQueryReader_AddRef *)call;
     struct qemu_wic_query_reader *reader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     reader = QEMU_G2H(c->iface);
 
     c->super.iret = IWICMetadataQueryReader_AddRef(reader->host);
