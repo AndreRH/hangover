@@ -49,6 +49,7 @@ struct qemu_dll_init
     uint64_t guest_bitmap_source_copypalette;
     uint64_t guest_block_reader_getpixelformat;
     uint64_t guest_block_reader_getcount;
+    uint64_t guest_block_reader_getreaderbyindex;
     struct istream_wrapper_funcs istream;
 };
 
@@ -92,6 +93,13 @@ struct guest_block_reader_getcount
 {
     uint64_t reader;
     uint64_t count;
+};
+
+struct guest_block_reader_getreaderbyindex
+{
+    uint64_t reader;
+    uint64_t index;
+    uint64_t out;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -151,6 +159,17 @@ static ULONG __fastcall guest_block_reader_getcount(struct guest_block_reader_ge
             (UINT *)(ULONG_PTR)call->count);
 }
 
+static ULONG __fastcall guest_block_reader_getreaderbyindex(struct guest_block_reader_getreaderbyindex *call)
+{
+    IWICMetadataBlockReader *reader = (IWICMetadataBlockReader *)(ULONG_PTR)call->reader;
+    IWICMetadataReader *out;
+    HRESULT hr;
+
+    hr = IWICMetadataBlockReader_GetReaderByIndex(reader, call->index, &out);
+    call->out = (ULONG_PTR)out;
+    return hr;
+}
+
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_dll_init call;
@@ -169,6 +188,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
         call.guest_bitmap_source_copypalette = (ULONG_PTR)guest_bitmap_source_copypalette;
         call.guest_block_reader_getpixelformat = (ULONG_PTR)guest_block_reader_getpixelformat;
         call.guest_block_reader_getcount = (ULONG_PTR)guest_block_reader_getcount;
+        call.guest_block_reader_getreaderbyindex = (ULONG_PTR)guest_block_reader_getreaderbyindex;
         istream_wrapper_get_funcs(&call.istream);
         qemu_syscall(&call.super);
     }
@@ -211,6 +231,7 @@ static uint64_t guest_bitmap_source_getresolution;
 static uint64_t guest_bitmap_source_copypalette;
 static uint64_t guest_block_reader_getpixelformat;
 static uint64_t guest_block_reader_getcount;
+static uint64_t guest_block_reader_getreaderbyindex;
 
 static void qemu_init_dll(struct qemu_syscall *call)
 {
@@ -228,6 +249,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
             guest_bitmap_source_copypalette = c->guest_bitmap_source_copypalette;
             guest_block_reader_getpixelformat = c->guest_block_reader_getpixelformat;
             guest_block_reader_getcount = c->guest_block_reader_getcount;
+            guest_block_reader_getreaderbyindex = c->guest_block_reader_getreaderbyindex;
             istream_wrapper_set_funcs(&c->istream);
             break;
 
@@ -687,6 +709,98 @@ struct qemu_bitmap_source *bitmap_source_wrapper_create(uint64_t guest)
     return ret;
 }
 
+static inline struct qemu_mdr *impl_from_IWICMetadataReader(IWICMetadataReader *iface)
+{
+    return CONTAINING_RECORD(iface, struct qemu_mdr, IWICMetadataReader_iface);
+}
+
+static HRESULT WINAPI mdr_QueryInterface(IWICMetadataReader *iface, REFIID iid, void **out)
+{
+    WINE_FIXME("Stub!\n");
+    if (*out)
+        *out = NULL;
+    return E_NOTIMPL;
+}
+
+static ULONG WINAPI mdr_AddRef(IWICMetadataReader *iface)
+{
+    struct qemu_mdr *mdr = impl_from_IWICMetadataReader(iface);
+    ULONG ref = InterlockedIncrement(&mdr->ref);
+
+    WINE_TRACE("(%p) refcount=%u\n", iface, ref);
+
+    return ref;
+}
+
+static ULONG WINAPI mdr_Release(IWICMetadataReader *iface)
+{
+    struct qemu_mdr *mdr = impl_from_IWICMetadataReader(iface);
+    ULONG ref = InterlockedDecrement(&mdr->ref), ref2;
+
+    WINE_TRACE("(%p) refcount=%u\n", iface, ref);
+
+    if (ref == 0)
+    {
+        WINE_TRACE("Calling guest release method.\n");
+        ref2 = qemu_ops->qemu_execute(QEMU_G2H(guest_iunknown_release), mdr->guest);
+        WINE_TRACE("Guest release method returned %u.\n", ref2);
+        HeapFree(GetProcessHeap(), 0, mdr);
+    }
+
+    return ref;
+}
+
+static HRESULT WINAPI mdr_GetMetadataFormat(IWICMetadataReader *iface, GUID *format)
+{
+    WINE_FIXME("Stub!\n");
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI mdr_GetMetadataHandlerInfo(IWICMetadataReader *iface, IWICMetadataHandlerInfo **handler)
+{
+    WINE_FIXME("Stub!\n");
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI mdr_GetCount(IWICMetadataReader *iface, UINT *count)
+{
+    WINE_FIXME("Stub!\n");
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI mdr_GetValueByIndex(IWICMetadataReader *iface, UINT index, PROPVARIANT *schema,
+        PROPVARIANT *id, PROPVARIANT *value)
+{
+    WINE_FIXME("Stub!\n");
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI mdr_GetValue(IWICMetadataReader *iface, const PROPVARIANT *schema, const PROPVARIANT *id,
+        PROPVARIANT *value)
+{
+    WINE_FIXME("Stub!\n");
+    return E_NOTIMPL;
+}
+
+static HRESULT WINAPI mdr_GetEnumerator(IWICMetadataReader *iface, IWICEnumMetadataItem **enumerator)
+{
+    WINE_FIXME("Stub!\n");
+    return E_NOTIMPL;
+}
+
+static const IWICMetadataReaderVtbl mdr_wrapper_vtbl =
+{
+    mdr_QueryInterface,
+    mdr_AddRef,
+    mdr_Release,
+    mdr_GetMetadataFormat,
+    mdr_GetMetadataHandlerInfo,
+    mdr_GetCount,
+    mdr_GetValueByIndex,
+    mdr_GetValue,
+    mdr_GetEnumerator
+};
+
 static HRESULT WINAPI mdbr_QueryInterface(IWICMetadataBlockReader *iface, REFIID iid, void **out)
 {
     WINE_FIXME("Stub!\n");
@@ -758,8 +872,41 @@ static HRESULT WINAPI mdbr_GetCount(IWICMetadataBlockReader *iface, UINT *count)
 
 static HRESULT WINAPI mdbr_GetReaderByIndex(IWICMetadataBlockReader *iface, UINT index, IWICMetadataReader **out)
 {
-    WINE_FIXME("Stub!\n");
-    return E_INVALIDARG;
+    struct qemu_mdbr *reader = impl_from_IWICMetadataBlockReader(iface);
+    struct guest_block_reader_getreaderbyindex call;
+    HRESULT hr;
+    struct qemu_mdr *mdr;
+
+    WINE_TRACE("\n");
+    *out = NULL;
+
+    call.reader = reader->guest;
+    call.index = index;
+
+    mdr = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*mdr));
+    if (!mdr)
+    {
+        WINE_WARN("Out of memory.\n");
+        return E_OUTOFMEMORY;
+    }
+
+    WINE_TRACE("Calling guest function %p.\n", QEMU_G2H(guest_block_reader_getreaderbyindex));
+    hr = qemu_ops->qemu_execute(QEMU_G2H(guest_block_reader_getreaderbyindex), QEMU_H2G(&call));
+    WINE_TRACE("Guest function returned %#x.\n", hr);
+
+    if (FAILED(hr))
+    {
+        HeapFree(GetProcessHeap(), 0, mdr);
+        return hr;
+    }
+
+    mdr->ref = 1;
+    mdr->guest = call.out;
+    mdr->IWICMetadataReader_iface.lpVtbl = &mdr_wrapper_vtbl;
+
+    *out = &mdr->IWICMetadataReader_iface;
+
+    return hr;
 }
 
 static HRESULT WINAPI mdbr_GetEnumerator(IWICMetadataBlockReader *iface, IEnumUnknown **enumerator)
