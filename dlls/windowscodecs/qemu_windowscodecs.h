@@ -557,6 +557,7 @@ struct qemu_wic_metadata_enum
 
     /* Host fields */
     IWICEnumMetadataItem *host;
+    struct qemu_wic_metadata_handler *handler;
 };
 
 /* This is a reverse wrapper. */

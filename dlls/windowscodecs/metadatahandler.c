@@ -168,6 +168,19 @@ static ULONG WINAPI MetadataHandler_Release(IWICMetadataWriter *iface)
 
 #else
 
+static ULONG qemu_MetadataHandler_Release_internal(struct qemu_wic_metadata_handler *handler)
+{
+    ULONG ref = IWICMetadataWriter_Release(handler->host_writer);
+
+    if (!ref)
+    {
+        WINE_TRACE("Destroying metadata handler %p for host handler %p.\n", handler, handler->host_writer);
+        HeapFree(GetProcessHeap(), 0, handler);
+    }
+
+    return ref;
+}
+
 void qemu_MetadataHandler_Release(struct qemu_syscall *call)
 {
     struct qemu_MetadataHandler_Release *c = (struct qemu_MetadataHandler_Release *)call;
@@ -177,11 +190,6 @@ void qemu_MetadataHandler_Release(struct qemu_syscall *call)
     handler = QEMU_G2H(c->iface);
 
     c->super.iret = IWICMetadataWriter_Release(handler->host_writer);
-    if (!c->super.iret)
-    {
-        WINE_TRACE("Destroying metadata handler %p for host handler %p.\n", handler, handler->host_writer);
-        HeapFree(GetProcessHeap(), 0, handler);
-    }
 }
 
 #endif
@@ -395,16 +403,24 @@ struct qemu_MetadataHandler_GetEnumerator
 
 #ifdef QEMU_DLL_GUEST
 
+static void WICEnumMetadataItem_init_guest(struct qemu_wic_metadata_enum *item);
 static HRESULT WINAPI MetadataHandler_GetEnumerator(IWICMetadataWriter *iface, IWICEnumMetadataItem **ppIEnumMetadata)
 {
     struct qemu_MetadataHandler_GetEnumerator call;
     struct qemu_wic_metadata_handler *handler = impl_from_IWICMetadataWriter(iface);
+    struct qemu_wic_metadata_enum *item;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_METADATAHANDLER_GETENUMERATOR);
     call.iface = (ULONG_PTR)handler;
     call.ppIEnumMetadata = (ULONG_PTR)ppIEnumMetadata;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    item = (struct qemu_wic_metadata_enum *)(ULONG_PTR)call.ppIEnumMetadata;
+    WICEnumMetadataItem_init_guest(item);
+    *ppIEnumMetadata = &item->IWICEnumMetadataItem_iface;
 
     return call.super.iret;
 }
@@ -415,11 +431,27 @@ void qemu_MetadataHandler_GetEnumerator(struct qemu_syscall *call)
 {
     struct qemu_MetadataHandler_GetEnumerator *c = (struct qemu_MetadataHandler_GetEnumerator *)call;
     struct qemu_wic_metadata_handler *handler;
+    struct qemu_wic_metadata_enum *item;
+    IWICEnumMetadataItem *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     handler = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICMetadataWriter_GetEnumerator(handler->host_writer, QEMU_G2H(c->ppIEnumMetadata));
+    c->super.iret = IWICMetadataWriter_GetEnumerator(handler->host_writer, c->ppIEnumMetadata ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    item = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*item));
+    if (!item)
+    {
+        WINE_WARN("Out of memory.\n");
+        IWICEnumMetadataItem_Release(host);
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+    item->host = host;
+    item->handler = handler;
+    c->ppIEnumMetadata = QEMU_H2G(item);
 }
 
 #endif
@@ -966,7 +998,7 @@ void qemu_WICEnumMetadataItem_AddRef(struct qemu_syscall *call)
     struct qemu_WICEnumMetadataItem_AddRef *c = (struct qemu_WICEnumMetadataItem_AddRef *)call;
     struct qemu_wic_metadata_enum *item;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     item = QEMU_G2H(c->iface);
 
     c->super.iret = IWICEnumMetadataItem_AddRef(item->host);
@@ -1002,10 +1034,18 @@ void qemu_WICEnumMetadataItem_Release(struct qemu_syscall *call)
     struct qemu_WICEnumMetadataItem_Release *c = (struct qemu_WICEnumMetadataItem_Release *)call;
     struct qemu_wic_metadata_enum *item;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     item = QEMU_G2H(c->iface);
 
+    IWICMetadataWriter_AddRef(item->handler->host_writer);
     c->super.iret = IWICEnumMetadataItem_Release(item->host);
+    qemu_MetadataHandler_Release_internal(item->handler);
+
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying metadata item %p for host item %p.\n", item, item->host);
+        HeapFree(GetProcessHeap(), 0, item);
+    }
 }
 
 #endif
@@ -1237,6 +1277,22 @@ HRESULT MetadataReader_CreateInstance(const CLSID *clsid, const IID *iid, void *
     IWICMetadataWriter_Release(&handler->IWICMetadataWriter_iface);
 
     return hr;
+}
+
+static const IWICEnumMetadataItemVtbl WICEnumMetadataItem_Vtbl =
+{
+    WICEnumMetadataItem_QueryInterface,
+    WICEnumMetadataItem_AddRef,
+    WICEnumMetadataItem_Release,
+    WICEnumMetadataItem_Next,
+    WICEnumMetadataItem_Skip,
+    WICEnumMetadataItem_Reset,
+    WICEnumMetadataItem_Clone
+};
+
+static void WICEnumMetadataItem_init_guest(struct qemu_wic_metadata_enum *item)
+{
+    item->IWICEnumMetadataItem_iface.lpVtbl = &WICEnumMetadataItem_Vtbl;
 }
 
 #else
