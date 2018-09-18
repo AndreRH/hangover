@@ -353,6 +353,7 @@ static const syscall_handler dll_functions[] =
     qemu_IMILUnknown2Impl_UnknownMethod1,
     qemu_init_dll,
     qemu_MetadataHandler_AddRef,
+    qemu_MetadataHandler_create_host,
     qemu_MetadataHandler_GetClassID,
     qemu_MetadataHandler_GetCount,
     qemu_MetadataHandler_GetEnumerator,

@@ -37,7 +37,6 @@ struct qemu_MetadataHandler_QueryInterface
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t iid;
-    uint64_t ppv;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -57,12 +56,38 @@ static HRESULT WINAPI MetadataHandler_QueryInterface(IWICMetadataWriter *iface, 
     struct qemu_MetadataHandler_QueryInterface call;
     struct qemu_wic_metadata_handler *handler = impl_from_IWICMetadataWriter(iface);
 
+    if (!ppv)
+        return E_INVALIDARG;
+
     call.super.id = QEMU_SYSCALL_ID(CALL_METADATAHANDLER_QUERYINTERFACE);
     call.iface = (ULONG_PTR)handler;
     call.iid = (ULONG_PTR)iid;
-    call.ppv = (ULONG_PTR)ppv;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+    {
+        *ppv = NULL;
+        return call.super.iret;
+    }
+
+    if (IsEqualIID(&IID_IUnknown, iid) || IsEqualIID(&IID_IWICMetadataReader, iid)
+            || (IsEqualIID(&IID_IWICMetadataWriter, iid)))
+    {
+        *ppv = &handler->IWICMetadataWriter_iface;
+    }
+    else if (IsEqualIID(&IID_IPersist, iid) ||
+             IsEqualIID(&IID_IPersistStream, iid) ||
+             IsEqualIID(&IID_IWICPersistStream, iid))
+    {
+        *ppv = &handler->IWICPersistStream_iface;
+    }
+    else
+    {
+        WINE_FIXME("unknown interface %s, but host knows about it.\n", wine_dbgstr_guid(iid));
+        *ppv = NULL;
+        IWICMetadataWriter_Release(iface);
+        return E_NOINTERFACE;
+    }
 
     return call.super.iret;
 }
@@ -73,11 +98,13 @@ void qemu_MetadataHandler_QueryInterface(struct qemu_syscall *call)
 {
     struct qemu_MetadataHandler_QueryInterface *c = (struct qemu_MetadataHandler_QueryInterface *)call;
     struct qemu_wic_metadata_handler *handler;
+    IUnknown *obj;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     handler = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICMetadataWriter_QueryInterface(handler->host_writer, QEMU_G2H(c->iid), QEMU_G2H(c->ppv));
+    c->super.iret = IWICMetadataWriter_QueryInterface(handler->host_writer, QEMU_G2H(c->iid), (void **)&obj);
+    /* Pass the reference to the guest. */
 }
 
 #endif
@@ -110,7 +137,7 @@ void qemu_MetadataHandler_AddRef(struct qemu_syscall *call)
     struct qemu_MetadataHandler_AddRef *c = (struct qemu_MetadataHandler_AddRef *)call;
     struct qemu_wic_metadata_handler *handler;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     handler = QEMU_G2H(c->iface);
 
     c->super.iret = IWICMetadataWriter_AddRef(handler->host_writer);
@@ -146,10 +173,15 @@ void qemu_MetadataHandler_Release(struct qemu_syscall *call)
     struct qemu_MetadataHandler_Release *c = (struct qemu_MetadataHandler_Release *)call;
     struct qemu_wic_metadata_handler *handler;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     handler = QEMU_G2H(c->iface);
 
     c->super.iret = IWICMetadataWriter_Release(handler->host_writer);
+    if (!c->super.iret)
+    {
+        WINE_TRACE("Destroying metadata handler %p for host handler %p.\n", handler, handler->host_writer);
+        HeapFree(GetProcessHeap(), 0, handler);
+    }
 }
 
 #endif
@@ -1217,3 +1249,149 @@ void qemu_WICEnumMetadataItem_Clone(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_MetadataHandler_create_host
+{
+    struct qemu_syscall super;
+    uint64_t clsid;
+    uint64_t handler;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+static const IWICMetadataWriterVtbl MetadataHandler_Vtbl = {
+    MetadataHandler_QueryInterface,
+    MetadataHandler_AddRef,
+    MetadataHandler_Release,
+    MetadataHandler_GetMetadataFormat,
+    MetadataHandler_GetMetadataHandlerInfo,
+    MetadataHandler_GetCount,
+    MetadataHandler_GetValueByIndex,
+    MetadataHandler_GetValue,
+    MetadataHandler_GetEnumerator,
+    MetadataHandler_SetValue,
+    MetadataHandler_SetValueByIndex,
+    MetadataHandler_RemoveValue,
+    MetadataHandler_RemoveValueByIndex
+};
+
+static const IWICPersistStreamVtbl MetadataHandler_PersistStream_Vtbl =
+{
+    MetadataHandler_PersistStream_QueryInterface,
+    MetadataHandler_PersistStream_AddRef,
+    MetadataHandler_PersistStream_Release,
+    MetadataHandler_GetClassID,
+    MetadataHandler_IsDirty,
+    MetadataHandler_Load,
+    MetadataHandler_Save,
+    MetadataHandler_GetSizeMax,
+    MetadataHandler_LoadEx,
+    MetadataHandler_SaveEx
+};
+
+static void MetadataHandler_init_guest(struct qemu_wic_metadata_handler *handler)
+{
+    handler->IWICMetadataWriter_iface.lpVtbl = &MetadataHandler_Vtbl;
+    handler->IWICPersistStream_iface.lpVtbl = &MetadataHandler_PersistStream_Vtbl;
+}
+
+HRESULT MetadataReader_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
+{
+    struct qemu_MetadataHandler_create_host call;
+    struct qemu_wic_metadata_handler *handler;
+    HRESULT hr;
+
+    WINE_TRACE("(%s,%p)\n", wine_dbgstr_guid(iid), obj);
+
+    *obj = NULL;
+    call.super.id = QEMU_SYSCALL_ID(CALL_METADATAHANDLER_CREATE_HOST);
+    call.clsid = (ULONG_PTR)clsid;
+
+    qemu_syscall(&call.super);
+
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    handler = (struct qemu_wic_metadata_handler *)(ULONG_PTR)call.handler;
+    MetadataHandler_init_guest(handler);
+
+    hr = IWICMetadataWriter_QueryInterface(&handler->IWICMetadataWriter_iface, iid, obj);
+    IWICMetadataWriter_Release(&handler->IWICMetadataWriter_iface);
+
+    return hr;
+}
+
+#else
+
+static struct qemu_wic_metadata_handler *MetadataHandler_create_host(IWICMetadataReader *host)
+{
+    struct qemu_wic_metadata_handler *ret;
+    HRESULT hr;
+    IWICMetadataWriter *writer;
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+    {
+        WINE_WARN("Out of memory\n");
+        return NULL;
+    }
+
+    hr = IWICMetadataReader_QueryInterface(host, &IID_IWICPersistStream, (void **)&ret->host_stream);
+    if (FAILED(hr))
+        WINE_ERR("Failed to QI IWICPeristStream.\n");
+    IWICPersistStream_Release(ret->host_stream);
+
+    hr = IWICMetadataReader_QueryInterface(host, &IID_IWICMetadataWriter, (void **)&writer);
+    if (SUCCEEDED(hr))
+    {
+        if (host != (IWICMetadataReader *)writer)
+            WINE_FIXME("IWICMetadataReader != IWICMetadataWriter.\n");
+
+        IWICMetadataReader_Release(host);
+        ret->host_writer = writer;
+    }
+    else
+    {
+        ret->host_writer = (IWICMetadataWriter *)host;
+    }
+
+    return ret;
+}
+
+void qemu_MetadataHandler_create_host(struct qemu_syscall *call)
+{
+    struct qemu_MetadataHandler_create_host *c = (struct qemu_MetadataHandler_create_host *)call;
+    struct qemu_wic_metadata_handler *handler;
+    HMODULE lib;
+    HRESULT (* WINAPI p_DllGetClassObject)(REFCLSID rclsid, REFIID riid, void **obj);
+    IClassFactory *host_factory;
+    HRESULT hr;
+    IWICMetadataReader *host;
+
+    lib = GetModuleHandleA("windowscodecs");
+    p_DllGetClassObject = (void *)GetProcAddress(lib, "DllGetClassObject");
+
+    hr = p_DllGetClassObject(QEMU_G2H(c->clsid), &IID_IClassFactory, (void *)&host_factory);
+    if (FAILED(hr))
+        WINE_ERR("Cannot create class factory\n");
+
+    hr = IClassFactory_CreateInstance(host_factory, NULL, &IID_IWICMetadataReader, (void **)&host);
+    IClassFactory_Release(host_factory);
+    if (FAILED(hr))
+    {
+        WINE_WARN("Failed to create an IID_IWICMetadataWriter object.\n");
+        c->super.iret = hr;
+        return;
+    }
+
+    handler = MetadataHandler_create_host(host);
+    if (!handler)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        return;
+    }
+
+    c->handler = QEMU_H2G(handler);
+    c->super.iret = hr;
+}
+
+#endif

@@ -79,6 +79,7 @@ enum windowscodecs_calls
     CALL_IMILUNKNOWN2IMPL_UNKNOWNMETHOD1,
     CALL_INIT_DLL,
     CALL_METADATAHANDLER_ADDREF,
+    CALL_METADATAHANDLER_CREATE_HOST,
     CALL_METADATAHANDLER_GETCLASSID,
     CALL_METADATAHANDLER_GETCOUNT,
     CALL_METADATAHANDLER_GETENUMERATOR,
@@ -598,8 +599,9 @@ DEFINE_GUID(GUID_VendorWine, 0xddf46da1,0x7dc1,0x404e,0x98,0xf2,0xef,0xa4,0x8d,0
 typedef HRESULT (*class_constructor)(const CLSID *, const IID *, void **);
 extern HRESULT Decoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj);
 extern HRESULT Encoder_CreateInstance(const CLSID *clsid, const IID *iid, void **obj);
-HRESULT FormatConverter_CreateInstance(const CLSID *clsid, const IID *iid, void **obj);
-HRESULT ComponentFactory_CreateInstance(const CLSID *clsid, const IID *iid, void **obj);
+extern HRESULT FormatConverter_CreateInstance(const CLSID *clsid, const IID *iid, void **obj);
+extern HRESULT ComponentFactory_CreateInstance(const CLSID *clsid, const IID *iid, void **obj);
+extern HRESULT MetadataReader_CreateInstance(const CLSID *clsid, const IID *iid, void **obj);
 
 IWICBitmap *WICBitmap_init_guest(struct qemu_wic_bitmap *bitmap);
 void WICPalette_init_guest(struct qemu_wic_palette *palette);
@@ -724,6 +726,7 @@ void qemu_MetadataHandler_Save(struct qemu_syscall *call);
 void qemu_MetadataHandler_SaveEx(struct qemu_syscall *call);
 void qemu_MetadataHandler_SetValue(struct qemu_syscall *call);
 void qemu_MetadataHandler_SetValueByIndex(struct qemu_syscall *call);
+void qemu_MetadataHandler_create_host(struct qemu_syscall *call);
 void qemu_PropertyBag_AddRef(struct qemu_syscall *call);
 void qemu_PropertyBag_CountProperties(struct qemu_syscall *call);
 void qemu_PropertyBag_GetPropertyInfo(struct qemu_syscall *call);
