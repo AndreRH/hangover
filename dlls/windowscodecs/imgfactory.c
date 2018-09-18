@@ -1627,10 +1627,12 @@ struct qemu_ComponentFactory_CreateMetadataReaderFromContainer
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateMetadataReaderFromContainer(IWICComponentFactory *iface, REFGUID format, const GUID *vendor, DWORD options, IStream *stream, IWICMetadataReader **reader)
+static HRESULT WINAPI ComponentFactory_CreateMetadataReaderFromContainer(IWICComponentFactory *iface, REFGUID format,
+        const GUID *vendor, DWORD options, IStream *stream, IWICMetadataReader **reader)
 {
     struct qemu_ComponentFactory_CreateMetadataReaderFromContainer call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_wic_metadata_handler *handler;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATEMETADATAREADERFROMCONTAINER);
     call.iface = (ULONG_PTR)factory;
@@ -1642,6 +1644,13 @@ static HRESULT WINAPI ComponentFactory_CreateMetadataReaderFromContainer(IWICCom
 
     qemu_syscall(&call.super);
 
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    handler = (struct qemu_wic_metadata_handler *)(ULONG_PTR)call.reader;
+    MetadataHandler_init_guest(handler);
+    *reader = (IWICMetadataReader *)&handler->IWICMetadataWriter_iface;
+
     return call.super.iret;
 }
 
@@ -1649,13 +1658,34 @@ static HRESULT WINAPI ComponentFactory_CreateMetadataReaderFromContainer(IWICCom
 
 void qemu_ComponentFactory_CreateMetadataReaderFromContainer(struct qemu_syscall *call)
 {
-    struct qemu_ComponentFactory_CreateMetadataReaderFromContainer *c = (struct qemu_ComponentFactory_CreateMetadataReaderFromContainer *)call;
+    struct qemu_ComponentFactory_CreateMetadataReaderFromContainer *c =
+            (struct qemu_ComponentFactory_CreateMetadataReaderFromContainer *)call;
     struct qemu_component_factory *factory;
+    struct qemu_wic_metadata_handler *handler;
+    IWICMetadataReader *host;
+    struct istream_wrapper *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
+    stream = istream_wrapper_create(c->stream);
 
-    c->super.iret = IWICComponentFactory_CreateMetadataReaderFromContainer(factory->host, QEMU_G2H(c->format), QEMU_G2H(c->vendor), c->options, QEMU_G2H(c->stream), QEMU_G2H(c->reader));
+    c->super.iret = IWICComponentFactory_CreateMetadataReaderFromContainer(factory->host, QEMU_G2H(c->format),
+            QEMU_G2H(c->vendor), c->options, istream_wrapper_host_iface(stream), c->reader ? &host : NULL);
+
+    if (stream)
+        IStream_Release(istream_wrapper_host_iface(stream));
+
+    if (FAILED(c->super.iret))
+        return;
+
+    handler = MetadataHandler_create_host(host);
+    if (!host)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        IWICMetadataReader_Release(host);
+        return;
+    }
+    c->reader = QEMU_H2G(handler);
 }
 
 #endif

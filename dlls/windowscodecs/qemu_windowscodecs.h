@@ -612,6 +612,7 @@ void PropertyBag_init_guest(struct qemu_propery_bag *bag);
 void WICStream_init_guest(struct qemu_wic_stream *stream);
 void WICColorContext_init_guest(struct qemu_wic_color_context *context);
 void WICMetadataQueryReader_init_guest(struct qemu_wic_query_reader *reader);
+void MetadataHandler_init_guest(struct qemu_wic_metadata_handler *handler);
 
 struct qemu_wic_palette *unsafe_impl_from_IWICPalette(IWICPalette *iface);
 struct qemu_wic_color_context *unsafe_impl_from_IWICColorContext(IWICColorContext *iface);
@@ -964,6 +965,7 @@ struct qemu_propery_bag *PropertyBag_create_host(IPropertyBag2 *host);
 struct qemu_wic_stream *WICStream_create_host(IWICStream *host);
 struct qemu_wic_color_context *WICColorContext_create_host(IWICColorContext *host);
 struct qemu_wic_query_reader *WICMetadataQueryReader_create_host(IWICMetadataQueryReader *host);
+struct qemu_wic_metadata_handler *MetadataHandler_create_host(IWICMetadataReader *host);
 
 ULONG qemu_WICBitmap_Release_internal(struct qemu_wic_bitmap *bitmap);
 ULONG qemu_WICFormatConverter_Release_internal(struct qemu_wic_converter *converter);

@@ -1408,7 +1408,7 @@ static const IWICPersistStreamVtbl MetadataHandler_PersistStream_Vtbl =
     MetadataHandler_SaveEx
 };
 
-static void MetadataHandler_init_guest(struct qemu_wic_metadata_handler *handler)
+void MetadataHandler_init_guest(struct qemu_wic_metadata_handler *handler)
 {
     handler->IWICMetadataWriter_iface.lpVtbl = &MetadataHandler_Vtbl;
     handler->IWICPersistStream_iface.lpVtbl = &MetadataHandler_PersistStream_Vtbl;
@@ -1458,7 +1458,7 @@ static void WICEnumMetadataItem_init_guest(struct qemu_wic_metadata_enum *item)
 
 #else
 
-static struct qemu_wic_metadata_handler *MetadataHandler_create_host(IWICMetadataReader *host)
+struct qemu_wic_metadata_handler *MetadataHandler_create_host(IWICMetadataReader *host)
 {
     struct qemu_wic_metadata_handler *ret;
     HRESULT hr;
