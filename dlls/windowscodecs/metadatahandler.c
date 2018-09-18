@@ -818,11 +818,16 @@ void qemu_MetadataHandler_Load(struct qemu_syscall *call)
 {
     struct qemu_MetadataHandler_Load *c = (struct qemu_MetadataHandler_Load *)call;
     struct qemu_wic_metadata_handler *handler;
+    struct istream_wrapper *stream;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     handler = QEMU_G2H(c->iface);
+    stream = istream_wrapper_create(c->pStm);
 
-    c->super.iret = IWICPersistStream_Load(handler->host_stream, QEMU_G2H(c->pStm));
+    c->super.iret = IWICPersistStream_Load(handler->host_stream, istream_wrapper_host_iface(stream));
+
+    if (stream)
+        IStream_Release(istream_wrapper_host_iface(stream));
 }
 
 #endif
@@ -941,10 +946,10 @@ void qemu_MetadataHandler_LoadEx(struct qemu_syscall *call)
     struct qemu_wic_metadata_handler *handler;
     struct qemu_component_factory *factory;
     struct istream_wrapper *stream;
-    stream = istream_wrapper_create(c->pIStream);
 
     WINE_TRACE("\n");
     handler = QEMU_G2H(c->iface);
+    stream = istream_wrapper_create(c->pIStream);
 
     c->super.iret = IWICPersistStream_LoadEx(handler->host_stream, istream_wrapper_host_iface(stream),
             QEMU_G2H(c->pguidPreferredVendor), c->dwPersistOptions);
