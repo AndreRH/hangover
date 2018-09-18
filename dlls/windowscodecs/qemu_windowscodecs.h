@@ -78,6 +78,29 @@ enum windowscodecs_calls
     CALL_IMILUNKNOWN2IMPL_QUERYINTERFACE,
     CALL_IMILUNKNOWN2IMPL_UNKNOWNMETHOD1,
     CALL_INIT_DLL,
+    CALL_METADATAHANDLER_ADDREF,
+    CALL_METADATAHANDLER_GETCLASSID,
+    CALL_METADATAHANDLER_GETCOUNT,
+    CALL_METADATAHANDLER_GETENUMERATOR,
+    CALL_METADATAHANDLER_GETMETADATAFORMAT,
+    CALL_METADATAHANDLER_GETMETADATAHANDLERINFO,
+    CALL_METADATAHANDLER_GETSIZEMAX,
+    CALL_METADATAHANDLER_GETVALUE,
+    CALL_METADATAHANDLER_GETVALUEBYINDEX,
+    CALL_METADATAHANDLER_ISDIRTY,
+    CALL_METADATAHANDLER_LOAD,
+    CALL_METADATAHANDLER_LOADEX,
+    CALL_METADATAHANDLER_PERSISTSTREAM_ADDREF,
+    CALL_METADATAHANDLER_PERSISTSTREAM_QUERYINTERFACE,
+    CALL_METADATAHANDLER_PERSISTSTREAM_RELEASE,
+    CALL_METADATAHANDLER_QUERYINTERFACE,
+    CALL_METADATAHANDLER_RELEASE,
+    CALL_METADATAHANDLER_REMOVEVALUE,
+    CALL_METADATAHANDLER_REMOVEVALUEBYINDEX,
+    CALL_METADATAHANDLER_SAVE,
+    CALL_METADATAHANDLER_SAVEEX,
+    CALL_METADATAHANDLER_SETVALUE,
+    CALL_METADATAHANDLER_SETVALUEBYINDEX,
     CALL_PROPERTYBAG_ADDREF,
     CALL_PROPERTYBAG_COUNTPROPERTIES,
     CALL_PROPERTYBAG_GETPROPERTYINFO,
@@ -217,6 +240,13 @@ enum windowscodecs_calls
     CALL_WICCOMPONENTINFO_RELEASE,
     CALL_WICCONVERTBITMAPSOURCE,
     CALL_WICCREATEBITMAPFROMSECTIONEX,
+    CALL_WICENUMMETADATAITEM_ADDREF,
+    CALL_WICENUMMETADATAITEM_CLONE,
+    CALL_WICENUMMETADATAITEM_NEXT,
+    CALL_WICENUMMETADATAITEM_QUERYINTERFACE,
+    CALL_WICENUMMETADATAITEM_RELEASE,
+    CALL_WICENUMMETADATAITEM_RESET,
+    CALL_WICENUMMETADATAITEM_SKIP,
     CALL_WICFORMATCONVERTER_ADDREF,
     CALL_WICFORMATCONVERTER_CANCONVERT,
     CALL_WICFORMATCONVERTER_COPYPALETTE,
@@ -511,6 +541,26 @@ struct qemu_wic_query_reader
     IWICMetadataQueryReader *host;
 };
 
+struct qemu_wic_metadata_handler
+{
+    /* Guest fields */
+    IWICMetadataWriter IWICMetadataWriter_iface;
+    IWICPersistStream IWICPersistStream_iface;
+
+    /* Host fields */
+    IWICMetadataWriter *host_writer;
+    IWICPersistStream *host_stream;
+};
+
+struct qemu_wic_metadata_enum
+{
+    /* Guest fields */
+    IWICEnumMetadataItem IWICEnumMetadataItem_iface;
+
+    /* Host fields */
+    IWICEnumMetadataItem *host;
+};
+
 /* This is a reverse wrapper. */
 struct qemu_bitmap_source
 {
@@ -651,6 +701,29 @@ void qemu_IMILBitmapImpl_UnknownMethod1(struct qemu_syscall *call);
 void qemu_IMILUnknown1Impl_QueryInterface(struct qemu_syscall *call);
 void qemu_IMILUnknown2Impl_QueryInterface(struct qemu_syscall *call);
 void qemu_IMILUnknown2Impl_UnknownMethod1(struct qemu_syscall *call);
+void qemu_MetadataHandler_AddRef(struct qemu_syscall *call);
+void qemu_MetadataHandler_GetClassID(struct qemu_syscall *call);
+void qemu_MetadataHandler_GetCount(struct qemu_syscall *call);
+void qemu_MetadataHandler_GetEnumerator(struct qemu_syscall *call);
+void qemu_MetadataHandler_GetMetadataFormat(struct qemu_syscall *call);
+void qemu_MetadataHandler_GetMetadataHandlerInfo(struct qemu_syscall *call);
+void qemu_MetadataHandler_GetSizeMax(struct qemu_syscall *call);
+void qemu_MetadataHandler_GetValue(struct qemu_syscall *call);
+void qemu_MetadataHandler_GetValueByIndex(struct qemu_syscall *call);
+void qemu_MetadataHandler_IsDirty(struct qemu_syscall *call);
+void qemu_MetadataHandler_Load(struct qemu_syscall *call);
+void qemu_MetadataHandler_LoadEx(struct qemu_syscall *call);
+void qemu_MetadataHandler_PersistStream_AddRef(struct qemu_syscall *call);
+void qemu_MetadataHandler_PersistStream_QueryInterface(struct qemu_syscall *call);
+void qemu_MetadataHandler_PersistStream_Release(struct qemu_syscall *call);
+void qemu_MetadataHandler_QueryInterface(struct qemu_syscall *call);
+void qemu_MetadataHandler_Release(struct qemu_syscall *call);
+void qemu_MetadataHandler_RemoveValue(struct qemu_syscall *call);
+void qemu_MetadataHandler_RemoveValueByIndex(struct qemu_syscall *call);
+void qemu_MetadataHandler_Save(struct qemu_syscall *call);
+void qemu_MetadataHandler_SaveEx(struct qemu_syscall *call);
+void qemu_MetadataHandler_SetValue(struct qemu_syscall *call);
+void qemu_MetadataHandler_SetValueByIndex(struct qemu_syscall *call);
 void qemu_PropertyBag_AddRef(struct qemu_syscall *call);
 void qemu_PropertyBag_CountProperties(struct qemu_syscall *call);
 void qemu_PropertyBag_GetPropertyInfo(struct qemu_syscall *call);
@@ -793,6 +866,13 @@ void qemu_WICComponentInfo_QueryInterface(struct qemu_syscall *call);
 void qemu_WICComponentInfo_Release(struct qemu_syscall *call);
 void qemu_WICConvertBitmapSource(struct qemu_syscall *call);
 void qemu_WICCreateBitmapFromSectionEx(struct qemu_syscall *call);
+void qemu_WICEnumMetadataItem_AddRef(struct qemu_syscall *call);
+void qemu_WICEnumMetadataItem_Clone(struct qemu_syscall *call);
+void qemu_WICEnumMetadataItem_Next(struct qemu_syscall *call);
+void qemu_WICEnumMetadataItem_QueryInterface(struct qemu_syscall *call);
+void qemu_WICEnumMetadataItem_Release(struct qemu_syscall *call);
+void qemu_WICEnumMetadataItem_Reset(struct qemu_syscall *call);
+void qemu_WICEnumMetadataItem_Skip(struct qemu_syscall *call);
 void qemu_WICFormatConverterInfo_AddRef(struct qemu_syscall *call);
 void qemu_WICFormatConverterInfo_CreateInstance(struct qemu_syscall *call);
 void qemu_WICFormatConverterInfo_GetPixelFormats(struct qemu_syscall *call);
