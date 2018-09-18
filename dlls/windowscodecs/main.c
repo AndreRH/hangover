@@ -752,10 +752,19 @@ static inline struct qemu_mdr *impl_from_IWICMetadataReader(IWICMetadataReader *
 
 static HRESULT WINAPI mdr_QueryInterface(IWICMetadataReader *iface, REFIID iid, void **out)
 {
-    WINE_FIXME("Stub!\n");
-    if (*out)
-        *out = NULL;
-    return E_NOTIMPL;
+    WINE_TRACE("%p,%s,%p\n", iface, wine_dbgstr_guid(iid), out);
+
+    if (IsEqualIID(iid, &IID_IUnknown) || IsEqualIID(iid, &IID_IWICMetadataReader))
+    {
+        *out = iface;
+        IWICMetadataReader_AddRef(iface);
+        return S_OK;
+    }
+
+    WINE_WARN("unknown iid %s\n", wine_dbgstr_guid(iid));
+
+    *out = NULL;
+    return E_NOINTERFACE;
 }
 
 static ULONG WINAPI mdr_AddRef(IWICMetadataReader *iface)
@@ -904,14 +913,22 @@ static HRESULT WINAPI mdr_GetValue(IWICMetadataReader *iface, const PROPVARIANT 
 
 #if GUEST_BIT != HOST_BIT
     if (value)
-    {
-        if (value32.vt == VT_UNKNOWN)
-            WINE_FIXME("Handle VT_UNKNOWN.\n");
         PROPVARIANT_g2h(value, &value32);
-    }
+
     HeapFree(GetProcessHeap(), 0, bounce_str);
     HeapFree(GetProcessHeap(), 0, bounce_str2);
 #endif
+
+    if (value && value->vt == VT_UNKNOWN)
+    {
+        if ((ULONG_PTR)value->punkVal == reader->guest)
+            value->punkVal = (IUnknown *)&reader->IWICMetadataReader_iface;
+        else
+            WINE_FIXME("Unexpected interface %p returned.\n", value->punkVal);
+
+        IWICMetadataReader_AddRef(&reader->IWICMetadataReader_iface);
+        qemu_ops->qemu_execute(QEMU_G2H(guest_iunknown_release), reader->guest);
+    }
 
     return hr;
 }
