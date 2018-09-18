@@ -1110,6 +1110,9 @@ struct qemu_mdbr *mdbr_wrapper_create(uint64_t guest)
     struct qemu_mdbr *ret;
     ULONG ref;
 
+    if (!guest)
+        return NULL;
+
     ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
     if (!ret)
         return NULL;
