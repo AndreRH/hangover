@@ -431,6 +431,8 @@ struct qemu_wic_frame_decode
     IWICBitmapFrameDecode *host;
     IWICMetadataBlockReader *host_block_reader;
     struct qemu_wic_decoder *decoder;
+    UINT reader_count;
+    struct qemu_wic_metadata_handler **readers;
 };
 
 struct qemu_wic_decoder
@@ -970,6 +972,7 @@ struct qemu_wic_metadata_handler *MetadataHandler_create_host(IWICMetadataReader
 ULONG qemu_WICBitmap_Release_internal(struct qemu_wic_bitmap *bitmap);
 ULONG qemu_WICFormatConverter_Release_internal(struct qemu_wic_converter *converter);
 ULONG qemu_WICBitmapClipper_Release_internal(struct qemu_wic_clipper *clipper);
+ULONG qemu_MetadataHandler_Release_internal(struct qemu_wic_metadata_handler *handler);
 
 struct qemu_bitmap_source *bitmap_source_wrapper_create(uint64_t guest);
 struct qemu_mdbr *mdbr_wrapper_create(uint64_t guest);

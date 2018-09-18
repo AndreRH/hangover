@@ -187,6 +187,7 @@ void qemu_WICBitmapFrameDecode_Release(struct qemu_syscall *call)
 {
     struct qemu_WICBitmapFrameDecode_Release *c = (struct qemu_WICBitmapFrameDecode_Release *)call;
     struct qemu_wic_frame_decode *frame;
+    ULONG i;
 
     WINE_TRACE("\n");
     frame = QEMU_G2H(c->iface);
@@ -202,6 +203,11 @@ void qemu_WICBitmapFrameDecode_Release(struct qemu_syscall *call)
         {
             /* Multi-frame decoder, destroy only the frame. */
             WINE_TRACE("Destroying frame wrapper %p for host frame %p.\n", frame, frame->host);
+
+            for (i = 0; i < frame->reader_count; ++i)
+                qemu_MetadataHandler_Release_internal(frame->readers[i]);
+            HeapFree(GetProcessHeap(), 0, frame->readers);
+
             HeapFree(GetProcessHeap(), 0, frame);
         }
     }
@@ -213,6 +219,11 @@ void qemu_WICBitmapFrameDecode_Release(struct qemu_syscall *call)
             /* Single-frame decoder, destroy the entire decoder. */
             struct qemu_wic_decoder *decoder = CONTAINING_RECORD(frame, struct qemu_wic_decoder, static_frame);
             WINE_TRACE("Destroying decoder wrapper %p for host decoder %p via frame %p.\n", decoder, decoder->host, frame);
+
+            for (i = 0; i < frame->reader_count; ++i)
+                qemu_MetadataHandler_Release_internal(frame->readers[i]);
+            HeapFree(GetProcessHeap(), 0, frame->readers);
+
             HeapFree(GetProcessHeap(), 0, decoder);
         }
     }
@@ -690,10 +701,12 @@ struct qemu_WICMetadataBlockReader_GetReaderByIndex
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICMetadataBlockReader_GetReaderByIndex(IWICMetadataBlockReader *iface, UINT index, IWICMetadataReader **reader)
+static HRESULT WINAPI WICMetadataBlockReader_GetReaderByIndex(IWICMetadataBlockReader *iface, UINT index,
+        IWICMetadataReader **reader)
 {
     struct qemu_WICMetadataBlockReader_GetReaderByIndex call;
     struct qemu_wic_frame_decode *frame = frame_from_IWICMetadataBlockReader(iface);
+    struct qemu_wic_metadata_handler *handler;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATABLOCKREADER_GETREADERBYINDEX);
     call.iface = (ULONG_PTR)frame;
@@ -701,6 +714,12 @@ static HRESULT WINAPI WICMetadataBlockReader_GetReaderByIndex(IWICMetadataBlockR
     call.reader = (ULONG_PTR)reader;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    handler = (struct qemu_wic_metadata_handler *)(ULONG_PTR)call.reader;
+    MetadataHandler_init_guest(handler);
+    *reader = (IWICMetadataReader *)&handler->IWICMetadataWriter_iface;
 
     return call.super.iret;
 }
@@ -709,13 +728,26 @@ static HRESULT WINAPI WICMetadataBlockReader_GetReaderByIndex(IWICMetadataBlockR
 
 void qemu_WICMetadataBlockReader_GetReaderByIndex(struct qemu_syscall *call)
 {
-    struct qemu_WICMetadataBlockReader_GetReaderByIndex *c = (struct qemu_WICMetadataBlockReader_GetReaderByIndex *)call;
+    struct qemu_WICMetadataBlockReader_GetReaderByIndex *c =
+            (struct qemu_WICMetadataBlockReader_GetReaderByIndex *)call;
     struct qemu_wic_frame_decode *frame;
+    IWICMetadataReader *host;
+    UINT idx;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("");
     frame = QEMU_G2H(c->iface);
+    idx = c->index;
 
-    c->super.iret = IWICMetadataBlockReader_GetReaderByIndex(frame->host_block_reader, c->index, QEMU_G2H(c->reader));
+    c->super.iret = IWICMetadataBlockReader_GetReaderByIndex(frame->host_block_reader, idx, c->reader ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    if (idx >= frame->reader_count)
+        WINE_ERR("I have %u readers, but getting reader %u succeeded.\n", frame->reader_count, idx);
+
+    c->reader = QEMU_H2G(frame->readers[idx]);
+    IWICMetadataWriter_AddRef(frame->readers[idx]->host_writer);
+    IWICMetadataReader_Release(host);
 }
 
 #endif
@@ -876,11 +908,16 @@ static ULONG WINAPI WICBitmapDecoder_Release(IWICBitmapDecoder *iface)
 
 static ULONG qemu_WICBitmapDecoder_Release_internal(struct qemu_wic_decoder *decoder)
 {
-    ULONG ref = IWICBitmapDecoder_Release(decoder->host);
+    ULONG ref = IWICBitmapDecoder_Release(decoder->host), i;
 
     if (!ref)
     {
         WINE_TRACE("Destroying decoder wrapper %p for host decoder %p.\n", decoder, decoder->host);
+
+        for (i = 0; i < decoder->static_frame.reader_count; ++i)
+            qemu_MetadataHandler_Release_internal(decoder->static_frame.readers[i]);
+        HeapFree(GetProcessHeap(), 0, decoder->static_frame.readers);
+
         HeapFree(GetProcessHeap(), 0, decoder);
     }
 
@@ -1408,6 +1445,8 @@ void qemu_WICBitmapDecoder_GetFrame(struct qemu_syscall *call)
     IWICBitmapFrameDecode *host, *host2;
     struct qemu_wic_frame_decode *frame;
     BOOL multi_obj;
+    UINT count, i;
+    HRESULT hr;
 
     WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
@@ -1458,6 +1497,25 @@ void qemu_WICBitmapDecoder_GetFrame(struct qemu_syscall *call)
         if (SUCCEEDED(IWICBitmapFrameDecode_QueryInterface(host, &IID_IWICMetadataBlockReader,
                 (void **)&frame->host_block_reader)))
         {
+            IWICMetadataBlockReader_GetCount(frame->host_block_reader, &count);
+            frame->reader_count = count;
+
+            frame->readers = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, count * sizeof(*frame->readers));
+            if (!frame->readers)
+                WINE_ERR("Out of memory\n");
+
+            for (i = 0; i < count; ++i)
+            {
+                IWICMetadataReader *host_reader;
+                hr = IWICMetadataBlockReader_GetReaderByIndex(frame->host_block_reader, i, &host_reader);
+                if (FAILED(hr))
+                    WINE_ERR("Failed to get reader %u\n", i);
+
+                frame->readers[i] = MetadataHandler_create_host(host_reader);
+                if (!frame->readers[i])
+                    WINE_ERR("Out of memory\n");
+            }
+
             IWICMetadataBlockReader_Release(frame->host_block_reader);
         }
 

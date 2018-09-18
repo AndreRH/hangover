@@ -171,7 +171,7 @@ static ULONG WINAPI MetadataHandler_Release(IWICMetadataWriter *iface)
 
 #else
 
-static ULONG qemu_MetadataHandler_Release_internal(struct qemu_wic_metadata_handler *handler)
+ULONG qemu_MetadataHandler_Release_internal(struct qemu_wic_metadata_handler *handler)
 {
     ULONG ref = IWICMetadataWriter_Release(handler->host_writer);
 
