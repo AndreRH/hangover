@@ -1455,6 +1455,12 @@ void qemu_WICBitmapDecoder_GetFrame(struct qemu_syscall *call)
         }
 
         frame->host = host;
+        if (SUCCEEDED(IWICBitmapFrameDecode_QueryInterface(host, &IID_IWICMetadataBlockReader,
+                (void **)&frame->host_block_reader)))
+        {
+            IWICMetadataBlockReader_Release(frame->host_block_reader);
+        }
+
         c->ppIBitmapFrame = QEMU_H2G(frame);
     }
 }
