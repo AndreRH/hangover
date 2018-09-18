@@ -25,6 +25,9 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_wincodec.h"
+
 #include <wine/debug.h>
 #include <wine/list.h>
 
@@ -247,7 +250,7 @@ static HRESULT WINAPI WICMetadataQueryReader_GetMetadataByName(IWICMetadataQuery
         LPCWSTR query, PROPVARIANT *value)
 {
     struct qemu_WICMetadataQueryReader_GetMetadataByName call;
-    struct qemu_wic_query_reader *reader = impl_from_IWICMetadataQueryReader(iface);
+    struct qemu_wic_query_reader *reader = impl_from_IWICMetadataQueryReader(iface), *new_reader;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICMETADATAQUERYREADER_GETMETADATABYNAME);
     call.iface = (ULONG_PTR)reader;
@@ -256,6 +259,12 @@ static HRESULT WINAPI WICMetadataQueryReader_GetMetadataByName(IWICMetadataQuery
 
     qemu_syscall(&call.super);
 
+    if (SUCCEEDED(call.super.iret) && value->vt == VT_UNKNOWN)
+    {
+        new_reader = (struct qemu_wic_query_reader *)value->punkVal;
+        WICMetadataQueryReader_init_guest(new_reader);
+        value->punkVal = (IUnknown *)&new_reader->IWICMetadataQueryReader_iface;
+    }
     return call.super.iret;
 }
 
@@ -265,12 +274,55 @@ void qemu_WICMetadataQueryReader_GetMetadataByName(struct qemu_syscall *call)
 {
     struct qemu_WICMetadataQueryReader_GetMetadataByName *c =
             (struct qemu_WICMetadataQueryReader_GetMetadataByName *)call;
-    struct qemu_wic_query_reader *reader;
+    struct qemu_wic_query_reader *reader, *new_reader;
+    PROPVARIANT stack, *value = &stack;
+    IUnknown *unk;
+    IWICMetadataQueryReader *host;
+    HRESULT hr;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     reader = QEMU_G2H(c->iface);
+#if GUEST_BIT == HOST_BIT
+    value = QEMU_G2H(c->value);
+#else
+    if (!c->value)
+        value = NULL;
+#endif
 
-    c->super.iret = IWICMetadataQueryReader_GetMetadataByName(reader->host, QEMU_G2H(c->query), QEMU_G2H(c->value));
+    c->super.iret = IWICMetadataQueryReader_GetMetadataByName(reader->host, QEMU_G2H(c->query), value);
+
+    if (SUCCEEDED(c->super.iret))
+    {
+        if (value->vt == VT_UNKNOWN)
+        {
+            WINE_TRACE("Returning a COM interface. Me %p, host %p, ret %p\n", reader, reader->host, value->punkVal);
+            unk = value->punkVal;
+
+            hr = IUnknown_QueryInterface(unk, &IID_IWICMetadataQueryReader, (void **)&host);
+            IUnknown_Release(unk);
+            if (FAILED(hr))
+            {
+                WINE_FIXME("Returned interface is not an IWICMetadataQueryReader.\n");
+                c->super.iret = hr;
+                return;
+            }
+            if (host == reader->host)
+                WINE_FIXME("Returning self.\n");
+
+            new_reader = WICMetadataQueryReader_create_host(host);
+            if (!new_reader)
+            {
+                IWICMetadataQueryReader_Release(host);
+                c->super.iret = E_OUTOFMEMORY;
+                return;
+            }
+            value->punkVal = (IUnknown *)new_reader;
+        }
+
+#if GUEST_BIT != HOST_BIT
+        PROPVARIANT_h2g(QEMU_G2H(c->value), value);
+#endif
+    }
 }
 
 #endif

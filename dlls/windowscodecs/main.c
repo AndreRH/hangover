@@ -27,6 +27,9 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_wincodec.h"
+
 #include <wine/debug.h>
 #include <wine/list.h>
 
@@ -50,6 +53,8 @@ struct qemu_dll_init
     uint64_t guest_block_reader_getpixelformat;
     uint64_t guest_block_reader_getcount;
     uint64_t guest_block_reader_getreaderbyindex;
+    uint64_t guest_reader_getmetadataformat;
+    uint64_t guest_reader_getvalue;
     struct istream_wrapper_funcs istream;
 };
 
@@ -100,6 +105,18 @@ struct guest_block_reader_getreaderbyindex
     uint64_t reader;
     uint64_t index;
     uint64_t out;
+};
+
+struct guest_reader_getmetadataformat
+{
+    uint64_t reader;
+    uint64_t fmt;
+};
+
+struct guest_reader_getvalue
+{
+    uint64_t reader;
+    uint64_t schema, id, value;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -170,6 +187,19 @@ static ULONG __fastcall guest_block_reader_getreaderbyindex(struct guest_block_r
     return hr;
 }
 
+static ULONG __fastcall guest_reader_getmetadataformat(struct guest_reader_getmetadataformat *call)
+{
+    return IWICMetadataReader_GetMetadataFormat((IWICMetadataReader *)(ULONG_PTR)call->reader,
+            (GUID *)(ULONG_PTR)call->fmt);
+}
+
+static ULONG __fastcall guest_reader_getvalue(struct guest_reader_getvalue *call)
+{
+    return IWICMetadataReader_GetValue((IWICMetadataReader *)(ULONG_PTR)call->reader,
+            (PROPVARIANT *)(ULONG_PTR)call->schema, (PROPVARIANT *)(ULONG_PTR)call->id,
+            (PROPVARIANT *)(ULONG_PTR)call->value);
+}
+
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_dll_init call;
@@ -189,6 +219,8 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
         call.guest_block_reader_getpixelformat = (ULONG_PTR)guest_block_reader_getpixelformat;
         call.guest_block_reader_getcount = (ULONG_PTR)guest_block_reader_getcount;
         call.guest_block_reader_getreaderbyindex = (ULONG_PTR)guest_block_reader_getreaderbyindex;
+        call.guest_reader_getmetadataformat = (ULONG_PTR)guest_reader_getmetadataformat;
+        call.guest_reader_getvalue = (ULONG_PTR)guest_reader_getvalue;
         istream_wrapper_get_funcs(&call.istream);
         qemu_syscall(&call.super);
     }
@@ -232,6 +264,8 @@ static uint64_t guest_bitmap_source_copypalette;
 static uint64_t guest_block_reader_getpixelformat;
 static uint64_t guest_block_reader_getcount;
 static uint64_t guest_block_reader_getreaderbyindex;
+static uint64_t guest_reader_getmetadataformat;
+static uint64_t guest_reader_getvalue;
 
 static void qemu_init_dll(struct qemu_syscall *call)
 {
@@ -250,6 +284,8 @@ static void qemu_init_dll(struct qemu_syscall *call)
             guest_block_reader_getpixelformat = c->guest_block_reader_getpixelformat;
             guest_block_reader_getcount = c->guest_block_reader_getcount;
             guest_block_reader_getreaderbyindex = c->guest_block_reader_getreaderbyindex;
+            guest_reader_getmetadataformat = c->guest_reader_getmetadataformat;
+            guest_reader_getvalue = c->guest_reader_getvalue;
             istream_wrapper_set_funcs(&c->istream);
             break;
 
@@ -752,8 +788,17 @@ static ULONG WINAPI mdr_Release(IWICMetadataReader *iface)
 
 static HRESULT WINAPI mdr_GetMetadataFormat(IWICMetadataReader *iface, GUID *format)
 {
-    WINE_FIXME("Stub!\n");
-    return E_NOTIMPL;
+    struct qemu_mdr *reader = impl_from_IWICMetadataReader(iface);
+    struct guest_reader_getmetadataformat call;
+    HRESULT hr;
+
+    WINE_TRACE("\n");
+    call.reader = reader->guest;
+    call.fmt = QEMU_H2G(format);
+
+    hr = qemu_ops->qemu_execute(QEMU_G2H(guest_reader_getmetadataformat), QEMU_H2G(&call));
+
+    return hr;
 }
 
 static HRESULT WINAPI mdr_GetMetadataHandlerInfo(IWICMetadataReader *iface, IWICMetadataHandlerInfo **handler)
@@ -778,8 +823,97 @@ static HRESULT WINAPI mdr_GetValueByIndex(IWICMetadataReader *iface, UINT index,
 static HRESULT WINAPI mdr_GetValue(IWICMetadataReader *iface, const PROPVARIANT *schema, const PROPVARIANT *id,
         PROPVARIANT *value)
 {
-    WINE_FIXME("Stub!\n");
-    return E_NOTIMPL;
+    struct qemu_mdr *reader = impl_from_IWICMetadataReader(iface);
+    struct guest_reader_getvalue call;
+    HRESULT hr;
+    struct qemu_PROPVARIANT schema32, id32, value32;
+    WCHAR *bounce_str = NULL, *bounce_str2 = NULL, *str;
+    size_t len;
+
+    WINE_TRACE("\n");
+    call.reader = reader->guest;
+#if GUEST_BIT == HOST_BIT
+    call.schema = QEMU_G2H(schema);
+    call.id = QEMU_G2H(id);
+    call.value = QEMU_G2H(value);
+#else
+    if (schema)
+    {
+        PROPVARIANT_h2g(&schema32, schema);
+
+        /* The host lib passes pointers to static const WCHAR[] data. This here is ugly, the problem
+         * might as well happen with non-string values. */
+        switch(schema->vt)
+        {
+            case VT_LPWSTR:
+                str = schema->pwszVal;
+                if ((ULONG_PTR)str > ~0U)
+                {
+                    len = (lstrlenW(str) + 1) * sizeof(*str);
+                    bounce_str = HeapAlloc(GetProcessHeap(), 0, len);
+                    memcpy(bounce_str, str, len);
+                    schema32.u1.pwszVal = QEMU_H2G(bounce_str);
+                }
+        }
+
+        call.schema = QEMU_H2G(&schema32);
+    }
+    else
+    {
+        call.schema = 0;
+    }
+
+    if (id)
+    {
+        PROPVARIANT_h2g(&id32, id);
+
+        switch(id->vt)
+        {
+            case VT_LPWSTR:
+                str = id->pwszVal;
+                if ((ULONG_PTR)str > ~0U)
+                {
+                    len = (lstrlenW(str) + 1) * sizeof(*str);
+                    bounce_str2 = HeapAlloc(GetProcessHeap(), 0, len);
+                    memcpy(bounce_str2, str, len);
+                    id32.u1.pwszVal = QEMU_H2G(bounce_str2);
+                }
+        }
+
+        call.id = QEMU_H2G(&id32);
+    }
+    else
+    {
+        call.id = 0;
+    }
+
+    if (value)
+    {
+        PROPVARIANT_h2g(&value32, value);
+        call.value = QEMU_H2G(&value32);
+    }
+    else
+    {
+        call.value = 0;
+    }
+#endif
+
+    WINE_TRACE("Calling guest function %p.\n", QEMU_G2H(guest_reader_getvalue));
+    hr = qemu_ops->qemu_execute(QEMU_G2H(guest_reader_getvalue), QEMU_H2G(&call));
+    WINE_TRACE("Guest function returned %#x.\n", hr);
+
+#if GUEST_BIT != HOST_BIT
+    if (value)
+    {
+        if (value32.vt == VT_UNKNOWN)
+            WINE_FIXME("Handle VT_UNKNOWN.\n");
+        PROPVARIANT_g2h(value, &value32);
+    }
+    HeapFree(GetProcessHeap(), 0, bounce_str);
+    HeapFree(GetProcessHeap(), 0, bounce_str2);
+#endif
+
+    return hr;
 }
 
 static HRESULT WINAPI mdr_GetEnumerator(IWICMetadataReader *iface, IWICEnumMetadataItem **enumerator)
