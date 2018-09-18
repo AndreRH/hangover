@@ -223,7 +223,8 @@ struct qemu_WICMetadataQueryReader_GetLocation
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICMetadataQueryReader_GetLocation(IWICMetadataQueryReader *iface, UINT len, WCHAR *location, UINT *ret_len)
+static HRESULT WINAPI WICMetadataQueryReader_GetLocation(IWICMetadataQueryReader *iface, UINT len, WCHAR *location,
+        UINT *ret_len)
 {
     struct qemu_WICMetadataQueryReader_GetLocation call;
     struct qemu_wic_query_reader *reader = impl_from_IWICMetadataQueryReader(iface);
@@ -246,10 +247,11 @@ void qemu_WICMetadataQueryReader_GetLocation(struct qemu_syscall *call)
     struct qemu_WICMetadataQueryReader_GetLocation *c = (struct qemu_WICMetadataQueryReader_GetLocation *)call;
     struct qemu_wic_query_reader *reader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     reader = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICMetadataQueryReader_GetLocation(reader->host, c->len, QEMU_G2H(c->location), QEMU_G2H(c->ret_len));
+    c->super.iret = IWICMetadataQueryReader_GetLocation(reader->host, c->len, QEMU_G2H(c->location),
+            QEMU_G2H(c->ret_len));
 }
 
 #endif
@@ -413,7 +415,7 @@ WINBASEAPI HRESULT WINAPI WICMapGuidToShortName(REFGUID guid, UINT len, WCHAR *n
 void qemu_WICMapGuidToShortName(struct qemu_syscall *call)
 {
     struct qemu_WICMapGuidToShortName *c = (struct qemu_WICMapGuidToShortName *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WICMapGuidToShortName(QEMU_G2H(c->guid), c->len, QEMU_G2H(c->name), QEMU_G2H(c->ret_len));
 }
 
@@ -445,7 +447,7 @@ WINBASEAPI HRESULT WINAPI WICMapShortNameToGuid(PCWSTR name, GUID *guid)
 void qemu_WICMapShortNameToGuid(struct qemu_syscall *call)
 {
     struct qemu_WICMapShortNameToGuid *c = (struct qemu_WICMapShortNameToGuid *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WICMapShortNameToGuid(QEMU_G2H(c->name), QEMU_G2H(c->guid));
 }
 
@@ -483,7 +485,7 @@ WINBASEAPI HRESULT WINAPI WICMapSchemaToName(REFGUID format, LPWSTR schema, UINT
 void qemu_WICMapSchemaToName(struct qemu_syscall *call)
 {
     struct qemu_WICMapSchemaToName *c = (struct qemu_WICMapSchemaToName *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WICMapSchemaToName(QEMU_G2H(c->format), QEMU_G2H(c->schema), c->len,
             QEMU_G2H(c->name), QEMU_G2H(c->ret_len));
 }
