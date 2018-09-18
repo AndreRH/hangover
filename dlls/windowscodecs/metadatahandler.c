@@ -901,7 +901,8 @@ struct qemu_MetadataHandler_LoadEx
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI MetadataHandler_LoadEx(IWICPersistStream *iface, IStream *pIStream, const GUID *pguidPreferredVendor, DWORD dwPersistOptions)
+static HRESULT WINAPI MetadataHandler_LoadEx(IWICPersistStream *iface, IStream *pIStream,
+        const GUID *pguidPreferredVendor, DWORD dwPersistOptions)
 {
     struct qemu_MetadataHandler_LoadEx call;
     struct qemu_wic_metadata_handler *handler = impl_from_IWICPersistStream(iface);
@@ -923,11 +924,18 @@ void qemu_MetadataHandler_LoadEx(struct qemu_syscall *call)
 {
     struct qemu_MetadataHandler_LoadEx *c = (struct qemu_MetadataHandler_LoadEx *)call;
     struct qemu_wic_metadata_handler *handler;
+    struct qemu_component_factory *factory;
+    struct istream_wrapper *stream;
+    stream = istream_wrapper_create(c->pIStream);
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     handler = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICPersistStream_LoadEx(handler->host_stream, QEMU_G2H(c->pIStream), QEMU_G2H(c->pguidPreferredVendor), c->dwPersistOptions);
+    c->super.iret = IWICPersistStream_LoadEx(handler->host_stream, istream_wrapper_host_iface(stream),
+            QEMU_G2H(c->pguidPreferredVendor), c->dwPersistOptions);
+
+    if (stream)
+        IStream_Release(istream_wrapper_host_iface(stream));
 }
 
 #endif
