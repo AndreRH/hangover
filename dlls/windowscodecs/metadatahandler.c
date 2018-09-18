@@ -25,6 +25,9 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 
+#include "thunk/qemu_windows.h"
+#include "thunk/qemu_wincodec.h"
+
 #include <wine/debug.h>
 #include <wine/list.h>
 
@@ -1063,7 +1066,8 @@ struct qemu_WICEnumMetadataItem_Next
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICEnumMetadataItem_Next(IWICEnumMetadataItem *iface, ULONG celt, PROPVARIANT *rgeltSchema, PROPVARIANT *rgeltId, PROPVARIANT *rgeltValue, ULONG *pceltFetched)
+static HRESULT WINAPI WICEnumMetadataItem_Next(IWICEnumMetadataItem *iface, ULONG celt, PROPVARIANT *rgeltSchema,
+        PROPVARIANT *rgeltId, PROPVARIANT *rgeltValue, ULONG *pceltFetched)
 {
     struct qemu_WICEnumMetadataItem_Next call;
     struct qemu_wic_metadata_enum *item = impl_from_IWICEnumMetadataItem(iface);
@@ -1087,11 +1091,99 @@ void qemu_WICEnumMetadataItem_Next(struct qemu_syscall *call)
 {
     struct qemu_WICEnumMetadataItem_Next *c = (struct qemu_WICEnumMetadataItem_Next *)call;
     struct qemu_wic_metadata_enum *item;
+    PROPVARIANT *schema, *id, *value;
+    ULONG *fetched, i;
+    struct qemu_PROPVARIANT *schema32, *id32, *value32;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     item = QEMU_G2H(c->iface);
+    fetched = QEMU_G2H(c->pceltFetched);
+#if GUEST_BIT == HOST_BIT
+    schema = QEMU_G2H(c->rgeltSchema);
+    id = QEMU_G2H(c->rgeltId);
+    value = QEMU_G2H(c->rgeltValue);
+#else
+    schema32 = QEMU_G2H(c->rgeltSchema);
+    id32 = QEMU_G2H(c->rgeltId);
+    value32 = QEMU_G2H(c->rgeltValue);
 
-    c->super.iret = IWICEnumMetadataItem_Next(item->host, c->celt, QEMU_G2H(c->rgeltSchema), QEMU_G2H(c->rgeltId), QEMU_G2H(c->rgeltValue), QEMU_G2H(c->pceltFetched));
+    if (schema32)
+    {
+        schema = HeapAlloc(GetProcessHeap(), 0, c->celt * sizeof(*schema));
+        if (!schema)
+        {
+            WINE_WARN("Out of memory\n");
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+
+        for (i = 0; i < c->celt; ++i)
+            PROPVARIANT_g2h(&schema[i], &schema32[i]);
+    }
+    else
+        schema = NULL;
+
+    if (id32)
+    {
+        id = HeapAlloc(GetProcessHeap(), 0, c->celt * sizeof(*id));
+        if (!id)
+        {
+            WINE_WARN("Out of memory\n");
+            HeapFree(GetProcessHeap(), 0, schema);
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+
+        for (i = 0; i < c->celt; ++i)
+            PROPVARIANT_g2h(&id[i], &id32[i]);
+    }
+    else
+        id = NULL;
+
+    if (value32)
+    {
+        value = HeapAlloc(GetProcessHeap(), 0, c->celt * sizeof(*value));
+        if (!value)
+        {
+            WINE_WARN("Out of memory\n");
+            HeapFree(GetProcessHeap(), 0, schema);
+            HeapFree(GetProcessHeap(), 0, id);
+            c->super.iret = E_OUTOFMEMORY;
+            return;
+        }
+
+        for (i = 0; i < c->celt; ++i)
+            PROPVARIANT_g2h(&value[i], &value32[i]);
+    }
+    else
+        value = NULL;
+#endif
+
+    c->super.iret = IWICEnumMetadataItem_Next(item->host, c->celt, schema, id, value, fetched);
+
+    if (WINE_FIXME_ON(qemu_wic) && SUCCEEDED(c->super.iret))
+    {
+        for (i = 0; i < *fetched; ++i)
+        {
+            if (schema[i].vt == VT_UNKNOWN || id[i].vt == VT_UNKNOWN || value[i].vt == VT_UNKNOWN)
+                WINE_FIXME("Handle VT_UNKNOWN\n");
+        }
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (SUCCEEDED(c->super.iret))
+    {
+        for (i = 0; i < *fetched; ++i)
+        {
+            PROPVARIANT_h2g(&schema32[i], &schema[i]);
+            PROPVARIANT_h2g(&id32[i], &id[i]);
+            PROPVARIANT_h2g(&value32[i], &value[i]);
+        }
+    }
+    HeapFree(GetProcessHeap(), 0, schema);
+    HeapFree(GetProcessHeap(), 0, id);
+    HeapFree(GetProcessHeap(), 0, value);
+#endif
 }
 
 #endif

@@ -2,6 +2,7 @@
 #define HAVE_QEMU_THUNK_WINCODEC_H
 
 #include "thunk/qemu_ocidl.h"
+#include "thunk/qemu_wtypes.h"
 #include "thunk/qemu_propidl.h"
 
 struct qemu_WICBitmapPattern

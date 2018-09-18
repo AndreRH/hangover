@@ -127,7 +127,7 @@ struct qemu_PROPVARIANT
         DATE date;
         FILETIME filetime;
         qemu_ptr puuid;
-//         BLOB blob;
+        struct qemu_BLOB blob;
         qemu_ptr pclipdata;
         qemu_ptr pStream;
         qemu_ptr pStorage;
@@ -188,7 +188,19 @@ static inline void PROPVARIANT_g2h(PROPVARIANT *host, const struct qemu_PROPVARI
      * There are also cases of COM interfaces, those need to be handled by the caller. */
     memset(host, 0, sizeof(*host));
     host->vt = guest->vt;
-    host->punkVal = (void *)(ULONG_PTR)guest->u1.punkVal;
+
+    switch (host->vt)
+    {
+        case VT_BLOB:
+            host->blob.cbSize = guest->u1.blob.cbSize;
+            host->blob.pBlobData = (void *)(ULONG_PTR)guest->u1.blob.pBlobData;
+            break;
+
+        /* TODO: There are more 8 vs 16 byte sized structs. */
+
+        default:
+            host->punkVal = (void *)(ULONG_PTR)guest->u1.punkVal;
+    }
 }
 
 static inline void PROPVARIANT_h2g(struct qemu_PROPVARIANT *guest, const PROPVARIANT *host)
@@ -197,7 +209,18 @@ static inline void PROPVARIANT_h2g(struct qemu_PROPVARIANT *guest, const PROPVAR
      * There are also cases of COM interfaces, those need to be handled by the caller. */
     memset(guest, 0, sizeof(*guest));
     guest->vt = host->vt;
-    guest->u1.punkVal = (ULONG_PTR)host->punkVal;
+    switch (host->vt)
+    {
+        case VT_BLOB:
+            guest->u1.blob.cbSize = host->blob.cbSize;
+            guest->u1.blob.pBlobData = (ULONG_PTR)host->blob.pBlobData;
+            break;
+
+        /* TODO: There are more 8 vs 16 byte sized structs. */
+
+        default:
+            guest->u1.punkVal = (ULONG_PTR)host->punkVal;
+    }
 }
 
 #endif
