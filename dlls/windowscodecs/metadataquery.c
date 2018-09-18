@@ -179,10 +179,11 @@ static HRESULT WINAPI WICMetadataQueryReader_GetContainerFormat(IWICMetadataQuer
 
 void qemu_WICMetadataQueryReader_GetContainerFormat(struct qemu_syscall *call)
 {
-    struct qemu_WICMetadataQueryReader_GetContainerFormat *c = (struct qemu_WICMetadataQueryReader_GetContainerFormat *)call;
+    struct qemu_WICMetadataQueryReader_GetContainerFormat *c =
+            (struct qemu_WICMetadataQueryReader_GetContainerFormat *)call;
     struct qemu_wic_query_reader *reader;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     reader = QEMU_G2H(c->iface);
 
     c->super.iret = IWICMetadataQueryReader_GetContainerFormat(reader->host, QEMU_G2H(c->format));
@@ -242,7 +243,8 @@ struct qemu_WICMetadataQueryReader_GetMetadataByName
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI WICMetadataQueryReader_GetMetadataByName(IWICMetadataQueryReader *iface, LPCWSTR query, PROPVARIANT *value)
+static HRESULT WINAPI WICMetadataQueryReader_GetMetadataByName(IWICMetadataQueryReader *iface,
+        LPCWSTR query, PROPVARIANT *value)
 {
     struct qemu_WICMetadataQueryReader_GetMetadataByName call;
     struct qemu_wic_query_reader *reader = impl_from_IWICMetadataQueryReader(iface);
@@ -261,7 +263,8 @@ static HRESULT WINAPI WICMetadataQueryReader_GetMetadataByName(IWICMetadataQuery
 
 void qemu_WICMetadataQueryReader_GetMetadataByName(struct qemu_syscall *call)
 {
-    struct qemu_WICMetadataQueryReader_GetMetadataByName *c = (struct qemu_WICMetadataQueryReader_GetMetadataByName *)call;
+    struct qemu_WICMetadataQueryReader_GetMetadataByName *c =
+            (struct qemu_WICMetadataQueryReader_GetMetadataByName *)call;
     struct qemu_wic_query_reader *reader;
 
     WINE_FIXME("Unverified!\n");

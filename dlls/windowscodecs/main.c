@@ -47,6 +47,8 @@ struct qemu_dll_init
     uint64_t guest_bitmap_source_copypixels;
     uint64_t guest_bitmap_source_getresolution;
     uint64_t guest_bitmap_source_copypalette;
+    uint64_t guest_block_reader_getpixelformat;
+    uint64_t guest_block_reader_getcount;
     struct istream_wrapper_funcs istream;
 };
 
@@ -78,6 +80,18 @@ struct guest_bitmap_source_copypalette
 {
     uint64_t source;
     uint64_t palette;
+};
+
+struct guest_block_reader_getpixelformat
+{
+    uint64_t reader;
+    uint64_t fmt;
+};
+
+struct guest_block_reader_getcount
+{
+    uint64_t reader;
+    uint64_t count;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -125,6 +139,18 @@ static ULONG __fastcall guest_bitmap_source_copypalette(struct guest_bitmap_sour
     return IWICBitmapSource_CopyPalette((IWICBitmapSource *)(ULONG_PTR)call->source, &pal->IWICPalette_iface);
 }
 
+static ULONG __fastcall guest_block_reader_getpixelformat(struct guest_block_reader_getpixelformat *call)
+{
+    return IWICMetadataBlockReader_GetContainerFormat((IWICMetadataBlockReader *)(ULONG_PTR)call->reader,
+            (WICPixelFormatGUID *)(ULONG_PTR)call->fmt);
+}
+
+static ULONG __fastcall guest_block_reader_getcount(struct guest_block_reader_getcount *call)
+{
+    return IWICMetadataBlockReader_GetCount((IWICMetadataBlockReader *)(ULONG_PTR)call->reader,
+            (UINT *)(ULONG_PTR)call->count);
+}
+
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_dll_init call;
@@ -141,6 +167,8 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
         call.guest_bitmap_source_copypixels = (ULONG_PTR)guest_bitmap_source_copypixels;
         call.guest_bitmap_source_getresolution = (ULONG_PTR)guest_bitmap_source_getresolution;
         call.guest_bitmap_source_copypalette = (ULONG_PTR)guest_bitmap_source_copypalette;
+        call.guest_block_reader_getpixelformat = (ULONG_PTR)guest_block_reader_getpixelformat;
+        call.guest_block_reader_getcount = (ULONG_PTR)guest_block_reader_getcount;
         istream_wrapper_get_funcs(&call.istream);
         qemu_syscall(&call.super);
     }
@@ -181,6 +209,8 @@ static uint64_t guest_bitmap_source_getpixelformat;
 static uint64_t guest_bitmap_source_copypixels;
 static uint64_t guest_bitmap_source_getresolution;
 static uint64_t guest_bitmap_source_copypalette;
+static uint64_t guest_block_reader_getpixelformat;
+static uint64_t guest_block_reader_getcount;
 
 static void qemu_init_dll(struct qemu_syscall *call)
 {
@@ -196,6 +226,8 @@ static void qemu_init_dll(struct qemu_syscall *call)
             guest_bitmap_source_copypixels = c->guest_bitmap_source_copypixels;
             guest_bitmap_source_getresolution = c->guest_bitmap_source_getresolution;
             guest_bitmap_source_copypalette = c->guest_bitmap_source_copypalette;
+            guest_block_reader_getpixelformat = c->guest_block_reader_getpixelformat;
+            guest_block_reader_getcount = c->guest_block_reader_getcount;
             istream_wrapper_set_funcs(&c->istream);
             break;
 
@@ -696,14 +728,32 @@ static ULONG WINAPI mdbr_Release(IWICMetadataBlockReader *iface)
 
 static HRESULT WINAPI mdbr_GetContainerFormat(IWICMetadataBlockReader *iface, GUID *format)
 {
-    WINE_FIXME("Stub!\n");
-    return S_OK;
+    struct qemu_mdbr *reader = impl_from_IWICMetadataBlockReader(iface);
+    struct guest_block_reader_getpixelformat call;
+    HRESULT hr;
+
+    WINE_TRACE("\n");
+    call.reader = reader->guest;
+    call.fmt = QEMU_H2G(format);
+
+    hr = qemu_ops->qemu_execute(QEMU_G2H(guest_block_reader_getpixelformat), QEMU_H2G(&call));
+
+    return hr;
 }
 
 static HRESULT WINAPI mdbr_GetCount(IWICMetadataBlockReader *iface, UINT *count)
 {
-    WINE_FIXME("Stub!\n");
-    return S_OK;
+    struct qemu_mdbr *reader = impl_from_IWICMetadataBlockReader(iface);
+    struct guest_block_reader_getcount call;
+    HRESULT hr;
+
+    WINE_TRACE("\n");
+    call.reader = reader->guest;
+    call.count = QEMU_H2G(count);
+
+    hr = qemu_ops->qemu_execute(QEMU_G2H(guest_block_reader_getcount), QEMU_H2G(&call));
+
+    return hr;
 }
 
 static HRESULT WINAPI mdbr_GetReaderByIndex(IWICMetadataBlockReader *iface, UINT index, IWICMetadataReader **out)
