@@ -202,20 +202,31 @@ struct qemu_MetadataHandler_GetMetadataHandlerInfo
     struct qemu_syscall super;
     uint64_t iface;
     uint64_t ppIHandler;
+    uint64_t type;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI MetadataHandler_GetMetadataHandlerInfo(IWICMetadataWriter *iface, IWICMetadataHandlerInfo **ppIHandler)
+static HRESULT WINAPI MetadataHandler_GetMetadataHandlerInfo(IWICMetadataWriter *iface,
+        IWICMetadataHandlerInfo **ppIHandler)
 {
     struct qemu_MetadataHandler_GetMetadataHandlerInfo call;
     struct qemu_wic_metadata_handler *handler = impl_from_IWICMetadataWriter(iface);
+    struct qemu_wic_info *info;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_METADATAHANDLER_GETMETADATAHANDLERINFO);
     call.iface = (ULONG_PTR)handler;
     call.ppIHandler = (ULONG_PTR)ppIHandler;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    info = (struct qemu_wic_info *)(ULONG_PTR)call.ppIHandler;
+    WICComponentInfo_init_guest(info, call.type);
+    *ppIHandler = (IWICMetadataHandlerInfo *)&info->IWICComponentInfo_iface;
+
+    return call.super.iret;
 
     return call.super.iret;
 }
@@ -226,11 +237,27 @@ void qemu_MetadataHandler_GetMetadataHandlerInfo(struct qemu_syscall *call)
 {
     struct qemu_MetadataHandler_GetMetadataHandlerInfo *c = (struct qemu_MetadataHandler_GetMetadataHandlerInfo *)call;
     struct qemu_wic_metadata_handler *handler;
+    IWICMetadataHandlerInfo *host;
+    struct qemu_wic_info *info;
+    enum component_info_type type;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     handler = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICMetadataWriter_GetMetadataHandlerInfo(handler->host_writer, QEMU_G2H(c->ppIHandler));
+    c->super.iret = IWICMetadataWriter_GetMetadataHandlerInfo(handler->host_writer, c->ppIHandler ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    info = WICComponentInfo_create_host((IWICComponentInfo *)host, &type);
+    if (!info)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        IWICMetadataHandlerInfo_Release(host);
+        return;
+    }
+
+    c->type = type;
+    c->ppIHandler = QEMU_H2G(info);
 }
 
 #endif
