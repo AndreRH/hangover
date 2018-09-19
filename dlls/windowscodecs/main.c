@@ -870,9 +870,9 @@ static HRESULT WINAPI mdr_GetValue(IWICMetadataReader *iface, const PROPVARIANT 
     WINE_TRACE("\n");
     call.reader = reader->guest;
 #if GUEST_BIT == HOST_BIT
-    call.schema = QEMU_G2H(schema);
-    call.id = QEMU_G2H(id);
-    call.value = QEMU_G2H(value);
+    call.schema = QEMU_H2G(schema);
+    call.id = QEMU_H2G(id);
+    call.value = QEMU_H2G(value);
 #else
     if (schema)
     {
