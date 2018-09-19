@@ -1270,7 +1270,7 @@ struct qemu_RegSetKeyValueW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LONG WINAPI RegSetKeyValueW(HKEY hkey, LPCWSTR subkey, LPCWSTR name, DWORD type, const void *data, DWORD len)
+WINBASEAPI LONG WINAPI RegSetKeyValueW(HKEY hkey, LPCWSTR subkey, LPCWSTR name, DWORD type, LPCVOID data, DWORD len)
 {
     struct qemu_RegSetKeyValueW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSETKEYVALUEW);
@@ -1310,7 +1310,7 @@ struct qemu_RegSetKeyValueA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI LONG WINAPI RegSetKeyValueA(HKEY hkey, LPCSTR subkey, LPCSTR name, DWORD type, const void *data, DWORD len)
+WINBASEAPI LONG WINAPI RegSetKeyValueA(HKEY hkey, LPCSTR subkey, LPCSTR name, DWORD type, LPCVOID data, DWORD len)
 {
     struct qemu_RegSetKeyValueA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_REGSETKEYVALUEA);
