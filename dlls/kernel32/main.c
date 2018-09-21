@@ -1616,9 +1616,12 @@ static int ov_tree_compare(const void *key, const struct wine_rb_entry *entry)
 {
     struct OVERLAPPED_data *data = WINE_RB_ENTRY_VALUE(entry, struct OVERLAPPED_data, rbtree_entry);
 
-    if ((ULONG_PTR)key == (ULONG_PTR)data->guest_ov)
+    if ((ULONG_PTR)key > (ULONG_PTR)data->guest_ov)
+        return 1;
+    else if ((ULONG_PTR)key == (ULONG_PTR)data->guest_ov)
         return 0;
-    return (ULONG_PTR)key > (ULONG_PTR)data->guest_ov;
+    else
+        return -1;
 }
 
 struct OVERLAPPED_data *get_OVERLAPPED_data(void *guest)
