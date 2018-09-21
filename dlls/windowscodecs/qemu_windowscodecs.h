@@ -473,6 +473,7 @@ struct qemu_wic_info
 
     /* Host fields */
     IWICComponentInfo *host;
+    struct wine_rb_entry entry;
 };
 
 enum component_info_type
@@ -977,6 +978,8 @@ ULONG qemu_MetadataHandler_Release_internal(struct qemu_wic_metadata_handler *ha
 struct qemu_bitmap_source *bitmap_source_wrapper_create(uint64_t guest);
 struct qemu_mdbr *mdbr_wrapper_create(uint64_t guest);
 struct qemu_mdr *mdr_wrapper_create(uint64_t guest);
+
+extern struct wine_rb_tree info_tree;
 
 #endif
 

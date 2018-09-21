@@ -32,6 +32,7 @@
 
 #include <wine/debug.h>
 #include <wine/list.h>
+#include <wine/rbtree.h>
 
 #include "qemu_windowscodecs.h"
 
@@ -596,12 +597,28 @@ static const syscall_handler dll_functions[] =
     qemu_WICStream_Write,
 };
 
+struct wine_rb_tree info_tree;
+
+static int info_tree_compare(const void *key, const struct wine_rb_entry *entry)
+{
+    struct qemu_wic_info *data = WINE_RB_ENTRY_VALUE(entry, struct qemu_wic_info, entry);
+
+    if ((ULONG_PTR)key > (ULONG_PTR)data->host)
+        return 1;
+    else if ((ULONG_PTR)key == (ULONG_PTR)data->host)
+        return 0;
+    else
+        return -1;
+}
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     WINE_TRACE("Loading host-side windowscodecs wrapper.\n");
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
+
+    wine_rb_init(&info_tree, info_tree_compare);
 
     return dll_functions;
 }

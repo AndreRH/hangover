@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 André Hentschel
+ * Copyright 2018 Stefan Dösinger for CodeWeavers
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,6 +32,7 @@
 
 #include <wine/debug.h>
 #include <wine/list.h>
+#include <wine/rbtree.h>
 
 #include "qemu_windowscodecs.h"
 
@@ -79,6 +81,8 @@ static HRESULT WINAPI WICComponentInfo_QueryInterface(IWICComponentInfo *iface, 
 }
 
 #else
+
+static CRITICAL_SECTION info_cs = {0, -1, 0, 0, 0, 0};
 
 void qemu_WICComponentInfo_QueryInterface(struct qemu_syscall *call)
 {
@@ -169,8 +173,9 @@ void qemu_WICComponentInfo_Release(struct qemu_syscall *call)
     c->super.iret = IWICComponentInfo_Release(info->host);
     if (!c->super.iret)
     {
-        WINE_TRACE("Destroying component component info wrapper %p for host info %p.\n", info, info->host);
-        HeapFree(GetProcessHeap(), 0, info);
+        /* Wine keeps them in a cache like we do and destroys them on library unload. Host windowscodecs
+         * is never unloaded as long as we are around. */
+        WINE_FIXME("Did not expect a WICComponentInfo object to be destroyed.\n");
     }
 }
 
@@ -3114,18 +3119,10 @@ void WICComponentInfo_init_guest(struct qemu_wic_info *info, enum component_info
 struct qemu_wic_info *WICComponentInfo_create_host(IWICComponentInfo *host, enum component_info_type *type)
 {
     IUnknown *unk = NULL;
-    struct qemu_wic_info *ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    struct qemu_wic_info *ret;
+    struct wine_rb_entry *entry;
 
-    if (!ret)
-    {
-        WINE_WARN("Out of memory\n");
-        return NULL;
-    }
-
-    /* FIXME: The host library caches info objects, so we need to do this too. Otherwise if we create
-     * a 2nd wrapper for the same objects one of them won't be released properly. The tests also
-     * check for this. */
-
+    /* Make sure we don't have a race between two threads creating a wrapper for the same object. */
     if (SUCCEEDED(IWICComponentInfo_QueryInterface(host, &IID_IWICBitmapDecoderInfo, (void **)&unk)))
         *type = BITMAPDECODER_INFO;
     else if (SUCCEEDED(IWICComponentInfo_QueryInterface(host, &IID_IWICBitmapEncoderInfo, (void **)&unk)))
@@ -3141,7 +3138,31 @@ struct qemu_wic_info *WICComponentInfo_create_host(IWICComponentInfo *host, enum
 
     IUnknown_Release(unk);
 
+    EnterCriticalSection(&info_cs);
+    entry = wine_rb_get(&info_tree, host);
+    if (entry)
+    {
+        /* Already AddRef'ed through the host create call. */
+        ret = WINE_RB_ENTRY_VALUE(entry, struct qemu_wic_info, entry);
+        LeaveCriticalSection(&info_cs);
+        WINE_TRACE("Found existing info wrapper %p for host %p.\n", ret, host);
+        return ret;
+    }
+
+    ret = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*ret));
+    if (!ret)
+    {
+        LeaveCriticalSection(&info_cs);
+        WINE_WARN("Out of memory\n");
+        return NULL;
+    }
+
+    WINE_TRACE("Creating new info wrapper %p for host %p.\n", ret, host);
     ret->host = host;
+    if (wine_rb_put(&info_tree, host, &ret->entry))
+        WINE_ERR("Failed to put new info into tree.\n");
+
+    LeaveCriticalSection(&info_cs);
     return ret;
 }
 

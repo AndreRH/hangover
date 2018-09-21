@@ -26,6 +26,7 @@
 #include <wincodecsdk.h>
 #include <wine/debug.h>
 #include <wine/list.h>
+#include <wine/rbtree.h>
 
 #include "windows-user-services.h"
 #include "qemu_windowscodecs.h"

@@ -1,5 +1,6 @@
 /*
  * Copyright 2009 Vincent Povirk for CodeWeavers
+ * Copyright 2018 Stefan Dösinger for CodeWeavers
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +25,7 @@
 #include <wincodecsdk.h>
 #include <wine/debug.h>
 #include <wine/list.h>
+#include <wine/rbtree.h>
 
 #include "windows-user-services.h"
 #include "qemu_windowscodecs.h"

@@ -1,5 +1,6 @@
 /*
  * Copyright 2017 André Hentschel
+ * Copyright 2018 Stefan Dösinger for CodeWeavers
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +29,7 @@
 
 #include <wine/debug.h>
 #include <wine/list.h>
+#include <wine/rbtree.h>
 
 #include "qemu_windowscodecs.h"
 
