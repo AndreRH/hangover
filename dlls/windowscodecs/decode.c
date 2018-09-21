@@ -1648,6 +1648,7 @@ struct qemu_WICDecoder_MetadataBlockReader_GetReaderByIndex
     uint64_t iface;
     uint64_t index;
     uint64_t reader;
+    uint64_t type;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -1657,6 +1658,7 @@ static HRESULT WINAPI WICDecoder_MetadataBlockReader_GetReaderByIndex(IWICMetada
 {
     struct qemu_WICDecoder_MetadataBlockReader_GetReaderByIndex call;
     struct qemu_wic_decoder *decoder = decoder_from_IWICMetadataBlockReader(iface);
+    struct qemu_wic_metadata_handler *handler;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICDECODER_METADATABLOCKREADER_GETREADERBYINDEX);
     call.iface = (ULONG_PTR)decoder;
@@ -1664,6 +1666,12 @@ static HRESULT WINAPI WICDecoder_MetadataBlockReader_GetReaderByIndex(IWICMetada
     call.reader = (ULONG_PTR)reader;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    handler = (struct qemu_wic_metadata_handler *)(ULONG_PTR)call.reader;
+    MetadataHandler_init_guest(handler);
+    *reader = (IWICMetadataReader *)&handler->IWICMetadataWriter_iface;
 
     return call.super.iret;
 }
@@ -1675,11 +1683,29 @@ void qemu_WICDecoder_MetadataBlockReader_GetReaderByIndex(struct qemu_syscall *c
     struct qemu_WICDecoder_MetadataBlockReader_GetReaderByIndex *c =
             (struct qemu_WICDecoder_MetadataBlockReader_GetReaderByIndex *)call;
     struct qemu_wic_decoder *decoder;
+    IWICMetadataReader *host;
+    struct qemu_wic_metadata_handler *handler;
 
-    WINE_FIXME("Unverified!\n");
     decoder = QEMU_G2H(c->iface);
+    WINE_TRACE("\n");
 
-    c->super.iret = IWICMetadataBlockReader_GetReaderByIndex(decoder->host_block_reader, c->index, QEMU_G2H(c->reader));
+    c->super.iret = IWICMetadataBlockReader_GetReaderByIndex(decoder->host_block_reader, c->index,
+            c->reader ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    /* The only implementation in the decoder (and not frame) I can spot - in gifformat.c - returns
+     * new readers every time this is inovked. */
+    handler = MetadataHandler_create_host(host);
+    if (!handler)
+    {
+        WINE_WARN("Out of memory\n");
+        c->super.iret = E_OUTOFMEMORY;
+        IWICMetadataReader_Release(host);
+        return;
+    }
+
+    c->reader = QEMU_H2G(handler);
 }
 
 #endif
