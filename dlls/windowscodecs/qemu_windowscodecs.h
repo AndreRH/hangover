@@ -238,6 +238,10 @@ enum windowscodecs_calls
     CALL_WICCOMPONENTINFO_RELEASE,
     CALL_WICCONVERTBITMAPSOURCE,
     CALL_WICCREATEBITMAPFROMSECTIONEX,
+    CALL_WICDECODER_METADATABLOCKREADER_GETCONTAINERFORMAT,
+    CALL_WICDECODER_METADATABLOCKREADER_GETCOUNT,
+    CALL_WICDECODER_METADATABLOCKREADER_GETENUMERATOR,
+    CALL_WICDECODER_METADATABLOCKREADER_GETREADERBYINDEX,
     CALL_WICENUMMETADATAITEM_ADDREF,
     CALL_WICENUMMETADATAITEM_CLONE,
     CALL_WICENUMMETADATAITEM_NEXT,
@@ -439,9 +443,11 @@ struct qemu_wic_decoder
 {
     /* Guest fields */
     IWICBitmapDecoder IWICBitmapDecoder_iface;
+    IWICMetadataBlockReader IWICMetadataBlockReader_iface;
 
     /* Host fields */
     IWICBitmapDecoder *host;
+    IWICMetadataBlockReader *host_block_reader;
     struct qemu_wic_frame_decode static_frame;
 };
 
@@ -868,6 +874,10 @@ void qemu_WICComponentInfo_QueryInterface(struct qemu_syscall *call);
 void qemu_WICComponentInfo_Release(struct qemu_syscall *call);
 void qemu_WICConvertBitmapSource(struct qemu_syscall *call);
 void qemu_WICCreateBitmapFromSectionEx(struct qemu_syscall *call);
+void qemu_WICDecoder_MetadataBlockReader_GetContainerFormat(struct qemu_syscall *call);
+void qemu_WICDecoder_MetadataBlockReader_GetCount(struct qemu_syscall *call);
+void qemu_WICDecoder_MetadataBlockReader_GetEnumerator(struct qemu_syscall *call);
+void qemu_WICDecoder_MetadataBlockReader_GetReaderByIndex(struct qemu_syscall *call);
 void qemu_WICEnumMetadataItem_AddRef(struct qemu_syscall *call);
 void qemu_WICEnumMetadataItem_Clone(struct qemu_syscall *call);
 void qemu_WICEnumMetadataItem_Next(struct qemu_syscall *call);
