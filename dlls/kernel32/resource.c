@@ -30,7 +30,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_kernel32);
 #endif
 
-
 struct qemu_FindResourceExA
 {
     struct qemu_syscall super;
@@ -263,65 +262,58 @@ void qemu_EnumResourceTypesW(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_EnumResourceNamesA
+struct qemu_EnumResourceNames
 {
     struct qemu_syscall super;
     uint64_t hmod;
     uint64_t type;
     uint64_t lpfun;
     uint64_t lparam;
+    uint64_t wrapper;
+};
+
+struct qemu_EnumResourceNames_cb
+{
+    uint64_t cb;
+    uint64_t mod;
+    uint64_t type;
+    uint64_t name;
+    uint64_t param;
 };
 
 #ifdef QEMU_DLL_GUEST
 
+static BOOL __fastcall EnumResourceNamesA_guest_cb(struct qemu_EnumResourceNames_cb *call)
+{
+    ENUMRESNAMEPROCW cb = (ENUMRESNAMEPROCW)(ULONG_PTR)call->cb;
+    return cb((HMODULE)(ULONG_PTR)call->mod, (const WCHAR *)(ULONG_PTR)call->type,
+            (WCHAR *)(ULONG_PTR)call->name, call->param);
+}
+
 WINBASEAPI BOOL WINAPI EnumResourceNamesA(HMODULE hmod, LPCSTR type, ENUMRESNAMEPROCA lpfun, LONG_PTR lparam)
 {
-    struct qemu_EnumResourceNamesA call;
+    struct qemu_EnumResourceNames call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMRESOURCENAMESA);
     call.hmod = (ULONG_PTR)hmod;
     call.type = (ULONG_PTR)type;
     call.lpfun = (ULONG_PTR)lpfun;
     call.lparam = (ULONG_PTR)lparam;
+    call.wrapper = (ULONG_PTR)EnumResourceNamesA_guest_cb;
 
     qemu_syscall(&call.super);
 
     return call.super.iret;
 }
 
-#else
-
-void qemu_EnumResourceNamesA(struct qemu_syscall *call)
-{
-    struct qemu_EnumResourceNamesA *c = (struct qemu_EnumResourceNamesA *)call;
-    HMODULE mod;
-
-    WINE_FIXME("Unverified!\n");
-    mod = qemu_ops->qemu_module_g2h(c->hmod);
-
-    c->super.iret = EnumResourceNamesA(mod, QEMU_G2H(c->type), QEMU_G2H(c->lpfun), c->lparam);
-}
-
-#endif
-
-struct qemu_EnumResourceNamesW
-{
-    struct qemu_syscall super;
-    uint64_t hmod;
-    uint64_t type;
-    uint64_t lpfun;
-    uint64_t lparam;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI EnumResourceNamesW(HMODULE hmod, LPCWSTR type, ENUMRESNAMEPROCW lpfun, LONG_PTR lparam)
 {
-    struct qemu_EnumResourceNamesW call;
+    struct qemu_EnumResourceNames call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ENUMRESOURCENAMESW);
     call.hmod = (ULONG_PTR)hmod;
     call.type = (ULONG_PTR)type;
     call.lpfun = (ULONG_PTR)lpfun;
     call.lparam = (ULONG_PTR)lparam;
+    call.wrapper = (ULONG_PTR)EnumResourceNamesA_guest_cb;
 
     qemu_syscall(&call.super);
 
@@ -330,18 +322,58 @@ WINBASEAPI BOOL WINAPI EnumResourceNamesW(HMODULE hmod, LPCWSTR type, ENUMRESNAM
 
 #else
 
-void qemu_EnumResourceNamesW(struct qemu_syscall *call)
+struct qemu_EnumResourceNames_host_data
 {
-    struct qemu_EnumResourceNamesW *c = (struct qemu_EnumResourceNamesW *)call;
+    uint64_t guest_cb;
+    uint64_t guest_param;
+    uint64_t wrapper;
+};
+
+static BOOL CALLBACK qemu_EnumResourceNames_host_cb(HMODULE mod, const WCHAR *type, WCHAR *name, LONG_PTR param)
+{
+    struct qemu_EnumResourceNames_host_data *ctx = (struct qemu_EnumResourceNames_host_data *)param;
+    struct qemu_EnumResourceNames_cb call;
+    BOOL ret;
+
+    call.cb = ctx->guest_cb;
+    call.mod = QEMU_H2G(mod);
+    call.type = QEMU_H2G(type);
+    call.name = QEMU_H2G(name);
+    call.param = ctx->guest_param;
+
+    WINE_TRACE("Calling guest callback %p(%p, %p, %p, %p).\n", (void *)call.cb, mod, type, name, (void *)param);
+    ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
+    WINE_TRACE("Guest returned %x.\n", ret);
+
+    return ret;
+}
+
+void qemu_EnumResourceNames(struct qemu_syscall *call)
+{
+    struct qemu_EnumResourceNames *c = (struct qemu_EnumResourceNames *)call;
     HMODULE mod;
+    struct qemu_EnumResourceNames_host_data ctx;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     mod = qemu_ops->qemu_module_g2h(c->hmod);
+    ctx.guest_cb = c->lpfun;
+    ctx.guest_param = c->lparam;
+    ctx.wrapper = c->wrapper;
 
-    c->super.iret = EnumResourceNamesW(mod, QEMU_G2H(c->type), QEMU_G2H(c->lpfun), c->lparam);
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_ENUMRESOURCENAMESA))
+    {
+        c->super.iret = EnumResourceNamesA(mod, QEMU_G2H(c->type),
+                (ENUMRESNAMEPROCA)(c->lpfun ? qemu_EnumResourceNames_host_cb : NULL), (LONG_PTR)&ctx);
+    }
+    else
+    {
+        c->super.iret = EnumResourceNamesW(mod, QEMU_G2H(c->type),
+                c->lpfun ? qemu_EnumResourceNames_host_cb : NULL, (LONG_PTR)&ctx);
+    }
 }
 
 #endif
+
 
 struct qemu_EnumResourceLanguagesExA
 {
