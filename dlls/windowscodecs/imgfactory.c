@@ -490,10 +490,12 @@ struct qemu_ComponentFactory_CreateEncoder
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT WINAPI ComponentFactory_CreateEncoder(IWICComponentFactory *iface, REFGUID guidContainerFormat, const GUID *pguidVendor, IWICBitmapEncoder **ppIEncoder)
+static HRESULT WINAPI ComponentFactory_CreateEncoder(IWICComponentFactory *iface, REFGUID guidContainerFormat,
+        const GUID *pguidVendor, IWICBitmapEncoder **ppIEncoder)
 {
     struct qemu_ComponentFactory_CreateEncoder call;
     struct qemu_component_factory *factory = impl_from_IWICComponentFactory(iface);
+    struct qemu_wic_encoder *encoder;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_COMPONENTFACTORY_CREATEENCODER);
     call.iface = (ULONG_PTR)factory;
@@ -502,6 +504,12 @@ static HRESULT WINAPI ComponentFactory_CreateEncoder(IWICComponentFactory *iface
     call.ppIEncoder = (ULONG_PTR)ppIEncoder;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    encoder = (struct qemu_wic_encoder *)(ULONG_PTR)call.ppIEncoder;
+    WICBitmapEncoder_init_guest(encoder);
+    *ppIEncoder = &encoder->IWICBitmapEncoder_iface;
 
     return call.super.iret;
 }
@@ -512,11 +520,26 @@ void qemu_ComponentFactory_CreateEncoder(struct qemu_syscall *call)
 {
     struct qemu_ComponentFactory_CreateEncoder *c = (struct qemu_ComponentFactory_CreateEncoder *)call;
     struct qemu_component_factory *factory;
+    struct qemu_wic_encoder *encoder;
+    IWICBitmapEncoder *host;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
 
-    c->super.iret = IWICComponentFactory_CreateEncoder(factory->host, QEMU_G2H(c->guidContainerFormat), QEMU_G2H(c->pguidVendor), QEMU_G2H(c->ppIEncoder));
+    c->super.iret = IWICComponentFactory_CreateEncoder(factory->host, QEMU_G2H(c->guidContainerFormat),
+            QEMU_G2H(c->pguidVendor), c->ppIEncoder ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    encoder = WICBitmapEncoder_create_host(host);
+    if (!encoder)
+    {
+        c->super.iret = E_OUTOFMEMORY;
+        IWICBitmapEncoder_Release(host);
+        return;
+    }
+
+    c->ppIEncoder = QEMU_H2G(encoder);
 }
 
 #endif
