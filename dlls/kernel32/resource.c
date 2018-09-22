@@ -647,7 +647,7 @@ WINBASEAPI BOOL WINAPI FreeResource(HGLOBAL handle)
 void qemu_FreeResource(struct qemu_syscall *call)
 {
     struct qemu_FreeResource *c = (struct qemu_FreeResource *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FreeResource(QEMU_G2H(c->handle));
 }
 
