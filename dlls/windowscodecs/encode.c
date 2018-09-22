@@ -285,7 +285,7 @@ void qemu_WICBitmapFrameEncode_SetResolution(struct qemu_syscall *call)
     struct qemu_WICBitmapFrameEncode_SetResolution *c = (struct qemu_WICBitmapFrameEncode_SetResolution *)call;
     struct qemu_wic_frame_encode *frame_encode;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     frame_encode = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapFrameEncode_SetResolution(frame_encode->host, c->dpiX, c->dpiY);
