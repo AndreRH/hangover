@@ -165,7 +165,18 @@ void qemu_WICMetadataQueryReader_Release(struct qemu_syscall *call)
     WINE_TRACE("\n");
     reader = QEMU_G2H(c->iface);
 
+    if (reader->frame)
+        IWICMetadataBlockReader_AddRef(reader->frame->host_block_reader);
+    if (reader->decoder)
+        IWICMetadataBlockReader_AddRef(reader->decoder->host_block_reader);
+
     c->super.iret = IWICMetadataQueryReader_Release(reader->host);
+
+    if (reader->frame)
+        qemu_WICBitmapFrameDecode_Release_internal(reader->frame);
+    if (reader->decoder)
+        qemu_WICBitmapDecoder_Release_internal(reader->decoder);
+
     if (!c->super.iret)
     {
         WINE_TRACE("Destroying query reader wrapper %p for host reader %p.\n", reader, reader->host);

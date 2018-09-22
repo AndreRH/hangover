@@ -189,24 +189,18 @@ static ULONG WINAPI WICBitmapFrameDecode_Release(IWICBitmapFrameDecode *iface)
 
 #else
 
-static ULONG qemu_WICBitmapDecoder_Release_internal(struct qemu_wic_decoder *decoder);
-void qemu_WICBitmapFrameDecode_Release(struct qemu_syscall *call)
+ULONG qemu_WICBitmapFrameDecode_Release_internal(struct qemu_wic_frame_decode *frame)
 {
-    struct qemu_WICBitmapFrameDecode_Release *c = (struct qemu_WICBitmapFrameDecode_Release *)call;
-    struct qemu_wic_frame_decode *frame;
-    ULONG i;
-
-    WINE_TRACE("\n");
-    frame = QEMU_G2H(c->iface);
+    ULONG ref, i;
 
     if (frame->decoder)
     {
         /* GIF frames hold a reference to their parent decoders, ICO and TIFF frames do not. */
         IWICBitmapDecoder_AddRef(frame->decoder->host);
-        c->super.iret = IWICBitmapFrameDecode_Release(frame->host);
+        ref = IWICBitmapFrameDecode_Release(frame->host);
         qemu_WICBitmapDecoder_Release_internal(frame->decoder);
 
-        if (!c->super.iret)
+        if (!ref)
         {
             /* Multi-frame decoder, destroy only the frame. */
             WINE_TRACE("Destroying frame wrapper %p for host frame %p.\n", frame, frame->host);
@@ -220,8 +214,8 @@ void qemu_WICBitmapFrameDecode_Release(struct qemu_syscall *call)
     }
     else
     {
-        c->super.iret = IWICBitmapFrameDecode_Release(frame->host);
-        if (!c->super.iret)
+        ref = IWICBitmapFrameDecode_Release(frame->host);
+        if (!ref)
         {
             /* Single-frame decoder, destroy the entire decoder. */
             struct qemu_wic_decoder *decoder = CONTAINING_RECORD(frame, struct qemu_wic_decoder, static_frame);
@@ -234,6 +228,17 @@ void qemu_WICBitmapFrameDecode_Release(struct qemu_syscall *call)
             HeapFree(GetProcessHeap(), 0, decoder);
         }
     }
+
+}
+
+void qemu_WICBitmapFrameDecode_Release(struct qemu_syscall *call)
+{
+    struct qemu_WICBitmapFrameDecode_Release *c = (struct qemu_WICBitmapFrameDecode_Release *)call;
+    struct qemu_wic_frame_decode *frame;
+
+    WINE_TRACE("\n");
+    frame = QEMU_G2H(c->iface);
+    c->super.iret = qemu_WICBitmapFrameDecode_Release_internal(frame);
 }
 
 #endif
@@ -458,12 +463,19 @@ static HRESULT WINAPI WICBitmapFrameDecode_GetMetadataQueryReader(IWICBitmapFram
 {
     struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader call;
     struct qemu_wic_frame_decode *frame = impl_from_IWICBitmapFrameDecode(iface);
+    struct qemu_wic_query_reader *reader;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPFRAMEDECODE_GETMETADATAQUERYREADER);
     call.iface = (ULONG_PTR)frame;
     call.ppIMetadataQueryReader = (ULONG_PTR)ppIMetadataQueryReader;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    reader = (struct qemu_wic_query_reader *)(ULONG_PTR)call.ppIMetadataQueryReader;
+    WICMetadataQueryReader_init_guest(reader);
+    *ppIMetadataQueryReader = &reader->IWICMetadataQueryReader_iface;
 
     return call.super.iret;
 }
@@ -476,19 +488,26 @@ void qemu_WICBitmapFrameDecode_GetMetadataQueryReader(struct qemu_syscall *call)
             (struct qemu_WICBitmapFrameDecode_GetMetadataQueryReader *)call;
     struct qemu_wic_frame_decode *frame;
     IWICMetadataQueryReader *host;
+    struct qemu_wic_query_reader *reader;
 
     WINE_TRACE("\n");
     frame = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapFrameDecode_GetMetadataQueryReader(frame->host,
             c->ppIMetadataQueryReader ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
 
-    if (SUCCEEDED(c->super.iret))
+    reader = WICMetadataQueryReader_create_host(host);
+    if (!reader)
     {
-        WINE_FIXME("Host GetMetadataQueryReader succeeded, write a wrapper.\n");
-        IWICMetadataQueryReader_Release(host);
-        c->super.iret = E_FAIL;
+        c->super.iret = E_OUTOFMEMORY;
+        IWICMetadataBlockReader_Release(host);
+        return;
     }
+
+    reader->frame = frame;
+    c->ppIMetadataQueryReader = QEMU_H2G(reader);
 }
 
 #endif
@@ -922,7 +941,7 @@ static ULONG WINAPI WICBitmapDecoder_Release(IWICBitmapDecoder *iface)
 
 #else
 
-static ULONG qemu_WICBitmapDecoder_Release_internal(struct qemu_wic_decoder *decoder)
+ULONG qemu_WICBitmapDecoder_Release_internal(struct qemu_wic_decoder *decoder)
 {
     ULONG ref = IWICBitmapDecoder_Release(decoder->host), i;
 
@@ -1201,12 +1220,19 @@ static HRESULT WINAPI WICBitmapDecoder_GetMetadataQueryReader(IWICBitmapDecoder 
 {
     struct qemu_WICBitmapDecoder_GetMetadataQueryReader call;
     struct qemu_wic_decoder *decoder = impl_from_IWICBitmapDecoder(iface);
+    struct qemu_wic_query_reader *reader;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_WICBITMAPDECODER_GETMETADATAQUERYREADER);
     call.iface = (ULONG_PTR)decoder;
     call.ppIMetadataQueryReader = (ULONG_PTR)ppIMetadataQueryReader;
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    reader = (struct qemu_wic_query_reader *)(ULONG_PTR)call.ppIMetadataQueryReader;
+    WICMetadataQueryReader_init_guest(reader);
+    *ppIMetadataQueryReader = &reader->IWICMetadataQueryReader_iface;
 
     return call.super.iret;
 }
@@ -1219,19 +1245,26 @@ void qemu_WICBitmapDecoder_GetMetadataQueryReader(struct qemu_syscall *call)
             (struct qemu_WICBitmapDecoder_GetMetadataQueryReader *)call;
     struct qemu_wic_decoder *decoder;
     IWICMetadataQueryReader *host;
+    struct qemu_wic_query_reader *reader;
 
     WINE_TRACE("\n");
     decoder = QEMU_G2H(c->iface);
 
     c->super.iret = IWICBitmapDecoder_GetMetadataQueryReader(decoder->host,
             c->ppIMetadataQueryReader ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
 
-    if (SUCCEEDED(c->super.iret))
+    reader = WICMetadataQueryReader_create_host(host);
+    if (!reader)
     {
-        WINE_FIXME("Host GetMetadataQueryReader succeeded, write a wrapper.\n");
         IWICMetadataQueryReader_Release(host);
-        c->super.iret = E_FAIL;
+        c->super.iret = E_OUTOFMEMORY;
+        return;
     }
+
+    reader->decoder = decoder;
+    c->ppIMetadataQueryReader = QEMU_H2G(reader);
 }
 
 #endif
