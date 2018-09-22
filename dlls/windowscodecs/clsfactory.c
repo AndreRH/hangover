@@ -39,12 +39,6 @@ typedef struct {
     class_constructor constructor;
 } classinfo;
 
-static HRESULT CommentReader_CreateInstance(const CLSID *clsid, const IID *iid, void **obj)
-{
-    WINE_FIXME("Stub\n");
-    return E_FAIL;
-}
-
 static const classinfo wic_classes[] = {
     {&CLSID_WICImagingFactory, ComponentFactory_CreateInstance},
     {&CLSID_WICBmpDecoder, Decoder_CreateInstance},
@@ -69,7 +63,7 @@ static const classinfo wic_classes[] = {
     {&CLSID_WICIMDMetadataReader, MetadataReader_CreateInstance},
     {&CLSID_WICGCEMetadataReader, MetadataReader_CreateInstance},
     {&CLSID_WICAPEMetadataReader, MetadataReader_CreateInstance},
-    {&CLSID_WICGifCommentMetadataReader, CommentReader_CreateInstance},
+    {&CLSID_WICGifCommentMetadataReader, MetadataReader_CreateInstance},
     {0}};
 
 typedef struct {
