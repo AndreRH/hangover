@@ -490,7 +490,7 @@ void qemu_d3d9_volume_LockBox(struct qemu_syscall *call)
     struct qemu_d3d9_subresource_impl *volume;
     D3DLOCKED_BOX stack, *lb = &stack;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
 #if GUEST_BIT == HOST_BIT
     lb = QEMU_G2H(c->locked_box);
@@ -535,7 +535,7 @@ void qemu_d3d9_volume_UnlockBox(struct qemu_syscall *call)
     struct qemu_d3d9_volume_UnlockBox *c = (struct qemu_d3d9_volume_UnlockBox *)call;
     struct qemu_d3d9_subresource_impl *volume;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     volume = QEMU_G2H(c->iface);
 
     c->super.iret = IDirect3DVolume9_UnlockBox(volume->host_volume);
