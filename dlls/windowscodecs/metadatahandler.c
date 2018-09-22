@@ -1268,8 +1268,11 @@ void qemu_WICEnumMetadataItem_Next(struct qemu_syscall *call)
     {
         for (i = 0; i < *fetched; ++i)
         {
-            if (schema[i].vt == VT_UNKNOWN || id[i].vt == VT_UNKNOWN || value[i].vt == VT_UNKNOWN)
+            if ((schema && schema[i].vt == VT_UNKNOWN) || (id && id[i].vt == VT_UNKNOWN)
+                    || (value && value[i].vt == VT_UNKNOWN))
+            {
                 WINE_FIXME("Handle VT_UNKNOWN\n");
+            }
         }
     }
 
@@ -1278,9 +1281,12 @@ void qemu_WICEnumMetadataItem_Next(struct qemu_syscall *call)
     {
         for (i = 0; i < *fetched; ++i)
         {
-            PROPVARIANT_h2g(&schema32[i], &schema[i]);
-            PROPVARIANT_h2g(&id32[i], &id[i]);
-            PROPVARIANT_h2g(&value32[i], &value[i]);
+            if (schema)
+                PROPVARIANT_h2g(&schema32[i], &schema[i]);
+            if (id)
+                PROPVARIANT_h2g(&id32[i], &id[i]);
+            if (value)
+                PROPVARIANT_h2g(&value32[i], &value[i]);
         }
     }
     HeapFree(GetProcessHeap(), 0, schema);
@@ -1357,7 +1363,7 @@ void qemu_WICEnumMetadataItem_Reset(struct qemu_syscall *call)
     struct qemu_WICEnumMetadataItem_Reset *c = (struct qemu_WICEnumMetadataItem_Reset *)call;
     struct qemu_wic_metadata_enum *item;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     item = QEMU_G2H(c->iface);
 
     c->super.iret = IWICEnumMetadataItem_Reset(item->host);
