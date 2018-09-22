@@ -230,6 +230,10 @@ static inline void PROPVARIANT_g2h(PROPVARIANT *host, const struct qemu_PROPVARI
             host->hVal = guest->u1.hVal;
             break;
 
+        case VT_R8:
+            host->dblVal = guest->u1.dblVal;
+            break;
+
         /* TODO: There are more 8 vs 16 byte sized structs. */
 
         default:
@@ -282,6 +286,10 @@ static inline void PROPVARIANT_h2g(struct qemu_PROPVARIANT *guest, const PROPVAR
 
         case VT_I8:
             guest->u1.hVal = host->hVal;
+            break;
+
+        case VT_R8:
+            guest->u1.dblVal = host->dblVal;
             break;
 
         /* TODO: There are more 8 vs 16 byte sized structs. */
