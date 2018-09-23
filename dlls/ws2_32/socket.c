@@ -1303,7 +1303,7 @@ struct qemu_WSAIoctl
  * the memcmp and it's all fine, but some do not and linking fails. Just do it by hand. */
 static BOOL inline my_IsEqualGUID(const GUID *a, const GUID *b)
 {
-    return a->Data1 == b->Data1 && a->Data2 == b->Data2 == a->Data3 == b->Data3
+    return a->Data1 == b->Data1 && a->Data2 == b->Data2 && a->Data3 == b->Data3
             && a->Data4[0] == b->Data4[0] && a->Data4[1] == b->Data4[1] && a->Data4[2] == b->Data4[2]
             && a->Data4[3] == b->Data4[3] && a->Data4[4] == b->Data4[4] && a->Data4[5] == b->Data4[5]
             && a->Data4[6] == b->Data4[6] && a->Data4[7] == b->Data4[7];
@@ -1436,7 +1436,7 @@ void qemu_WSAIoctl(struct qemu_syscall *call)
 
         case WS_SIO_GET_EXTENSION_FUNCTION_POINTER:
         {
-            void *out;
+            void *out = NULL;
             DWORD ret_size;
             /* This is handled in the guest, the call here is mainly there to catch newly added functions
              * that we don't support yet. */
@@ -1444,7 +1444,8 @@ void qemu_WSAIoctl(struct qemu_syscall *call)
                     sizeof(out), &ret_size, NULL, NULL);
             if (out && !c->out_buff)
             {
-                WINE_FIXME("Wine supports a WSA function this wrapper does not know about!\n");
+                WINE_FIXME("Wine supports a WSA function (%s) this wrapper does not know about %p %p!\n",
+                        wine_dbgstr_guid(QEMU_G2H(c->in_buff)), out, (void *)c->out_buff);
             }
             break;
         }
