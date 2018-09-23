@@ -1016,6 +1016,8 @@ WINBASEAPI void * CDECL MSVCRT__aligned_malloc(size_t size, size_t alignment)
     call.alignment = alignment;
 
     qemu_syscall(&call.super);
+
+    return (void *)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1023,8 +1025,8 @@ WINBASEAPI void * CDECL MSVCRT__aligned_malloc(size_t size, size_t alignment)
 void qemu__aligned_malloc(struct qemu_syscall *call)
 {
     struct qemu__aligned_malloc *c = (struct qemu__aligned_malloc *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    p__aligned_malloc(c->size, c->alignment);
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(p__aligned_malloc(c->size, c->alignment));
 }
 
 #endif
