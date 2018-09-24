@@ -134,7 +134,7 @@ WINBASEAPI BOOL WINAPI SwitchToThread(void)
 void qemu_SwitchToThread(struct qemu_syscall *call)
 {
     struct qemu_SwitchToThread *c = (struct qemu_SwitchToThread *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = SwitchToThread();
 }
 
