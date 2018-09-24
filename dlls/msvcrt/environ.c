@@ -86,8 +86,9 @@ WCHAR * CDECL MSVCRT__wgetenv(const WCHAR *name)
 void qemu__wgetenv(struct qemu_syscall *call)
 {
     struct qemu__wgetenv *c = (struct qemu__wgetenv *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE(" %s\n", wine_dbgstr_w(QEMU_G2H(c->name)));
     c->super.iret = QEMU_H2G(p__wgetenv(QEMU_G2H(c->name)));
+    WINE_TRACE("Ret %p\n", QEMU_G2H(c->super.iret));
 }
 
 #endif

@@ -1862,7 +1862,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p__wfullpath = (void *)GetProcAddress(msvcrt, "_wfullpath");
     p__wgetcwd = (void *)GetProcAddress(msvcrt, "_wgetcwd");
     p__wgetdcwd = (void *)GetProcAddress(msvcrt, "_wgetdcwd");
-    p__wgetenv = (void *)GetProcAddress(msvcrt, "__wgetenv");
+    p__wgetenv = (void *)GetProcAddress(msvcrt, "_wgetenv");
     p__wgetenv_s = (void *)GetProcAddress(msvcrt, "_wgetenv_s");
     p__wmakepath = (void *)GetProcAddress(msvcrt, "_wmakepath");
     p__wmakepath_s = (void *)GetProcAddress(msvcrt, "_wmakepath_s");
