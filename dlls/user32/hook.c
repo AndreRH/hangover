@@ -177,6 +177,7 @@ struct qemu_hook_data
 
 static struct qemu_hook_data *installed_hooks[WH_MAXHOOK + 1 - WH_MIN][2];
 static uint64_t hook_guest_wrapper;
+static __thread struct qemu_hook_data *current_hook;
 
 struct hook_conv_data
 {
@@ -195,6 +196,7 @@ static LRESULT CALLBACK qemu_hook_wrapper(int code, WPARAM wp, LPARAM lp, struct
     struct qemu_CREATESTRUCT createstruct;
     struct hook_conv_data conv_data;
     MSG *msg, msg_copy;
+    struct qemu_hook_data *old;
 
     WINE_TRACE("Calling callback 0x%lx(%u, %lu, %lu).\n", (unsigned long)data->client_cb, code, wp, lp);
     call.func = data->client_cb;
@@ -222,7 +224,10 @@ static LRESULT CALLBACK qemu_hook_wrapper(int code, WPARAM wp, LPARAM lp, struct
     }
 #endif
 
+    old = current_hook;
+    current_hook = data;
     ret = qemu_ops->qemu_execute(QEMU_G2H(hook_guest_wrapper), QEMU_H2G(&call));
+    current_hook = old;
 
     WINE_TRACE("Guest function returned %lu.\n", ret);
 
@@ -704,42 +709,21 @@ WINUSERAPI LRESULT WINAPI CallNextHookEx(HHOOK hhook, INT code, WPARAM wparam, L
 void qemu_CallNextHookEx(struct qemu_syscall *call)
 {
     struct qemu_CallNextHookEx *c = (struct qemu_CallNextHookEx *)call;
-    INT i;
-    unsigned int hook_no;
-    const unsigned int max_hooks = sizeof(installed_hooks[0]) / sizeof(installed_hooks[0][0]);
-    HHOOK hook;
     LPARAM lp;
     struct hook_conv_data *conv_data;
 
     WINE_TRACE("\n");
-    hook = QEMU_G2H(c->hhook);
     lp = c->lparam;
 
 #if GUEST_BIT != HOST_BIT
-    EnterCriticalSection(&hook_cs);
-    for (i = WH_MIN; i < WH_MAXHOOK + 1; ++i)
+    if (current_hook->type == WH_GETMESSAGE)
     {
-        for (hook_no = 0; hook_no < max_hooks; ++hook_no)
-        {
-            if (installed_hooks[i - WH_MIN][hook_no] && installed_hooks[i - WH_MIN][hook_no]->hook_id == hook)
-            {
-                LeaveCriticalSection(&hook_cs);
-                if (i == WH_GETMESSAGE)
-                {
-                    conv_data = CONTAINING_RECORD((void *)lp, struct hook_conv_data, conv.msg32);
-                    lp = conv_data->orig_lp;
-                }
-
-                c->super.iret = CallNextHookEx(hook, c->code, c->wparam, lp);
-                return;
-            }
-        }
+        conv_data = CONTAINING_RECORD((void *)lp, struct hook_conv_data, conv.msg32);
+        lp = conv_data->orig_lp;
     }
-    LeaveCriticalSection(&hook_cs);
-    WINE_ERR("Did not find hook %p in the hook array.\n", hook);
 #endif
 
-    c->super.iret = CallNextHookEx(hook, c->code, c->wparam, lp);
+    c->super.iret = CallNextHookEx(QEMU_G2H(c->hhook), c->code, c->wparam, lp);
 }
 
 #endif
