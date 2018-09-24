@@ -750,7 +750,7 @@ WINBASEAPI u_short WINAPI WS_ntohs(u_short netshort)
 void qemu_WS_ntohs(struct qemu_syscall *call)
 {
     struct qemu_WS_ntohs *c = (struct qemu_WS_ntohs *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_ntohs(c->netshort);
 }
 
