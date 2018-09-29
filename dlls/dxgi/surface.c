@@ -17,8 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-/* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
-
 #define COBJMACROS
 
 #include <windows.h>
@@ -29,20 +27,8 @@
 #include "dll_list.h"
 #include "qemudxgi.h"
 
-#ifdef QEMU_DLL_GUEST
-
-#include <dxgi1_2.h>
-#include <debug.h>
-#include <initguid.h>
-
-DEFINE_GUID(IID_IDXGISurface1, 0x4ae63092, 0x6327, 0x4c1b, 0x80,0xae, 0xbf,0xe1,0x2e,0xa3,0x2b,0x86);
-
-#else
-
 #include <dxgi1_5.h>
 #include <wine/debug.h>
-
-#endif
 
 #include "qemu_dxgi.h"
 
@@ -534,31 +520,23 @@ void qemu_dxgi_surface_ReleaseDC(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-static struct
+static struct IDXGISurface1Vtbl dxgi_surface_vtbl =
 {
-    IDXGISurfaceVtbl vtbl1;
-    void *GetDC;
-    void *ReleaseDC;
-}
-dxgi_surface_vtbl =
-{
-    {
-        /* IUnknown methods */
-        dxgi_surface_QueryInterface,
-        dxgi_surface_AddRef,
-        dxgi_surface_Release,
-        /* IDXGIObject methods */
-        dxgi_surface_SetPrivateData,
-        dxgi_surface_SetPrivateDataInterface,
-        dxgi_surface_GetPrivateData,
-        dxgi_surface_GetParent,
-        /* IDXGIDeviceSubObject methods */
-        dxgi_surface_GetDevice,
-        /* IDXGISurface methods */
-        dxgi_surface_GetDesc,
-        dxgi_surface_Map,
-        dxgi_surface_Unmap,
-    },
+    /* IUnknown methods */
+    dxgi_surface_QueryInterface,
+    dxgi_surface_AddRef,
+    dxgi_surface_Release,
+    /* IDXGIObject methods */
+    dxgi_surface_SetPrivateData,
+    dxgi_surface_SetPrivateDataInterface,
+    dxgi_surface_GetPrivateData,
+    dxgi_surface_GetParent,
+    /* IDXGIDeviceSubObject methods */
+    dxgi_surface_GetDevice,
+    /* IDXGISurface methods */
+    dxgi_surface_GetDesc,
+    dxgi_surface_Map,
+    dxgi_surface_Unmap,
     /* IDXGISurface1 methods */
     dxgi_surface_GetDC,
     dxgi_surface_ReleaseDC,
@@ -574,7 +552,7 @@ static struct IUnknownVtbl dxgi_surface_inner_unknown_vtbl =
 
 void qemu_dxgi_surface_guest_init(struct qemu_dxgi_surface *surface, IUnknown *outer_unknown)
 {
-    surface->IDXGISurface1_iface.lpVtbl = &dxgi_surface_vtbl.vtbl1;
+    surface->IDXGISurface1_iface.lpVtbl = &dxgi_surface_vtbl;
     surface->IUnknown_iface.lpVtbl = &dxgi_surface_inner_unknown_vtbl;
     wined3d_private_store_init(&surface->private_store);
 

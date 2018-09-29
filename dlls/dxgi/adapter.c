@@ -17,8 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-/* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
-
 #define COBJMACROS
 
 #include <windows.h>
@@ -29,20 +27,8 @@
 #include "dll_list.h"
 #include "qemudxgi.h"
 
-#ifdef QEMU_DLL_GUEST
-#include <initguid.h>
-
-#include <dxgi1_2.h>
-#include <debug.h>
-
-DEFINE_GUID(IID_IDXGIAdapter3, 0x645967a4, 0x1392, 0x4310, 0xa7,0x98, 0x80,0x53,0xce,0x3e,0x93,0xfd);
-
-#else
-
 #include <dxgi1_5.h>
 #include <wine/debug.h>
-
-#endif
 
 #include "thunk/qemu_dxgi.h"
 #include "qemu_dxgi.h"
@@ -765,36 +751,23 @@ void qemu_dxgi_adapter_UnregisterVideoMemoryBudgetChangeNotification(struct qemu
 
 #ifdef QEMU_DLL_GUEST
 
-static struct
+static struct IDXGIAdapter3Vtbl dxgi_adapter_vtbl =
 {
-    IDXGIAdapter2Vtbl vtbl2;
-    void *RegisterHardwareContentProtectionTeardownStatusEvent;
-    void *UnregisterHardwareContentProtectionTeardownStatus;
-    void *QueryVideoMemoryInfo;
-    void *SetVideoMemoryReservation;
-    void *RegisterVideoMemoryBudgetChangeNotificationEvent;
-    void *UnregisterVideoMemoryBudgetChangeNotification;
-
-}
-dxgi_adapter_vtbl =
-{
-    {
-        dxgi_adapter_QueryInterface,
-        dxgi_adapter_AddRef,
-        dxgi_adapter_Release,
-        dxgi_adapter_SetPrivateData,
-        dxgi_adapter_SetPrivateDataInterface,
-        dxgi_adapter_GetPrivateData,
-        dxgi_adapter_GetParent,
-        /* IDXGIAdapter methods */
-        dxgi_adapter_EnumOutputs,
-        dxgi_adapter_GetDesc,
-        dxgi_adapter_CheckInterfaceSupport,
-        /* IDXGIAdapter1 methods */
-        dxgi_adapter_GetDesc1,
-        /* IDXGIAdapter2 methods */
-        dxgi_adapter_GetDesc2,
-    },
+    dxgi_adapter_QueryInterface,
+    dxgi_adapter_AddRef,
+    dxgi_adapter_Release,
+    dxgi_adapter_SetPrivateData,
+    dxgi_adapter_SetPrivateDataInterface,
+    dxgi_adapter_GetPrivateData,
+    dxgi_adapter_GetParent,
+    /* IDXGIAdapter methods */
+    dxgi_adapter_EnumOutputs,
+    dxgi_adapter_GetDesc,
+    dxgi_adapter_CheckInterfaceSupport,
+    /* IDXGIAdapter1 methods */
+    dxgi_adapter_GetDesc1,
+    /* IDXGIAdapter2 methods */
+    dxgi_adapter_GetDesc2,
     /* IDXGIAdapter3 methods */
     dxgi_adapter_RegisterHardwareContentProtectionTeardownStatusEvent,
     dxgi_adapter_UnregisterHardwareContentProtectionTeardownStatus,
@@ -806,7 +779,7 @@ dxgi_adapter_vtbl =
 
 void qemu_dxgi_adapter_guest_init(struct qemu_dxgi_adapter *factory)
 {
-    factory->IDXGIAdapter3_iface.lpVtbl = &dxgi_adapter_vtbl.vtbl2;
+    factory->IDXGIAdapter3_iface.lpVtbl = &dxgi_adapter_vtbl;
     wined3d_private_store_init(&factory->private_store);
 }
 

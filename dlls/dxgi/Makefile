@@ -9,13 +9,13 @@ VPATH=$(SRCDIR)
 all: dxgi.dll qemu_dxgi.dll.so
 
 dxgi.dll: adapter_g.o device_g.o dxgi.spec factory_g.o main_g.o output_g.o surface_g.o swapchain_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/dxgi.spec *_g.o -o dxgi.dll -nodefaultlibs -nostdlib -lwine -lmsvcrt -ldxguid -lkernel32 -L../../$(WINE_DIR)/libs/wine
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/dxgi.spec *_g.o -o dxgi.dll -nodefaultlibs -nostdlib -lwine -lmsvcrt -luuid -ldxguid -lkernel32 -L../../$(WINE_DIR)/dlls/uuid -L../../$(WINE_DIR)/dlls/dxguid -L../../$(WINE_DIR)/libs/wine
 
 qemu_dxgi.dll.so: adapter_h.o device_h.o factory_h.o main_h.o output_h.o qemu_dxgi.spec surface_h.o swapchain_h.o
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_dxgi.spec *_h.o -o qemu_dxgi.dll.so -ldxgi -ldxguid
 
 %_g.o: %.c qemu_dxgi.h Makefile $(SRCDIR)/Makefile
-	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../../wine/include/wine -Wno-format
+	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../wine-guest32/include -I../../../wine/include -Wno-format
 
 %_h.o: %.c qemu_dxgi.h Makefile $(SRCDIR)/Makefile
 	$(WINEGCC) $(HOST_CC) $< -c -o $@ $(CFLAGS)

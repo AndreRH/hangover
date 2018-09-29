@@ -17,8 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-/* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
-
 #define COBJMACROS
 
 #include <windows.h>
@@ -29,13 +27,8 @@
 #include "dll_list.h"
 #include "qemudxgi.h"
 
-#ifdef QEMU_DLL_GUEST
-#include <dxgi1_2.h>
-#include <debug.h>
-#else
 #include <dxgi1_5.h>
 #include <wine/debug.h>
-#endif
 
 #include "qemu_dxgi.h"
 
