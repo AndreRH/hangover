@@ -17,9 +17,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
-
-/* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
-
 #define COBJMACROS
 
 #include <windows.h>
@@ -31,13 +28,8 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 
-#ifdef QEMU_DLL_GUEST
-#include <dxgi1_2.h>
-#include <debug.h>
-#else
 #include <dxgi1_5.h>
 #include <wine/debug.h>
-#endif
 
 #include <initguid.h>
 #include "qemudxgi.h"

@@ -17,8 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-/* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
-
 #define COBJMACROS
 
 #include <windows.h>
@@ -29,24 +27,8 @@
 #include "dll_list.h"
 #include "qemudxgi.h"
 
-#ifdef QEMU_DLL_GUEST
-#include <initguid.h>
-
-#include <dxgi1_2.h>
-#include <debug.h>
-
-#include <initguid.h>
-DEFINE_GUID(IID_IDXGIOutput4, 0xdc7dca35, 0x2196, 0x414d, 0x9f,0x53, 0x61,0x78,0x84,0x03,0x2a,0x60);
-DEFINE_GUID(IID_IDXGIOutput3, 0x8a6bb301, 0x7e7e, 0x41f4, 0xa8,0xe0, 0x5b,0x32,0xf7,0xf9,0x9b,0x18);
-DEFINE_GUID(IID_IDXGIOutput2, 0x595e39d1, 0x2724, 0x4663, 0x99,0xb1, 0xda,0x96,0x9d,0xe2,0x83,0x64);
-DEFINE_GUID(IID_IDXGIOutput1, 0x00cddea8, 0x939b, 0x4b83, 0xa3,0x40, 0xa6,0x85,0x22,0x66,0x66,0xcc);
-
-#else
-
 #include <dxgi1_5.h>
 #include <wine/debug.h>
-
-#endif
 
 #include "thunk/qemu_dxgi.h"
 
@@ -1066,42 +1048,29 @@ void qemu_dxgi_output_CheckOverlayColorSpaceSupport(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-static struct
+static struct IDXGIOutput4Vtbl dxgi_output_vtbl =
 {
-    IDXGIOutputVtbl vtbl1;
-    void *GetDisplayModeList1;
-    void *FindClosestMatchingMode1;
-    void *GetDisplaySurfaceData1;
-    void *DuplicateOutput;
-    void *SupportsOverlays;
-    void *CheckOverlaySupport;
-    void *CheckOverlayColorSpaceSupport;
-}
-dxgi_output_vtbl =
-{
-    {
-        dxgi_output_QueryInterface,
-        dxgi_output_AddRef,
-        dxgi_output_Release,
-        /* IDXGIObject methods */
-        dxgi_output_SetPrivateData,
-        dxgi_output_SetPrivateDataInterface,
-        dxgi_output_GetPrivateData,
-        dxgi_output_GetParent,
-        /* IDXGIOutput methods */
-        dxgi_output_GetDesc,
-        dxgi_output_GetDisplayModeList,
-        dxgi_output_FindClosestMatchingMode,
-        dxgi_output_WaitForVBlank,
-        dxgi_output_TakeOwnership,
-        dxgi_output_ReleaseOwnership,
-        dxgi_output_GetGammaControlCapabilities,
-        dxgi_output_SetGammaControl,
-        dxgi_output_GetGammaControl,
-        dxgi_output_SetDisplaySurface,
-        dxgi_output_GetDisplaySurfaceData,
-        dxgi_output_GetFrameStatistics,
-    },
+    dxgi_output_QueryInterface,
+    dxgi_output_AddRef,
+    dxgi_output_Release,
+    /* IDXGIObject methods */
+    dxgi_output_SetPrivateData,
+    dxgi_output_SetPrivateDataInterface,
+    dxgi_output_GetPrivateData,
+    dxgi_output_GetParent,
+    /* IDXGIOutput methods */
+    dxgi_output_GetDesc,
+    dxgi_output_GetDisplayModeList,
+    dxgi_output_FindClosestMatchingMode,
+    dxgi_output_WaitForVBlank,
+    dxgi_output_TakeOwnership,
+    dxgi_output_ReleaseOwnership,
+    dxgi_output_GetGammaControlCapabilities,
+    dxgi_output_SetGammaControl,
+    dxgi_output_GetGammaControl,
+    dxgi_output_SetDisplaySurface,
+    dxgi_output_GetDisplaySurfaceData,
+    dxgi_output_GetFrameStatistics,
     /* IDXGIOutput1 methods */
     dxgi_output_GetDisplayModeList1,
     dxgi_output_FindClosestMatchingMode1,
@@ -1143,7 +1112,7 @@ struct qemu_dxgi_output *unsafe_impl_from_IDXGIOutput(IUnknown *iface)
 
 void qemu_dxgi_output_guest_init(struct qemu_dxgi_output *output)
 {
-    output->IDXGIOutput4_iface.lpVtbl = &dxgi_output_vtbl.vtbl1;
+    output->IDXGIOutput4_iface.lpVtbl = &dxgi_output_vtbl;
     wined3d_private_store_init(&output->private_store);
 }
 
