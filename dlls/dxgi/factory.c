@@ -17,8 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-/* NOTE: The guest side uses mingw's headers. The host side uses Wine's headers. */
-
 #define COBJMACROS
 
 #include <windows.h>
@@ -29,22 +27,8 @@
 #include "dll_list.h"
 #include "qemudxgi.h"
 
-#ifdef QEMU_DLL_GUEST
-#include <initguid.h>
-
-#include <dxgi1_2.h>
-#include <debug.h>
-
-DEFINE_GUID(IID_IDXGIFactory3, 0x25483823, 0xcd46, 0x4c7d, 0x86,0xca, 0x47,0xaa,0x95,0xb8,0x37,0xbd);
-DEFINE_GUID(IID_IDXGIFactory4, 0x1bc6ea02, 0xef36, 0x464f, 0xbf,0x0c, 0x21,0xca,0x39,0xe5,0x16,0x8a);
-DEFINE_GUID(IID_IDXGIFactory5, 0x7632e1f5, 0xee65, 0x4dca, 0x87,0xfd, 0x84,0xcd,0x75,0xf8,0x83,0x8d);
-
-#else
-
 #include <dxgi1_5.h>
 #include <wine/debug.h>
-
-#endif
 
 #include "thunk/qemu_dxgi.h"
 #include "qemu_dxgi.h"
@@ -1270,45 +1254,36 @@ void qemu_dxgi_factory_CheckFeatureSupport(struct qemu_syscall *call)
 
 #ifdef QEMU_DLL_GUEST
 
-static struct
+static struct IDXGIFactory5Vtbl dxgi_factory_vtbl =
 {
-    IDXGIFactory2Vtbl vtbl2;
-    void *GetCreationFlags;
-    void *EnumAdapterByLuid;
-    void *EnumWarpAdapter;
-    void *CheckFeatureSupport;
-}
-dxgi_factory_vtbl =
-{
-    {
-        dxgi_factory_QueryInterface,
-        dxgi_factory_AddRef,
-        dxgi_factory_Release,
-        dxgi_factory_SetPrivateData,
-        dxgi_factory_SetPrivateDataInterface,
-        dxgi_factory_GetPrivateData,
-        dxgi_factory_GetParent,
-        dxgi_factory_EnumAdapters,
-        dxgi_factory_MakeWindowAssociation,
-        dxgi_factory_GetWindowAssociation,
-        dxgi_factory_CreateSwapChain,
-        dxgi_factory_CreateSoftwareAdapter,
-        /* IDXGIFactory1 methods */
-        dxgi_factory_EnumAdapters1,
-        dxgi_factory_IsCurrent,
-        /* IDXGIFactory2 methods */
-        dxgi_factory_IsWindowedStereoEnabled,
-        dxgi_factory_CreateSwapChainForHwnd,
-        dxgi_factory_CreateSwapChainForCoreWindow,
-        dxgi_factory_GetSharedResourceAdapterLuid,
-        dxgi_factory_RegisterOcclusionStatusWindow,
-        dxgi_factory_RegisterStereoStatusEvent,
-        dxgi_factory_UnregisterStereoStatus,
-        dxgi_factory_RegisterStereoStatusWindow,
-        dxgi_factory_RegisterOcclusionStatusEvent,
-        dxgi_factory_UnregisterOcclusionStatus,
-        dxgi_factory_CreateSwapChainForComposition,
-    },
+    dxgi_factory_QueryInterface,
+    dxgi_factory_AddRef,
+    dxgi_factory_Release,
+    dxgi_factory_SetPrivateData,
+    dxgi_factory_SetPrivateDataInterface,
+    dxgi_factory_GetPrivateData,
+    dxgi_factory_GetParent,
+    dxgi_factory_EnumAdapters,
+    dxgi_factory_MakeWindowAssociation,
+    dxgi_factory_GetWindowAssociation,
+    dxgi_factory_CreateSwapChain,
+    dxgi_factory_CreateSoftwareAdapter,
+    /* IDXGIFactory1 methods */
+    dxgi_factory_EnumAdapters1,
+    dxgi_factory_IsCurrent,
+    /* IDXGIFactory2 methods */
+    dxgi_factory_IsWindowedStereoEnabled,
+    dxgi_factory_CreateSwapChainForHwnd,
+    dxgi_factory_CreateSwapChainForCoreWindow,
+    dxgi_factory_GetSharedResourceAdapterLuid,
+    dxgi_factory_RegisterOcclusionStatusWindow,
+    dxgi_factory_RegisterStereoStatusEvent,
+    dxgi_factory_UnregisterStereoStatus,
+    dxgi_factory_RegisterStereoStatusWindow,
+    dxgi_factory_RegisterOcclusionStatusEvent,
+    dxgi_factory_UnregisterOcclusionStatus,
+    dxgi_factory_CreateSwapChainForComposition,
+
     /* IDXGIFactory3 methods */
     dxgi_factory_GetCreationFlags,
     /* IDXGIFactory4 methods */
@@ -1320,7 +1295,7 @@ dxgi_factory_vtbl =
 
 void qemu_dxgi_factory_guest_init(struct qemu_dxgi_factory *factory)
 {
-    factory->IDXGIFactory5_iface.lpVtbl = &dxgi_factory_vtbl.vtbl2;
+    factory->IDXGIFactory5_iface.lpVtbl = &dxgi_factory_vtbl;
     wined3d_private_store_init(&factory->private_store);
 }
 
