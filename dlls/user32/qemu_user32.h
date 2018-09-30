@@ -1518,6 +1518,8 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv);
 /* Registered messages that need translation */
 ATOM msg_FINDMSGSTRING;
 
+BOOL init_hook_wrappers(void);
+
 #endif
 
 #endif

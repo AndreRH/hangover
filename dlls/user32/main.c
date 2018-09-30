@@ -1056,6 +1056,11 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         return NULL;
     }
 
+    if (!init_hook_wrappers())
+    {
+        WINE_ERR("Failed to allocate memory for class wndproc wrappers.\n");
+        return NULL;
+    }
     return dll_functions;
 }
 
