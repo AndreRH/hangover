@@ -23,7 +23,8 @@
 struct callback_entry_table
 {
     unsigned int count;
-    struct callback_entry entries[1];
+    size_t entry_size;
+    BYTE entries[1];
 };
 
 void callback_init(struct callback_entry *entry, unsigned int params, void *proc)
@@ -93,15 +94,16 @@ BOOL callback_alloc_table(struct callback_entry_table **table, unsigned int coun
     struct callback_entry_table *ret;
     unsigned int i;
 
-    ret = VirtualAlloc(NULL, entry_size * count + sizeof(ret->count),
+    ret = VirtualAlloc(NULL, FIELD_OFFSET(struct callback_entry_table, entries[entry_size * count]),
             MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     if (!ret)
         return FALSE;
 
     for (i = 0; i < count; ++i)
-        callback_init(&ret->entries[i], params, func);
+        callback_init((struct callback_entry *)&ret->entries[i * entry_size], params, func);
 
     ret->count = count;
+    ret->entry_size = entry_size;
     *table = ret;
     return TRUE;
 }
@@ -109,27 +111,29 @@ BOOL callback_alloc_table(struct callback_entry_table **table, unsigned int coun
 struct callback_entry *callback_get(struct callback_entry_table *table, uint64_t guest_proc, BOOL *is_new)
 {
     unsigned int i;
+    struct callback_entry *entry;
 
     /* Note that I cannot sort this thing because once a callback has been passed to Wine, it
      * needs to start at the same address. If the search speed becomes an issue a possible choice
      * is to create a separate rbtree that points to entries in this table. */
     for (i = 0; i < table->count; ++i)
     {
-        if (table->entries[i].guest_proc == guest_proc)
+        entry = (struct callback_entry *)&table->entries[i * table->entry_size];
+        if (entry->guest_proc == guest_proc)
         {
             if (is_new)
                 *is_new = FALSE;
 
-            return (struct callback_entry *)&table->entries[i];
+            return (struct callback_entry *)entry;
         }
 
-        if (!table->entries[i].guest_proc)
+        if (!entry->guest_proc)
         {
             if (is_new)
                 *is_new = TRUE;
 
-            table->entries[i].guest_proc = guest_proc;
-            return (struct callback_entry *)&table->entries[i];
+            entry->guest_proc = guest_proc;
+            return entry;
         }
     }
 
@@ -139,6 +143,6 @@ struct callback_entry *callback_get(struct callback_entry_table *table, uint64_t
 BOOL callback_is_in_table(const struct callback_entry_table *table, const struct callback_entry *entry)
 {
     return (ULONG_PTR)entry >= (ULONG_PTR)&table->entries[0]
-            && (ULONG_PTR)entry <= (ULONG_PTR)&table->entries[table->count];
+            && (ULONG_PTR)entry <= (ULONG_PTR)&table->entries[table->entry_size * table->count];
 }
 
