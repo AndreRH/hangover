@@ -485,7 +485,7 @@ void qemu_CertVerifyCertificateChainPolicy(struct qemu_syscall *call)
 #if GUEST_BIT == HOST_BIT
     c->super.iret = CertVerifyCertificateChainPolicy(QEMU_G2H(c->szPolicyOID), QEMU_G2H(c->pChainContext),
             QEMU_G2H(c->pPolicyPara), QEMU_G2H(c->pPolicyStatus));
-    return
+    return;
 #endif
 
     status32 = QEMU_G2H(c->pPolicyStatus);
