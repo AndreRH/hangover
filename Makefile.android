@@ -120,7 +120,7 @@ build.android/wine-tools/Makefile: wine/configure build.android/aarch64-linux-an
 build.android/wine-tools/.built: build.android/wine-tools/Makefile
 	+$(MAKE) -C build.android/wine-tools tools tools/sfnt2fon tools/widl tools/winebuild tools/winegcc tools/wmc tools/wrc
 	@mkdir -p build
-	ln -sf $(WINE_HOST) build/wine-host
+	ln -sf $(WINE_HOST) build/
 	ln -sf ../wine-tools/tools build.android/wine-host/
 	@touch build.android/wine-tools/.built
 
