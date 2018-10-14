@@ -58,7 +58,7 @@ build.android/freetype-2.9.1/configure: build.android/freetype-2.9.1.tar.gz
 	cd build.android ; rm -rf freetype-2.9.1 ; tar -xzf freetype-2.9.1.tar.gz ; cd .. ; touch $@
 
 build.android/freetype-2.9.1/config.mk: build.android/freetype-2.9.1/configure build.android/aarch64-linux-android/lib/libpng15.so
-	cd $(@D) ; ./configure --host=aarch64-linux-android --prefix=$(abspath build.android/aarch64-linux-android) LIBPNG_CFLAGS="-I$(abspath build.android/aarch64-linux-android/include/libpng15)" LIBPNG_LIBS="-L$(abspath build.android/aarch64-linux-android/lib) -lpng15" CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang
+	cd $(@D) ; ./configure --host=aarch64-linux-android --prefix=$(abspath build.android/aarch64-linux-android) --with-harfbuzz=no LIBPNG_CFLAGS="-I$(abspath build.android/aarch64-linux-android/include/libpng15)" LIBPNG_LIBS="-L$(abspath build.android/aarch64-linux-android/lib) -lpng15" CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang
 
 build.android/aarch64-linux-android/lib/libfreetype.so: build.android/freetype-2.9.1/config.mk
 	@mkdir -p $(@D)
