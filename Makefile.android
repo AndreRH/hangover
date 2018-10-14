@@ -320,6 +320,7 @@ build.android/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll: wine-guest 
 # Resetup the apk with qemu
 build.android/wine-host/dlls/wineandroid.drv/hangover-debug.apk: build.android/wine-host/.built build.android/qemu/x86_64-windows-user/qemu-x86_64.exe.so wine-guest wine-guest32 $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32) build.android/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll build.android/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
 	mkdir -p build.android/wine-host/dlls/wineandroid.drv/lib/arm64-v8a
+	mkdir -p build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib
 	cp -lf $(abspath build.android/aarch64-linux-android/lib)/lib*.so build.android/wine-host/dlls/wineandroid.drv/lib/arm64-v8a/
 	cp -lf $(abspath build.android/aarch64-linux-android/lib)/lib*.so build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib/
 	+$(MAKE) -C build.android/wine-host install
