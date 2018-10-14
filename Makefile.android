@@ -1,4 +1,5 @@
 # environment needs to be setup before the Makefile can run, e.g.:
+#export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ # Always use Java 8 here
 #export PATH=/home/$USER/src/ndk/aarch64-linux-android/bin/:$PATH
 #export ANDROID_HOME=/home/$USER/src/ANDROID/android-sdk-linux
 #export NDK_SYSROOT=/home/$USER/src/ndk/aarch64-linux-android/sysroot
