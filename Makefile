@@ -30,9 +30,6 @@ WINE_HOST = $(abspath build/wine-host)
 all: build/wine-host/.built wine-guest wine-guest32 qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32) $(EXTDLL_TARGET64) build/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
 .PHONY: all
 
-libiconv/configure: libiconv/autogen.sh
-	cd $(@D) ; NOCONFIGURE=1 ./autogen.sh
-
 build/libiconv32/Makefile: libiconv/configure
 	@mkdir -p $(@D)
 	cd $(@D) ; ../../libiconv/configure --host=i686-w64-mingw32 --prefix=$(abspath build/i686-w64-mingw32)

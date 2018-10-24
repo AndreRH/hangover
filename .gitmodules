@@ -13,6 +13,3 @@
 [submodule "libxslt"]
 	path = libxslt
 	url = https://gitlab.gnome.org/GNOME/libxslt.git
-[submodule "libiconv"]
-	path = libiconv
-	url = git://git.savannah.gnu.org/libiconv.git

@@ -88,9 +88,6 @@ build.android/glib/Makefile: glib/configure
 build.android/aarch64-linux-android/lib/libglib-2.0.so: build.android/glib/Makefile
 	+$(MAKE) -C build.android/glib/ install
 
-libiconv/configure: libiconv/autogen.sh
-	cd $(@D) ; NOCONFIGURE=1 ./autogen.sh
-
 build.android/libiconv/Makefile: libiconv/configure
 	@mkdir -p $(@D)
 	cd $(@D) ; ../../libiconv/configure --host=i686-w64-mingw32 --prefix=$(abspath build.android/i686-w64-mingw32)
