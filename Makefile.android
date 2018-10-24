@@ -134,7 +134,6 @@ build.android/wine-tools/.built: build.android/wine-tools/Makefile
 	+$(MAKE) -C build.android/wine-tools tools tools/sfnt2fon tools/widl tools/winebuild tools/winegcc tools/wmc tools/wrc
 	@mkdir -p build
 	ln -sf $(WINE_HOST) build/
-	ln -sf ../wine-tools/tools build.android/wine-host/
 	@touch build.android/wine-tools/.built
 
 
@@ -145,6 +144,7 @@ build.android/wine-host/Makefile: build.android/wine-tools/.built wine/configure
 
 wine-host build.android/wine-host/.built build.android/wine-host/dlls/wineandroid.drv/wine-debug.apk: build.android/wine-host/Makefile
 	+$(MAKE) -C build.android/wine-host
+	ln -sf ../wine-tools/tools build.android/wine-host/
 	@touch build.android/wine-host/.built
 
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
