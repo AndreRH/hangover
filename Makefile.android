@@ -48,34 +48,27 @@ all: build.android/wine-host/dlls/wineandroid.drv/hangover-debug.apk
 .PHONY: all
 
 # Build libs
-build.android/libpng-1.5.30.tar.gz:
+build.android/libpng/Makefile: libpng/configure
 	@mkdir -p $(@D)
-	cd $(@D) ; wget -c ftp://ftp-osl.osuosl.org/pub/libpng/src/libpng15/libpng-1.5.30.tar.gz
+	cd $(@D) ; ../../libpng/configure --host=aarch64-linux-android --prefix=$(abspath build.android/aarch64-linux-android) CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang
 
-build.android/libpng-1.5.30/configure: build.android/libpng-1.5.30.tar.gz
-	cd build.android ; rm -rf libpng-1.5.30 ; tar -xzf libpng-1.5.30.tar.gz ; cd .. ; touch $@
-
-build.android/libpng-1.5.30/Makefile: build.android/libpng-1.5.30/configure
-	cd $(@D) ; ./configure --host=aarch64-linux-android --prefix=$(abspath build.android/aarch64-linux-android) CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang
-
-build.android/aarch64-linux-android/lib/libpng15.so: build.android/libpng-1.5.30/Makefile
+build.android/aarch64-linux-android/lib/libpng16.so: build.android/libpng/Makefile
 	@mkdir -p $(@D)
-	+$(MAKE) -C build.android/libpng-1.5.30/ install
+	+$(MAKE) -C build.android/libpng/ install
 
 
-build.android/freetype-2.9.1.tar.gz:
+freetype/builds/unix/configure: freetype/autogen.sh
+	cd freetype ; NOCONFIGURE=1 ./autogen.sh
+
+build.android/freetype/config.mk: freetype/builds/unix/configure build.android/aarch64-linux-android/lib/libpng16.so
+	@rm -rf build.android/freetype
+	@mkdir -p build.android/
+	cp -ra freetype build.android/
+	cd $(@D) ; ./configure --host=aarch64-linux-android --prefix=$(abspath build.android/aarch64-linux-android) --with-harfbuzz=no LIBPNG_CFLAGS="-I$(abspath build.android/aarch64-linux-android/include/libpng16)" LIBPNG_LIBS="-L$(abspath build.android/aarch64-linux-android/lib) -lpng16" CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang
+
+build.android/aarch64-linux-android/lib/libfreetype.so: build.android/freetype/config.mk
 	@mkdir -p $(@D)
-	cd $(@D) ; wget -c https://download.savannah.gnu.org/releases/freetype/freetype-2.9.1.tar.gz
-
-build.android/freetype-2.9.1/configure: build.android/freetype-2.9.1.tar.gz
-	cd build.android ; rm -rf freetype-2.9.1 ; tar -xzf freetype-2.9.1.tar.gz ; cd .. ; touch $@
-
-build.android/freetype-2.9.1/config.mk: build.android/freetype-2.9.1/configure build.android/aarch64-linux-android/lib/libpng15.so
-	cd $(@D) ; ./configure --host=aarch64-linux-android --prefix=$(abspath build.android/aarch64-linux-android) --with-harfbuzz=no LIBPNG_CFLAGS="-I$(abspath build.android/aarch64-linux-android/include/libpng15)" LIBPNG_LIBS="-L$(abspath build.android/aarch64-linux-android/lib) -lpng15" CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang
-
-build.android/aarch64-linux-android/lib/libfreetype.so: build.android/freetype-2.9.1/config.mk
-	@mkdir -p $(@D)
-	+$(MAKE) -C build.android/freetype-2.9.1/ install
+	+$(MAKE) -C build.android/freetype/ install
 
 
 glib/configure: glib/autogen.sh
@@ -137,7 +130,7 @@ build.android/wine-tools/.built: build.android/wine-tools/Makefile
 # Build the Host (e.g. arm64) wine
 build.android/wine-host/Makefile: build.android/wine-tools/.built wine/configure
 	@mkdir -p $(@D)
-	cd $(@D) ; ../../wine/configure --host=aarch64-linux-android --with-wine-tools=../wine-tools --prefix=$(PREFIX) --with-freetype --with-png --bindir=$(PREFIX)/bin --libdir=$(PREFIX)/lib CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang PNG_CFLAGS="-I$(abspath build.android/aarch64-linux-android/include/libpng15)" PNG_LIBS="-L$(abspath build.android/aarch64-linux-android/lib) -lpng15" FREETYPE_CFLAGS="-I$(abspath build.android/aarch64-linux-android/include/freetype2)" FREETYPE_LIBS="-L$(abspath build.android/aarch64-linux-android/lib) -lm -lz -lpng15 -lfreetype" --disable-tests
+	cd $(@D) ; ../../wine/configure --host=aarch64-linux-android --with-wine-tools=../wine-tools --prefix=$(PREFIX) --with-freetype --with-png --bindir=$(PREFIX)/bin --libdir=$(PREFIX)/lib CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang PNG_CFLAGS="-I$(abspath build.android/aarch64-linux-android/include/libpng16)" PNG_LIBS="-L$(abspath build.android/aarch64-linux-android/lib) -lpng16" FREETYPE_CFLAGS="-I$(abspath build.android/aarch64-linux-android/include/freetype2)" FREETYPE_LIBS="-L$(abspath build.android/aarch64-linux-android/lib) -lm -lz -lpng16 -lfreetype" --disable-tests
 
 wine-host build.android/wine-host/.built build.android/wine-host/dlls/wineandroid.drv/wine-debug.apk: build.android/wine-host/Makefile
 	+$(MAKE) -C build.android/wine-host

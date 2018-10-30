@@ -13,3 +13,9 @@
 [submodule "libxslt"]
 	path = libxslt
 	url = https://gitlab.gnome.org/GNOME/libxslt.git
+[submodule "libpng"]
+	path = libpng
+	url = https://github.com/glennrp/libpng
+[submodule "freetype"]
+	path = freetype
+	url = https://github.com/aseprite/freetype2
