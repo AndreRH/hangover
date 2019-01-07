@@ -570,7 +570,7 @@ void WINAPI RtlUnwind( void *frame, void *target_ip, EXCEPTION_RECORD *rec, void
 
 /* Copypasted from Wine. */
 NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec,
-        ULONG64 frame, CONTEXT *context, struct _DISPATCHER_CONTEXT *dispatch)
+        void *frame, CONTEXT *context, struct _DISPATCHER_CONTEXT *dispatch)
 {
     SCOPE_TABLE *table = dispatch->HandlerData;
     ULONG i;
@@ -579,7 +579,7 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
     call.super.id = QEMU_SYSCALL_ID(CALL___C_SPECIFIC_HANDLER);
     call.string = (ULONG_PTR)"Record %p, frame %p, context %p, dispatch %p.\n";
     call.p1 = (ULONG_PTR)rec;
-    call.p2 = frame;
+    call.p2 = (ULONG_PTR)frame;
     call.p3 = (ULONG_PTR)context;
     call.p4 = (ULONG_PTR)dispatch;
     call.num_params = 4;
@@ -612,11 +612,11 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
 
                 call.string = (ULONG_PTR)"calling __finally %p frame %lx\n";
                 call.p1 = (ULONG_PTR)handler;
-                call.p2 = frame;
+                call.p2 = (ULONG_PTR)frame;
                 call.num_params = 2;
                 qemu_syscall(&call.super);
 
-                handler( 1, frame );
+                handler( 1, (ULONG_PTR)frame );
             }
         }
         return ExceptionContinueSearch;
@@ -640,12 +640,12 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
                 call.string = (ULONG_PTR)"calling filter %p ptrs %p frame %lx\n";
                 call.p1 = (ULONG_PTR)filter;
                 call.p2 = (ULONG_PTR)&ptrs;
-                call.p3 = frame;
+                call.p3 = (ULONG_PTR)frame;
                 call.num_params = 3;
                 qemu_syscall(&call.super);
 
                 call.num_params = 0;
-                switch (filter( &ptrs, frame ))
+                switch (filter( &ptrs, (ULONG_PTR)frame ))
                 {
                 case EXCEPTION_EXECUTE_HANDLER:
                     call.string = (ULONG_PTR)"Filter returned EXCEPTION_EXECUTE_HANDLER\n";
@@ -664,11 +664,11 @@ NTSYSAPI EXCEPTION_DISPOSITION WINAPI __C_specific_handler(EXCEPTION_RECORD *rec
 
             call.string = (ULONG_PTR)"unwinding to target %lx, end frame %lx\n";
             call.p1 = dispatch->ImageBase + table->ScopeRecord[i].JumpTarget;
-            call.p2 = frame;
+            call.p2 = (ULONG_PTR)frame;
             call.num_params = 2;
             qemu_syscall(&call.super);
 
-            ntdll_RtlUnwindEx( (void *)frame, (char *)dispatch->ImageBase + table->ScopeRecord[i].JumpTarget,
+            ntdll_RtlUnwindEx( frame, (char *)dispatch->ImageBase + table->ScopeRecord[i].JumpTarget,
                          rec, 0, dispatch->ContextRecord, dispatch->HistoryTable );
         }
     }
