@@ -54,7 +54,7 @@ unsigned int* CDECL __p__commode(void)
     return &MSVCRT__commode;
 }
 
-unsigned int* CDECL __p__fmode(void)
+unsigned int* CDECL MSVCRT__p__fmode(void)
 {
     return &MSVCRT__fmode;
 }
