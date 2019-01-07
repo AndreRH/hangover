@@ -638,7 +638,7 @@
 @ cdecl __p__daylight() MSVCRT___p__daylight
 @ cdecl __p__dstbias() MSVCRT___p__dstbias
 @ cdecl __p__environ() MSVCRT___p__environ
-@ cdecl __p__fmode()
+@ cdecl __p__fmode() MSVCRT__p__fmode
 @ cdecl __p__iob() MSVCRT___iob_func
 @ stub __p__mbcasemap()
 @ cdecl __p__mbctype()
