@@ -133,7 +133,7 @@ struct qemu_XInputGetStateEx
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI XInputGetStateEx(DWORD index, void* state_ex)
+WINBASEAPI DWORD WINAPI xinput_XInputGetStateEx(DWORD index, void* state_ex)
 {
     struct qemu_XInputGetStateEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_XINPUTGETSTATEEX);
