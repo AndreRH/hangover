@@ -331,6 +331,7 @@ build.android/wine-host/dlls/wineandroid.drv/hangover-debug.apk: build.android/w
 	echo "c:\\\\x86\\\\qemu-x86_64.exe.so c:\\\\x86\\\\npp\\\\notepad++.exe" >> build.android/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/winestart.cmd
 	+$(MAKE) -C build.android/wine-host/dlls/wineandroid.drv/
 	cp -f build.android/wine-host/dlls/wineandroid.drv/wine-debug.apk build.android/wine-host/dlls/wineandroid.drv/hangover-debug.apk
+	@echo "Hangover build complete."
 
 # TODO:
 #configure: OpenCL development files not found, OpenCL won't be supported.
