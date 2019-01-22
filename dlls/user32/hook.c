@@ -197,13 +197,12 @@ static LRESULT CALLBACK qemu_hook_wrapper(int code, WPARAM wp, LPARAM lp, struct
     MSG *msg, msg_copy;
     struct qemu_hook_data *old;
 
-    WINE_ERR("Hello world\n");
     call.func = callback_get_guest_proc(&data->cb);
     call.inst = data->client_inst;
     call.code = code;
     call.wp = wp;
     call.lp = lp;
-    WINE_ERR("Calling callback 0x%lx(%u, %lu, %lu).\n", (unsigned long)call.func, code, wp, lp);
+    WINE_TRACE("Calling callback 0x%lx(%u, %lu, %lu).\n", (unsigned long)call.func, code, wp, lp);
 
 #if GUEST_BIT != HOST_BIT
     if (data->type == WH_CBT && code == HCBT_CREATEWND)
