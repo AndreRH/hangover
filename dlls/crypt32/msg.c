@@ -246,10 +246,15 @@ void qemu_CryptMsgGetParam(struct qemu_syscall *call)
     DWORD param;
     void *data;
 
-    WINE_FIXME("Hopelessly unfinished.\n");
+    WINE_TRACE("\n");
     param = c->dwParamType;
     data = QEMU_G2H(c->pvData);
 
+#if GUEST_BIT == HOST_BIT
+    c->super.iret = CryptMsgGetParam(QEMU_G2H(c->hCryptMsg), param, c->dwIndex, data,
+            QEMU_G2H(c->pcbData));
+#else
+    WINE_FIXME("Hopelessly unfinished.\n");
     switch (param)
     {
         case CMSG_SIGNER_INFO_PARAM:
@@ -263,6 +268,7 @@ void qemu_CryptMsgGetParam(struct qemu_syscall *call)
             c->super.iret = CryptMsgGetParam(QEMU_G2H(c->hCryptMsg), param, c->dwIndex, data,
                     QEMU_G2H(c->pcbData));
     }
+#endif
 }
 
 #endif
