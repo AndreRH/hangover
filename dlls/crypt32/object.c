@@ -93,10 +93,12 @@ void qemu_CryptQueryObject(struct qemu_syscall *call)
             QEMU_G2H(c->pdwContentType), QEMU_G2H(c->pdwFormatType), c->phCertStore ? &store : NULL,
             c->phMsg ? &msg : NULL, QEMU_G2H(c->ppvContext));
 
+    c->phCertStore = QEMU_H2G(store);
+
+#if GUEST_BIT != HOST_BIT
     if (store == empty_store)
         c->phCertStore = empty_store_replace;
-    else
-        c->phCertStore = QEMU_H2G(store);
+#endif
 
     c->phMsg = QEMU_H2G(msg);
 }
