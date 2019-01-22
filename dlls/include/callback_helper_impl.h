@@ -67,7 +67,7 @@ void callback_init(struct callback_entry *entry, unsigned int params, void *proc
     static const char wrapper_code3[] =
     {
         0x4c, 0x8d, 0x0d, 0xf9, 0xff, 0xff, 0xff,   /* lea    -0x7(%rip),%r9    - selfptr in 4th param  */
-        0x48, 0xff, 0x25, 0x22, 0x00, 0x00, 0x00,   /* rex.W jmpq *0x22(%rip)   - call host_proc        */
+        0x48, 0xff, 0x25, 0x1a, 0x00, 0x00, 0x00,   /* rex.W jmpq *0x1a(%rip)   - call host_proc        */
     };
 
     if (params == 4)
@@ -80,6 +80,7 @@ void callback_init(struct callback_entry *entry, unsigned int params, void *proc
         memset(entry->code, 0xcc, sizeof(entry->code));
         memcpy(entry->code, wrapper_code3, sizeof(wrapper_code3));
     }
+    entry->selfptr = entry; /* Note that this is not read by the asm code, but put it in place anyway. */
 #else
 #error callback helper not supported on your platform
 #endif
