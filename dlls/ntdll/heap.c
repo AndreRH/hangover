@@ -141,7 +141,16 @@ void qemu_RtlAllocateHeap(struct qemu_syscall *call)
 {
     struct qemu_RtlAllocateHeap *c = (struct qemu_RtlAllocateHeap *)call;
     WINE_TRACE("\n");
+#if GUEST_BIT != HOST_BIT
+    /* Discard any allocation > 32 bit that may be returned. This can happen if a Wine component frees
+     * memory that was allocated before we blocked high addresses after the high address block.
+     *
+     * This hack is not quite perfect, there are many more places where too high heap addresses can
+     * be returned. Need to hook and inject this at a lower level... */
+    while ((c->super.iret = (ULONG_PTR)RtlAllocateHeap(QEMU_G2H(c->heap), c->flags, c->size)) > ~0U);
+#else
     c->super.iret = (ULONG_PTR)RtlAllocateHeap(QEMU_G2H(c->heap), c->flags, c->size);
+#endif
 }
 
 #endif
