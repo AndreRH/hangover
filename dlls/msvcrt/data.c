@@ -163,7 +163,7 @@ struct qemu___wgetmainargs
 
 #ifdef QEMU_DLL_GUEST
 
-void CDECL __wgetmainargs(int *argc, WCHAR** *wargv, WCHAR** *wenvp,
+int CDECL __wgetmainargs(int *argc, WCHAR** *wargv, WCHAR** *wenvp,
                           int expand_wildcards, int *new_mode)
 {
     struct qemu___wgetmainargs call;
@@ -176,6 +176,7 @@ void CDECL __wgetmainargs(int *argc, WCHAR** *wargv, WCHAR** *wenvp,
     *argc = call.argc;
     *wargv = (WCHAR **)(ULONG_PTR)call.wargv;
     *wenvp = (WCHAR **)(ULONG_PTR)call.wenvp;
+    return 0;
 }
 
 #else
