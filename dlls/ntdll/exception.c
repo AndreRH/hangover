@@ -157,7 +157,7 @@ void qemu_RtlAddVectoredExceptionHandler(struct qemu_syscall *call)
 {
     struct qemu_RtlAddVectoredExceptionHandler *c = (struct qemu_RtlAddVectoredExceptionHandler *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)RtlAddVectoredExceptionHandler(c->first, QEMU_G2H(c->func));
+    c->super.iret = 0xdeadbeef;
 }
 
 #endif
