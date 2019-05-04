@@ -1,1 +1,1 @@
-../msvcrt/qemu_msvcrt.spec
+@ stdcall qemu_dll_register(ptr ptr)
