@@ -87,7 +87,7 @@ build/x86_64-w64-mingw32/bin/libxslt-1.dll: build/libxslt64/Makefile
 # Build the Host (e.g. arm64) wine
 build/wine-host/Makefile: wine/configure
 	@mkdir -p $(@D)
-	cd build/wine-host ; ../../wine/configure --enable-win64 $(TESTS)
+	cd build/wine-host ; ../../wine/configure --enable-win64 --without-mingw $(TESTS)
 
 wine-host build/wine-host/.built: build/wine-host/Makefile
 	+$(MAKE) -C build/wine-host
