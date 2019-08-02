@@ -9,7 +9,7 @@ VPATH=$(SRCDIR)
 all: iphlpapi.dll qemu_iphlpapi.dll.so
 
 iphlpapi.dll: icmp_g.o iphlpapi.spec iphlpapi_main_g.o ipstats_g.o main_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/iphlpapi.spec *_g.o -o iphlpapi.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x180000000
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/iphlpapi.spec ../../$(WINE_DIR)/dlls/winecrt0/libwinecrt0.a *_g.o -o iphlpapi.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x180000000 -lkernel32
 
 qemu_iphlpapi.dll.so: icmp_h.o iphlpapi_main_h.o ipstats_h.o main_h.o
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_iphlpapi.spec *_h.o -o qemu_iphlpapi.dll.so -liphlpapi -DUSE_WS_PREFIX
