@@ -9,7 +9,7 @@ VPATH=$(SRCDIR)
 all: imm32.dll qemu_imm32.dll.so
 
 imm32.dll: imm32.spec imm_g.o main_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/imm32.spec *_g.o -o imm32.dll -nodefaultlibs -nostdlib -Wl,--image-base,0xe0000000
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/imm32.spec ../../$(WINE_DIR)/dlls/winecrt0/libwinecrt0.a *_g.o -o imm32.dll -nodefaultlibs -nostdlib -lkernel32 -Wl,--image-base,0xe0000000
 
 qemu_imm32.dll.so: imm_h.o main_h.o
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_imm32.spec *_h.o -o qemu_imm32.dll.so -limm32
