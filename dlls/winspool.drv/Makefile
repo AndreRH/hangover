@@ -9,7 +9,7 @@ VPATH=$(SRCDIR)
 all: winspool.drv qemu_winspool.drv.so
 
 winspool.drv: winspool.drv.spec main_g.o info_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/winspool.drv.spec *_g.o -o winspool.drv -nodefaultlibs -nostdlib
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/winspool.drv.spec ../../$(WINE_DIR)/dlls/winecrt0/libwinecrt0.a *_g.o -o winspool.drv -nodefaultlibs -nostdlib -lkernel32
 
 qemu_winspool.drv.so: main_h.o info_h.o qemu_winspool.drv.spec
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_winspool.drv.spec *_h.o -o qemu_winspool.drv.so -lwinspool
