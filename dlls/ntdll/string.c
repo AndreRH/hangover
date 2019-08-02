@@ -1142,7 +1142,7 @@ WINBASEAPI int CDECL NTDLL_isspace(int c)
 void qemu_isspace(struct qemu_syscall *call)
 {
     struct qemu_isspace *c = (struct qemu_isspace *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_isspace(c->c);
 }
 
