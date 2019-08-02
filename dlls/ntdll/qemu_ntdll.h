@@ -22,6 +22,7 @@ enum ntdll_calls
     CALL__LTOW,
     CALL__MEMCCPY,
     CALL__MEMICMP,
+    CALL__SNPRINTF_S,
     CALL__SPLITPATH,
     CALL__STRICMP,
     CALL__STRLWR,
@@ -33,6 +34,7 @@ enum ntdll_calls
     CALL__UI64TOW,
     CALL__ULTOA,
     CALL__ULTOW,
+    CALL__VSNPRINTF_S,
     CALL__WCSICMP,
     CALL__WCSLWR,
     CALL__WCSNICMP,
@@ -113,6 +115,13 @@ enum ntdll_calls
     CALL_NTDELETEVALUEKEY,
     CALL_NTDEVICEIOCONTROLFILE,
     CALL_NTDISPLAYSTRING,
+    CALL_NTDLL__SNPRINTF,
+    CALL_NTDLL__SNWPRINTF,
+    CALL_NTDLL__VSNPRINTF,
+    CALL_NTDLL__VSNWPRINTF,
+    CALL_NTDLL_SPRINTF,
+    CALL_NTDLL_SWPRINTF,
+    CALL_NTDLL_VSPRINTF,
     CALL_NTDUPLICATEOBJECT,
     CALL_NTDUPLICATETOKEN,
     CALL_NTENUMERATEKEY,
@@ -1225,6 +1234,15 @@ void qemu_wcstoul(struct qemu_syscall *call);
 void qemu_WinSqmEndSession(struct qemu_syscall *call);
 void qemu_WinSqmIsOptedIn(struct qemu_syscall *call);
 void qemu_WinSqmStartSession(struct qemu_syscall *call);
+void qemu_NTDLL__snprintf(struct qemu_syscall *call);
+void qemu_NTDLL__snwprintf(struct qemu_syscall *call);
+void qemu__snprintf_s(struct qemu_syscall *call);
+void qemu_NTDLL_sprintf(struct qemu_syscall *call);
+void qemu_NTDLL_swprintf(struct qemu_syscall *call);
+void qemu_NTDLL__vsnprintf(struct qemu_syscall *call);
+void qemu_NTDLL__vsnwprintf(struct qemu_syscall *call);
+void qemu__vsnprintf_s(struct qemu_syscall *call);
+void qemu_NTDLL_vsprintf(struct qemu_syscall *call);
 
 WCHAR *(* CDECL p_wcsrchr)(WCHAR *str, WCHAR ch);
 void * (* CDECL p_memchr)(const void *ptr, int c, size_t n);

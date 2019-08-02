@@ -272,7 +272,9 @@ WINBASEAPI ULONG WINAPI EtwRegisterTraceGuidsW(WMIDPREQUEST RequestAddress, void
     call.MofResourceName = (ULONG_PTR)MofResourceName;
     call.RegistrationHandle = (ULONG_PTR)RegistrationHandle;
 
+    return 0;
     qemu_syscall(&call.super);
+    *RegistrationHandle = (TRACEHANDLE)(ULONG_PTR)call.RegistrationHandle;
 
     return call.super.iret;
 }
@@ -284,8 +286,11 @@ extern ULONG WINAPI EtwRegisterTraceGuidsW(WMIDPREQUEST RequestAddress, void *Re
 void qemu_EtwRegisterTraceGuidsW(struct qemu_syscall *call)
 {
     struct qemu_EtwRegisterTraceGuidsW *c = (struct qemu_EtwRegisterTraceGuidsW *)call;
+    TRACEHANDLE h;
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EtwRegisterTraceGuidsW(QEMU_G2H(c->RequestAddress), QEMU_G2H(c->RequestContext), QEMU_G2H(c->ControlGuid), c->GuidCount, QEMU_G2H(c->TraceGuidReg), QEMU_G2H(c->MofImagePath), QEMU_G2H(c->MofResourceName), QEMU_G2H(c->RegistrationHandle));
+    c->super.iret = EtwRegisterTraceGuidsW(QEMU_G2H(c->RequestAddress), QEMU_G2H(c->RequestContext), QEMU_G2H(c->ControlGuid), c->GuidCount, QEMU_G2H(c->TraceGuidReg), QEMU_G2H(c->MofImagePath), QEMU_G2H(c->MofResourceName), &h);
+    c->RegistrationHandle = QEMU_H2G(h);
 }
 
 #endif

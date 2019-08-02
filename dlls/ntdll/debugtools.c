@@ -29,7 +29,6 @@
 #include "dll_list.h"
 #include "qemu_ntdll.h"
 
-
 #ifdef QEMU_DLL_GUEST
 struct __wine_debug_channel;
 enum __wine_debug_class
