@@ -9,7 +9,7 @@ VPATH=$(SRCDIR)
 all: cabinet.dll qemu_cabinet.dll.so
 
 cabinet.dll: cabinet.spec fci_g.o fdi_g.o main_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/cabinet.spec *_g.o -o cabinet.dll -nodefaultlibs -nostdlib -lwine -lmsvcrt -luuid -ldxguid -lkernel32 -L../../$(WINE_DIR)/libs/wine
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/cabinet.spec *_g.o -o cabinet.dll -L../../$(WINE_DIR)/dlls/winecrt0
 
 qemu_cabinet.dll.so: fci_h.o fdi_h.o main_h.o qemu_cabinet.spec
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_cabinet.spec *_h.o -o qemu_cabinet.dll.so -lcabinet
