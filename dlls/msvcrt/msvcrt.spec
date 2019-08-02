@@ -254,7 +254,7 @@
 @ cdecl __p___mb_cur_max()
 # @ cdecl __p___wargv() MSVCRT___p___wargv
 # @ cdecl __p___winitenv()
-# @ cdecl __p__acmdln()
+@ cdecl __p__acmdln() MSVCRT___p__acmdln
 @ cdecl __p__amblksiz()
 # @ cdecl __p__commode()
 @ cdecl __p__daylight() MSVCRT___p__daylight

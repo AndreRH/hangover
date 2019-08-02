@@ -59,6 +59,11 @@ unsigned int* CDECL MSVCRT__p__fmode(void)
     return &MSVCRT__fmode;
 }
 
+char** CDECL MSVCRT___p__acmdln(void)
+{
+    return &MSVCRT__acmdln;
+}
+
 #endif
 
 struct qemu___getmainargs
