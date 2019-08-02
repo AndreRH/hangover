@@ -9,7 +9,7 @@ VPATH=$(SRCDIR)
 all: d3d11.dll qemu_d3d11.dll.so
 
 d3d11.dll: async_g.o buffer_g.o d3d11.spec device_g.o inputlayout_g.o main_g.o shader_g.o state_g.o texture_g.o view_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/d3d11.spec *_g.o -o d3d11.dll -nodefaultlibs -nostdlib -lwine -lmsvcrt -luuid -ldxguid -lkernel32 -ldxgi -L../../$(WINE_DIR)/libs/wine
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/d3d11.spec *_g.o -o d3d11.dll -luuid -ldxguid -ldxgi -L../../$(WINE_DIR)/dlls/winecrt0
 
 qemu_d3d11.dll.so: async_h.o buffer_h.o device_h.o inputlayout_h.o main_h.o qemu_d3d11.spec shader_h.o state_h.o texture_h.o view_h.o
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_d3d11.spec *_h.o -o qemu_d3d11.dll.so

@@ -622,7 +622,7 @@ struct qemu_dll_init
 HRESULT (* WINAPI p_DXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
         unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
 
-BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
+BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_dll_init call;
     HMODULE dxgi;
