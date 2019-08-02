@@ -96,7 +96,7 @@ wine-host build/wine-host/.built: build/wine-host/Makefile
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
 build/wine-guest/Makefile: build/wine-host/.built wine/configure build/x86_64-w64-mingw32/bin/libxml2-2.dll build/x86_64-w64-mingw32/bin/libxslt-1.dll
 	@mkdir -p $(@D)
-	cd build/wine-guest ; ../../wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-host --without-freetype $(TESTS) --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
+	cd build/wine-guest ; ../../wine/configure --host=x86_64-w64-mingw32 --without-mingw --with-wine-tools=../wine-host --without-freetype $(TESTS) --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
 
 wine-guest: build/wine-guest/Makefile
 	+$(MAKE) -C build/wine-guest $(if $(NOTESTS),$(patsubst %,dlls/%,$(WINEDLLS)),)
@@ -104,7 +104,7 @@ wine-guest: build/wine-guest/Makefile
 # Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
 build/wine-guest32/Makefile: build/wine-host/.built wine/configure build/i686-w64-mingw32/bin/libxml2-2.dll build/i686-w64-mingw32/bin/libxslt-1.dll
 	@mkdir -p $(@D)
-	cd build/wine-guest32 ; ../../wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-host --without-freetype $(TESTS) --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/i686-w64-mingw32/include/libxml2) -I$(abspath build/i686-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/i686-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/i686-w64-mingw32/include/libxml2) -I$(abspath build/i686-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/i686-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
+	cd build/wine-guest32 ; ../../wine/configure --host=i686-w64-mingw32 --without-mingw --with-wine-tools=../wine-host --without-freetype $(TESTS) --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/i686-w64-mingw32/include/libxml2) -I$(abspath build/i686-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/i686-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/i686-w64-mingw32/include/libxml2) -I$(abspath build/i686-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/i686-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
 
 wine-guest32: build/wine-guest32/Makefile
 	+$(MAKE) -C build/wine-guest32 $(if $(NOTESTS),$(patsubst %,dlls/%,$(WINEDLLS)),)

@@ -230,3 +230,25 @@ void qemu_RtlDeleteFunctionTable(struct qemu_syscall *call)
 
 #endif
 
+#ifdef QEMU_DLL_GUEST
+/*************************************************************
+ *            __wine_spec_unimplemented_stub
+ *
+ * ntdll-specific implementation to avoid depending on kernel functions.
+ * Can be removed once ntdll.spec no longer contains stubs.
+ */
+void WINAPI RtlRaiseException(PEXCEPTION_RECORD);
+void __cdecl __wine_spec_unimplemented_stub( const char *module, const char *function )
+{
+    EXCEPTION_RECORD record;
+    
+    record.ExceptionCode    = 0x80000100;
+    record.ExceptionFlags   = 0x01;
+    record.ExceptionRecord  = NULL;
+    record.ExceptionAddress = __wine_spec_unimplemented_stub;
+    record.NumberParameters = 2;
+    record.ExceptionInformation[0] = (ULONG_PTR)module;
+    record.ExceptionInformation[1] = (ULONG_PTR)function;
+    for (;;) RtlRaiseException( &record );
+}
+#endif

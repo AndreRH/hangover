@@ -36,11 +36,11 @@
 #@ cdecl -arch=win64 ??0__non_rtti_object@std@@QEAA@AEBV01@@Z(ptr ptr) MSVCRT___non_rtti_object_copy_ctor
 #@ thiscall -arch=i386 ??0__non_rtti_object@std@@QAE@PBD@Z(ptr ptr) MSVCRT___non_rtti_object_ctor
 #@ cdecl -arch=win64 ??0__non_rtti_object@std@@QEAA@PEBD@Z(ptr ptr) MSVCRT___non_rtti_object_ctor
-@ thiscall -arch=i386 ??0bad_cast@std@@AAE@PBQBD@Z(ptr ptr) MSVCRT_bad_cast_ctor
+@ thiscall -arch=i386 ??0bad_cast@std@@AAE@PBQBD@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_ctor
 @ cdecl -arch=win64 ??0bad_cast@std@@AEAA@PEBQEBD@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_ctor
-@ thiscall -arch=i386 ??0bad_cast@std@@QAE@ABV01@@Z(ptr ptr) MSVCRT_bad_cast_copy_ctor
+@ thiscall -arch=i386 ??0bad_cast@std@@QAE@ABV01@@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_copy_ctor
 @ cdecl -arch=win64 ??0bad_cast@std@@QEAA@AEBV01@@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_copy_ctor
-@ thiscall -arch=i386 ??0bad_cast@std@@QAE@PBD@Z(ptr str) MSVCRT_bad_cast_ctor_charptr
+@ thiscall -arch=i386 ??0bad_cast@std@@QAE@PBD@Z(ptr str) __thiscall_MSVCRT_bad_cast_ctor_charptr
 @ cdecl -arch=win64 ??0bad_cast@std@@QEAA@PEBD@Z(ptr str) __thiscall_MSVCRT_bad_cast_ctor_charptr
 @ stub -arch=win32 ??0bad_target@Concurrency@@QAE@PBD@Z
 @ stub -arch=win64 ??0bad_target@Concurrency@@QEAA@PEBD@Z
@@ -66,13 +66,13 @@
 @ stub -arch=win64 ??0default_scheduler_exists@Concurrency@@QEAA@XZ
 #@ thiscall -arch=win32 ??0event@Concurrency@@QAE@XZ(ptr) event_ctor
 #@ cdecl -arch=win64 ??0event@Concurrency@@QEAA@XZ(ptr) event_ctor
-@ thiscall -arch=i386 ??0exception@std@@QAE@ABQBD@Z(ptr ptr) MSVCRT_exception_ctor
+@ thiscall -arch=i386 ??0exception@std@@QAE@ABQBD@Z(ptr ptr) __thiscall_MSVCRT_exception_ctor
 @ cdecl -arch=win64 ??0exception@std@@QEAA@AEBQEBD@Z(ptr ptr) __thiscall_MSVCRT_exception_ctor
-@ thiscall -arch=i386 ??0exception@std@@QAE@ABQBDH@Z(ptr ptr long) MSVCRT_exception_ctor_noalloc
+@ thiscall -arch=i386 ??0exception@std@@QAE@ABQBDH@Z(ptr ptr long) __thiscall_MSVCRT_exception_ctor_noalloc
 @ cdecl -arch=win64 ??0exception@std@@QEAA@AEBQEBDH@Z(ptr ptr long) __thiscall_MSVCRT_exception_ctor_noalloc
-@ thiscall -arch=i386 ??0exception@std@@QAE@ABV01@@Z(ptr ptr) MSVCRT_exception_copy_ctor
+@ thiscall -arch=i386 ??0exception@std@@QAE@ABV01@@Z(ptr ptr) __thiscall_MSVCRT_exception_copy_ctor
 @ cdecl -arch=win64 ??0exception@std@@QEAA@AEBV01@@Z(ptr ptr) __thiscall_MSVCRT_exception_copy_ctor
-@ thiscall -arch=i386 ??0exception@std@@QAE@XZ(ptr) MSVCRT_exception_default_ctor
+@ thiscall -arch=i386 ??0exception@std@@QAE@XZ(ptr) __thiscall_MSVCRT_exception_default_ctor
 @ cdecl -arch=win64 ??0exception@std@@QEAA@XZ(ptr) __thiscall_MSVCRT_exception_default_ctor
 #@ thiscall -arch=i386 ??0improper_lock@Concurrency@@QAE@PBD@Z(ptr str) improper_lock_ctor_str
 #@ cdecl -arch=win64 ??0improper_lock@Concurrency@@QEAA@PEBD@Z(ptr str) improper_lock_ctor_str
@@ -176,7 +176,7 @@
 @ stub -arch=win64 ??1_Timer@details@Concurrency@@IEAA@XZ
 #@ thiscall -arch=i386 ??1__non_rtti_object@std@@UAE@XZ(ptr) MSVCRT___non_rtti_object_dtor
 #@ cdecl -arch=win64 ??1__non_rtti_object@std@@UEAA@XZ(ptr) MSVCRT___non_rtti_object_dtor
-@ thiscall -arch=i386 ??1bad_cast@std@@UAE@XZ(ptr) MSVCRT_bad_cast_dtor
+@ thiscall -arch=i386 ??1bad_cast@std@@UAE@XZ(ptr) __thiscall_MSVCRT_bad_cast_dtor
 @ cdecl -arch=win64 ??1bad_cast@std@@UEAA@XZ(ptr) __thiscall_MSVCRT_bad_cast_dtor
 #@ thiscall -arch=i386 ??1bad_typeid@std@@UAE@XZ(ptr) MSVCRT_bad_typeid_dtor
 #@ cdecl -arch=win64 ??1bad_typeid@std@@UEAA@XZ(ptr) MSVCRT_bad_typeid_dtor
@@ -184,7 +184,7 @@
 #@ cdecl -arch=win64 ??1critical_section@Concurrency@@QEAA@XZ(ptr) critical_section_dtor
 #@ thiscall -arch=win32 ??1event@Concurrency@@QAE@XZ(ptr) event_dtor
 #@ cdecl -arch=win64 ??1event@Concurrency@@QEAA@XZ(ptr) event_dtor
-@ thiscall -arch=i386 ??1exception@std@@UAE@XZ(ptr) MSVCRT_exception_dtor
+@ thiscall -arch=i386 ??1exception@std@@UAE@XZ(ptr) __thiscall_MSVCRT_exception_dtor
 @ cdecl -arch=win64 ??1exception@std@@UEAA@XZ(ptr) __thiscall_MSVCRT_exception_dtor
 #@ thiscall -arch=win32 ??1reader_writer_lock@Concurrency@@QAE@XZ(ptr) reader_writer_lock_dtor
 #@ cdecl -arch=win64 ??1reader_writer_lock@Concurrency@@QEAA@XZ(ptr) reader_writer_lock_dtor
@@ -195,7 +195,7 @@
 #@ thiscall -arch=win32 ??1scoped_lock_read@reader_writer_lock@Concurrency@@QAE@XZ(ptr) reader_writer_lock_scoped_lock_read_dtor
 #@ cdecl -arch=win64 ??1scoped_lock_read@reader_writer_lock@Concurrency@@QEAA@XZ(ptr) reader_writer_lock_scoped_lock_read_dtor
 @ cdecl -arch=arm ??1type_info@@UAA@XZ(ptr) MSVCRT_type_info_dtor
-@ thiscall -arch=i386 ??1type_info@@UAE@XZ(ptr) MSVCRT_type_info_dtor
+@ thiscall -arch=i386 ??1type_info@@UAE@XZ(ptr) __thiscall_MSVCRT_type_info_dtor
 @ cdecl -arch=win64 ??1type_info@@UEAA@XZ(ptr) __thiscall_MSVCRT_type_info_dtor
 @ cdecl -arch=win32 ??2@YAPAXI@Z(long) MSVCRT_operator_new
 @ cdecl -arch=win64 ??2@YAPEAX_K@Z(long) MSVCRT_operator_new
@@ -211,17 +211,17 @@
 #@ cdecl -arch=win64 ??4SchedulerPolicy@Concurrency@@QEAAAEAV01@AEBV01@@Z(ptr ptr) SchedulerPolicy_op_assign
 #@ thiscall -arch=i386 ??4__non_rtti_object@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT___non_rtti_object_opequals
 #@ cdecl -arch=win64 ??4__non_rtti_object@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) MSVCRT___non_rtti_object_opequals
-@ thiscall -arch=i386 ??4bad_cast@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT_bad_cast_opequals
+@ thiscall -arch=i386 ??4bad_cast@std@@QAEAAV01@ABV01@@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_opequals
 @ cdecl -arch=win64 ??4bad_cast@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_opequals
 #@ thiscall -arch=i386 ??4bad_typeid@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT_bad_typeid_opequals
 #@ cdecl -arch=win64 ??4bad_typeid@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) MSVCRT_bad_typeid_opequals
-@ thiscall -arch=i386 ??4exception@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT_exception_opequals
+@ thiscall -arch=i386 ??4exception@std@@QAEAAV01@ABV01@@Z(ptr ptr) __thiscall_MSVCRT_exception_opequals
 @ cdecl -arch=win64 ??4exception@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) __thiscall_MSVCRT_exception_opequals
 @ cdecl -arch=arm ??8type_info@@QBA_NABV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opequals_equals
-@ thiscall -arch=i386 ??8type_info@@QBE_NABV0@@Z(ptr ptr) MSVCRT_type_info_opequals_equals
+@ thiscall -arch=i386 ??8type_info@@QBE_NABV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opequals_equals
 @ cdecl -arch=win64 ??8type_info@@QEBA_NAEBV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opequals_equals
 @ cdecl -arch=arm ??9type_info@@QBA_NABV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opnot_equals
-@ thiscall -arch=i386 ??9type_info@@QBE_NABV0@@Z(ptr ptr) MSVCRT_type_info_opnot_equals
+@ thiscall -arch=i386 ??9type_info@@QBE_NABV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opnot_equals
 @ cdecl -arch=win64 ??9type_info@@QEBA_NAEBV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opnot_equals
 #@ extern ??_7__non_rtti_object@std@@6B@ MSVCRT___non_rtti_object_vtable
 @ extern ??_7bad_cast@std@@6B@ MSVCRT_bad_cast_vtable
@@ -232,7 +232,7 @@
 #@ cdecl -arch=win64 ??_F?$_SpinWait@$00@details@Concurrency@@QEAAXXZ(ptr) SpinWait_dtor
 #@ thiscall -arch=win32 ??_F?$_SpinWait@$0A@@details@Concurrency@@QAEXXZ(ptr) SpinWait_dtor
 #@ cdecl -arch=win64 ??_F?$_SpinWait@$0A@@details@Concurrency@@QEAAXXZ(ptr) SpinWait_dtor
-@ thiscall -arch=i386 ??_Fbad_cast@std@@QAEXXZ(ptr) MSVCRT_bad_cast_default_ctor
+@ thiscall -arch=i386 ??_Fbad_cast@std@@QAEXXZ(ptr) __thiscall_MSVCRT_bad_cast_default_ctor
 @ cdecl -arch=win64 ??_Fbad_cast@std@@QEAAXXZ(ptr) __thiscall_MSVCRT_bad_cast_default_ctor
 #@ thiscall -arch=i386 ??_Fbad_typeid@std@@QAEXXZ(ptr) MSVCRT_bad_typeid_default_ctor
 #@ cdecl -arch=win64 ??_Fbad_typeid@std@@QEAAXXZ(ptr) MSVCRT_bad_typeid_default_ctor
@@ -455,7 +455,7 @@
 #@ cdecl -arch=win64 ?_wopen@@YAHPEB_WHH@Z(wstr long long) MSVCRT__wopen
 #@ cdecl -arch=win32 ?_wsopen@@YAHPB_WHHH@Z(wstr long long long) MSVCRT__wsopen
 #@ cdecl -arch=win64 ?_wsopen@@YAHPEB_WHHH@Z(wstr long long long) MSVCRT__wsopen
-@ thiscall -arch=i386 ?before@type_info@@QBEHABV1@@Z(ptr ptr) MSVCRT_type_info_before
+@ thiscall -arch=i386 ?before@type_info@@QBEHABV1@@Z(ptr ptr) __thiscall_MSVCRT_type_info_before
 @ cdecl -arch=win64 ?before@type_info@@QEBAHAEBV1@@Z(ptr ptr) __thiscall_MSVCRT_type_info_before
 #@ thiscall -arch=i386 ?get_error_code@scheduler_resource_allocation_error@Concurrency@@QBEJXZ(ptr) scheduler_resource_allocation_error_get_error_code
 #@ cdecl -arch=win64 ?get_error_code@scheduler_resource_allocation_error@Concurrency@@QEBAJXZ(ptr) scheduler_resource_allocation_error_get_error_code
@@ -501,7 +501,7 @@
 #@ cdecl -arch=win64 ?wait@event@Concurrency@@QEAA_KI@Z(ptr) event_wait
 #@ cdecl -arch=win32 ?wait_for_multiple@event@Concurrency@@SAIPAPAV12@I_NI@Z(ptr long long long) event_wait_for_multiple
 #@ cdecl -arch=win64 ?wait_for_multiple@event@Concurrency@@SA_KPEAPEAV12@_K_NI@Z(ptr long long long) event_wait_for_multiple
-@ thiscall -arch=i386 ?what@exception@std@@UBEPBDXZ(ptr) MSVCRT_what_exception
+@ thiscall -arch=i386 ?what@exception@std@@UBEPBDXZ(ptr) __thiscall_MSVCRT_what_exception
 @ cdecl -arch=win64 ?what@exception@std@@UEBAPEBDXZ(ptr) __thiscall_MSVCRT_what_exception
 @ cdecl -norelay $I10_OUTPUT(double long long long ptr) MSVCRT_I10_OUTPUT
 @ cdecl -arch=i386 _CIacos()

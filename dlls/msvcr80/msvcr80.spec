@@ -4,32 +4,32 @@
 #@ cdecl -arch=win64 ??0__non_rtti_object@std@@QEAA@AEBV01@@Z(ptr ptr) MSVCRT___non_rtti_object_copy_ctor
 #@ cdecl -arch=win64 ??0__non_rtti_object@std@@QEAA@PEBD@Z(ptr ptr) MSVCRT___non_rtti_object_ctor
 @ cdecl -arch=win64 ??0bad_cast@std@@AEAA@PEBQEBD@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_ctor
-@ thiscall -arch=i386 ??0bad_cast@std@@QAE@ABV01@@Z(ptr ptr) MSVCRT_bad_cast_copy_ctor
+@ thiscall -arch=i386 ??0bad_cast@std@@QAE@ABV01@@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_copy_ctor
 @ cdecl -arch=win64 ??0bad_cast@std@@QEAA@AEBV01@@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_copy_ctor
-@ thiscall -arch=i386 ??0bad_cast@std@@QAE@PBD@Z(ptr str) MSVCRT_bad_cast_ctor_charptr
+@ thiscall -arch=i386 ??0bad_cast@std@@QAE@PBD@Z(ptr str) __thiscall_MSVCRT_bad_cast_ctor_charptr
 @ cdecl -arch=win64 ??0bad_cast@std@@QEAA@PEBD@Z(ptr str) __thiscall_MSVCRT_bad_cast_ctor_charptr
-#@ thiscall -arch=i386 ??0bad_typeid@std@@QAE@ABV01@@Z(ptr ptr) MSVCRT_bad_typeid_copy_ctor
-#@ cdecl -arch=win64 ??0bad_typeid@std@@QEAA@AEBV01@@Z(ptr ptr) MSVCRT_bad_typeid_copy_ctor
+#@ thiscall -arch=i386 ??0bad_typeid@std@@QAE@ABV01@@Z(ptr ptr) __thiscall_MSVCRT_bad_typeid_copy_ctor
+#@ cdecl -arch=win64 ??0bad_typeid@std@@QEAA@AEBV01@@Z(ptr ptr) __thiscall_MSVCRT_bad_typeid_copy_ctor
 #@ thiscall -arch=i386 ??0bad_typeid@std@@QAE@PBD@Z(ptr str) MSVCRT_bad_typeid_ctor
 #@ cdecl -arch=win64 ??0bad_typeid@std@@QEAA@PEBD@Z(ptr str) MSVCRT_bad_typeid_ctor
-@ thiscall -arch=i386 ??0exception@std@@QAE@ABQBD@Z(ptr ptr) MSVCRT_exception_ctor
+@ thiscall -arch=i386 ??0exception@std@@QAE@ABQBD@Z(ptr ptr) __thiscall_MSVCRT_exception_ctor
 @ cdecl -arch=win64 ??0exception@std@@QEAA@AEBQEBD@Z(ptr ptr) __thiscall_MSVCRT_exception_ctor
-@ thiscall -arch=i386 ??0exception@std@@QAE@ABQBDH@Z(ptr ptr long) MSVCRT_exception_ctor_noalloc
+@ thiscall -arch=i386 ??0exception@std@@QAE@ABQBDH@Z(ptr ptr long) __thiscall_MSVCRT_exception_ctor_noalloc
 @ cdecl -arch=win64 ??0exception@std@@QEAA@AEBQEBDH@Z(ptr ptr long) __thiscall_MSVCRT_exception_ctor_noalloc
-@ thiscall -arch=i386 ??0exception@std@@QAE@ABV01@@Z(ptr ptr) MSVCRT_exception_copy_ctor
+@ thiscall -arch=i386 ??0exception@std@@QAE@ABV01@@Z(ptr ptr) __thiscall_MSVCRT_exception_copy_ctor
 @ cdecl -arch=win64 ??0exception@std@@QEAA@AEBV01@@Z(ptr ptr) __thiscall_MSVCRT_exception_copy_ctor
-@ thiscall -arch=i386 ??0exception@std@@QAE@XZ(ptr) MSVCRT_exception_default_ctor
+@ thiscall -arch=i386 ??0exception@std@@QAE@XZ(ptr) __thiscall_MSVCRT_exception_default_ctor
 @ cdecl -arch=win64 ??0exception@std@@QEAA@XZ(ptr) __thiscall_MSVCRT_exception_default_ctor
 #@ thiscall -arch=i386 ??1__non_rtti_object@std@@UAE@XZ(ptr) MSVCRT___non_rtti_object_dtor
 #@ cdecl -arch=win64 ??1__non_rtti_object@std@@UEAA@XZ(ptr) MSVCRT___non_rtti_object_dtor
-@ thiscall -arch=i386 ??1bad_cast@std@@UAE@XZ(ptr) MSVCRT_bad_cast_dtor
+@ thiscall -arch=i386 ??1bad_cast@std@@UAE@XZ(ptr) __thiscall_MSVCRT_bad_cast_dtor
 @ cdecl -arch=win64 ??1bad_cast@std@@UEAA@XZ(ptr) __thiscall_MSVCRT_bad_cast_dtor
 #@ thiscall -arch=i386 ??1bad_typeid@std@@UAE@XZ(ptr) MSVCRT_bad_typeid_dtor
 #@ cdecl -arch=win64 ??1bad_typeid@std@@UEAA@XZ(ptr) MSVCRT_bad_typeid_dtor
-@ thiscall -arch=i386 ??1exception@std@@UAE@XZ(ptr) MSVCRT_exception_dtor
+@ thiscall -arch=i386 ??1exception@std@@UAE@XZ(ptr) __thiscall_MSVCRT_exception_dtor
 @ cdecl -arch=win64 ??1exception@std@@UEAA@XZ(ptr) __thiscall_MSVCRT_exception_dtor
 @ cdecl -arch=arm ??1type_info@@UAA@XZ(ptr) MSVCRT_type_info_dtor
-@ thiscall -arch=i386 ??1type_info@@UAE@XZ(ptr) MSVCRT_type_info_dtor
+@ thiscall -arch=i386 ??1type_info@@UAE@XZ(ptr) __thiscall_MSVCRT_type_info_dtor
 @ cdecl -arch=win64 ??1type_info@@UEAA@XZ(ptr) __thiscall_MSVCRT_type_info_dtor
 @ cdecl -arch=win32 ??2@YAPAXI@Z(long) MSVCRT_operator_new
 @ cdecl -arch=win64 ??2@YAPEAX_K@Z(long) MSVCRT_operator_new
@@ -39,24 +39,24 @@
 @ cdecl -arch=win64 ??3@YAXPEAX@Z(ptr) MSVCRT_operator_delete
 #@ thiscall -arch=i386 ??4__non_rtti_object@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT___non_rtti_object_opequals
 #@ cdecl -arch=win64 ??4__non_rtti_object@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) MSVCRT___non_rtti_object_opequals
-@ thiscall -arch=i386 ??4bad_cast@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT_bad_cast_opequals
+@ thiscall -arch=i386 ??4bad_cast@std@@QAEAAV01@ABV01@@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_opequals
 @ cdecl -arch=win64 ??4bad_cast@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) __thiscall_MSVCRT_bad_cast_opequals
 #@ thiscall -arch=i386 ??4bad_typeid@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT_bad_typeid_opequals
 #@ cdecl -arch=win64 ??4bad_typeid@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) MSVCRT_bad_typeid_opequals
-@ thiscall -arch=i386 ??4exception@std@@QAEAAV01@ABV01@@Z(ptr ptr) MSVCRT_exception_opequals
+@ thiscall -arch=i386 ??4exception@std@@QAEAAV01@ABV01@@Z(ptr ptr) __thiscall_MSVCRT_exception_opequals
 @ cdecl -arch=win64 ??4exception@std@@QEAAAEAV01@AEBV01@@Z(ptr ptr) __thiscall_MSVCRT_exception_opequals
 @ cdecl -arch=arm ??8type_info@@QBA_NABV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opequals_equals
-@ thiscall -arch=i386 ??8type_info@@QBE_NABV0@@Z(ptr ptr) MSVCRT_type_info_opequals_equals
+@ thiscall -arch=i386 ??8type_info@@QBE_NABV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opequals_equals
 @ cdecl -arch=win64 ??8type_info@@QEBA_NAEBV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opequals_equals
 @ cdecl -arch=arm ??9type_info@@QBA_NABV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opnot_equals
-@ thiscall -arch=i386 ??9type_info@@QBE_NABV0@@Z(ptr ptr) MSVCRT_type_info_opnot_equals
+@ thiscall -arch=i386 ??9type_info@@QBE_NABV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opnot_equals
 @ cdecl -arch=win64 ??9type_info@@QEBA_NAEBV0@@Z(ptr ptr) __thiscall_MSVCRT_type_info_opnot_equals
 #@ extern ??_7__non_rtti_object@std@@6B@ MSVCRT___non_rtti_object_vtable
 @ extern ??_7bad_cast@std@@6B@ MSVCRT_bad_cast_vtable
 #@ extern ??_7bad_typeid@std@@6B@ MSVCRT_bad_typeid_vtable
 #@ extern ??_7exception@@6B@ MSVCRT_exception_old_vtable
 #@ extern ??_7exception@std@@6B@ MSVCRT_exception_vtable
-@ thiscall -arch=i386 ??_Fbad_cast@std@@QAEXXZ(ptr) MSVCRT_bad_cast_default_ctor
+@ thiscall -arch=i386 ??_Fbad_cast@std@@QAEXXZ(ptr) __thiscall_MSVCRT_bad_cast_default_ctor
 @ cdecl -arch=win64 ??_Fbad_cast@std@@QEAAXXZ(ptr) __thiscall_MSVCRT_bad_cast_default_ctor
 #@ thiscall -arch=i386 ??_Fbad_typeid@std@@QAEXXZ(ptr) MSVCRT_bad_typeid_default_ctor
 #@ cdecl -arch=win64 ??_Fbad_typeid@std@@QEAAXXZ(ptr) MSVCRT_bad_typeid_default_ctor
@@ -111,7 +111,7 @@
 #@ cdecl -arch=win64 ?_wopen@@YAHPEB_WHH@Z(wstr long long) MSVCRT__wopen
 #@ cdecl -arch=win32 ?_wsopen@@YAHPB_WHHH@Z(wstr long long long) MSVCRT__wsopen
 #@ cdecl -arch=win64 ?_wsopen@@YAHPEB_WHHH@Z(wstr long long long) MSVCRT__wsopen
-@ thiscall -arch=i386 ?before@type_info@@QBEHABV1@@Z(ptr ptr) MSVCRT_type_info_before
+@ thiscall -arch=i386 ?before@type_info@@QBEHABV1@@Z(ptr ptr) __thiscall_MSVCRT_type_info_before
 @ cdecl -arch=win64 ?before@type_info@@QEBAHAEBV1@@Z(ptr ptr) __thiscall_MSVCRT_type_info_before
 #@ thiscall -arch=win32 ?name@type_info@@QBEPBDPAU__type_info_node@@@Z(ptr ptr) type_info_name_internal_method
 #@ cdecl -arch=win64 ?name@type_info@@QEBAPEBDPEAU__type_info_node@@@Z(ptr ptr) type_info_name_internal_method
@@ -128,7 +128,7 @@
 @ cdecl ?terminate@@YAXXZ() MSVCRT_terminate
 #@ cdecl ?unexpected@@YAXXZ() MSVCRT_unexpected
 @ cdecl ?vswprintf@@YAHPA_WIPB_WPAD@Z(ptr long wstr ptr) MSVCRT__vsnwprintf
-@ thiscall -arch=i386 ?what@exception@std@@UBEPBDXZ(ptr) MSVCRT_what_exception
+@ thiscall -arch=i386 ?what@exception@std@@UBEPBDXZ(ptr) __thiscall_MSVCRT_what_exception
 @ cdecl -arch=win64 ?what@exception@std@@UEBAPEBDXZ(ptr) __thiscall_MSVCRT_what_exception
 @ stub @_calloc_crt@8
 @ cdecl @_malloc_crt@4(long) MSVCRT_malloc

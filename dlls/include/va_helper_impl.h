@@ -21,6 +21,8 @@
 #include "va_helper.h"
 
 #include "config.h"
+#undef _WIN32
+#include "wine/asm.h"
 
 #ifdef __aarch64__
 
