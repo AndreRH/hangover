@@ -9,7 +9,7 @@ VPATH=$(SRCDIR)
 all: mmdevapi.dll qemu_mmdevapi.dll.so
 
 mmdevapi.dll: audiovolume_g.o devenum_g.o driver_g.o main_g.o mmdevapi.spec
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/mmdevapi.spec *_g.o -o mmdevapi.dll -nodefaultlibs -nostdlib -lkernel32 -lwine -lmsvcrt -luuid -lole32 -loleaut32 -L../../$(WINE_DIR)/libs/wine
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/mmdevapi.spec *_g.o -o mmdevapi.dll -lole32 -loleaut32 -L../../$(WINE_DIR)/dlls/winecrt0
 
 qemu_mmdevapi.dll.so: audiovolume_h.o devenum_h.o driver_h.o main_h.o qemu_mmdevapi.spec
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_mmdevapi.spec *_h.o -o qemu_mmdevapi.dll.so -lole32
