@@ -9,7 +9,7 @@ VPATH=$(SRCDIR)
 all: d3d9.dll qemu_d3d9.dll.so
 
 d3d9.dll: buffer_g.o d3d9.spec d3d9_main_g.o device_g.o directx_g.o main_g.o query_g.o shader_g.o stateblock_g.o surface_g.o swapchain_g.o texture_g.o vertexdeclaration_g.o volume_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/d3d9.spec *_g.o -o d3d9.dll -nodefaultlibs -nostdlib -lkernel32 -lmsvcrt -Wl,--image-base,0xc0000000
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/d3d9.spec *_g.o -o d3d9.dll -Wl,--image-base,0xc0000000 -L../../$(WINE_DIR)/dlls/winecrt0
 
 qemu_d3d9.dll.so: buffer_h.o d3d9_main_h.o device_h.o directx_h.o main_h.o qemu_d3d9.spec query_h.o shader_h.o stateblock_h.o surface_h.o swapchain_h.o texture_h.o vertexdeclaration_h.o volume_h.o
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_d3d9.spec *_h.o -o qemu_d3d9.dll.so -ld3d9 -ldxguid -luuid
