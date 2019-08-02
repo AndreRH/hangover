@@ -1412,3 +1412,9 @@
 @ cdecl -private wcstol(wstr ptr long) NTDLL_wcstol
 @ cdecl -private wcstombs(ptr ptr long) NTDLL_wcstombs
 @ cdecl -private wcstoul(wstr ptr long) NTDLL_wcstoul
+
+# Debugging
+@ cdecl -norelay __wine_dbg_get_channel_flags(ptr)
+@ cdecl -norelay __wine_dbg_header(long long str)
+@ cdecl -norelay __wine_dbg_output(str)
+@ cdecl -norelay __wine_dbg_strdup(str)
