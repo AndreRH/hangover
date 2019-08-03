@@ -87,7 +87,8 @@ struct qemu_CryptMsgOpenToDecode
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI HCRYPTMSG WINAPI CryptMsgOpenToDecode(DWORD dwMsgEncodingType, DWORD dwFlags, DWORD dwMsgType, HCRYPTPROV_LEGACY hCryptProv, PCERT_INFO pRecipientInfo, PCMSG_STREAM_INFO pStreamInfo)
+WINBASEAPI HCRYPTMSG WINAPI CryptMsgOpenToDecode(DWORD dwMsgEncodingType, DWORD dwFlags, DWORD dwMsgType,
+         HCRYPTPROV_LEGACY hCryptProv, PCERT_INFO pRecipientInfo, PCMSG_STREAM_INFO pStreamInfo)
 {
     struct qemu_CryptMsgOpenToDecode call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTMSGOPENTODECODE);
@@ -108,8 +109,25 @@ WINBASEAPI HCRYPTMSG WINAPI CryptMsgOpenToDecode(DWORD dwMsgEncodingType, DWORD 
 void qemu_CryptMsgOpenToDecode(struct qemu_syscall *call)
 {
     struct qemu_CryptMsgOpenToDecode *c = (struct qemu_CryptMsgOpenToDecode *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(CryptMsgOpenToDecode(c->dwMsgEncodingType, c->dwFlags, c->dwMsgType, c->hCryptProv, QEMU_G2H(c->pRecipientInfo), QEMU_G2H(c->pStreamInfo)));
+    CERT_INFO stack, *cert = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    cert = QEMU_G2H(c->pRecipientInfo);
+#else
+    if (QEMU_G2H(c->pRecipientInfo))
+        CERT_INFO_g2h(cert, QEMU_G2H(c->pRecipientInfo));
+    else
+        cert = NULL;
+#endif
+
+    if (c->hCryptProv)
+        WINE_FIXME("hCryptProv is not NULL.\n");
+    if (c->pStreamInfo)
+        WINE_FIXME("Implement streaming.\n");
+
+    c->super.iret = QEMU_H2G(CryptMsgOpenToDecode(c->dwMsgEncodingType, c->dwFlags, c->dwMsgType,
+            c->hCryptProv, cert, QEMU_G2H(c->pStreamInfo)));
 }
 
 #endif
@@ -264,7 +282,18 @@ void qemu_CryptMsgGetParam(struct qemu_syscall *call)
                 CMSG_SIGNER_INFO_h2g(data, data);
             break;
 
+        case CMSG_SIGNER_CERT_INFO_PARAM:
+            c->super.iret = CryptMsgGetParam(QEMU_G2H(c->hCryptMsg), param, c->dwIndex, data,
+                     QEMU_G2H(c->pcbData));
+            if (data && c->super.iret)
+                CERT_INFO_h2g(data, data);
+            break;
+
         default:
+            WINE_ERR("Unexpected param %x\n", param);
+        case CMSG_CONTENT_PARAM: // 4 bytes?
+        case CMSG_INNER_CONTENT_TYPE_PARAM: //oid string?
+        case CMSG_SIGNER_COUNT_PARAM:
             c->super.iret = CryptMsgGetParam(QEMU_G2H(c->hCryptMsg), param, c->dwIndex, data,
                     QEMU_G2H(c->pcbData));
     }
