@@ -24,6 +24,7 @@
 #include <mssip.h>
 
 #include "thunk/qemu_windows.h"
+#include "thunk/qemu_mssip.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -194,8 +195,20 @@ BOOL WINAPI crypt32_CryptSIPGetSignedDataMsg(SIP_SUBJECTINFO* pSubjectInfo, DWOR
 void qemu_CryptSIPGetSignedDataMsg(struct qemu_syscall *call)
 {
     struct qemu_CryptSIPGetSignedDataMsg *c = (struct qemu_CryptSIPGetSignedDataMsg *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptSIPGetSignedDataMsg(QEMU_G2H(c->pSubjectInfo), QEMU_G2H(c->pdwEncodingType), c->dwIndex, QEMU_G2H(c->pcbSignedDataMsg), QEMU_G2H(c->pbSignedDataMsg));
+    SIP_SUBJECTINFO stack, *subject = &stack;
+
+    WINE_FIXME("Possibly unfinished!\n");
+#if GUEST_BIT == HOST_BIT
+    subject = QEMU_G2H(c->pSubjectInfo);
+#else
+    if (QEMU_G2H(c->pSubjectInfo))
+        SIP_SUBJECTINFO_g2h(subject, QEMU_G2H(c->pSubjectInfo));
+    else
+        subject = NULL;
+#endif
+
+    c->super.iret = CryptSIPGetSignedDataMsg(subject, QEMU_G2H(c->pdwEncodingType), c->dwIndex,
+            QEMU_G2H(c->pcbSignedDataMsg), QEMU_G2H(c->pbSignedDataMsg));
 }
 
 #endif
