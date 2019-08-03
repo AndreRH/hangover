@@ -1724,7 +1724,7 @@ WINBASEAPI INT CDECL MSVCRT_iswcntrl(WCHAR wc)
 void qemu_iswcntrl(struct qemu_syscall *call)
 {
     struct qemu_iswcntrl *c = (struct qemu_iswcntrl *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_iswcntrl(c->wc);
 }
 
@@ -2628,7 +2628,7 @@ WINBASEAPI int CDECL MSVCRT_towlower(MSVCRT_wint_t c)
 void qemu_towlower(struct qemu_syscall *call)
 {
     struct qemu_towlower *c = (struct qemu_towlower *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_towlower(c->c);
 }
 

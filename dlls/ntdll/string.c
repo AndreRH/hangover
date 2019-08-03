@@ -94,7 +94,7 @@ WINBASEAPI int CDECL NTDLL_memcmp(const void *ptr1, const void *ptr2, size_t n)
 void qemu_memcmp(struct qemu_syscall *call)
 {
     struct qemu_memcmp *c = (struct qemu_memcmp *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_memcmp(QEMU_G2H(c->ptr1), QEMU_G2H(c->ptr2), c->n);
 }
 
@@ -128,7 +128,7 @@ WINBASEAPI void * CDECL NTDLL_memcpy(void *dst, const void *src, size_t n)
 void qemu_memcpy(struct qemu_syscall *call)
 {
     struct qemu_memcpy *c = (struct qemu_memcpy *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_memcpy(QEMU_G2H(c->dst), QEMU_G2H(c->src), c->n));
 }
 
