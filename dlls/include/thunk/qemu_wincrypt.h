@@ -571,4 +571,26 @@ static inline void CERT_CHAIN_CONTEXT_g2h(CERT_CHAIN_CONTEXT *host,
     host->dwRevocationFreshnessTime = guest->dwRevocationFreshnessTime;
 }
 
+struct qemu_CRYPT_ATTRIBUTE_TYPE_VALUE
+{
+    qemu_ptr                    pszObjId;
+    struct qemu_CRYPT_DATA_BLOB Value;
+};
+
+static inline void CRYPT_ATTRIBUTE_TYPE_VALUE_g2h(CRYPT_ATTRIBUTE_TYPE_VALUE *host,
+        const struct qemu_CRYPT_ATTRIBUTE_TYPE_VALUE *guest)
+{
+    /* FIXME: Not sure if this works for in-place conversion */
+    CRYPT_DATA_BLOB_g2h(&host->Value, &guest->Value);
+    host->pszObjId = (char *)(ULONG_PTR)guest->pszObjId;
+}
+
+static inline void CRYPT_ATTRIBUTE_TYPE_VALUE_h2g(struct qemu_CRYPT_ATTRIBUTE_TYPE_VALUE *guest,
+        const CRYPT_ATTRIBUTE_TYPE_VALUE *host)
+{
+    /* This should be OK for in-place conversion. */
+    guest->pszObjId = (ULONG_PTR)host->pszObjId;
+    CRYPT_DATA_BLOB_h2g(&guest->Value, &host->Value);
+}
+
 #endif

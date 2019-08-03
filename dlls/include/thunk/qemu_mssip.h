@@ -57,4 +57,20 @@ static void SIP_SUBJECTINFO_g2h(SIP_SUBJECTINFO *host, const struct qemu_SIP_SUB
     host->pClientData = (void *)(ULONG_PTR)guest->pClientData;
 }
 
+#include <pshpack8.h>
+struct qemu_SIP_INDIRECT_DATA
+{
+    struct qemu_CRYPT_ATTRIBUTE_TYPE_VALUE Data;
+    struct qemu_CRYPT_ALGORITHM_IDENTIFIER DigestAlgorithm;
+    struct qemu_CRYPT_DATA_BLOB            Digest;
+};
+#include <poppack.h>
+
+static void SIP_INDIRECT_DATA_h2g(struct qemu_SIP_INDIRECT_DATA *guest, const SIP_INDIRECT_DATA *host)
+{
+    CRYPT_ATTRIBUTE_TYPE_VALUE_h2g(&guest->Data, &host->Data);
+    CRYPT_ALGORITHM_IDENTIFIER_h2g(&guest->DigestAlgorithm, &host->DigestAlgorithm);
+    CRYPT_DATA_BLOB_h2g(&guest->Digest, &host->Digest);
+}
+
 #endif

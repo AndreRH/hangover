@@ -21,8 +21,11 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <wintrust.h>
+#include <mssip.h>
 
 #include "thunk/qemu_windows.h"
+#include "thunk/qemu_mssip.h"
 
 #include "windows-user-services.h"
 #include "dll_list.h"
@@ -30,6 +33,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <wine/exception.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_crypt32);
 #endif
 
@@ -69,8 +73,36 @@ WINBASEAPI BOOL WINAPI CryptDecodeObject(DWORD dwCertEncodingType, LPCSTR lpszSt
 void qemu_CryptDecodeObject(struct qemu_syscall *call)
 {
     struct qemu_CryptDecodeObject *c = (struct qemu_CryptDecodeObject *)call;
+    const char *type = QEMU_G2H(c->lpszStructType);
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptDecodeObject(c->dwCertEncodingType, QEMU_G2H(c->lpszStructType), QEMU_G2H(c->pbEncoded), c->cbEncoded, c->dwFlags, QEMU_G2H(c->pvStructInfo), QEMU_G2H(c->pcbStructInfo));
+    c->super.iret = CryptDecodeObject(c->dwCertEncodingType, QEMU_G2H(c->lpszStructType), QEMU_G2H(c->pbEncoded),
+            c->cbEncoded, c->dwFlags, QEMU_G2H(c->pvStructInfo), QEMU_G2H(c->pcbStructInfo));
+
+    if (c->pvStructInfo)
+    {
+        __TRY
+        {
+            if (IS_INTOID(type))
+            {
+                WINE_FIXME("Intoid not handled yet.\n");
+            }
+            else if (!strcmp(type, SPC_INDIRECT_DATA_OBJID))
+            {
+                SIP_INDIRECT_DATA_h2g(QEMU_G2H(c->pvStructInfo), QEMU_G2H(c->pvStructInfo));
+            }
+            else
+            {
+                WINE_FIXME("String struct types not handled yet.\n");
+                WINE_FIXME("Type is \"%s\"\n", type);
+            }
+        }
+        __EXCEPT_PAGE_FAULT
+        {
+            WINE_ERR("page fault\n");
+        }
+        __ENDTRY
+    }
 }
 
 #endif
@@ -113,8 +145,11 @@ WINBASEAPI BOOL WINAPI CryptDecodeObjectEx(DWORD dwCertEncodingType, LPCSTR lpsz
 void qemu_CryptDecodeObjectEx(struct qemu_syscall *call)
 {
     struct qemu_CryptDecodeObjectEx *c = (struct qemu_CryptDecodeObjectEx *)call;
+    const char *type = QEMU_G2H(c->pvStructInfo);
+
     WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptDecodeObjectEx(c->dwCertEncodingType, QEMU_G2H(c->lpszStructType), QEMU_G2H(c->pbEncoded), c->cbEncoded, c->dwFlags, QEMU_G2H(c->pDecodePara), QEMU_G2H(c->pvStructInfo), QEMU_G2H(c->pcbStructInfo));
+
+    c->super.iret = CryptDecodeObjectEx(c->dwCertEncodingType, QEMU_G2H(c->lpszStructType), QEMU_G2H(c->pbEncoded), c->cbEncoded, c->dwFlags, QEMU_G2H(c->pDecodePara), type, QEMU_G2H(c->pcbStructInfo));
 }
 
 #endif
