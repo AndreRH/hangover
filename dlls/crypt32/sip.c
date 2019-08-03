@@ -128,40 +128,6 @@ void qemu_CryptSIPRetrieveSubjectGuid(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_CryptSIPLoad
-{
-    struct qemu_syscall super;
-    uint64_t pgSubject;
-    uint64_t dwFlags;
-    uint64_t pSipDispatch;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI BOOL WINAPI CryptSIPLoad (const GUID *pgSubject, DWORD dwFlags, SIP_DISPATCH_INFO *pSipDispatch)
-{
-    struct qemu_CryptSIPLoad call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIPLOAD);
-    call.pgSubject = (ULONG_PTR)pgSubject;
-    call.dwFlags = dwFlags;
-    call.pSipDispatch = (ULONG_PTR)pSipDispatch;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_CryptSIPLoad(struct qemu_syscall *call)
-{
-    struct qemu_CryptSIPLoad *c = (struct qemu_CryptSIPLoad *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptSIPLoad(QEMU_G2H(c->pgSubject), c->dwFlags, QEMU_G2H(c->pSipDispatch));
-}
-
-#endif
-
 struct qemu_CryptSIPCreateIndirectData
 {
     struct qemu_syscall super;
@@ -172,7 +138,7 @@ struct qemu_CryptSIPCreateIndirectData
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptSIPCreateIndirectData(SIP_SUBJECTINFO* pSubjectInfo, DWORD* pcbIndirectData, SIP_INDIRECT_DATA* pIndirectData)
+BOOL WINAPI crypt32_CryptSIPCreateIndirectData(SIP_SUBJECTINFO* pSubjectInfo, DWORD* pcbIndirectData, SIP_INDIRECT_DATA* pIndirectData)
 {
     struct qemu_CryptSIPCreateIndirectData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIPCREATEINDIRECTDATA);
@@ -208,7 +174,7 @@ struct qemu_CryptSIPGetSignedDataMsg
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptSIPGetSignedDataMsg(SIP_SUBJECTINFO* pSubjectInfo, DWORD* pdwEncodingType, DWORD dwIndex, DWORD* pcbSignedDataMsg, BYTE* pbSignedDataMsg)
+BOOL WINAPI crypt32_CryptSIPGetSignedDataMsg(SIP_SUBJECTINFO* pSubjectInfo, DWORD* pdwEncodingType, DWORD dwIndex, DWORD* pcbSignedDataMsg, BYTE* pbSignedDataMsg)
 {
     struct qemu_CryptSIPGetSignedDataMsg call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIPGETSIGNEDDATAMSG);
@@ -246,7 +212,7 @@ struct qemu_CryptSIPPutSignedDataMsg
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptSIPPutSignedDataMsg(SIP_SUBJECTINFO* pSubjectInfo, DWORD pdwEncodingType, DWORD* pdwIndex, DWORD cbSignedDataMsg, BYTE* pbSignedDataMsg)
+BOOL WINAPI crypt32_CryptSIPPutSignedDataMsg(SIP_SUBJECTINFO* pSubjectInfo, DWORD pdwEncodingType, DWORD* pdwIndex, DWORD cbSignedDataMsg, BYTE* pbSignedDataMsg)
 {
     struct qemu_CryptSIPPutSignedDataMsg call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIPPUTSIGNEDDATAMSG);
@@ -281,7 +247,7 @@ struct qemu_CryptSIPRemoveSignedDataMsg
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptSIPRemoveSignedDataMsg(SIP_SUBJECTINFO* pSubjectInfo, DWORD dwIndex)
+BOOL WINAPI crypt32_CryptSIPRemoveSignedDataMsg(SIP_SUBJECTINFO* pSubjectInfo, DWORD dwIndex)
 {
     struct qemu_CryptSIPRemoveSignedDataMsg call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIPREMOVESIGNEDDATAMSG);
@@ -313,7 +279,8 @@ struct qemu_CryptSIPVerifyIndirectData
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptSIPVerifyIndirectData(SIP_SUBJECTINFO* pSubjectInfo, SIP_INDIRECT_DATA* pIndirectData)
+BOOL WINAPI crypt32_CryptSIPVerifyIndirectData(SIP_SUBJECTINFO* pSubjectInfo,
+        SIP_INDIRECT_DATA* pIndirectData)
 {
     struct qemu_CryptSIPVerifyIndirectData call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIPVERIFYINDIRECTDATA);
@@ -332,6 +299,66 @@ void qemu_CryptSIPVerifyIndirectData(struct qemu_syscall *call)
     struct qemu_CryptSIPVerifyIndirectData *c = (struct qemu_CryptSIPVerifyIndirectData *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = CryptSIPVerifyIndirectData(QEMU_G2H(c->pSubjectInfo), QEMU_G2H(c->pIndirectData));
+}
+
+#endif
+
+struct qemu_CryptSIPLoad
+{
+    struct qemu_syscall super;
+    uint64_t pgSubject;
+    uint64_t dwFlags;
+    uint64_t pSipDispatch;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI CryptSIPLoad (const GUID *pgSubject, DWORD dwFlags,
+                                     SIP_DISPATCH_INFO *pSipDispatch)
+{
+    struct qemu_CryptSIPLoad call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTSIPLOAD);
+    call.pgSubject = (ULONG_PTR)pgSubject;
+    call.dwFlags = dwFlags;
+    call.pSipDispatch = (ULONG_PTR)pSipDispatch;
+
+    qemu_syscall(&call.super);
+    if (call.super.iret)
+    {
+        pSipDispatch->hSIP = NULL;
+        pSipDispatch->pfGet = crypt32_CryptSIPGetSignedDataMsg;
+        pSipDispatch->pfPut = crypt32_CryptSIPPutSignedDataMsg;
+        pSipDispatch->pfCreate = crypt32_CryptSIPCreateIndirectData;
+        pSipDispatch->pfVerify = crypt32_CryptSIPVerifyIndirectData;
+        pSipDispatch->pfRemove = crypt32_CryptSIPRemoveSignedDataMsg;
+    }
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_CryptSIPLoad(struct qemu_syscall *call)
+{
+    struct qemu_CryptSIPLoad *c = (struct qemu_CryptSIPLoad *)call;
+    SIP_DISPATCH_INFO stack, *info= &stack;
+    WINE_TRACE("\n");
+
+    if (!QEMU_G2H(c->pSipDispatch))
+        info = NULL;
+
+    c->super.iret = CryptSIPLoad(QEMU_G2H(c->pgSubject), c->dwFlags, info);
+
+    if (c->super.iret)
+    {
+        HMODULE crypt32 = GetModuleHandleA("crypt32");
+        void *p_CryptSIPGetSignedDataMsg = GetProcAddress(crypt32, "CryptSIPGetSignedDataMsg");
+        void *p_CryptSIPPutSignedDataMsg = GetProcAddress(crypt32, "CryptSIPPutSignedDataMsg");
+        if (info->pfGet != p_CryptSIPGetSignedDataMsg)
+            WINE_ERR("Got unexpected pfGet pointer\n");
+        if (info->pfPut != p_CryptSIPPutSignedDataMsg)
+            WINE_ERR("Got unexpected pfPut pointer\n");
+    }
 }
 
 #endif

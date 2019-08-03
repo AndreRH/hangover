@@ -170,15 +170,15 @@
 @ stdcall CryptRegisterOIDFunction(long str str wstr str)
 @ stdcall CryptRegisterOIDInfo(ptr long)
 @ stdcall CryptSIPAddProvider(ptr)
-@ stdcall CryptSIPCreateIndirectData(ptr ptr ptr)
-@ stdcall CryptSIPGetSignedDataMsg(ptr ptr long ptr ptr)
+@ stdcall CryptSIPCreateIndirectData(ptr ptr ptr) crypt32_CryptSIPCreateIndirectData
+@ stdcall CryptSIPGetSignedDataMsg(ptr ptr long ptr ptr) crypt32_CryptSIPGetSignedDataMsg
 @ stdcall CryptSIPLoad(ptr long ptr)
-@ stdcall CryptSIPPutSignedDataMsg(ptr long ptr long ptr)
+@ stdcall CryptSIPPutSignedDataMsg(ptr long ptr long ptr) crypt32_CryptSIPPutSignedDataMsg
 @ stdcall CryptSIPRemoveProvider(ptr)
-@ stdcall CryptSIPRemoveSignedDataMsg(ptr long)
+@ stdcall CryptSIPRemoveSignedDataMsg(ptr long) crypt32_CryptSIPRemoveSignedDataMsg
 @ stdcall CryptSIPRetrieveSubjectGuid(wstr long ptr)
 @ stdcall CryptSIPRetrieveSubjectGuidForCatalogFile(wstr long ptr)
-@ stdcall CryptSIPVerifyIndirectData(ptr ptr)
+@ stdcall CryptSIPVerifyIndirectData(ptr ptr) crypt32_CryptSIPVerifyIndirectData
 @ stub CryptSetAsyncParam
 @ stdcall CryptSetOIDFunctionValue(long str str wstr long ptr long)
 @ stub CryptSetProviderU
