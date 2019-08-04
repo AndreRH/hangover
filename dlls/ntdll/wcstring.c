@@ -275,7 +275,7 @@ WINBASEAPI LPWSTR CDECL NTDLL_wcschr(LPCWSTR str, WCHAR ch)
 void qemu_wcschr(struct qemu_syscall *call)
 {
     struct qemu_wcschr *c = (struct qemu_wcschr *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)p_wcschr(QEMU_G2H(c->str), c->ch);
 }
 
@@ -899,7 +899,7 @@ WINBASEAPI INT CDECL NTDLL_iswdigit(WCHAR wc)
 void qemu_iswdigit(struct qemu_syscall *call)
 {
     struct qemu_iswdigit *c = (struct qemu_iswdigit *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_iswdigit(c->wc);
 }
 
@@ -959,7 +959,7 @@ WINBASEAPI INT CDECL NTDLL_iswspace(WCHAR wc)
 void qemu_iswspace(struct qemu_syscall *call)
 {
     struct qemu_iswspace *c = (struct qemu_iswspace *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_iswspace(c->wc);
 }
 
