@@ -2566,7 +2566,7 @@ WINBASEAPI int CDECL MSVCRT_towupper(MSVCRT_wint_t c)
 void qemu_towupper(struct qemu_syscall *call)
 {
     struct qemu_towupper *c = (struct qemu_towupper *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_towupper(c->c);
 }
 
