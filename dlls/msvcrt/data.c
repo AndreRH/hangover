@@ -43,6 +43,7 @@ unsigned int MSVCRT__fmode = 0;
 double MSVCRT__HUGE = 0.0;
 int MSVCRT___argc = 0;
 char **MSVCRT___argv = NULL;
+WCHAR **MSVCRT___winitenv = NULL;
 
 void msvcrt_data_init(double huge, int argc, char **argv)
 {
@@ -63,6 +64,25 @@ char** CDECL MSVCRT___p__acmdln(void)
 {
     return &MSVCRT__acmdln;
 }
+
+WCHAR** CDECL MSVCRT___p__wcmdln(void)
+{
+    return &MSVCRT__wcmdln;
+}
+
+char*** CDECL __p___initenv(void)
+{
+    return &MSVCRT___initenv;
+}
+
+/*********************************************************************
+ *        __p___winitenv (MSVCRT.@)
+ */
+WCHAR*** CDECL __p___winitenv(void)
+{
+    return &MSVCRT___winitenv;
+}
+
 
 #endif
 

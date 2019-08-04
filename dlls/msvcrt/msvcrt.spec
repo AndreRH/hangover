@@ -250,10 +250,10 @@
 @ extern __mb_cur_max msvcrt.__qemu_native_data__
 # @ cdecl __p___argc() MSVCRT___p___argc
 # @ cdecl __p___argv() MSVCRT___p___argv
-# @ cdecl __p___initenv()
+@ cdecl __p___initenv()
 @ cdecl __p___mb_cur_max()
 # @ cdecl __p___wargv() MSVCRT___p___wargv
-# @ cdecl __p___winitenv()
+@ cdecl __p___winitenv()
 @ cdecl __p__acmdln() MSVCRT___p__acmdln
 @ cdecl __p__amblksiz()
 # @ cdecl __p__commode()
@@ -271,7 +271,7 @@
 @ stub __p__pwctype()
 @ cdecl __p__timezone() MSVCRT___p__timezone
 @ cdecl __p__tzname()
-# @ cdecl __p__wcmdln()
+@ cdecl __p__wcmdln() MSVCRT___p__wcmdln
 @ cdecl __p__wenviron() MSVCRT___p__wenviron
 # @ cdecl __p__winmajor()
 # @ cdecl __p__winminor()
@@ -297,7 +297,7 @@
 @ cdecl __wcserror_s(ptr long wstr) MSVCRT___wcserror_s
 # stub __wcsncnt(wstr long)
 @ cdecl __wgetmainargs(ptr ptr ptr long ptr)
-# @ extern __winitenv MSVCRT___winitenv
+@ extern __winitenv MSVCRT___winitenv
 # @ cdecl _abnormal_termination()
 @ cdecl -ret64 _abs64(int64)
 @ cdecl _access(str long) MSVCRT__access
