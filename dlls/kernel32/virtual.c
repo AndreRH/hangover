@@ -1006,7 +1006,7 @@ WINBASEAPI BOOL WINAPI IsBadStringPtrA(LPCSTR str, UINT_PTR max)
 void qemu_IsBadStringPtrA(struct qemu_syscall *call)
 {
     struct qemu_IsBadStringPtrA *c = (struct qemu_IsBadStringPtrA *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsBadStringPtrA(QEMU_G2H(c->str), c->max);
 }
 
@@ -1038,7 +1038,7 @@ WINBASEAPI BOOL WINAPI IsBadStringPtrW(LPCWSTR str, UINT_PTR max)
 void qemu_IsBadStringPtrW(struct qemu_syscall *call)
 {
     struct qemu_IsBadStringPtrW *c = (struct qemu_IsBadStringPtrW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = IsBadStringPtrW(QEMU_G2H(c->str), c->max);
 }
 
