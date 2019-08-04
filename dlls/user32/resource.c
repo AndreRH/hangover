@@ -286,6 +286,8 @@ WINUSERAPI INT WINAPI LoadStringW(HINSTANCE instance, UINT resource_id, LPWSTR b
     call.buflen = (ULONG_PTR)buflen;
 
     qemu_syscall(&call.super);
+    if (!buflen && call.super.iret)
+        *((WCHAR **)buffer) = (WCHAR *)(ULONG_PTR)call.buffer;
 
     return call.super.iret;
 }
@@ -296,11 +298,14 @@ void qemu_LoadStringW(struct qemu_syscall *call)
 {
     struct qemu_LoadStringW *c = (struct qemu_LoadStringW *)call;
     HINSTANCE instance;
+    WCHAR *buffer;
+
     WINE_TRACE("\n");
-
     instance = qemu_ops->qemu_module_g2h(c->instance);
+    buffer = QEMU_G2H(c->buffer);
 
-    c->super.iret = LoadStringW(instance, c->resource_id, QEMU_G2H(c->buffer), c->buflen);
+    c->super.iret = LoadStringW(instance, c->resource_id, c->buflen ? buffer : (WCHAR *)&buffer, c->buflen);
+    c->buffer = QEMU_H2G(buffer);
 }
 
 #endif
@@ -336,10 +341,11 @@ void qemu_LoadStringA(struct qemu_syscall *call)
 {
     struct qemu_LoadStringA *c = (struct qemu_LoadStringA *)call;
     HINSTANCE instance;
-    WINE_TRACE("\n");
 
+    WINE_TRACE("\n");
     instance = qemu_ops->qemu_module_g2h(c->instance);
 
+    /* LoadStringA always writes the contents into the dest buffer and fails on buflen = 0. */
     c->super.iret = LoadStringA(instance, c->resource_id, QEMU_G2H(c->buffer), c->buflen);
 }
 
