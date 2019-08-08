@@ -1222,10 +1222,6 @@ static const syscall_handler dll_functions[] =
     qemu_ZombifyActCtx,
 };
 
-/* Wine's TEB access is slow because it doesn't store it in a CPU register yet.
- * Cache it using ELF TLS for now. Yeah, it's ugly. */
-__thread TEB *teb;
-
 /* RtlSetCurrentDirectory_U is non-trivial and I'd have to use an
  * actual hook that keeps the function callable. SetCurrentDirectoryA/W
  * is its only caller in Wine, so hook it to fix up the guest TEB,
@@ -1245,9 +1241,7 @@ static BOOL WINAPI hook_SetCurrentDirectoryW(const WCHAR *dir)
     {
         TEB *qemu_teb = qemu_ops->qemu_getTEB();
         TEB32 *qemu_teb32 = qemu_ops->qemu_getTEB32();
-
-        if (!teb)
-            teb = NtCurrentTeb();
+        TEB *teb = NtCurrentTeb();
 
         /* No need to update dosPath, it always points to the same place anyway. */
         qemu_teb->Peb->ProcessParameters->CurrentDirectory.Handle =
@@ -1270,6 +1264,7 @@ static WCHAR *FILE_name_AtoW( LPCSTR name, BOOL alloc )
     ANSI_STRING str;
     UNICODE_STRING strW, *pstrW;
     NTSTATUS status;
+    TEB *teb = NtCurrentTeb();
 
     RtlInitAnsiString( &str, name );
     pstrW = alloc ? &strW : &teb->StaticUnicodeString;
@@ -1291,9 +1286,7 @@ static BOOL WINAPI hook_SetCurrentDirectoryA(const CHAR *dir)
     WCHAR *dirW;
     UNICODE_STRING strW;
     NTSTATUS status;
-
-    if (!teb)
-        teb = NtCurrentTeb();
+    TEB *teb = NtCurrentTeb();
 
     if (!(dirW = FILE_name_AtoW( dir, FALSE ))) return FALSE;
     RtlInitUnicodeString( &strW, dirW );
