@@ -55,13 +55,16 @@
 @ stub KiUserCallbackDispatcher
 @ stub KiUserExceptionDispatcher
 # @ stub LdrAccessOutOfProcessResourcef
+@ stdcall LdrAccessResource(long ptr ptr ptr)
 # @ stub LdrAlternateResourcesEnabled
 # @ stub LdrCreateOutOfProcessImage
 # @ stub LdrDestroyOutOfProcessImage
 @ stub LdrEnumResources
 # @ stub LdrFindCreateProcessManifest
 @ stdcall LdrFindEntryForAddress(ptr ptr) ntdll_LdrFindEntryForAddress
+@ stdcall LdrFindResourceDirectory_U(long ptr long ptr)
 # @ stub LdrFindResourceEx_U
+@ stdcall LdrFindResource_U(long ptr long ptr)
 @ stub LdrFlushAlternateResourceModules
 # @ stub LdrGetDllHandleEx
 # @ stub LdrHotPatchRoutine
@@ -212,8 +215,8 @@
 # @ stub NtQueryBootEntryOrder
 # @ stub NtQueryBootOptions
 # @ stub NtQueryDebugFilterState
-# @ stdcall NtQueryDefaultLocale(long ptr)
-# @ stdcall NtQueryDefaultUILanguage(ptr)
+@ stdcall NtQueryDefaultLocale(long ptr)
+@ stdcall NtQueryDefaultUILanguage(ptr)
 # @ stdcall NtQueryDirectoryFile(long long ptr ptr ptr ptr long long long ptr long)
 @ stdcall NtQueryDirectoryObject(long ptr long long long ptr ptr)
 @ stdcall NtQueryEaFile(long ptr ptr long long ptr long ptr long)
@@ -226,7 +229,7 @@
 @ stdcall NtQueryInformationProcess(long long ptr long ptr)
 @ stdcall NtQueryInformationThread(long long ptr long ptr)
 @ stdcall NtQueryInformationToken(long long ptr long ptr)
-# @ stdcall NtQueryInstallUILanguage(ptr)
+@ stdcall NtQueryInstallUILanguage(ptr)
 @ stub NtQueryIntervalProfile
 @ stdcall NtQueryIoCompletion(long long ptr long ptr)
 @ stdcall NtQueryKey (long long ptr long ptr)
@@ -291,8 +294,8 @@
 # @ stdcall NtSetContextThread(long ptr)
 @ stub NtSetDebugFilterState
 @ stub NtSetDefaultHardErrorPort
-# @ stdcall NtSetDefaultLocale(long long)
-# @ stdcall NtSetDefaultUILanguage(long)
+@ stdcall NtSetDefaultLocale(long long)
+@ stdcall NtSetDefaultUILanguage(long)
 @ stdcall NtSetEaFile(long ptr ptr long)
 @ stdcall NtSetEvent(long ptr)
 # @ stub NtSetEventBoostPriority
@@ -573,7 +576,7 @@
 # @ stdcall RtlFindLeastSignificantBit(int64)
 # @ stdcall RtlFindLongestRunClear(ptr ptr)
 # @ stdcall RtlFindLongestRunSet(ptr ptr)
-# @ stdcall RtlFindMessage(long long long long ptr)
+@ stdcall RtlFindMessage(long long long long ptr)
 # @ stdcall RtlFindMostSignificantBit(int64)
 # @ stdcall RtlFindNextForwardRunClear(ptr long ptr)
 # @ stdcall RtlFindNextForwardRunSet(ptr long ptr)
@@ -586,7 +589,7 @@
 @ stub RtlFlushPropertySet
 # @ stub RtlFlushSecureMemoryCache
 @ stdcall RtlFormatCurrentUserKeyPath(ptr)
-# @ stdcall RtlFormatMessage(ptr long long long long ptr ptr long)
+@ stdcall RtlFormatMessage(ptr long long long long ptr ptr long)
 @ stdcall RtlFreeAnsiString(ptr)
 # @ stdcall RtlFreeHandle(ptr ptr)
 @ stdcall RtlFreeHeap(long long ptr)

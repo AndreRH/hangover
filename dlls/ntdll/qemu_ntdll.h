@@ -69,7 +69,10 @@ enum ntdll_calls
     CALL_ISWSPACE,
     CALL_ISWXDIGIT,
     CALL_ISXDIGIT,
+    CALL_LDRACCESSRESOURCE,
     CALL_LDRFINDENTRYFORADDRESS,
+    CALL_LDRFINDRESOURCE_U,
+    CALL_LDRFINDRESOURCEDIRECTORY_U,
     CALL_MBSTOWCS,
     CALL_MEMCHR,
     CALL_MEMCMP,
@@ -167,6 +170,8 @@ enum ntdll_calls
     CALL_NTPRIVILEGECHECK,
     CALL_NTPULSEEVENT,
     CALL_NTQUERYATTRIBUTESFILE,
+    CALL_NTQUERYDEFAULTLOCALE,
+    CALL_NTQUERYDEFAULTUILANGUAGE,
     CALL_NTQUERYDIRECTORYOBJECT,
     CALL_NTQUERYEAFILE,
     CALL_NTQUERYEVENT,
@@ -176,6 +181,7 @@ enum ntdll_calls
     CALL_NTQUERYINFORMATIONPROCESS,
     CALL_NTQUERYINFORMATIONTHREAD,
     CALL_NTQUERYINFORMATIONTOKEN,
+    CALL_NTQUERYINSTALLUILANGUAGE,
     CALL_NTQUERYIOCOMPLETION,
     CALL_NTQUERYKEY,
     CALL_NTQUERYLICENSEVALUE,
@@ -214,6 +220,8 @@ enum ntdll_calls
     CALL_NTSAVEKEY,
     CALL_NTSECURECONNECTPORT,
     CALL_NTSETCONTEXTTHREAD,
+    CALL_NTSETDEFAULTLOCALE,
+    CALL_NTSETDEFAULTUILANGUAGE,
     CALL_NTSETEAFILE,
     CALL_NTSETEVENT,
     CALL_NTSETINFORMATIONFILE,
@@ -351,9 +359,11 @@ enum ntdll_calls
     CALL_RTLFINDACTIVATIONCONTEXTSECTIONGUID,
     CALL_RTLFINDACTIVATIONCONTEXTSECTIONSTRING,
     CALL_RTLFINDCHARINUNICODESTRING,
+    CALL_RTLFINDMESSAGE,
     CALL_RTLFIRSTENTRYSLIST,
     CALL_RTLFIRSTFREEACE,
     CALL_RTLFORMATCURRENTUSERKEYPATH,
+    CALL_RTLFORMATMESSAGE,
     CALL_RTLFREEANSISTRING,
     CALL_RTLFREEHEAP,
     CALL_RTLFREEOEMSTRING,
@@ -655,6 +665,7 @@ void qemu__ltoa(struct qemu_syscall *call);
 void qemu__ltow(struct qemu_syscall *call);
 void qemu__memccpy(struct qemu_syscall *call);
 void qemu__memicmp(struct qemu_syscall *call);
+void qemu__snprintf_s(struct qemu_syscall *call);
 void qemu__splitpath(struct qemu_syscall *call);
 void qemu__stricmp(struct qemu_syscall *call);
 void qemu__strlwr(struct qemu_syscall *call);
@@ -666,6 +677,7 @@ void qemu__ui64toa(struct qemu_syscall *call);
 void qemu__ui64tow(struct qemu_syscall *call);
 void qemu__ultoa(struct qemu_syscall *call);
 void qemu__ultow(struct qemu_syscall *call);
+void qemu__vsnprintf_s(struct qemu_syscall *call);
 void qemu__wcsicmp(struct qemu_syscall *call);
 void qemu__wcslwr(struct qemu_syscall *call);
 void qemu__wcsnicmp(struct qemu_syscall *call);
@@ -700,7 +712,10 @@ void qemu_iswlower(struct qemu_syscall *call);
 void qemu_iswspace(struct qemu_syscall *call);
 void qemu_iswxdigit(struct qemu_syscall *call);
 void qemu_isxdigit(struct qemu_syscall *call);
+void qemu_LdrAccessResource(struct qemu_syscall *call);
 void qemu_LdrFindEntryForAddress(struct qemu_syscall *call);
+void qemu_LdrFindResource_U(struct qemu_syscall *call);
+void qemu_LdrFindResourceDirectory_U(struct qemu_syscall *call);
 void qemu_mbstowcs(struct qemu_syscall *call);
 void qemu_memchr(struct qemu_syscall *call);
 void qemu_memcmp(struct qemu_syscall *call);
@@ -746,6 +761,13 @@ void qemu_NtDeleteKey(struct qemu_syscall *call);
 void qemu_NtDeleteValueKey(struct qemu_syscall *call);
 void qemu_NtDeviceIoControlFile(struct qemu_syscall *call);
 void qemu_NtDisplayString(struct qemu_syscall *call);
+void qemu_NTDLL__snprintf(struct qemu_syscall *call);
+void qemu_NTDLL__snwprintf(struct qemu_syscall *call);
+void qemu_NTDLL__vsnprintf(struct qemu_syscall *call);
+void qemu_NTDLL__vsnwprintf(struct qemu_syscall *call);
+void qemu_NTDLL_sprintf(struct qemu_syscall *call);
+void qemu_NTDLL_swprintf(struct qemu_syscall *call);
+void qemu_NTDLL_vsprintf(struct qemu_syscall *call);
 void qemu_NtDuplicateObject(struct qemu_syscall *call);
 void qemu_NtDuplicateToken(struct qemu_syscall *call);
 void qemu_NtEnumerateKey(struct qemu_syscall *call);
@@ -791,6 +813,8 @@ void qemu_NtPowerInformation(struct qemu_syscall *call);
 void qemu_NtPrivilegeCheck(struct qemu_syscall *call);
 void qemu_NtPulseEvent(struct qemu_syscall *call);
 void qemu_NtQueryAttributesFile(struct qemu_syscall *call);
+void qemu_NtQueryDefaultLocale(struct qemu_syscall *call);
+void qemu_NtQueryDefaultUILanguage(struct qemu_syscall *call);
 void qemu_NtQueryDirectoryObject(struct qemu_syscall *call);
 void qemu_NtQueryEaFile(struct qemu_syscall *call);
 void qemu_NtQueryEvent(struct qemu_syscall *call);
@@ -800,6 +824,7 @@ void qemu_NtQueryInformationJobObject(struct qemu_syscall *call);
 void qemu_NtQueryInformationProcess(struct qemu_syscall *call);
 void qemu_NtQueryInformationThread(struct qemu_syscall *call);
 void qemu_NtQueryInformationToken(struct qemu_syscall *call);
+void qemu_NtQueryInstallUILanguage(struct qemu_syscall *call);
 void qemu_NtQueryIoCompletion(struct qemu_syscall *call);
 void qemu_NtQueryKey(struct qemu_syscall *call);
 void qemu_NtQueryLicenseValue(struct qemu_syscall *call);
@@ -838,6 +863,8 @@ void qemu_NtResumeThread(struct qemu_syscall *call);
 void qemu_NtSaveKey(struct qemu_syscall *call);
 void qemu_NtSecureConnectPort(struct qemu_syscall *call);
 void qemu_NtSetContextThread(struct qemu_syscall *call);
+void qemu_NtSetDefaultLocale(struct qemu_syscall *call);
+void qemu_NtSetDefaultUILanguage(struct qemu_syscall *call);
 void qemu_NtSetEaFile(struct qemu_syscall *call);
 void qemu_NtSetEvent(struct qemu_syscall *call);
 void qemu_NtSetInformationFile(struct qemu_syscall *call);
@@ -975,9 +1002,11 @@ void qemu_RtlFillMemoryUlong(struct qemu_syscall *call);
 void qemu_RtlFindActivationContextSectionGuid(struct qemu_syscall *call);
 void qemu_RtlFindActivationContextSectionString(struct qemu_syscall *call);
 void qemu_RtlFindCharInUnicodeString(struct qemu_syscall *call);
+void qemu_RtlFindMessage(struct qemu_syscall *call);
 void qemu_RtlFirstEntrySList(struct qemu_syscall *call);
 void qemu_RtlFirstFreeAce(struct qemu_syscall *call);
 void qemu_RtlFormatCurrentUserKeyPath(struct qemu_syscall *call);
+void qemu_RtlFormatMessage(struct qemu_syscall *call);
 void qemu_RtlFreeAnsiString(struct qemu_syscall *call);
 void qemu_RtlFreeHeap(struct qemu_syscall *call);
 void qemu_RtlFreeOemString(struct qemu_syscall *call);
@@ -1234,15 +1263,6 @@ void qemu_wcstoul(struct qemu_syscall *call);
 void qemu_WinSqmEndSession(struct qemu_syscall *call);
 void qemu_WinSqmIsOptedIn(struct qemu_syscall *call);
 void qemu_WinSqmStartSession(struct qemu_syscall *call);
-void qemu_NTDLL__snprintf(struct qemu_syscall *call);
-void qemu_NTDLL__snwprintf(struct qemu_syscall *call);
-void qemu__snprintf_s(struct qemu_syscall *call);
-void qemu_NTDLL_sprintf(struct qemu_syscall *call);
-void qemu_NTDLL_swprintf(struct qemu_syscall *call);
-void qemu_NTDLL__vsnprintf(struct qemu_syscall *call);
-void qemu_NTDLL__vsnwprintf(struct qemu_syscall *call);
-void qemu__vsnprintf_s(struct qemu_syscall *call);
-void qemu_NTDLL_vsprintf(struct qemu_syscall *call);
 
 WCHAR *(* CDECL p_wcsrchr)(WCHAR *str, WCHAR ch);
 void * (* CDECL p_memchr)(const void *ptr, int c, size_t n);
