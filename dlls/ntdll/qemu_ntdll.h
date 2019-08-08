@@ -192,6 +192,8 @@ enum ntdll_calls
     CALL_NTQUERYSECURITYOBJECT,
     CALL_NTQUERYSEMAPHORE,
     CALL_NTQUERYSYMBOLICLINKOBJECT,
+    CALL_NTQUERYSYSTEMENVIRONMENTVALUE,
+    CALL_NTQUERYSYSTEMENVIRONMENTVALUEEX,
     CALL_NTQUERYSYSTEMINFORMATION,
     CALL_NTQUERYSYSTEMINFORMATIONEX,
     CALL_NTQUERYSYSTEMTIME,
@@ -314,7 +316,10 @@ enum ntdll_calls
     CALL_RTLCOPYUNICODESTRING,
     CALL_RTLCREATEACL,
     CALL_RTLCREATEACTIVATIONCONTEXT,
+    CALL_RTLCREATEENVIRONMENT,
     CALL_RTLCREATEHEAP,
+    CALL_RTLCREATEPROCESSPARAMETERS,
+    CALL_RTLCREATEPROCESSPARAMETERSEX,
     CALL_RTLCREATESECURITYDESCRIPTOR,
     CALL_RTLCREATETIMER,
     CALL_RTLCREATETIMERQUEUE,
@@ -334,9 +339,12 @@ enum ntdll_calls
     CALL_RTLDELETESECURITYOBJECT,
     CALL_RTLDELETETIMER,
     CALL_RTLDELETETIMERQUEUEEX,
+    CALL_RTLDENORMALIZEPROCESSPARAMS,
     CALL_RTLDEREGISTERWAIT,
     CALL_RTLDEREGISTERWAITEX,
+    CALL_RTLDESTROYENVIRONMENT,
     CALL_RTLDESTROYHEAP,
+    CALL_RTLDESTROYPROCESSPARAMETERS,
     CALL_RTLDETERMINEDOSPATHNAMETYPE_U,
     CALL_RTLDOSPATHNAMETONTPATHNAME_U,
     CALL_RTLDOSSEARCHPATH_U,
@@ -354,6 +362,8 @@ enum ntdll_calls
     CALL_RTLEQUALSTRING,
     CALL_RTLEQUALUNICODESTRING,
     CALL_RTLERASEUNICODESTRING,
+    CALL_RTLEXPANDENVIRONMENTSTRINGS,
+    CALL_RTLEXPANDENVIRONMENTSTRINGS_U,
     CALL_RTLFILLMEMORY,
     CALL_RTLFILLMEMORYULONG,
     CALL_RTLFINDACTIVATIONCONTEXTSECTIONGUID,
@@ -444,6 +454,7 @@ enum ntdll_calls
     CALL_RTLMULTIBYTETOUNICODEN,
     CALL_RTLMULTIBYTETOUNICODESIZE,
     CALL_RTLNEWSECURITYOBJECT,
+    CALL_RTLNORMALIZEPROCESSPARAMS,
     CALL_RTLNTSTATUSTODOSERROR,
     CALL_RTLNTSTATUSTODOSERRORNOTEB,
     CALL_RTLOEMSTRINGTOUNICODESIZE,
@@ -463,6 +474,7 @@ enum ntdll_calls
     CALL_RTLPWAITFORCRITICALSECTION,
     CALL_RTLQUERYDEPTHSLIST,
     CALL_RTLQUERYDYNAMICTIMEZONEINFORMATION,
+    CALL_RTLQUERYENVIRONMENTVARIABLE_U,
     CALL_RTLQUERYHEAPINFORMATION,
     CALL_RTLQUERYINFORMATIONACL,
     CALL_RTLQUERYINFORMATIONACTIVATIONCONTEXT,
@@ -492,8 +504,10 @@ enum ntdll_calls
     CALL_RTLSETCONTROLSECURITYDESCRIPTOR,
     CALL_RTLSETCRITICALSECTIONSPINCOUNT,
     CALL_RTLSETCURRENTDIRECTORY_U,
+    CALL_RTLSETCURRENTENVIRONMENT,
     CALL_RTLSETCURRENTTRANSACTION,
     CALL_RTLSETDACLSECURITYDESCRIPTOR,
+    CALL_RTLSETENVIRONMENTVARIABLE,
     CALL_RTLSETGROUPSECURITYDESCRIPTOR,
     CALL_RTLSETHEAPINFORMATION,
     CALL_RTLSETIOCOMPLETIONCALLBACK,
@@ -835,6 +849,8 @@ void qemu_NtQueryPerformanceCounter(struct qemu_syscall *call);
 void qemu_NtQuerySecurityObject(struct qemu_syscall *call);
 void qemu_NtQuerySemaphore(struct qemu_syscall *call);
 void qemu_NtQuerySymbolicLinkObject(struct qemu_syscall *call);
+void qemu_NtQuerySystemEnvironmentValue(struct qemu_syscall *call);
+void qemu_NtQuerySystemEnvironmentValueEx(struct qemu_syscall *call);
 void qemu_NtQuerySystemInformation(struct qemu_syscall *call);
 void qemu_NtQuerySystemInformationEx(struct qemu_syscall *call);
 void qemu_NtQuerySystemTime(struct qemu_syscall *call);
@@ -957,7 +973,10 @@ void qemu_RtlCopyString(struct qemu_syscall *call);
 void qemu_RtlCopyUnicodeString(struct qemu_syscall *call);
 void qemu_RtlCreateAcl(struct qemu_syscall *call);
 void qemu_RtlCreateActivationContext(struct qemu_syscall *call);
+void qemu_RtlCreateEnvironment(struct qemu_syscall *call);
 void qemu_RtlCreateHeap(struct qemu_syscall *call);
+void qemu_RtlCreateProcessParameters(struct qemu_syscall *call);
+void qemu_RtlCreateProcessParametersEx(struct qemu_syscall *call);
 void qemu_RtlCreateSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlCreateTimer(struct qemu_syscall *call);
 void qemu_RtlCreateTimerQueue(struct qemu_syscall *call);
@@ -977,9 +996,12 @@ void qemu_RtlDeleteResource(struct qemu_syscall *call);
 void qemu_RtlDeleteSecurityObject(struct qemu_syscall *call);
 void qemu_RtlDeleteTimer(struct qemu_syscall *call);
 void qemu_RtlDeleteTimerQueueEx(struct qemu_syscall *call);
+void qemu_RtlDeNormalizeProcessParams(struct qemu_syscall *call);
 void qemu_RtlDeregisterWait(struct qemu_syscall *call);
 void qemu_RtlDeregisterWaitEx(struct qemu_syscall *call);
+void qemu_RtlDestroyEnvironment(struct qemu_syscall *call);
 void qemu_RtlDestroyHeap(struct qemu_syscall *call);
+void qemu_RtlDestroyProcessParameters(struct qemu_syscall *call);
 void qemu_RtlDetermineDosPathNameType_U(struct qemu_syscall *call);
 void qemu_RtlDosPathNameToNtPathName_U(struct qemu_syscall *call);
 void qemu_RtlDosSearchPath_U(struct qemu_syscall *call);
@@ -997,6 +1019,8 @@ void qemu_RtlEqualSid(struct qemu_syscall *call);
 void qemu_RtlEqualString(struct qemu_syscall *call);
 void qemu_RtlEqualUnicodeString(struct qemu_syscall *call);
 void qemu_RtlEraseUnicodeString(struct qemu_syscall *call);
+void qemu_RtlExpandEnvironmentStrings(struct qemu_syscall *call);
+void qemu_RtlExpandEnvironmentStrings_U(struct qemu_syscall *call);
 void qemu_RtlFillMemory(struct qemu_syscall *call);
 void qemu_RtlFillMemoryUlong(struct qemu_syscall *call);
 void qemu_RtlFindActivationContextSectionGuid(struct qemu_syscall *call);
@@ -1087,6 +1111,7 @@ void qemu_RtlMoveMemory(struct qemu_syscall *call);
 void qemu_RtlMultiByteToUnicodeN(struct qemu_syscall *call);
 void qemu_RtlMultiByteToUnicodeSize(struct qemu_syscall *call);
 void qemu_RtlNewSecurityObject(struct qemu_syscall *call);
+void qemu_RtlNormalizeProcessParams(struct qemu_syscall *call);
 void qemu_RtlNtStatusToDosError(struct qemu_syscall *call);
 void qemu_RtlNtStatusToDosErrorNoTeb(struct qemu_syscall *call);
 void qemu_RtlOemStringToUnicodeSize(struct qemu_syscall *call);
@@ -1106,6 +1131,7 @@ void qemu_RtlpUnWaitCriticalSection(struct qemu_syscall *call);
 void qemu_RtlpWaitForCriticalSection(struct qemu_syscall *call);
 void qemu_RtlQueryDepthSList(struct qemu_syscall *call);
 void qemu_RtlQueryDynamicTimeZoneInformation(struct qemu_syscall *call);
+void qemu_RtlQueryEnvironmentVariable_U(struct qemu_syscall *call);
 void qemu_RtlQueryHeapInformation(struct qemu_syscall *call);
 void qemu_RtlQueryInformationAcl(struct qemu_syscall *call);
 void qemu_RtlQueryInformationActivationContext(struct qemu_syscall *call);
@@ -1135,8 +1161,10 @@ void qemu_RtlSelfRelativeToAbsoluteSD(struct qemu_syscall *call);
 void qemu_RtlSetControlSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlSetCriticalSectionSpinCount(struct qemu_syscall *call);
 void qemu_RtlSetCurrentDirectory_U(struct qemu_syscall *call);
+void qemu_RtlSetCurrentEnvironment(struct qemu_syscall *call);
 void qemu_RtlSetCurrentTransaction(struct qemu_syscall *call);
 void qemu_RtlSetDaclSecurityDescriptor(struct qemu_syscall *call);
+void qemu_RtlSetEnvironmentVariable(struct qemu_syscall *call);
 void qemu_RtlSetGroupSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlSetHeapInformation(struct qemu_syscall *call);
 void qemu_RtlSetIoCompletionCallback(struct qemu_syscall *call);

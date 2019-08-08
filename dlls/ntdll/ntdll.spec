@@ -245,8 +245,8 @@
 @ stdcall NtQuerySecurityObject(long long ptr long ptr)
 @ stdcall NtQuerySemaphore (long long ptr long ptr)
 @ stdcall NtQuerySymbolicLinkObject(long ptr ptr)
-# @ stdcall NtQuerySystemEnvironmentValue(ptr ptr long ptr)
-# @ stdcall NtQuerySystemEnvironmentValueEx(ptr ptr ptr ptr ptr)
+@ stdcall NtQuerySystemEnvironmentValue(ptr ptr long ptr)
+@ stdcall NtQuerySystemEnvironmentValueEx(ptr ptr ptr ptr ptr)
 @ stdcall NtQuerySystemInformation(long ptr long ptr)
 @ stdcall NtQuerySystemInformationEx(long ptr long ptr long ptr)
 @ stdcall NtQuerySystemTime(ptr)
@@ -469,9 +469,10 @@
 @ stub RtlCreateAndSetSD
 # @ stdcall RtlCreateAtomTable(long ptr)
 # @ stub RtlCreateBootStatusDataFile
-# @ stdcall RtlCreateEnvironment(long ptr)
+@ stdcall RtlCreateEnvironment(long ptr)
 @ stdcall RtlCreateHeap(long ptr long long ptr ptr)
-# @ stdcall RtlCreateProcessParameters(ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr)
+@ stdcall RtlCreateProcessParameters(ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr)
+@ stdcall RtlCreateProcessParametersEx(ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr long)
 @ stub RtlCreatePropertySet
 # @ stdcall RtlCreateQueryDebugBuffer(long long)
 @ stub RtlCreateRegistryKey
@@ -487,7 +488,7 @@
 @ stdcall RtlCreateUserThread(long ptr long ptr long long ptr ptr ptr ptr)
 @ stub RtlCustomCPToUnicodeN
 @ stub RtlCutoverTimeToSystemTime
-# @ stdcall RtlDeNormalizeProcessParams(ptr)
+@ stdcall RtlDeNormalizeProcessParams(ptr)
 @ stdcall RtlDeactivateActivationContext(long long)
 @ stub RtlDeactivateActivationContextUnsafeFast
 @ stub RtlDebugPrintTimes
@@ -515,10 +516,10 @@
 @ stdcall RtlDeregisterWait(ptr)
 @ stdcall RtlDeregisterWaitEx(ptr ptr)
 # @ stdcall RtlDestroyAtomTable(ptr)
-# @ stdcall RtlDestroyEnvironment(ptr)
+@ stdcall RtlDestroyEnvironment(ptr)
 # @ stdcall RtlDestroyHandleTable(ptr)
 @ stdcall RtlDestroyHeap(long)
-# @ stdcall RtlDestroyProcessParameters(ptr)
+@ stdcall RtlDestroyProcessParameters(ptr)
 # @ stdcall RtlDestroyQueryDebugBuffer(ptr)
 @ stdcall RtlDetermineDosPathNameType_U(wstr)
 # @ stdcall RtlDllShutdownInProgress()
@@ -557,7 +558,8 @@
 @ stdcall RtlEraseUnicodeString(ptr)
 # @ stdcall RtlExitUserProcess(long)
 # @ stdcall RtlExitUserThread(long)
-# @ stdcall RtlExpandEnvironmentStrings_U(ptr ptr ptr ptr)
+@ stdcall RtlExpandEnvironmentStrings(ptr wstr long ptr long ptr)
+@ stdcall RtlExpandEnvironmentStrings_U(ptr ptr ptr ptr)
 @ stub RtlExtendHeap
 # @ stdcall -arch=win32 -ret64 RtlExtendedIntegerMultiply(int64 long)
 # @ stdcall -arch=win32 -ret64 RtlExtendedLargeIntegerDivide(int64 long ptr)
@@ -747,7 +749,7 @@
 @ stdcall RtlNewSecurityObject(ptr ptr ptr long ptr ptr)
 # @ stub RtlNewSecurityObjectEx
 # @ stub RtlNewSecurityObjectWithMultipleInheritance
-# @ stdcall RtlNormalizeProcessParams(ptr)
+@ stdcall RtlNormalizeProcessParams(ptr)
 # @ stub RtlNtPathNameToDosPathName
 @ stdcall RtlNtStatusToDosError(long)
 @ stdcall RtlNtStatusToDosErrorNoTeb(long)
@@ -770,7 +772,7 @@
 # @ stdcall RtlQueryAtomInAtomTable(ptr long ptr ptr ptr ptr)
 @ stdcall RtlQueryDepthSList(ptr)
 @ stdcall RtlQueryDynamicTimeZoneInformation(ptr)
-# @ stdcall RtlQueryEnvironmentVariable_U(ptr ptr ptr)
+@ stdcall RtlQueryEnvironmentVariable_U(ptr ptr ptr)
 @ stdcall RtlQueryHeapInformation(long long ptr long ptr)
 @ stdcall RtlQueryInformationAcl(ptr ptr long long)
 @ stdcall RtlQueryInformationActivationContext(long long ptr long ptr long ptr)
@@ -831,10 +833,10 @@
 @ stdcall RtlSetControlSecurityDescriptor(ptr long long)
 @ stdcall RtlSetCriticalSectionSpinCount(ptr long)
 @ stdcall RtlSetCurrentDirectory_U(ptr)
-# @ stdcall RtlSetCurrentEnvironment(wstr ptr)
+@ stdcall RtlSetCurrentEnvironment(wstr ptr)
 @ stdcall RtlSetCurrentTransaction(ptr)
 @ stdcall RtlSetDaclSecurityDescriptor(ptr long ptr long)
-# @ stdcall RtlSetEnvironmentVariable(ptr ptr ptr)
+@ stdcall RtlSetEnvironmentVariable(ptr ptr ptr)
 @ stdcall RtlSetGroupSecurityDescriptor(ptr ptr long)
 @ stdcall RtlSetHeapInformation(long long ptr long)
 @ stub RtlSetInformationAcl
