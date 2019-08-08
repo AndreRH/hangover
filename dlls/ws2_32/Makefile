@@ -12,7 +12,7 @@ ws2_32.dll: async_g.o main_g.o socket_g.o ws2_32.spec
 	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/ws2_32.spec ../../$(WINE_DIR)/dlls/winecrt0/libwinecrt0.a *_g.o -o ws2_32.dll -nodefaultlibs -nostdlib -lkernel32 -Wl,--image-base,0x170000000
 
 qemu_ws2_32.dll.so: async_h.o main_h.o socket_h.o
-	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_ws2_32.spec *_h.o -o qemu_ws2_32.dll.so -lws2_32
+	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_ws2_32.spec *_h.o -o qemu_ws2_32.dll.so -lws2_32 -lpthread
 
 %_g.o: %.c qemu_ws2_32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST

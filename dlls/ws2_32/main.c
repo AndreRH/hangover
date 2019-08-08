@@ -40,6 +40,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 #else
 
 #include <wine/debug.h>
+#include <pthread.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ws2_32);
 
 const struct qemu_ops *qemu_ops;
@@ -177,6 +178,8 @@ static const syscall_handler dll_functions[] =
     qemu_WSCWriteProviderOrder,
 };
 
+static pthread_key_t tls_key;
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     HMODULE ws2_32, qemu_kernel32;
@@ -189,7 +192,15 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     GUID WSARecvMsg_GUID = WSAID_WSARECVMSG;
     GUID WSASendMsg_GUID = WSAID_WSASENDMSG;
     DWORD bytes;
+    int ret;
     WINE_TRACE("Loading host-side ws2_32 wrapper.\n");
+
+    ret = pthread_key_create(&tls_key, NULL);
+    if (ret)
+    {
+        WINE_FIXME("Failed to create TLS key.\n");
+        return NULL;
+    }
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
@@ -352,30 +363,36 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     return dll_functions;
 }
 
-static __thread struct per_thread_data *thread_data;
-
 struct per_thread_data *get_per_thread_data(void)
 {
+    struct per_thread_data *thread_data = pthread_getspecific(tls_key);
+
     /* I should probably use teb32->WinSockData, but keep in mind that this function here is host
      * code, not guest code. */
 
     if (!thread_data)
+    {
         thread_data = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*thread_data));
+        pthread_setspecific(tls_key, thread_data);
+    }
 
     return thread_data;
 }
 
 static BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
+    struct per_thread_data *thread_data;
+
     switch (reason)
     {
         case DLL_THREAD_DETACH:
             WINE_TRACE("Freeing thread data %p.\n", thread_data);
+            thread_data = pthread_getspecific(tls_key);
             if (!thread_data)
                 break;
 
             HeapFree(GetProcessHeap(), 0, thread_data->he_buffer);
-            thread_data = NULL;
+            pthread_setspecific(tls_key, NULL);
             break;
 
         default:
