@@ -3379,6 +3379,22 @@ static inline MSVCRT_FILE *FILE_g2h(uint64_t guest)
 #endif
 }
 
+static inline uint64_t FILE_h2g(MSVCRT_FILE *host)
+{
+#if GUEST_BIT == HOST_BIT
+    return QEMU_H2G(host);
+#else
+    MSVCRT_FILE *host_iob = p___iob_func();
+    if ((ULONG_PTR)host >= (ULONG_PTR)host_iob)
+    {
+        size_t offset;
+        offset = (host - host_iob);
+        if (offset <= guest_iob_size)
+            return QEMU_H2G(guest_iob + offset * guest_iob_size);
+    }
+    return QEMU_H2G(host);
+#endif
+}
 #endif
 
 #endif
