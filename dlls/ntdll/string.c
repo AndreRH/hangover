@@ -162,7 +162,7 @@ WINBASEAPI void * CDECL NTDLL_memmove(void *dst, const void *src, size_t n)
 void qemu_memmove(struct qemu_syscall *call)
 {
     struct qemu_memmove *c = (struct qemu_memmove *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_memmove(QEMU_G2H(c->dst), QEMU_G2H(c->src), c->n));
 }
 
