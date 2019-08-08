@@ -109,7 +109,6 @@ int * CDECL MSVCRT__errno(void)
 void qemu__errno(struct qemu_syscall *call)
 {
     struct qemu__errno *c = (struct qemu__errno *)(ULONG_PTR)call;
-    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p__errno());
 }
 

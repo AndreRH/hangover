@@ -1147,10 +1147,18 @@ typedef struct
     void *unk;
 } cxx_frame_info;
 
+/* TODO: Keep in sync with wine/dlls/msvcrt up to thread_errno.
+ *
+ * TODO 2: One day we will run into a 32 bit application that accesses
+ * members directly. At that point we don't be able to just pass the host's
+ * version of the structure through and will have to create a proper copy
+ * and update members. There's hope though that this won't happen until
+ * we can make a proper PE build of Wine's msvcrt and ditch this wrapper. */
 struct __thread_data
 {
     DWORD                           tid;
     HANDLE                          handle;
+    int                             thread_errno;
     MSVCRT__se_translator_function  se_translator;
     EXCEPTION_RECORD               *exc_record;
     frame_info                     *frame_info_head;
