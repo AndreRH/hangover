@@ -693,7 +693,7 @@
 @ cdecl _aligned_realloc(ptr long long)
 @ stub _aligned_recalloc
 @ cdecl _amsg_exit(long)
-#@ cdecl _assert(str str long) MSVCRT__assert
+@ cdecl _assert(str str long) MSVCRT__assert
 @ cdecl _atodbl(ptr str) MSVCRT__atodbl
 @ cdecl _atodbl_l(ptr str ptr) MSVCRT__atodbl_l
 @ cdecl _atof_l(str ptr) MSVCRT__atof_l

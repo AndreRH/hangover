@@ -290,3 +290,35 @@ void qemu__purecall(struct qemu_syscall *c)
 }
 
 #endif
+
+struct qemu__assert
+{
+    struct qemu_syscall super;
+    uint64_t str;
+    uint64_t file;
+    uint64_t line;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void CDECL MSVCRT__assert(const char* str, const char* file, unsigned int line)
+{
+    struct qemu__assert call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__ASSERT);
+    call.str = (ULONG_PTR)str;
+    call.file = (ULONG_PTR)file;
+    call.line = line;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu__assert(struct qemu_syscall *call)
+{
+    struct qemu__assert *c = (struct qemu__assert *)call;
+    WINE_FIXME("Unverified!\n");
+    p__assert(QEMU_G2H(c->str), QEMU_G2H(c->file), c->line);
+}
+
+#endif

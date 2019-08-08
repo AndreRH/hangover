@@ -91,6 +91,7 @@ enum msvcrt_calls
     CALL__ALIGNED_OFFSET_REALLOC,
     CALL__ALIGNED_REALLOC,
     CALL__AMSG_EXIT,
+    CALL__ASSERT,
     CALL__ATODBL,
     CALL__ATODBL_L,
     CALL__ATOF_L,
@@ -1298,6 +1299,7 @@ void qemu__aligned_offset_malloc(struct qemu_syscall *call);
 void qemu__aligned_offset_realloc(struct qemu_syscall *call);
 void qemu__aligned_realloc(struct qemu_syscall *call);
 void qemu__amsg_exit(struct qemu_syscall *call);
+void qemu__assert(struct qemu_syscall *call);
 void qemu__atodbl(struct qemu_syscall *call);
 void qemu__atodbl_l(struct qemu_syscall *call);
 void qemu__atof_l(struct qemu_syscall *call);
@@ -3260,6 +3262,7 @@ void (* CDECL p__swab)(char* src, char* dst, int len);
 double (* CDECL p_strtod_l)(const char *str, char **end, MSVCRT__locale_t locale);
 float (* CDECL p__strtof_l)(const char *str, char **end, MSVCRT__locale_t locale);
 float (* CDECL p_strtof)(const char *str, char **end);
+void (* CDECL p__assert)(const char* str, const char* file, unsigned int line);
 double (* CDECL p__atof_l)(const char *str, MSVCRT__locale_t locale);
 int (* CDECL p__atoflt_l)(FLOAT *value, char *str, MSVCRT__locale_t locale);
 int (* CDECL p__atoflt)(FLOAT *value, char *str);
