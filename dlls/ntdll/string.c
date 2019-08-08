@@ -386,7 +386,7 @@ WINBASEAPI size_t CDECL NTDLL_strlen(const char *str)
 void qemu_strlen(struct qemu_syscall *call)
 {
     struct qemu_strlen *c = (struct qemu_strlen *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_strlen(QEMU_G2H(c->str));
 }
 

@@ -535,7 +535,7 @@ WINBASEAPI LPWSTR CDECL NTDLL_wcspbrk(LPCWSTR str, LPCWSTR accept)
 void qemu_wcspbrk(struct qemu_syscall *call)
 {
     struct qemu_wcspbrk *c = (struct qemu_wcspbrk *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)p_wcspbrk(QEMU_G2H(c->str), QEMU_G2H(c->accept));
 }
 
@@ -869,7 +869,7 @@ WINBASEAPI INT CDECL NTDLL_iswalpha(WCHAR wc)
 void qemu_iswalpha(struct qemu_syscall *call)
 {
     struct qemu_iswalpha *c = (struct qemu_iswalpha *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_iswalpha(c->wc);
 }
 
