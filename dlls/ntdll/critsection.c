@@ -505,7 +505,7 @@ WINBASEAPI BOOL WINAPI RtlTryEnterCriticalSection(RTL_CRITICAL_SECTION *crit)
 void qemu_RtlTryEnterCriticalSection(struct qemu_syscall *call)
 {
     struct qemu_RtlTryEnterCriticalSection *c = (struct qemu_RtlTryEnterCriticalSection *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
 #if GUEST_BIT == HOST_BIT
     c->super.iret = RtlTryEnterCriticalSection(QEMU_G2H(c->crit));
 #else

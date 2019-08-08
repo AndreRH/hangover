@@ -196,7 +196,7 @@ WINBASEAPI void * CDECL NTDLL_memset(void *dst, int c, size_t n)
 void qemu_memset(struct qemu_syscall *call)
 {
     struct qemu_memset *c = (struct qemu_memset *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_memset(QEMU_G2H(c->dst), c->c, c->n));
 }
 

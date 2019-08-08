@@ -469,7 +469,7 @@ WINBASEAPI INT CDECL NTDLL_wcsncmp(LPCWSTR str1, LPCWSTR str2, INT n)
 void qemu_wcsncmp(struct qemu_syscall *call)
 {
     struct qemu_wcsncmp *c = (struct qemu_wcsncmp *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_wcsncmp(QEMU_G2H(c->str1), QEMU_G2H(c->str2), c->n);
 }
 
