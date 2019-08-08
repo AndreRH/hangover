@@ -31,6 +31,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <pthread.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_cabinet);
 #endif
 
@@ -197,7 +198,7 @@ WINBASEAPI HFCI CDECL FCICreate(PERF perf, PFNFCIFILEPLACED pfnfiledest, PFNFCIA
 static int CDECL host_dest(PCCAB pccab, char *pszFile, LONG cbFile,
         BOOL fContinuation, void *pv)
 {
-    struct qemu_fxi *fci = cabinet_tls;
+    struct qemu_fxi *fci = pthread_getspecific(cabinet_tls);
     struct FCI_dest_cb call;
     int ret;
 
@@ -217,7 +218,7 @@ static int CDECL host_dest(PCCAB pccab, char *pszFile, LONG cbFile,
 
 void * CDECL host_alloc(ULONG cb)
 {
-    struct qemu_fxi *fci = cabinet_tls;
+    struct qemu_fxi *fci = pthread_getspecific(cabinet_tls);
     uint64_t ret;
     struct FCI_alloc_cb call;
 
@@ -232,7 +233,7 @@ void * CDECL host_alloc(ULONG cb)
 
 void CDECL host_free(void *memory)
 {
-    struct qemu_fxi *fci = cabinet_tls;
+    struct qemu_fxi *fci = pthread_getspecific(cabinet_tls);
     struct FCI_free_cb call;
 
     WINE_TRACE("Calling guest callback %p(%p).\n", (void *)fci->free, memory);
@@ -244,7 +245,7 @@ void CDECL host_free(void *memory)
 
 static INT_PTR CDECL host_open(char *pszFile, int oflag, int pmode, int *err, void *pv)
 {
-    struct qemu_fxi *fci = cabinet_tls;
+    struct qemu_fxi *fci = pthread_getspecific(cabinet_tls);
     struct FCI_open_cb call;
     UINT ret;
 
@@ -264,7 +265,7 @@ static INT_PTR CDECL host_open(char *pszFile, int oflag, int pmode, int *err, vo
 
 static UINT CDECL host_read(INT_PTR hf, void *memory, UINT cb, int *err, void *pv)
 {
-    struct qemu_fxi *fci = cabinet_tls;
+    struct qemu_fxi *fci = pthread_getspecific(cabinet_tls);
     struct FCI_read_cb call;
     UINT ret;
 
@@ -284,7 +285,7 @@ static UINT CDECL host_read(INT_PTR hf, void *memory, UINT cb, int *err, void *p
 
 static UINT CDECL host_write(INT_PTR hf, void *memory, UINT cb, int *err, void *pv)
 {
-    struct qemu_fxi *fci = cabinet_tls;
+    struct qemu_fxi *fci = pthread_getspecific(cabinet_tls);
     struct FCI_read_cb call;
     UINT ret;
 
@@ -304,7 +305,7 @@ static UINT CDECL host_write(INT_PTR hf, void *memory, UINT cb, int *err, void *
 
 static int CDECL host_close(INT_PTR hf, int *err, void *pv)
 {
-    struct qemu_fxi *fci = cabinet_tls;
+    struct qemu_fxi *fci = pthread_getspecific(cabinet_tls);
     struct FCI_close_cb call;
     int ret;
 
@@ -322,7 +323,7 @@ static int CDECL host_close(INT_PTR hf, int *err, void *pv)
 
 static LONG CDECL host_seek(INT_PTR hf, LONG dist, int seektype, int *err, void *pv)
 {
-    struct qemu_fxi *fci = cabinet_tls;
+    struct qemu_fxi *fci = pthread_getspecific(cabinet_tls);
     struct FCI_seek_cb call;
     LONG ret;
 
@@ -342,7 +343,7 @@ static LONG CDECL host_seek(INT_PTR hf, LONG dist, int seektype, int *err, void 
 
 static int CDECL host_delete(char *pszFile, int *err, void *pv)
 {
-    struct qemu_fxi *fci = cabinet_tls;
+    struct qemu_fxi *fci = pthread_getspecific(cabinet_tls);
     struct FCI_delete_cb call;
     BOOL ret;
 
@@ -360,7 +361,7 @@ static int CDECL host_delete(char *pszFile, int *err, void *pv)
 
 static BOOL CDECL host_temp(char *pszTempName, int cbTempName, void *pv)
 {
-    struct qemu_fxi *fci = cabinet_tls;
+    struct qemu_fxi *fci = pthread_getspecific(cabinet_tls);
     struct FCI_temp_cb call;
     BOOL ret;
 
@@ -380,7 +381,7 @@ void qemu_FCICreate(struct qemu_syscall *call)
 {
     struct qemu_FCICreate *c = (struct qemu_FCICreate *)call;
     struct qemu_fxi *fci;
-    struct qemu_fxi *old_tls = cabinet_tls;
+    struct qemu_fxi *old_tls = pthread_getspecific(cabinet_tls);
 
     WINE_TRACE("\n");
     fci = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*fci));
@@ -398,7 +399,7 @@ void qemu_FCICreate(struct qemu_syscall *call)
     fci->del = c->pfndelete;
     fci->temp = c->pfnfcigtf;
 
-    cabinet_tls = fci;
+    pthread_setspecific(cabinet_tls, fci);
 
     /* ERF and CCAB are compatible between 32 and 64 bit. */
     fci->host.fci = FCICreate(QEMU_G2H(c->perf), c->pfnfiledest ? host_dest : NULL, c->pfnalloc ? host_alloc : NULL,
@@ -406,7 +407,7 @@ void qemu_FCICreate(struct qemu_syscall *call)
             c->pfnwrite ? host_write : NULL, c->pfnclose ? host_close : NULL, c->pfnseek ? host_seek : NULL,
             c->pfndelete ? host_delete : NULL, c->pfnfcigtf ? host_temp : NULL, QEMU_G2H(c->pccab), QEMU_G2H(c->pv));
 
-    cabinet_tls = old_tls;
+    pthread_setspecific(cabinet_tls, old_tls);
 
     if (!fci->host.fci)
     {
@@ -488,7 +489,7 @@ static BOOL CDECL host_next(PCCAB pccab, ULONG  cbPrevCab, void *pv)
 
 static LONG CDECL host_progress(UINT typeStatus, ULONG cb1, ULONG cb2, void *pv)
 {
-    struct qemu_fxi *fci = cabinet_tls;
+    struct qemu_fxi *fci = pthread_getspecific(cabinet_tls);
     struct FCI_progress_cb call;
     LONG ret;
 
@@ -509,7 +510,7 @@ static INT_PTR CDECL host_open_info(char *pszName, USHORT *pdate, USHORT *ptime,
         USHORT *pattribs, int *err, void *pv)
 {
     struct FCI_open_info_cb call;
-    struct qemu_fxi *fci = cabinet_tls;
+    struct qemu_fxi *fci = pthread_getspecific(cabinet_tls);
     INT_PTR ret;
 
     call.func = fci->open_info;
@@ -531,7 +532,7 @@ void qemu_FCIAddFile(struct qemu_syscall *call)
 {
     struct qemu_FCIAddFile *c = (struct qemu_FCIAddFile *)call;
     struct qemu_fxi *fci;
-    struct qemu_fxi *old_tls = cabinet_tls;
+    struct qemu_fxi *old_tls = pthread_getspecific(cabinet_tls);
     uint64_t old_open_info, old_progress;
 
     WINE_TRACE("\n");
@@ -542,13 +543,13 @@ void qemu_FCIAddFile(struct qemu_syscall *call)
     fci->open_info = c->pfnfcigoi;
     fci->progress = c->pfnfcis;
 
-    cabinet_tls = fci;
+    pthread_setspecific(cabinet_tls, fci);
 
     c->super.iret = FCIAddFile(fci->host.fci, QEMU_G2H(c->pszSourceFile), QEMU_G2H(c->pszFileName), c->fExecute, 
             c->pfnfcignc ? host_next : NULL, c->pfnfcis ? host_progress : NULL,
             c->pfnfcigoi ? host_open_info : NULL, c->typeCompress);
 
-    cabinet_tls = old_tls;
+    pthread_setspecific(cabinet_tls, old_tls);
     fci->open_info = old_open_info;
     fci->progress = old_progress;
 }
@@ -584,7 +585,7 @@ void qemu_FCIFlushFolder(struct qemu_syscall *call)
 {
     struct qemu_FCIFlushFolder *c = (struct qemu_FCIFlushFolder *)call;
     struct qemu_fxi *fci;
-    struct qemu_fxi *old_tls = cabinet_tls;
+    struct qemu_fxi *old_tls = pthread_getspecific(cabinet_tls);
     uint64_t old_progress;
 
     /* Implemented without having code that calls it. */
@@ -593,10 +594,10 @@ void qemu_FCIFlushFolder(struct qemu_syscall *call)
     old_progress = fci->progress;
     fci->progress = c->pfnfcis;
 
-    cabinet_tls = fci;
+    pthread_setspecific(cabinet_tls, fci);
     c->super.iret = FCIFlushFolder(fci->host.fci, c->pfnfcignc ? host_next : NULL,
             c->pfnfcis ? host_progress : NULL);
-    cabinet_tls = old_tls;
+    pthread_setspecific(cabinet_tls, old_tls);
 
     fci->progress = old_progress;
 }
@@ -634,7 +635,7 @@ void qemu_FCIFlushCabinet(struct qemu_syscall *call)
 {
     struct qemu_FCIFlushCabinet *c = (struct qemu_FCIFlushCabinet *)call;
     struct qemu_fxi *fci;
-    struct qemu_fxi *old_tls = cabinet_tls;
+    struct qemu_fxi *old_tls = pthread_getspecific(cabinet_tls);
     uint64_t old_progress;
 
     WINE_TRACE("\n");
@@ -642,12 +643,12 @@ void qemu_FCIFlushCabinet(struct qemu_syscall *call)
     old_progress = fci->progress;
     fci->progress = c->pfnfcis;
 
-    cabinet_tls = fci;
+    pthread_setspecific(cabinet_tls, fci);
 
     c->super.iret = FCIFlushCabinet(fci->host.fci, c->fGetNextCab, c->pfnfcignc ? host_next : NULL,
             c->pfnfcis ? host_progress : NULL);
 
-    cabinet_tls = old_tls;
+    pthread_setspecific(cabinet_tls, old_tls);
 
     fci->progress = old_progress;
 }
@@ -679,18 +680,18 @@ void qemu_FCIDestroy(struct qemu_syscall *call)
 {
     struct qemu_FCIDestroy *c = (struct qemu_FCIDestroy *)call;
     struct qemu_fxi *fci;
-    struct qemu_fxi *old_tls = cabinet_tls;
+    struct qemu_fxi *old_tls = pthread_getspecific(cabinet_tls);
 
     WINE_TRACE("\n");
     fci = QEMU_G2H(c->hfci);
 
-    cabinet_tls = fci;
+    pthread_setspecific(cabinet_tls, fci);
 
     c->super.iret = FCIDestroy(fci->host.fci);
     if (c->super.iret)
         HeapFree(GetProcessHeap(), 0, fci);
 
-    cabinet_tls = old_tls;
+    pthread_setspecific(cabinet_tls, old_tls);
 }
 
 #endif

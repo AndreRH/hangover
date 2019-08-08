@@ -206,8 +206,9 @@ struct qemu_fxi
     uint64_t dest, alloc, free, open, read, write, close, seek, del, temp, open_info, progress;
 };
 
-/* Use Linux / Mac TLS because TlsGetValue and TlsSetValue mess with the last error. */
-extern __thread struct qemu_fxi *cabinet_tls;
+/* Use posix TLS TlsGetValue and TlsSetValue mess with the last error. __thread
+ * doesn't work for some reason and corrupts the call stack in our callbacks. */
+extern pthread_key_t cabinet_tls;
 
 #endif
 

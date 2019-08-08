@@ -33,6 +33,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <pthread.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_cabinet);
 #endif
 
@@ -333,12 +334,20 @@ static const syscall_handler dll_functions[] =
     qemu_init_dll,
 };
 
-__thread struct qemu_fxi *cabinet_tls;
+pthread_key_t cabinet_tls;
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
+    int ret;
     WINE_TRACE("Loading host-side cabinet wrapper.\n");
     HMODULE cabinet = GetModuleHandleA("cabinet");
+
+    ret = pthread_key_create(&cabinet_tls, NULL);
+    if (ret)
+    {
+        WINE_FIXME("pthread_key_create failed\n");
+        return NULL;
+    }
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
