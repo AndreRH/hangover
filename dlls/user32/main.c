@@ -158,6 +158,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 #include <wine/debug.h>
 #include <wine/unicode.h>
 #include <assert.h>
+#include <pthread.h>
 
 #include "callback_helper_impl.h"
 
@@ -165,7 +166,7 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 
 uint64_t reverse_wndproc_func;
 
-__thread uint64_t user32_tls;
+pthread_key_t user32_tls;
 
 #define REVERSE_WNDPROC_WRAPPER_COUNT 1024
 static struct reverse_wndproc_wrapper *reverse_wndproc_wrappers;
@@ -1137,7 +1138,7 @@ uint64_t LVM_SORTITEMS_guest_cb;
 static INT CALLBACK LVM_SORTITEMS_host_cb(LPARAM first, LPARAM second, LPARAM lParam)
 {
     struct LVM_SORTITEMS_cb_data call;
-    uint64_t guest_func = user32_tls;
+    uint64_t guest_func = (uint64_t)pthread_getspecific(user32_tls);
     INT ret;
 
     call.func = guest_func;
@@ -1153,7 +1154,7 @@ static INT CALLBACK LVM_SORTITEMS_host_cb(LPARAM first, LPARAM second, LPARAM lP
     return ret;
 }
 
-uint64_t *LVM_SORTITEMS_old_tls;
+void *LVM_SORTITEMS_old_tls;
 
 void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
 {
@@ -1176,7 +1177,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
         case LVM_SORTITEMSEX:
         {
             WINE_TRACE("Wrapping callback of LVM_SORTITEMS.\n");
-            LVM_SORTITEMS_old_tls = user32_tls;
+            LVM_SORTITEMS_old_tls = pthread_getspecific(user32_tls);
 #if HOST_BIT == GUEST_BIT
             if (msg_in->lParam == (uint64_t)LVM_SORTITEMS_host_cb)
 #else
@@ -1185,7 +1186,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in)
             {
                 WINE_ERR("Found my own callback. Subclassing gone bad?\n");
             }
-            user32_tls = msg_in->lParam;
+            pthread_setspecific(user32_tls, (void *)msg_in->lParam);
             msg_out->lParam = (LPARAM)LVM_SORTITEMS_host_cb;
             break;
         }
@@ -1600,7 +1601,7 @@ void msg_guest_to_host_return(MSG *orig, MSG *conv)
 #if 0
         case LVM_SORTITEMS:
         case LVM_SORTITEMSEX:
-            user32_tls = LVM_SORTITEMS_old_tls;
+            pthread_setspecific(user32_tls, LVM_SORTITEMS_old_tls);
             break;
 #endif
 
@@ -1879,7 +1880,7 @@ void msg_host_to_guest(MSG *msg_out, MSG *msg_in)
             }
             else
             {
-                uint64_t guest_cb = user32_tls;
+                uint64_t guest_cb = (uint64_t)pthread_getspecific(user32_tls);
                 if (!guest_cb)
                     WINE_ERR("Converting a LVM_SORTITEMS back, but user32_tls is NULL?\n");
                 msg_out->lParam = guest_cb;

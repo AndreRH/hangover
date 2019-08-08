@@ -27,6 +27,7 @@
 
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
+#include <pthread.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 #endif
 
@@ -748,7 +749,7 @@ static BOOL CALLBACK qemu_DrawStateW_host_cb(HDC hdc, LPARAM lp, WPARAM wp, int 
     struct qemu_DrawStateW_cb call;
     BOOL ret;
 
-    call.func = user32_tls;
+    call.func = (uint64_t)pthread_getspecific(user32_tls);
     call.hdc = QEMU_H2G(hdc);
     call.lp = lp;
     call.wp = wp;
@@ -765,13 +766,13 @@ static BOOL CALLBACK qemu_DrawStateW_host_cb(HDC hdc, LPARAM lp, WPARAM wp, int 
 void qemu_DrawStateW(struct qemu_syscall *call)
 {
     struct qemu_DrawStateW *c = (struct qemu_DrawStateW *)call;
-    uint64_t old_tls = user32_tls;
+    void *old_tls = pthread_getspecific(user32_tls);
 
     WINE_TRACE("\n");
-    user32_tls = c->func;
+    pthread_setspecific(user32_tls, (void *)c->func);
     c->super.iret = DrawStateW(QEMU_G2H(c->hdc), QEMU_G2H(c->hbr), c->func ? qemu_DrawStateW_host_cb : NULL,
             c->ldata, c->wdata, c->x, c->y, c->cx, c->cy, c->flags);
-    user32_tls = old_tls;
+    pthread_setspecific(user32_tls, old_tls);
 }
 
 #endif

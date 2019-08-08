@@ -1502,7 +1502,7 @@ struct reverse_wndproc_wrapper
 
 WNDPROC wndproc_guest_to_host(uint64_t guest_func);
 uint64_t wndproc_host_to_guest(WNDPROC host_func);
-extern __thread uint64_t user32_tls;
+extern pthread_key_t user32_tls;
 
 HMODULE wrapper_mod, host_mod, guest_mod;
 
