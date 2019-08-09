@@ -23,6 +23,8 @@
 #include <winsvc.h>
 #include <lmserver.h>
 
+#include "thunk/qemu_windows.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_advapi32.h"
@@ -195,7 +197,8 @@ struct qemu_OpenSCManagerA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI SC_HANDLE WINAPI OpenSCManagerA(LPCSTR lpMachineName, LPCSTR lpDatabaseName, DWORD dwDesiredAccess)
+WINBASEAPI SC_HANDLE WINAPI OpenSCManagerA(LPCSTR lpMachineName, LPCSTR lpDatabaseName,
+        DWORD dwDesiredAccess)
 {
     struct qemu_OpenSCManagerA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENSCMANAGERA);
@@ -213,8 +216,9 @@ WINBASEAPI SC_HANDLE WINAPI OpenSCManagerA(LPCSTR lpMachineName, LPCSTR lpDataba
 void qemu_OpenSCManagerA(struct qemu_syscall *call)
 {
     struct qemu_OpenSCManagerA *c = (struct qemu_OpenSCManagerA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)OpenSCManagerA(QEMU_G2H(c->lpMachineName), QEMU_G2H(c->lpDatabaseName), c->dwDesiredAccess);
+    WINE_TRACE("\n");
+    c->super.iret = (ULONG_PTR)OpenSCManagerA(QEMU_G2H(c->lpMachineName),
+            QEMU_G2H(c->lpDatabaseName), c->dwDesiredAccess);
 }
 
 #endif
@@ -229,7 +233,8 @@ struct qemu_OpenSCManagerW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI SC_HANDLE WINAPI OpenSCManagerW(LPCWSTR lpMachineName, LPCWSTR lpDatabaseName, DWORD dwDesiredAccess)
+WINBASEAPI SC_HANDLE WINAPI OpenSCManagerW(LPCWSTR lpMachineName, LPCWSTR lpDatabaseName,
+    DWORD dwDesiredAccess)
 {
     struct qemu_OpenSCManagerW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_OPENSCMANAGERW);
@@ -247,8 +252,9 @@ WINBASEAPI SC_HANDLE WINAPI OpenSCManagerW(LPCWSTR lpMachineName, LPCWSTR lpData
 void qemu_OpenSCManagerW(struct qemu_syscall *call)
 {
     struct qemu_OpenSCManagerW *c = (struct qemu_OpenSCManagerW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)OpenSCManagerW(QEMU_G2H(c->lpMachineName), QEMU_G2H(c->lpDatabaseName), c->dwDesiredAccess);
+    WINE_TRACE("\n");
+    c->super.iret = (ULONG_PTR)OpenSCManagerW(QEMU_G2H(c->lpMachineName),
+            QEMU_G2H(c->lpDatabaseName), c->dwDesiredAccess);
 }
 
 #endif
@@ -345,8 +351,9 @@ WINBASEAPI SC_HANDLE WINAPI OpenServiceA(SC_HANDLE hSCManager, LPCSTR lpServiceN
 void qemu_OpenServiceA(struct qemu_syscall *call)
 {
     struct qemu_OpenServiceA *c = (struct qemu_OpenServiceA *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)OpenServiceA(QEMU_G2H(c->hSCManager), QEMU_G2H(c->lpServiceName), c->dwDesiredAccess);
+    WINE_TRACE("\n");
+    c->super.iret = (ULONG_PTR)OpenServiceA(QEMU_G2H(c->hSCManager),
+            QEMU_G2H(c->lpServiceName), c->dwDesiredAccess);
 }
 
 #endif
@@ -379,8 +386,9 @@ WINBASEAPI SC_HANDLE WINAPI OpenServiceW(SC_HANDLE hSCManager, LPCWSTR lpService
 void qemu_OpenServiceW(struct qemu_syscall *call)
 {
     struct qemu_OpenServiceW *c = (struct qemu_OpenServiceW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)OpenServiceW(QEMU_G2H(c->hSCManager), QEMU_G2H(c->lpServiceName), c->dwDesiredAccess);
+    WINE_TRACE("\n");
+    c->super.iret = (ULONG_PTR)OpenServiceW(QEMU_G2H(c->hSCManager),
+            QEMU_G2H(c->lpServiceName), c->dwDesiredAccess);
 }
 
 #endif
@@ -405,7 +413,11 @@ struct qemu_CreateServiceW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI SC_HANDLE WINAPI CreateServiceW(SC_HANDLE hSCManager, LPCWSTR lpServiceName, LPCWSTR lpDisplayName, DWORD dwDesiredAccess, DWORD dwServiceType, DWORD dwStartType, DWORD dwErrorControl, LPCWSTR lpBinaryPathName, LPCWSTR lpLoadOrderGroup, LPDWORD lpdwTagId, LPCWSTR lpDependencies, LPCWSTR lpServiceStartName, LPCWSTR lpPassword)
+WINBASEAPI SC_HANDLE WINAPI CreateServiceW(SC_HANDLE hSCManager, LPCWSTR lpServiceName,
+        LPCWSTR lpDisplayName, DWORD dwDesiredAccess, DWORD dwServiceType, DWORD dwStartType,
+        DWORD dwErrorControl, LPCWSTR lpBinaryPathName, LPCWSTR lpLoadOrderGroup,
+        LPDWORD lpdwTagId, LPCWSTR lpDependencies, LPCWSTR lpServiceStartName,
+        LPCWSTR lpPassword)
 {
     struct qemu_CreateServiceW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CREATESERVICEW);
@@ -433,8 +445,14 @@ WINBASEAPI SC_HANDLE WINAPI CreateServiceW(SC_HANDLE hSCManager, LPCWSTR lpServi
 void qemu_CreateServiceW(struct qemu_syscall *call)
 {
     struct qemu_CreateServiceW *c = (struct qemu_CreateServiceW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = (ULONG_PTR)CreateServiceW(QEMU_G2H(c->hSCManager), QEMU_G2H(c->lpServiceName), QEMU_G2H(c->lpDisplayName), c->dwDesiredAccess, c->dwServiceType, c->dwStartType, c->dwErrorControl, QEMU_G2H(c->lpBinaryPathName), QEMU_G2H(c->lpLoadOrderGroup), QEMU_G2H(c->lpdwTagId), QEMU_G2H(c->lpDependencies), QEMU_G2H(c->lpServiceStartName), QEMU_G2H(c->lpPassword));
+    WINE_FIXME("Binary %s.\n", wine_dbgstr_w(QEMU_G2H(c->lpBinaryPathName)));
+    c->super.iret = (ULONG_PTR)CreateServiceW(QEMU_G2H(c->hSCManager),
+            QEMU_G2H(c->lpServiceName), QEMU_G2H(c->lpDisplayName),
+            c->dwDesiredAccess, c->dwServiceType, c->dwStartType,
+            c->dwErrorControl, QEMU_G2H(c->lpBinaryPathName),
+            QEMU_G2H(c->lpLoadOrderGroup), QEMU_G2H(c->lpdwTagId),
+            QEMU_G2H(c->lpDependencies), QEMU_G2H(c->lpServiceStartName),
+            QEMU_G2H(c->lpPassword));
 }
 
 #endif
@@ -708,7 +726,8 @@ struct qemu_QueryServiceConfigW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI QueryServiceConfigW(SC_HANDLE hService, LPQUERY_SERVICE_CONFIGW lpServiceConfig, DWORD cbBufSize, LPDWORD pcbBytesNeeded)
+WINBASEAPI BOOL WINAPI QueryServiceConfigW(SC_HANDLE hService, LPQUERY_SERVICE_CONFIGW lpServiceConfig,
+        DWORD cbBufSize, LPDWORD pcbBytesNeeded)
 {
     struct qemu_QueryServiceConfigW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_QUERYSERVICECONFIGW);
@@ -719,7 +738,7 @@ WINBASEAPI BOOL WINAPI QueryServiceConfigW(SC_HANDLE hService, LPQUERY_SERVICE_C
 
     qemu_syscall(&call.super);
 
-    return call.super.iret;
+    return TRUE;
 }
 
 #else
@@ -727,8 +746,15 @@ WINBASEAPI BOOL WINAPI QueryServiceConfigW(SC_HANDLE hService, LPQUERY_SERVICE_C
 void qemu_QueryServiceConfigW(struct qemu_syscall *call)
 {
     struct qemu_QueryServiceConfigW *c = (struct qemu_QueryServiceConfigW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QueryServiceConfigW(QEMU_G2H(c->hService), QEMU_G2H(c->lpServiceConfig), c->cbBufSize, QEMU_G2H(c->pcbBytesNeeded));
+    WINE_TRACE("\n");
+    c->super.iret = QueryServiceConfigW(QEMU_G2H(c->hService), QEMU_G2H(c->lpServiceConfig),
+            c->cbBufSize, QEMU_G2H(c->pcbBytesNeeded));
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret)
+    {
+        QUERY_SERVICE_CONFIG_h2g(QEMU_G2H(c->lpServiceConfig), QEMU_G2H(c->lpServiceConfig));
+    }
+#endif
 }
 
 #endif
@@ -1371,8 +1397,16 @@ WINBASEAPI BOOL WINAPI ChangeServiceConfig2W(SC_HANDLE hService, DWORD dwInfoLev
 void qemu_ChangeServiceConfig2W(struct qemu_syscall *call)
 {
     struct qemu_ChangeServiceConfig2W *c = (struct qemu_ChangeServiceConfig2W *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = ChangeServiceConfig2W(QEMU_G2H(c->hService), c->dwInfoLevel, QEMU_G2H(c->lpInfo));
+    DWORD level;
+
+    WINE_TRACE("\n");
+    level = c->dwInfoLevel;
+    switch (level)
+    {
+        default:
+            WINE_FIXME("Unhandled info level %u.\n", level);
+            c->super.iret = ChangeServiceConfig2W(QEMU_G2H(c->hService), level, QEMU_G2H(c->lpInfo));
+    }
 }
 
 #endif

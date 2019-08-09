@@ -20,4 +20,6 @@
 
 #include "thunk/qemu_shellapi.h"
 
+#include "thunk/qemu_winsvc.h"
+
 #endif
