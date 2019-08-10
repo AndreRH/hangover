@@ -1546,7 +1546,8 @@ struct qemu_CryptHashPublicKeyInfo
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptHashPublicKeyInfo(HCRYPTPROV_LEGACY hCryptProv, ALG_ID Algid, DWORD dwFlags, DWORD dwCertEncodingType, PCERT_PUBLIC_KEY_INFO pInfo, BYTE *pbComputedHash, DWORD *pcbComputedHash)
+WINBASEAPI BOOL WINAPI CryptHashPublicKeyInfo(HCRYPTPROV_LEGACY hCryptProv, ALG_ID Algid, DWORD dwFlags,
+        DWORD dwCertEncodingType, PCERT_PUBLIC_KEY_INFO pInfo, BYTE *pbComputedHash, DWORD *pcbComputedHash)
 {
     struct qemu_CryptHashPublicKeyInfo call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTHASHPUBLICKEYINFO);
@@ -1568,8 +1569,19 @@ WINBASEAPI BOOL WINAPI CryptHashPublicKeyInfo(HCRYPTPROV_LEGACY hCryptProv, ALG_
 void qemu_CryptHashPublicKeyInfo(struct qemu_syscall *call)
 {
     struct qemu_CryptHashPublicKeyInfo *c = (struct qemu_CryptHashPublicKeyInfo *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptHashPublicKeyInfo(c->hCryptProv, c->Algid, c->dwFlags, c->dwCertEncodingType, QEMU_G2H(c->pInfo), QEMU_G2H(c->pbComputedHash), QEMU_G2H(c->pcbComputedHash));
+    CERT_PUBLIC_KEY_INFO stack, *info = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->pInfo);
+#else
+    if (c->pInfo)
+        CERT_PUBLIC_KEY_INFO_g2h(info, QEMU_G2H(c->pInfo));
+    else
+        info = NULL;
+#endif
+    c->super.iret = CryptHashPublicKeyInfo(c->hCryptProv, c->Algid, c->dwFlags, c->dwCertEncodingType,
+            info, QEMU_G2H(c->pbComputedHash), QEMU_G2H(c->pcbComputedHash));
 }
 
 #endif
