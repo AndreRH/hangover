@@ -46,7 +46,7 @@ static BOOL __fastcall abort_proc_guest_wrapper(struct qemu_abort_proc *data)
     return proc((HDC)(ULONG_PTR)data->hdc, data->error);
 }
 
-BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
+BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
     if (reason == DLL_PROCESS_ATTACH)
     {

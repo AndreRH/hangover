@@ -62,7 +62,7 @@ HRESULT WINAPI DllGetVersion (DLLVERSIONINFO *pdvi)
 
 extern LRESULT WINAPI RichEdit10ANSIWndProc(HWND, UINT, WPARAM, LPARAM);
 
-BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
+BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_init_dll call;
 

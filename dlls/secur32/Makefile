@@ -9,7 +9,7 @@ VPATH=$(SRCDIR)
 all: secur32.dll qemu_secur32.dll.so
 
 secur32.dll: lsa_g.o main_g.o secur32.spec secur32_g.o wrapper_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/secur32.spec ../../$(WINE_DIR)/dlls/winecrt0/libwinecrt0.a *_g.o -o secur32.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x190000000 -lkernel32
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/secur32.spec *_g.o -L../../$(WINE_DIR)/dlls/winecrt0 -lwinecrt0 -o secur32.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x190000000 -lkernel32
 
 qemu_secur32.dll.so: lsa_h.o main_h.o secur32_h.o wrapper_h.o
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_secur32.spec *_h.o -o qemu_secur32.dll.so -lsecur32 -DUSE_WS_PREFIX

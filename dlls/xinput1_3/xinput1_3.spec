@@ -1,4 +1,4 @@
-1 stdcall -private DllMain(long long ptr) DllMainCRTStartup
+1 stdcall -private DllMain(long long ptr)
 2 stdcall XInputGetState(long ptr)
 3 stdcall XInputSetState(long ptr)
 4 stdcall XInputGetCapabilities(long long ptr)

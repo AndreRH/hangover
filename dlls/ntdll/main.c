@@ -34,7 +34,7 @@ struct qemu_set_callbacks
 
 #ifdef QEMU_DLL_GUEST
 
-BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
+BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_set_callbacks call;
     switch (reason)

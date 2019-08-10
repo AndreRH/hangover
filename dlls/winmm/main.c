@@ -49,7 +49,7 @@ static LRESULT __fastcall ioproc_guest_wrapper(struct ioproc_callback *data)
     return func((char *)(ULONG_PTR)data->info, data->msg, data->param1, data->param2);
 }
 
-BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
+BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_dll_init call;
 

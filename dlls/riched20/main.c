@@ -126,7 +126,7 @@ static uint64_t __fastcall guest_breakproc_cb(struct qemu_breakproc_cb *data)
     return cb((WCHAR *)(ULONG_PTR)data->text, data->pos, data->bytes, data->code);
 }
 
-BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
+BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 {
     struct qemu_set_callbacks call;
 

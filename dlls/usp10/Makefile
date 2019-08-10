@@ -9,7 +9,7 @@ VPATH=$(SRCDIR)
 all: usp10.dll qemu_usp10.dll.so
 
 usp10.dll: main_g.o usp10.spec usp10_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/usp10.spec ../../$(WINE_DIR)/dlls/winecrt0/libwinecrt0.a *_g.o -o usp10.dll -nodefaultlibs -nostdlib -Wl,--image-base,0xf0000000 -lkernel32
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/usp10.spec *_g.o -L../../$(WINE_DIR)/dlls/winecrt0 -lwinecrt0 -o usp10.dll -nodefaultlibs -nostdlib -Wl,--image-base,0xf0000000 -lkernel32
 
 qemu_usp10.dll.so: main_h.o usp10_h.o
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_usp10.spec *_h.o -o qemu_usp10.dll.so -lusp10

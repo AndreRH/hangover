@@ -9,7 +9,7 @@ VPATH=$(SRCDIR)
 all: riched32.dll qemu_riched32.dll.so
 
 riched32.dll: main_g.o riched32.spec
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/riched32.spec *_g.o -o riched32.dll -nodefaultlibs -nostdlib -lriched20 -L../riched20
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/riched32.spec *_g.o -L../../$(WINE_DIR)/dlls/winecrt0 -lwinecrt0 -o riched32.dll -nodefaultlibs -nostdlib -lriched20 -L../riched20
 
 qemu_riched32.dll.so: main_h.o
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_riched32.spec *_h.o -o qemu_riched32.dll.so

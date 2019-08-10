@@ -9,7 +9,7 @@ VPATH=$(SRCDIR)
 all: xinput1_3.dll qemu_xinput1_3.dll.so
 
 xinput1_3.dll: main_g.o xinput1_3.spec xinput1_3_main_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/xinput1_3.spec *_g.o -o xinput1_3.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x130000000
+	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/xinput1_3.spec *_g.o -L../../$(WINE_DIR)/dlls/winecrt0 -lwinecrt0 -o xinput1_3.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x130000000
 
 qemu_xinput1_3.dll.so: main_h.o xinput1_3_main_h.o
 	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_xinput1_3.spec *_h.o -o qemu_xinput1_3.dll.so -lxinput
