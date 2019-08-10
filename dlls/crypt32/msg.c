@@ -351,7 +351,8 @@ struct qemu_CryptMsgGetAndVerifySigner
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI CryptMsgGetAndVerifySigner(HCRYPTMSG hCryptMsg, DWORD cSignerStore, HCERTSTORE *rghSignerStore, DWORD dwFlags, PCCERT_CONTEXT *ppSigner, DWORD *pdwSignerIndex)
+WINBASEAPI BOOL WINAPI CryptMsgGetAndVerifySigner(HCRYPTMSG hCryptMsg, DWORD cSignerStore,
+        HCERTSTORE *rghSignerStore, DWORD dwFlags, PCCERT_CONTEXT *ppSigner, DWORD *pdwSignerIndex)
 {
     struct qemu_CryptMsgGetAndVerifySigner call;
     call.super.id = QEMU_SYSCALL_ID(CALL_CRYPTMSGGETANDVERIFYSIGNER);
@@ -364,6 +365,9 @@ WINBASEAPI BOOL WINAPI CryptMsgGetAndVerifySigner(HCRYPTMSG hCryptMsg, DWORD cSi
 
     qemu_syscall(&call.super);
 
+    if (call.super.iret && ppSigner)
+        *ppSigner = (PCCERT_CONTEXT)(ULONG_PTR)call.ppSigner;
+
     return call.super.iret;
 }
 
@@ -372,8 +376,40 @@ WINBASEAPI BOOL WINAPI CryptMsgGetAndVerifySigner(HCRYPTMSG hCryptMsg, DWORD cSi
 void qemu_CryptMsgGetAndVerifySigner(struct qemu_syscall *call)
 {
     struct qemu_CryptMsgGetAndVerifySigner *c = (struct qemu_CryptMsgGetAndVerifySigner *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptMsgGetAndVerifySigner(QEMU_G2H(c->hCryptMsg), c->cSignerStore, QEMU_G2H(c->rghSignerStore), c->dwFlags, QEMU_G2H(c->ppSigner), QEMU_G2H(c->pdwSignerIndex));
+    HCERTSTORE store_stack[16], *store = store_stack;
+    DWORD cSignerStore, i;
+    qemu_ptr *guest_signer_store;
+    const CERT_CONTEXT *context = NULL;
+
+    WINE_TRACE("\n");
+    cSignerStore = c->cSignerStore;
+#if GUEST_BIT == HOST_BIT
+    QEMU_G2H(c->rghSignerStore);
+#else
+    guest_signer_store = QEMU_G2H(c->rghSignerStore);
+    if (guest_signer_store)
+    {
+        WINE_FIXME("This codepath has not been tested yet\n");
+        if (cSignerStore > (sizeof(store_stack) / sizeof(*store_stack)))
+            store = HeapAlloc(GetProcessHeap(), 0, sizeof(*store) * cSignerStore);
+
+        for (i = 0; i < cSignerStore; ++i)
+            store[i] = QEMU_G2H((ULONG_PTR)guest_signer_store[i]);
+    }
+    else
+    {
+        store = NULL;
+    }
+#endif
+
+    c->super.iret = CryptMsgGetAndVerifySigner(QEMU_G2H(c->hCryptMsg), cSignerStore,
+            store, c->dwFlags, QEMU_G2H(c->ppSigner) ? &context : NULL, QEMU_G2H(c->pdwSignerIndex));
+
+#if GUEST_BIT != HOST_BIT
+    if (context)
+        context = (CERT_CONTEXT *)context32_create(context);
+#endif
+    c->ppSigner = QEMU_H2G(context);
 }
 
 #endif
