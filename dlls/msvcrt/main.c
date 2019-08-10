@@ -90,14 +90,18 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
         case DLL_PROCESS_ATTACH:
             msvcrt_tls_index = TlsAlloc();
 
-#ifndef __x86_64__
             call.super.id = QEMU_SYSCALL_ID(CALL_INIT_DLL);
+#ifdef __x86_64__
+            call.iob = 0;
+            call.iob_size = 0;
+#else
             call.iob = (ULONG_PTR)guest_iob;
-            call.FILE_size = sizeof(FILE);
             call.iob_size = GUEST_IOB_SIZE;
+#endif
+            call.FILE_size = sizeof(FILE);
             qemu_syscall(&call.super);
             msvcrt_data_init(call.HUGE, call.argc, (char **)(ULONG_PTR)call.argv);
-#endif
+
             MSVCRT__acmdln = MSVCRT__strdup(GetCommandLineA());
             MSVCRT__wcmdln = msvcrt_wstrdupa(MSVCRT__acmdln);
             return TRUE;
@@ -138,8 +142,8 @@ static void qemu_init_dll(struct qemu_syscall *call)
         {
             int *my_errno;
             /* This happens when a different Wine DLL loaded the host DLL, e.g. version32 loading msvcrt.dll.
-            * It should only happen with msvcrt.dll. The trouble is that the DLL is probably initialized
-            * already and has allocated its thread data above 4 GB. */
+             * It should only happen with msvcrt.dll. The trouble is that the DLL is probably initialized
+             * already and has allocated its thread data above 4 GB. */
 
             if (strcmp(dll_name, "msvcrt.dll"))
             {
@@ -149,6 +153,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
             }
             
             msvcrt = LoadLibraryA(dll_name); /* For symmetry with the path below. */
+            WINE_ERR("loaded %p\n", msvcrt);
             if (!msvcrt)
                 WINE_ERR("WTF?\n");
 
@@ -1240,6 +1245,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p_wmemmove_s = (void *)GetProcAddress(msvcrt, "wmemmove_s");
     }
 
+#if HOST_BIT != GUEST_BIT
     guest_FILE_size = c->FILE_size;
     guest_iob = c->iob;
     guest_iob_size = c->iob_size;
@@ -1263,6 +1269,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
     }
 
     c->argv = QEMU_H2G(argv);
+#endif
 }
 
 static const syscall_handler dll_functions[] =
