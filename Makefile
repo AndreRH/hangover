@@ -27,7 +27,7 @@ DRV_TARGET64 = $(join $(DRV___DIRS64), $(DRVS)) $(join $(DRV___DIRS64), $(DRV__H
 WINE_SRC = $(abspath wine)
 WINE_HOST = $(abspath build/wine-host)
 
-all: build/wine-host/.built wine-guest wine-guest32 qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32) $(EXTDLL_TARGET64) build/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
+all: build/wine-host/.built wine-guest wine-guest32 qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32) $(EXTDLL_TARGET64)
 .PHONY: all
 
 build/libiconv32/Makefile: libiconv/configure
@@ -163,7 +163,7 @@ build/dlls64/%/Makefile:
 	mkdir -p $(@D)
 	$(eval DLL := $(lastword $(subst /, ,$(@D))))
 	echo "GUEST_CC=x86_64-w64-mingw32" > $@
-	echo "HOST_CC=$(TRIPLE)" >> $@
+	echo "HOST_CC=\"$(TRIPLE) -Wno-pragma-pack\"" >> $@
 	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
 	echo "DESTDIR?=../../.." >> $@
 	echo "GUEST_BIT=64" >> $@
@@ -176,7 +176,7 @@ build/dlls32/%/Makefile:
 	mkdir -p $(@D)
 	$(eval DLL := $(lastword $(subst /, ,$(@D))))
 	echo "GUEST_CC=i686-w64-mingw32" > $@
-	echo "HOST_CC=$(TRIPLE)" >> $@
+	echo "HOST_CC=\"$(TRIPLE) -Wno-pragma-pack\"" >> $@
 	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
 	echo "DESTDIR?=../../.." >> $@
 	echo "GUEST_BIT=32" >> $@
@@ -258,9 +258,3 @@ build/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll build/qemu/x86_64-windo
 	ln -sf ../../../x86_64-w64-mingw32/bin/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/
 endef
 $(foreach mod,$(EXTDLLS),$(eval $(call EXTDLLS_RULE,$(mod))))
-
-# Link libwine
-build/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll: wine-guest32
-	ln -sf ../../../wine-guest32/libs/wine/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll
-build/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll: wine-guest
-	ln -sf ../../../wine-guest/libs/wine/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
