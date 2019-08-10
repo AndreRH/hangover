@@ -859,6 +859,7 @@ struct qemu_wic_stream *WICStream_create_host(IWICStream *host)
 
     ret->host = host;
 
+    return ret;
 }
 
 #endif
