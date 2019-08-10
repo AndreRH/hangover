@@ -131,7 +131,7 @@ void qemu_Thread32Next(struct qemu_syscall *call)
 
 #endif
 
-struct qemu_Process32First
+struct qemu_Process32Iteration
 {
     struct qemu_syscall super;
     uint64_t hSnapshot;
@@ -142,7 +142,7 @@ struct qemu_Process32First
 
 WINBASEAPI BOOL WINAPI Process32First(HANDLE hSnapshot, LPPROCESSENTRY32 lppe)
 {
-    struct qemu_Process32First call;
+    struct qemu_Process32Iteration call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PROCESS32FIRST);
     call.hSnapshot = (ULONG_PTR)hSnapshot;
     call.lppe = (ULONG_PTR)lppe;
@@ -152,29 +152,9 @@ WINBASEAPI BOOL WINAPI Process32First(HANDLE hSnapshot, LPPROCESSENTRY32 lppe)
     return call.super.iret;
 }
 
-#else
-
-void qemu_Process32First(struct qemu_syscall *call)
-{
-    struct qemu_Process32First *c = (struct qemu_Process32First *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = Process32First(QEMU_G2H(c->hSnapshot), QEMU_G2H(c->lppe));
-}
-
-#endif
-
-struct qemu_Process32Next
-{
-    struct qemu_syscall super;
-    uint64_t hSnapshot;
-    uint64_t lppe;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI Process32Next(HANDLE hSnapshot, LPPROCESSENTRY32 lppe)
 {
-    struct qemu_Process32Next call;
+    struct qemu_Process32Iteration call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PROCESS32NEXT);
     call.hSnapshot = (ULONG_PTR)hSnapshot;
     call.lppe = (ULONG_PTR)lppe;
@@ -184,29 +164,9 @@ WINBASEAPI BOOL WINAPI Process32Next(HANDLE hSnapshot, LPPROCESSENTRY32 lppe)
     return call.super.iret;
 }
 
-#else
-
-void qemu_Process32Next(struct qemu_syscall *call)
-{
-    struct qemu_Process32Next *c = (struct qemu_Process32Next *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = Process32Next(QEMU_G2H(c->hSnapshot), QEMU_G2H(c->lppe));
-}
-
-#endif
-
-struct qemu_Process32FirstW
-{
-    struct qemu_syscall super;
-    uint64_t hSnapshot;
-    uint64_t lppe;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI Process32FirstW(HANDLE hSnapshot, LPPROCESSENTRY32W lppe)
 {
-    struct qemu_Process32FirstW call;
+    struct qemu_Process32Iteration call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PROCESS32FIRSTW);
     call.hSnapshot = (ULONG_PTR)hSnapshot;
     call.lppe = (ULONG_PTR)lppe;
@@ -216,29 +176,9 @@ WINBASEAPI BOOL WINAPI Process32FirstW(HANDLE hSnapshot, LPPROCESSENTRY32W lppe)
     return call.super.iret;
 }
 
-#else
-
-void qemu_Process32FirstW(struct qemu_syscall *call)
-{
-    struct qemu_Process32FirstW *c = (struct qemu_Process32FirstW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = Process32FirstW(QEMU_G2H(c->hSnapshot), QEMU_G2H(c->lppe));
-}
-
-#endif
-
-struct qemu_Process32NextW
-{
-    struct qemu_syscall super;
-    uint64_t hSnapshot;
-    uint64_t lppe;
-};
-
-#ifdef QEMU_DLL_GUEST
-
 WINBASEAPI BOOL WINAPI Process32NextW(HANDLE hSnapshot, LPPROCESSENTRY32W lppe)
 {
-    struct qemu_Process32NextW call;
+    struct qemu_Process32Iteration call;
     call.super.id = QEMU_SYSCALL_ID(CALL_PROCESS32NEXTW);
     call.hSnapshot = (ULONG_PTR)hSnapshot;
     call.lppe = (ULONG_PTR)lppe;
@@ -250,11 +190,73 @@ WINBASEAPI BOOL WINAPI Process32NextW(HANDLE hSnapshot, LPPROCESSENTRY32W lppe)
 
 #else
 
-void qemu_Process32NextW(struct qemu_syscall *call)
+void qemu_Process32Iteration(struct qemu_syscall *call)
 {
-    struct qemu_Process32NextW *c = (struct qemu_Process32NextW *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = Process32NextW(QEMU_G2H(c->hSnapshot), QEMU_G2H(c->lppe));
+    struct qemu_Process32Iteration *c = (struct qemu_Process32Iteration *)call;
+    PROCESSENTRY32W stackW, *entryW = &stackW;
+    struct qemu_PROCESSENTRY32W *guest_entryW;
+    PROCESSENTRY32 stackA, *entryA = &stackA;
+    struct qemu_PROCESSENTRY32A *guest_entryA;
+
+    WINE_FIXME("Should probably replace qemu.exe processes.\n");
+#if GUEST_BIT == HOST_BIT
+    entryA = QEMU_G2H(c->lppe);
+    entryW = QEMU_G2H(c->lppe);
+#else
+    if (c->super.id == QEMU_SYSCALL_ID(CALL_PROCESS32FIRSTW) ||
+            c->super.id == QEMU_SYSCALL_ID(CALL_PROCESS32NEXTW))
+    {
+        guest_entryA = NULL;
+        guest_entryW = QEMU_G2H(c->lppe);
+        if (!guest_entryW)
+            entryW = NULL;
+        else if (guest_entryW->dwSize >= sizeof(*guest_entryW))
+            entryW->dwSize = sizeof(*entryW);
+        else
+            entryW->dwSize = 0;
+    }
+    else
+    {
+        guest_entryA = QEMU_G2H(c->lppe);
+        guest_entryW = NULL;
+        if (!guest_entryA)
+            entryA = NULL;
+        else if (guest_entryA->dwSize >= sizeof(*guest_entryA))
+            entryA->dwSize = sizeof(*entryA);
+        else
+            entryA->dwSize = 0;
+    }
+#endif
+
+    switch(c->super.id)
+    {
+        case QEMU_SYSCALL_ID(CALL_PROCESS32FIRST):
+            c->super.iret = Process32First(QEMU_G2H(c->hSnapshot), entryA);
+            break;
+        case QEMU_SYSCALL_ID(CALL_PROCESS32NEXT):
+            c->super.iret = Process32Next(QEMU_G2H(c->hSnapshot), entryA);
+            break;
+        case QEMU_SYSCALL_ID(CALL_PROCESS32FIRSTW):
+            c->super.iret = Process32FirstW(QEMU_G2H(c->hSnapshot), entryW);
+            break;
+        case QEMU_SYSCALL_ID(CALL_PROCESS32NEXTW):
+            c->super.iret = Process32NextW(QEMU_G2H(c->hSnapshot), entryW);
+            break;
+        default:
+            WINE_ERR("Unexpected syscall.\n");
+    }
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret)
+    {
+        if (guest_entryA)
+            PROCESSENTRY32A_h2g(guest_entryA, entryA);
+        else if (guest_entryW)
+            PROCESSENTRY32W_h2g(guest_entryW, entryW);
+        else
+            WINE_ERR("Both A and W structs are NULL. How?\n");
+    }
+#endif
 }
 
 #endif

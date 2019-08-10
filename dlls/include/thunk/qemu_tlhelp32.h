@@ -55,4 +55,58 @@ static inline void MODULEENTRY32_h2g(struct qemu_MODULEENTRY32 *guest, const MOD
     memcpy(guest->szExePath, host->szExePath, sizeof(guest->szExePath));
 }
 
+struct qemu_PROCESSENTRY32A
+{
+    DWORD     dwSize;
+    DWORD     cntUsage;
+    DWORD     th32ProcessID;
+    qemu_ptr  th32DefaultHeapID;
+    DWORD     th32ModuleID;
+    DWORD     cntThreads;
+    DWORD     th32ParentProcessID;
+    LONG      pcPriClassBase;
+    DWORD     dwFlags;
+    char      szExeFile[MAX_PATH];
+};
+
+struct qemu_PROCESSENTRY32W
+{
+    DWORD     dwSize;
+    DWORD     cntUsage;
+    DWORD     th32ProcessID;
+    qemu_ptr  th32DefaultHeapID;
+    DWORD     th32ModuleID;
+    DWORD     cntThreads;
+    DWORD     th32ParentProcessID;
+    LONG      pcPriClassBase;
+    DWORD     dwFlags;
+    WCHAR     szExeFile[MAX_PATH];
+};
+
+static inline void PROCESSENTRY32A_h2g(struct qemu_PROCESSENTRY32A *guest, const PROCESSENTRY32 *host)
+{
+    guest->cntUsage = host->cntUsage;
+    guest->th32ProcessID = host->th32ProcessID;
+    guest->th32DefaultHeapID = host->th32DefaultHeapID;
+    guest->th32ModuleID = host->th32ModuleID;
+    guest->cntThreads = host->cntThreads;
+    guest->th32ParentProcessID = host->th32ParentProcessID;
+    guest->pcPriClassBase = host->pcPriClassBase;
+    guest->dwFlags = host->dwFlags;
+    memcpy(guest->szExeFile, host->szExeFile, sizeof(guest->szExeFile));
+}
+
+static inline void PROCESSENTRY32W_h2g(struct qemu_PROCESSENTRY32W *guest, const PROCESSENTRY32W *host)
+{
+    guest->cntUsage = host->cntUsage;
+    guest->th32ProcessID = host->th32ProcessID;
+    guest->th32DefaultHeapID = host->th32DefaultHeapID;
+    guest->th32ModuleID = host->th32ModuleID;
+    guest->cntThreads = host->cntThreads;
+    guest->th32ParentProcessID = host->th32ParentProcessID;
+    guest->pcPriClassBase = host->pcPriClassBase;
+    guest->dwFlags = host->dwFlags;
+    memcpy(guest->szExeFile, host->szExeFile, sizeof(guest->szExeFile));
+}
+
 #endif
