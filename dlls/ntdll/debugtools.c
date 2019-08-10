@@ -73,7 +73,7 @@ void qemu___wine_dbg_strdup(struct qemu_syscall *call)
 {
     struct qemu___wine_dbg_strdup *c = (struct qemu___wine_dbg_strdup *)call;
     WINE_TRACE("\n");
-    c->super.iret = __wine_dbg_strdup(QEMU_G2H(c->str));
+    c->super.iret = QEMU_H2G(__wine_dbg_strdup(QEMU_G2H(c->str)));
 }
 
 #endif
