@@ -1077,7 +1077,7 @@ void qemu_WICBitmapDecoderInfo_GetPatterns(struct qemu_syscall *call)
         for (i = 0; i < *count; ++i)
             WICBitmapPattern_h2g(&p32[i], &patterns[i]);
     }
-    else if (SUCCEEDED(c->super.iret) == WINCODEC_ERR_INSUFFICIENTBUFFER)
+    else if (c->super.iret == WINCODEC_ERR_INSUFFICIENTBUFFER)
     {
         WINE_FIXME("The host returned WINCODEC_ERR_INSUFFICIENTBUFFER.\n");
     }
