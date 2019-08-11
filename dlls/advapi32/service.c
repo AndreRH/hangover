@@ -1398,15 +1398,40 @@ void qemu_ChangeServiceConfig2W(struct qemu_syscall *call)
 {
     struct qemu_ChangeServiceConfig2W *c = (struct qemu_ChangeServiceConfig2W *)call;
     DWORD level;
+    void *info;
+    SERVICE_FAILURE_ACTIONSW fail_actions;
+    SERVICE_DESCRIPTIONW description;
+    SERVICE_REQUIRED_PRIVILEGES_INFOW priv;
 
     WINE_TRACE("\n");
     level = c->dwInfoLevel;
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->lpInfo);
+#else
     switch (level)
     {
+        case SERVICE_CONFIG_DESCRIPTION:
+            SERVICE_DESCRIPTION_g2h(&description, QEMU_G2H(c->lpInfo));
+            info = &description;
+            break;
+
+        case SERVICE_CONFIG_FAILURE_ACTIONS:
+            SERVICE_FAILURE_ACTIONS_g2h(&fail_actions, QEMU_G2H(c->lpInfo));
+            info = &fail_actions;
+            break;
+
+        case SERVICE_CONFIG_REQUIRED_PRIVILEGES_INFO:
+            SERVICE_REQUIRED_PRIVILEGES_INFO_g2h(&priv, QEMU_G2H(c->lpInfo));
+            info = &priv;
+            break;
+
         default:
             WINE_FIXME("Unhandled info level %u.\n", level);
-            c->super.iret = ChangeServiceConfig2W(QEMU_G2H(c->hService), level, QEMU_G2H(c->lpInfo));
+            info = QEMU_G2H(c->lpInfo);
     }
+#endif
+
+    c->super.iret = ChangeServiceConfig2W(QEMU_G2H(c->hService), level, info);
 }
 
 #endif
