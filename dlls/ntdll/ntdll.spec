@@ -70,6 +70,7 @@
 # @ stub LdrHotPatchRoutine
 @ stub LdrInitShimEngineDynamic
 @ stub LdrLoadAlternateResourceModule
+@ stdcall LdrResolveDelayLoadedAPI(ptr ptr ptr ptr ptr long)
 @ stub LdrSetAppCompatDllRedirectionCallback
 @ stub LdrSetDllManifestProber
 @ stub LdrUnloadAlternateResourceModule

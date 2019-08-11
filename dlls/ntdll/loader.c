@@ -37,6 +37,7 @@
 
 #include <ddk/ntddk.h>
 #include <wine/debug.h>
+#include <delayloadhandler.h>
 
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ntdll);
 
@@ -209,6 +210,54 @@ void qemu_RtlPcToFileHeader(struct qemu_syscall *call)
     c->super.iret = QEMU_H2G(qemu_ops->qemu_RtlPcToFileHeader(QEMU_G2H(c->pc), c->address ? &ret : NULL));
     if (c->address)
         *(uint64_t *)QEMU_G2H(c->address) = QEMU_H2G(ret);
+}
+
+#endif
+
+struct qemu_LdrResolveDelayLoadedAPI
+{
+    struct qemu_syscall super;
+    uint64_t base;
+    uint64_t desc;
+    uint64_t dllhook;
+    uint64_t syshook;
+    uint64_t addr;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void* WINAPI LdrResolveDelayLoadedAPI(void *base, const IMAGE_DELAYLOAD_DESCRIPTOR *desc,
+        void *dllhook, void *syshook, IMAGE_THUNK_DATA *addr, ULONG flags)
+{
+    struct qemu_LdrResolveDelayLoadedAPI call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LDRRESOLVEDELAYLOADEDAPI);
+    call.base = (ULONG_PTR)base;
+    call.desc = (ULONG_PTR)desc;
+    call.dllhook = (ULONG_PTR)dllhook;
+    call.syshook = (ULONG_PTR)syshook;
+    call.addr = (ULONG_PTR)addr;
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+
+    return (void *)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+static void WINAPI *DelayLoaderFailure(ULONG u, DELAYLOAD_INFO *info)
+{
+    WINE_FIXME("Stub\n");
+    return NULL;
+}
+
+void qemu_LdrResolveDelayLoadedAPI(struct qemu_syscall *call)
+{
+    struct qemu_LdrResolveDelayLoadedAPI *c = (struct qemu_LdrResolveDelayLoadedAPI *)call;
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(qemu_ops->qemu_LdrResolveDelayLoadedAPI(QEMU_G2H(c->base), QEMU_G2H(c->desc),
+            DelayLoaderFailure, QEMU_G2H(c->syshook), QEMU_G2H(c->addr), c->flags));
 }
 
 #endif

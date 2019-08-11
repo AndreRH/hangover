@@ -73,6 +73,7 @@ enum ntdll_calls
     CALL_LDRFINDENTRYFORADDRESS,
     CALL_LDRFINDRESOURCE_U,
     CALL_LDRFINDRESOURCEDIRECTORY_U,
+    CALL_LDRRESOLVEDELAYLOADEDAPI,
     CALL_MBSTOWCS,
     CALL_MEMCHR,
     CALL_MEMCMP,
@@ -730,6 +731,7 @@ void qemu_LdrAccessResource(struct qemu_syscall *call);
 void qemu_LdrFindEntryForAddress(struct qemu_syscall *call);
 void qemu_LdrFindResource_U(struct qemu_syscall *call);
 void qemu_LdrFindResourceDirectory_U(struct qemu_syscall *call);
+void qemu_LdrResolveDelayLoadedAPI(struct qemu_syscall *call);
 void qemu_mbstowcs(struct qemu_syscall *call);
 void qemu_memchr(struct qemu_syscall *call);
 void qemu_memcmp(struct qemu_syscall *call);

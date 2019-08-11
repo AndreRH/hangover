@@ -134,6 +134,7 @@ static const syscall_handler dll_functions[] =
     qemu_LdrFindEntryForAddress,
     qemu_LdrFindResource_U,
     qemu_LdrFindResourceDirectory_U,
+    qemu_LdrResolveDelayLoadedAPI,
     qemu_mbstowcs,
     qemu_memchr,
     qemu_memcmp,
