@@ -87,7 +87,7 @@ build/x86_64-w64-mingw32/bin/libxslt-1.dll: build/libxslt64/Makefile
 # Build the Host (e.g. arm64) wine
 build/wine-host/Makefile: wine/configure
 	@mkdir -p $(@D)
-	cd build/wine-host ; ../../wine/configure --enable-win64 --without-mingw $(TESTS)
+	cd build/wine-host ; ../../wine/configure --enable-win64 $(TESTS)
 
 wine-host build/wine-host/.built: build/wine-host/Makefile
 	+$(MAKE) -C build/wine-host
@@ -163,7 +163,7 @@ build/dlls64/%/Makefile:
 	mkdir -p $(@D)
 	$(eval DLL := $(lastword $(subst /, ,$(@D))))
 	echo "GUEST_CC=x86_64-w64-mingw32" > $@
-	echo "HOST_CC=\"$(TRIPLE) -Wno-pragma-pack\"" >> $@
+	echo "HOST_CC=-Wno-pragma-pack $(TRIPLE)" >> $@
 	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
 	echo "DESTDIR?=../../.." >> $@
 	echo "GUEST_BIT=64" >> $@
@@ -176,7 +176,7 @@ build/dlls32/%/Makefile:
 	mkdir -p $(@D)
 	$(eval DLL := $(lastword $(subst /, ,$(@D))))
 	echo "GUEST_CC=i686-w64-mingw32" > $@
-	echo "HOST_CC=\"$(TRIPLE) -Wno-pragma-pack\"" >> $@
+	echo "HOST_CC=-Wno-pragma-pack $(TRIPLE)" >> $@
 	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
 	echo "DESTDIR?=../../.." >> $@
 	echo "GUEST_BIT=32" >> $@
