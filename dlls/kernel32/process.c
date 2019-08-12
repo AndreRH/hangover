@@ -1987,7 +1987,7 @@ WINBASEAPI BOOL WINAPI IsWow64Process(HANDLE hProcess, PBOOL Wow64Process)
 void qemu_IsWow64Process(struct qemu_syscall *call)
 {
     struct qemu_IsWow64Process *c = (struct qemu_IsWow64Process *)call;
-    BOOL wow64;
+    BOOL wow64 = FALSE;
     WINE_TRACE("\n");
 
     /* 32 bit is complicated. On the one hand we're clearly a 32 bit program running on a 64 bit Wine or Windows,
@@ -1999,7 +1999,14 @@ void qemu_IsWow64Process(struct qemu_syscall *call)
      *
      * On the other hand it is plausible that the application knows it is 32 bit, looks at some registry keys or
      * other system properties and concludes it is running on 64 bit windows and can reasonably expect this call
-     * to return TRUE. */
+     * to return TRUE. Report TRUE to x86 guests to match the mismatch between GetSystemInfo and
+     * GetNativeSystemInfo and one day get an aarch64 Windows box and see what Microsoft's x86 emulator does.
+     * Report FALSE to x86_64 guests. */
+
+    c->super.iret = IsWow64Process(QEMU_G2H(c->hProcess), &wow64);
+    if (c->super.iret && wow64)
+        WINE_FIXME("The host reported we are WoW64. This is unexpected. */
+
 #if GUEST_BIT != HOST_BIT
     {
         static BOOL warned;
@@ -2009,10 +2016,10 @@ void qemu_IsWow64Process(struct qemu_syscall *call)
             warned = TRUE;
         }
     }
+    c->Wow64Process = TRUE;
+#else
+    c->Wow64Process = FALSE;
 #endif
-
-    c->super.iret = IsWow64Process(QEMU_G2H(c->hProcess), &wow64);
-    c->Wow64Process = wow64;
 }
 
 #endif
