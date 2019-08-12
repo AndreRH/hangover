@@ -332,8 +332,46 @@ WINBASEAPI BOOL WINAPI CryptMsgControl(HCRYPTMSG hCryptMsg, DWORD dwFlags, DWORD
 void qemu_CryptMsgControl(struct qemu_syscall *call)
 {
     struct qemu_CryptMsgControl *c = (struct qemu_CryptMsgControl *)call;
-    WINE_FIXME("Unverified!\n");
+    CMSG_CTRL_VERIFY_SIGNATURE_EX_PARA sign_ex;
+    WINE_TRACE("\n");
+
+#if GUEST_BIT == HOST_BIT
     c->super.iret = CryptMsgControl(QEMU_G2H(c->hCryptMsg), c->dwFlags, c->dwCtrlType, QEMU_G2H(c->pvCtrlPara));
+    return;
+#endif
+
+    switch (c->dwCtrlType)
+    {
+        case CMSG_CTRL_VERIFY_SIGNATURE_EX:
+            if(QEMU_G2H(c->pvCtrlPara))
+            {
+                struct qemu_CMSG_CTRL_VERIFY_SIGNATURE_EX_PARA *sign_ex32 = QEMU_G2H(c->pvCtrlPara);
+                struct qemu_cert_context *impl;
+
+                CMSG_CTRL_VERIFY_SIGNATURE_EX_PARA_g2h(&sign_ex, sign_ex32);
+                switch (sign_ex.dwSignerType)
+                {
+                    case CMSG_VERIFY_SIGNER_PUBKEY:
+                        WINE_FIXME("unimplemented for signer type CMSG_VERIFY_SIGNER_PUBKEY\n");
+                        break;
+                    case CMSG_VERIFY_SIGNER_CERT:
+                        impl = context_impl_from_context32(QEMU_G2H(sign_ex.pvSigner));
+                        sign_ex.pvSigner = impl ? impl->cert64 : NULL;
+                        break;
+                    default:
+                        WINE_FIXME("unimplemented for signer type %d\n", sign_ex.dwSignerType);
+                }
+            }
+
+            c->super.iret = CryptMsgControl(QEMU_G2H(c->hCryptMsg), c->dwFlags, c->dwCtrlType,
+                    QEMU_G2H(c->pvCtrlPara) ? &sign_ex : NULL);
+            break;
+
+        default:
+            WINE_FIXME("Unhandled control type %u.\n", (unsigned int)c->dwCtrlType);
+                c->super.iret = CryptMsgControl(QEMU_G2H(c->hCryptMsg), c->dwFlags, c->dwCtrlType,
+                        QEMU_G2H(c->pvCtrlPara));
+    }
 }
 
 #endif

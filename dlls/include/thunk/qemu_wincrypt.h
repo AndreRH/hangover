@@ -593,4 +593,23 @@ static inline void CRYPT_ATTRIBUTE_TYPE_VALUE_h2g(struct qemu_CRYPT_ATTRIBUTE_TY
     CRYPT_DATA_BLOB_h2g(&guest->Value, &host->Value);
 }
 
+struct qemu_CMSG_CTRL_VERIFY_SIGNATURE_EX_PARA
+{
+    DWORD      cbSize;
+    qemu_ptr   hCryptProv;
+    DWORD      dwSignerIndex;
+    DWORD      dwSignerType;
+    qemu_ptr   pvSigner;
+};
+
+static inline void CMSG_CTRL_VERIFY_SIGNATURE_EX_PARA_g2h(CMSG_CTRL_VERIFY_SIGNATURE_EX_PARA *host,
+        const struct qemu_CMSG_CTRL_VERIFY_SIGNATURE_EX_PARA *guest)
+{
+    host->cbSize = sizeof(*host);
+    host->hCryptProv = (HCRYPTPROV)(ULONG_PTR)guest->hCryptProv;
+    host->dwSignerIndex = guest->dwSignerIndex;
+    host->dwSignerType = guest->dwSignerType;
+    host->pvSigner = (void *)(ULONG_PTR)guest->pvSigner;
+}
+
 #endif
