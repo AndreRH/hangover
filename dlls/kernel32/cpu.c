@@ -21,6 +21,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <psapi.h>
+#include <winnt.h>
 
 #include "thunk/qemu_windows.h"
 
@@ -131,6 +132,18 @@ void qemu_GetSystemInfo(struct qemu_syscall *call)
 
     GetSystemInfo(si);
 
+    /* Overwrite the CPU to match the guest arch. Right now we don't support
+     * anything other than x86 or x86_64 guests though. */
+#if GUEST_BIT == 32
+    si->wProcessorArchitecture = PROCESSOR_ARCHITECTURE_INTEL;
+    si->dwProcessorType = PROCESSOR_INTEL_PENTIUM;
+#else if GUEST_BIT == 64
+    si->wProcessorArchitecture = PROCESSOR_ARCHITECTURE_AMD64;
+    si->dwProcessorType = PROCESSOR_AMD_X8664;
+#else
+#error Unexpected guest bitness
+#endif
+
 #if GUEST_BIT != HOST_BIT
     if (c->si)
         SYSTEM_INFO_h2g(QEMU_G2H(c->si), si);
@@ -163,7 +176,7 @@ void qemu_GetNativeSystemInfo(struct qemu_syscall *call)
     struct qemu_GetNativeSystemInfo *c = (struct qemu_GetNativeSystemInfo *)call;
     SYSTEM_INFO stack, *si = &stack;
 
-    WINE_FIXME("May need to overwrite some info.\n");
+    WINE_TRACE(".\n");
 #if GUEST_BIT == HOST_BIT
     si = QEMU_G2H(c->si);
 #else
@@ -172,6 +185,9 @@ void qemu_GetNativeSystemInfo(struct qemu_syscall *call)
 #endif
 
     GetNativeSystemInfo(si);
+    /* Pass the Info to the app and see what it does. I may have to overwrite
+     * aarch64 with x86_64 though. Don't replace x86_64 with x86 though, that
+     * only happens in GetSystemInfo(). */
 
 #if GUEST_BIT != HOST_BIT
     if (c->si)
