@@ -114,7 +114,7 @@ struct qemu__snprintf_s
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI int WINAPIV _snprintf_s(char *str, SIZE_T size, SIZE_T len, const char *format, ...)
+WINBASEAPI int WINAPIV ntdll_snprintf_s(char *str, SIZE_T size, SIZE_T len, const char *format, ...)
 {
     struct qemu__snprintf_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__SNPRINTF_S);
@@ -285,7 +285,7 @@ struct qemu__vsnprintf_s
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI int CDECL _vsnprintf_s(char *str, SIZE_T size, SIZE_T len, const char *format, va_list args)
+WINBASEAPI int CDECL ntdll_vsnprintf_s(char *str, SIZE_T size, SIZE_T len, const char *format, va_list args)
 {
     struct qemu__vsnprintf_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__VSNPRINTF_S);

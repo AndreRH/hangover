@@ -137,7 +137,7 @@ void qemu_GetSystemInfo(struct qemu_syscall *call)
 #if GUEST_BIT == 32
     si->wProcessorArchitecture = PROCESSOR_ARCHITECTURE_INTEL;
     si->dwProcessorType = PROCESSOR_INTEL_PENTIUM;
-#else if GUEST_BIT == 64
+#elif GUEST_BIT == 64
     si->wProcessorArchitecture = PROCESSOR_ARCHITECTURE_AMD64;
     si->dwProcessorType = PROCESSOR_AMD_X8664;
 #else

@@ -2005,7 +2005,7 @@ void qemu_IsWow64Process(struct qemu_syscall *call)
 
     c->super.iret = IsWow64Process(QEMU_G2H(c->hProcess), &wow64);
     if (c->super.iret && wow64)
-        WINE_FIXME("The host reported we are WoW64. This is unexpected. */
+        WINE_FIXME("The host reported we are WoW64. This is unexpected.\n");
 
 #if GUEST_BIT != HOST_BIT
     {
