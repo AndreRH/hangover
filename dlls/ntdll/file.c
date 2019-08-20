@@ -822,8 +822,17 @@ WINBASEAPI NTSTATUS WINAPI NtQueryAttributesFile(const OBJECT_ATTRIBUTES *attr, 
 void qemu_NtQueryAttributesFile(struct qemu_syscall *call)
 {
     struct qemu_NtQueryAttributesFile *c = (struct qemu_NtQueryAttributesFile *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtQueryAttributesFile(QEMU_G2H(c->attr), QEMU_G2H(c->info));
+    OBJECT_ATTRIBUTES stack, *attr = &stack;
+    UNICODE_STRING name;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    attr = QEMU_G2H(c->attr);
+#else
+    OBJECT_ATTRIBUTES_g2h(attr, QEMU_G2H(c->attr), &name);
+#endif
+    
+    c->super.iret = NtQueryAttributesFile(attr, QEMU_G2H(c->info));
 }
 
 #endif
