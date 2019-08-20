@@ -56,24 +56,41 @@
 @ stub KiUserExceptionDispatcher
 # @ stub LdrAccessOutOfProcessResourcef
 @ stdcall LdrAccessResource(long ptr ptr ptr)
+@ stdcall LdrAddRefDll(long ptr)
 # @ stub LdrAlternateResourcesEnabled
 # @ stub LdrCreateOutOfProcessImage
 # @ stub LdrDestroyOutOfProcessImage
+@ stdcall LdrDisableThreadCalloutsForDll(long)
 @ stub LdrEnumResources
+@ stdcall LdrEnumerateLoadedModules(ptr ptr ptr)
 # @ stub LdrFindCreateProcessManifest
 @ stdcall LdrFindEntryForAddress(ptr ptr) ntdll_LdrFindEntryForAddress
 @ stdcall LdrFindResourceDirectory_U(long ptr long ptr)
 # @ stub LdrFindResourceEx_U
 @ stdcall LdrFindResource_U(long ptr long ptr)
 @ stub LdrFlushAlternateResourceModules
+@ stdcall LdrGetDllHandle(wstr long ptr ptr)
 # @ stub LdrGetDllHandleEx
+@ stdcall LdrGetProcedureAddress(ptr ptr long ptr)
 # @ stub LdrHotPatchRoutine
 @ stub LdrInitShimEngineDynamic
+@ stdcall LdrInitializeThunk(ptr long long long)
 @ stub LdrLoadAlternateResourceModule
+@ stdcall LdrLoadDll(wstr long ptr ptr)
+@ stdcall LdrLockLoaderLock(long ptr ptr)
+@ stdcall LdrProcessRelocationBlock(ptr long ptr long)
+@ stdcall LdrQueryImageFileExecutionOptions(ptr wstr long ptr long ptr)
+@ stdcall LdrQueryProcessModuleInformation(ptr long ptr)
+@ stdcall LdrRegisterDllNotification(long ptr ptr ptr)
 @ stdcall LdrResolveDelayLoadedAPI(ptr ptr ptr ptr ptr long)
 @ stub LdrSetAppCompatDllRedirectionCallback
 @ stub LdrSetDllManifestProber
+@ stdcall LdrShutdownProcess()
+@ stdcall LdrShutdownThread()
 @ stub LdrUnloadAlternateResourceModule
+@ stdcall LdrUnloadDll(ptr)
+@ stdcall LdrUnlockLoaderLock(long long)
+@ stdcall LdrUnregisterDllNotification(ptr)
 @ stub LdrVerifyImageMatchesChecksum
 @ stdcall NtAcceptConnectPort(ptr long ptr long ptr ptr)
 @ stdcall NtAccessCheck(ptr long long ptr ptr ptr ptr ptr)
@@ -169,6 +186,7 @@
 @ stdcall NtInitiatePowerAction (long long long long)
 @ stdcall NtIsProcessInJob(long long)
 # @ stub NtIsSystemResumeAutomatic
+@ stdcall NtLoadDriver(ptr)
 @ stdcall NtListenPort(ptr ptr)
 @ stdcall NtLoadKey2(ptr ptr long)
 @ stdcall NtLoadKey(ptr ptr)
@@ -343,7 +361,7 @@
 @ stub NtTestAlert
 # @ stub NtTraceEvent
 # @ stub NtTranslateFilePath
-# @ stdcall NtUnloadDriver(ptr)
+@ stdcall NtUnloadDriver(ptr)
 @ stdcall NtUnloadKey(ptr)
 @ stub NtUnloadKeyEx
 @ stdcall NtUnlockFile(long ptr ptr ptr ptr)
@@ -523,7 +541,7 @@
 @ stdcall RtlDestroyProcessParameters(ptr)
 # @ stdcall RtlDestroyQueryDebugBuffer(ptr)
 @ stdcall RtlDetermineDosPathNameType_U(wstr)
-# @ stdcall RtlDllShutdownInProgress()
+@ stdcall RtlDllShutdownInProgress()
 # @ stub RtlDnsHostNameToComputerName
 @ stdcall RtlDoesFileExists_U(wstr)
 # @ stub RtlDosApplyFileIsolationRedirection_Ustr
@@ -557,7 +575,7 @@
 @ stdcall RtlEqualString(ptr ptr long)
 @ stdcall RtlEqualUnicodeString(ptr ptr long)
 @ stdcall RtlEraseUnicodeString(ptr)
-# @ stdcall RtlExitUserProcess(long)
+@ stdcall RtlExitUserProcess(long)
 # @ stdcall RtlExitUserThread(long)
 @ stdcall RtlExpandEnvironmentStrings(ptr wstr long ptr long ptr)
 @ stdcall RtlExpandEnvironmentStrings_U(ptr ptr ptr ptr)
@@ -638,7 +656,8 @@
 # @ stub RtlGetSecurityDescriptorRMControl
 # @ stub RtlGetSetBootStatusData
 @ stdcall RtlGetThreadErrorMode()
-# @ stdcall RtlGetUnloadEventTrace()
+@ stdcall RtlGetUnloadEventTrace()
+@ stdcall RtlGetUnloadEventTraceEx(ptr ptr ptr)
 @ stub RtlGetUserInfoHeap
 @ stdcall RtlGetVersion(ptr)
 @ stub RtlGuidToPropertySetName

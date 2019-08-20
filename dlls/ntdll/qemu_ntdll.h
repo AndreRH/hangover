@@ -70,10 +70,27 @@ enum ntdll_calls
     CALL_ISWXDIGIT,
     CALL_ISXDIGIT,
     CALL_LDRACCESSRESOURCE,
+    CALL_LDRADDREFDLL,
+    CALL_LDRDISABLETHREADCALLOUTSFORDLL,
+    CALL_LDRENUMERATELOADEDMODULES,
     CALL_LDRFINDENTRYFORADDRESS,
     CALL_LDRFINDRESOURCE_U,
     CALL_LDRFINDRESOURCEDIRECTORY_U,
+    CALL_LDRGETDLLHANDLE,
+    CALL_LDRGETPROCEDUREADDRESS,
+    CALL_LDRINITIALIZETHUNK,
+    CALL_LDRLOADDLL,
+    CALL_LDRLOCKLOADERLOCK,
+    CALL_LDRPROCESSRELOCATIONBLOCK,
+    CALL_LDRQUERYIMAGEFILEEXECUTIONOPTIONS,
+    CALL_LDRQUERYPROCESSMODULEINFORMATION,
+    CALL_LDRREGISTERDLLNOTIFICATION,
     CALL_LDRRESOLVEDELAYLOADEDAPI,
+    CALL_LDRSHUTDOWNPROCESS,
+    CALL_LDRSHUTDOWNTHREAD,
+    CALL_LDRUNLOADDLL,
+    CALL_LDRUNLOCKLOADERLOCK,
+    CALL_LDRUNREGISTERDLLNOTIFICATION,
     CALL_MBSTOWCS,
     CALL_MEMCHR,
     CALL_MEMCMP,
@@ -140,6 +157,7 @@ enum ntdll_calls
     CALL_NTINITIATEPOWERACTION,
     CALL_NTISPROCESSINJOB,
     CALL_NTLISTENPORT,
+    CALL_NTLOADDRIVER,
     CALL_NTLOADKEY,
     CALL_NTLOADKEY2,
     CALL_NTLOCKFILE,
@@ -253,6 +271,7 @@ enum ntdll_calls
     CALL_NTTERMINATEJOBOBJECT,
     CALL_NTTERMINATEPROCESS,
     CALL_NTTERMINATETHREAD,
+    CALL_NTUNLOADDRIVER,
     CALL_NTUNLOADKEY,
     CALL_NTUNLOCKFILE,
     CALL_NTWAITFORKEYEDEVENT,
@@ -348,6 +367,7 @@ enum ntdll_calls
     CALL_RTLDESTROYHEAP,
     CALL_RTLDESTROYPROCESSPARAMETERS,
     CALL_RTLDETERMINEDOSPATHNAMETYPE_U,
+    CALL_RTLDLLSHUTDOWNINPROGRESS,
     CALL_RTLDOESFILEEXISTS_U,
     CALL_RTLDOSPATHNAMETONTPATHNAME_U,
     CALL_RTLDOSSEARCHPATH_U,
@@ -365,6 +385,7 @@ enum ntdll_calls
     CALL_RTLEQUALSTRING,
     CALL_RTLEQUALUNICODESTRING,
     CALL_RTLERASEUNICODESTRING,
+    CALL_RTLEXITUSERPROCESS,
     CALL_RTLEXPANDENVIRONMENTSTRINGS,
     CALL_RTLEXPANDENVIRONMENTSTRINGS_U,
     CALL_RTLFILLMEMORY,
@@ -405,6 +426,8 @@ enum ntdll_calls
     CALL_RTLGETPRODUCTINFO,
     CALL_RTLGETSACLSECURITYDESCRIPTOR,
     CALL_RTLGETTHREADERRORMODE,
+    CALL_RTLGETUNLOADEVENTTRACE,
+    CALL_RTLGETUNLOADEVENTTRACEEX,
     CALL_RTLGETVERSION,
     CALL_RTLGUIDFROMSTRING,
     CALL_RTLHASHUNICODESTRING,
@@ -732,10 +755,27 @@ void qemu_iswspace(struct qemu_syscall *call);
 void qemu_iswxdigit(struct qemu_syscall *call);
 void qemu_isxdigit(struct qemu_syscall *call);
 void qemu_LdrAccessResource(struct qemu_syscall *call);
+void qemu_LdrAddRefDll(struct qemu_syscall *call);
+void qemu_LdrDisableThreadCalloutsForDll(struct qemu_syscall *call);
+void qemu_LdrEnumerateLoadedModules(struct qemu_syscall *call);
 void qemu_LdrFindEntryForAddress(struct qemu_syscall *call);
 void qemu_LdrFindResource_U(struct qemu_syscall *call);
 void qemu_LdrFindResourceDirectory_U(struct qemu_syscall *call);
+void qemu_LdrGetDllHandle(struct qemu_syscall *call);
+void qemu_LdrGetProcedureAddress(struct qemu_syscall *call);
+void qemu_LdrInitializeThunk(struct qemu_syscall *call);
+void qemu_LdrLoadDll(struct qemu_syscall *call);
+void qemu_LdrLockLoaderLock(struct qemu_syscall *call);
+void qemu_LdrProcessRelocationBlock(struct qemu_syscall *call);
+void qemu_LdrQueryImageFileExecutionOptions(struct qemu_syscall *call);
+void qemu_LdrQueryProcessModuleInformation(struct qemu_syscall *call);
+void qemu_LdrRegisterDllNotification(struct qemu_syscall *call);
 void qemu_LdrResolveDelayLoadedAPI(struct qemu_syscall *call);
+void qemu_LdrShutdownProcess(struct qemu_syscall *call);
+void qemu_LdrShutdownThread(struct qemu_syscall *call);
+void qemu_LdrUnloadDll(struct qemu_syscall *call);
+void qemu_LdrUnlockLoaderLock(struct qemu_syscall *call);
+void qemu_LdrUnregisterDllNotification(struct qemu_syscall *call);
 void qemu_mbstowcs(struct qemu_syscall *call);
 void qemu_memchr(struct qemu_syscall *call);
 void qemu_memcmp(struct qemu_syscall *call);
@@ -802,6 +842,7 @@ void qemu_NtImpersonateAnonymousToken(struct qemu_syscall *call);
 void qemu_NtInitiatePowerAction(struct qemu_syscall *call);
 void qemu_NtIsProcessInJob(struct qemu_syscall *call);
 void qemu_NtListenPort(struct qemu_syscall *call);
+void qemu_NtLoadDriver(struct qemu_syscall *call);
 void qemu_NtLoadKey(struct qemu_syscall *call);
 void qemu_NtLoadKey2(struct qemu_syscall *call);
 void qemu_NtLockFile(struct qemu_syscall *call);
@@ -915,6 +956,7 @@ void qemu_NtSystemDebugControl(struct qemu_syscall *call);
 void qemu_NtTerminateJobObject(struct qemu_syscall *call);
 void qemu_NtTerminateProcess(struct qemu_syscall *call);
 void qemu_NtTerminateThread(struct qemu_syscall *call);
+void qemu_NtUnloadDriver(struct qemu_syscall *call);
 void qemu_NtUnloadKey(struct qemu_syscall *call);
 void qemu_NtUnlockFile(struct qemu_syscall *call);
 void qemu_NtWaitForKeyedEvent(struct qemu_syscall *call);
@@ -1010,6 +1052,7 @@ void qemu_RtlDestroyEnvironment(struct qemu_syscall *call);
 void qemu_RtlDestroyHeap(struct qemu_syscall *call);
 void qemu_RtlDestroyProcessParameters(struct qemu_syscall *call);
 void qemu_RtlDetermineDosPathNameType_U(struct qemu_syscall *call);
+void qemu_RtlDllShutdownInProgress(struct qemu_syscall *call);
 void qemu_RtlDoesFileExists_U(struct qemu_syscall *call);
 void qemu_RtlDosPathNameToNtPathName_U(struct qemu_syscall *call);
 void qemu_RtlDosSearchPath_U(struct qemu_syscall *call);
@@ -1027,6 +1070,7 @@ void qemu_RtlEqualSid(struct qemu_syscall *call);
 void qemu_RtlEqualString(struct qemu_syscall *call);
 void qemu_RtlEqualUnicodeString(struct qemu_syscall *call);
 void qemu_RtlEraseUnicodeString(struct qemu_syscall *call);
+void qemu_RtlExitUserProcess(struct qemu_syscall *call);
 void qemu_RtlExpandEnvironmentStrings(struct qemu_syscall *call);
 void qemu_RtlExpandEnvironmentStrings_U(struct qemu_syscall *call);
 void qemu_RtlFillMemory(struct qemu_syscall *call);
@@ -1067,6 +1111,8 @@ void qemu_RtlGetProcessHeaps(struct qemu_syscall *call);
 void qemu_RtlGetProductInfo(struct qemu_syscall *call);
 void qemu_RtlGetSaclSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlGetThreadErrorMode(struct qemu_syscall *call);
+void qemu_RtlGetUnloadEventTrace(struct qemu_syscall *call);
+void qemu_RtlGetUnloadEventTraceEx(struct qemu_syscall *call);
 void qemu_RtlGetVersion(struct qemu_syscall *call);
 void qemu_RtlGUIDFromString(struct qemu_syscall *call);
 void qemu_RtlHashUnicodeString(struct qemu_syscall *call);
