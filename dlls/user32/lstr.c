@@ -155,7 +155,7 @@ WINUSERAPI LPWSTR WINAPI CharNextW(LPCWSTR x)
 void qemu_CharNextW(struct qemu_syscall *call)
 {
     struct qemu_CharNextW *c = (struct qemu_CharNextW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)CharNextW(QEMU_G2H(c->x));
 }
 
@@ -677,7 +677,7 @@ WINUSERAPI LPWSTR WINAPI CharUpperW(LPWSTR str)
 void qemu_CharUpperW(struct qemu_syscall *call)
 {
     struct qemu_CharUpperW *c = (struct qemu_CharUpperW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (ULONG_PTR)CharUpperW(QEMU_G2H(c->str));
 }
 
