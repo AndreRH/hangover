@@ -52,6 +52,7 @@ BOOL WINAPI DllMainCRTStartup(HMODULE mod, DWORD reason, void *reserved)
 #else
 
 #include <wine/debug.h>
+#include "va_helper_impl.h"
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_ntdll);
 
 const struct qemu_ops *qemu_ops;
@@ -83,7 +84,7 @@ static const syscall_handler dll_functions[] =
     qemu__ltow,
     qemu__memccpy,
     qemu__memicmp,
-    qemu__snprintf_s,
+    qemu_sprintf,
     qemu__splitpath,
     qemu__stricmp,
     qemu__strlwr,
@@ -95,7 +96,7 @@ static const syscall_handler dll_functions[] =
     qemu__ui64tow,
     qemu__ultoa,
     qemu__ultow,
-    qemu__vsnprintf_s,
+    qemu_sprintf,
     qemu__wcsicmp,
     qemu__wcslwr,
     qemu__wcsnicmp,
@@ -197,13 +198,13 @@ static const syscall_handler dll_functions[] =
     qemu_NtDeleteValueKey,
     qemu_NtDeviceIoControlFile,
     qemu_NtDisplayString,
-    qemu_NTDLL__snprintf,
+    qemu_sprintf,
     qemu_NTDLL__snwprintf,
-    qemu_NTDLL__vsnprintf,
+    qemu_sprintf,
     qemu_NTDLL__vsnwprintf,
-    qemu_NTDLL_sprintf,
+    qemu_sprintf,
     qemu_NTDLL_swprintf,
-    qemu_NTDLL_vsprintf,
+    qemu_sprintf,
     qemu_NtDuplicateObject,
     qemu_NtDuplicateToken,
     qemu_NtEnumerateKey,
@@ -728,7 +729,7 @@ static const syscall_handler dll_functions[] =
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
-    HMODULE ntdll;
+    HMODULE ntdll, msvcrt;
 
     WINE_TRACE("Loading host-side ntdll wrapper.\n");
 
@@ -1103,6 +1104,23 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_wcstoul = (void *)GetProcAddress(ntdll, "wcstoul");
     if (!p_wcstoul)
         WINE_ERR("Could not find \"wcstoul\" in ntdll\n");
+
+    /* Hack: Call the host msvcrt functions, the ntdll ones seem broken. */
+    msvcrt = GetModuleHandleA("msvcrt.dll");
+    if (!msvcrt)
+        WINE_ERR("hmm, msvcrt not loaded\n");
+
+    p_vsprintf = (void *)GetProcAddress(msvcrt, "vsprintf");
+    if (!p_vsprintf)
+        WINE_ERR("Could not find \"vsprintf\" in msvcrt\n");
+
+    p__vsnprintf = (void *)GetProcAddress(msvcrt, "_vsnprintf");
+    if (!p__vsnprintf)
+        WINE_ERR("Could not find \"_vsnprintf\" in msvcrt\n");
+
+    p__vsnprintf_s = (void *)GetProcAddress(msvcrt, "_vsnprintf_s");
+    if (!p__vsnprintf_s)
+        WINE_ERR("Could not find \"_vsnprintf_s\" in msvcrt\n");
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;

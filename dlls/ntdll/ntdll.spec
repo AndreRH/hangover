@@ -421,7 +421,7 @@
 @ stdcall RtlAdjustPrivilege(long long long ptr)
 @ stdcall RtlAllocateAndInitializeSid (ptr long long long long long long long long long ptr)
 # @ stdcall RtlAllocateHandle(ptr ptr)
-@ stdcall RtlAllocateHeap(long long long)
+@ stdcall RtlAllocateHeap(long long long) ntdll_RtlAllocateHeap
 @ stdcall RtlAnsiCharToUnicodeChar(ptr)
 @ stdcall RtlAnsiStringToUnicodeSize(ptr)
 @ stdcall RtlAnsiStringToUnicodeString(ptr ptr long)
@@ -613,7 +613,7 @@
 @ stdcall RtlFormatMessage(ptr long long long long ptr ptr long)
 @ stdcall RtlFreeAnsiString(ptr)
 # @ stdcall RtlFreeHandle(ptr ptr)
-@ stdcall RtlFreeHeap(long long ptr)
+@ stdcall RtlFreeHeap(long long ptr) ntdll_RtlFreeHeap
 @ stdcall RtlFreeOemString(ptr)
 # @ stub RtlFreeRangeList
 @ stdcall RtlFreeSid (ptr)

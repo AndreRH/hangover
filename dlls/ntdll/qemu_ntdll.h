@@ -672,6 +672,8 @@ NTSTATUS WINAPI ntdll_LdrFindEntryForAddress(const void *addr, LDR_MODULE **mod)
 PVOID WINAPI ntdll_RtlImageDirectoryEntryToData( HMODULE module, BOOL image, WORD dir, ULONG *size );
 NTSTATUS WINAPI ntdll_NtTerminateProcess(HANDLE handle, LONG exit_code);
 NTSTATUS WINAPI ntdll_NtCreateKeyedEvent(HANDLE *handle, ACCESS_MASK access, const OBJECT_ATTRIBUTES *attr, ULONG flags);
+PVOID WINAPI ntdll_RtlAllocateHeap(HANDLE heap, ULONG flags, SIZE_T size);
+BOOLEAN WINAPI ntdll_RtlFreeHeap(HANDLE heap, ULONG flags, PVOID ptr);
 
 extern HANDLE keyed_event;
 
@@ -821,13 +823,10 @@ void qemu_NtDeleteKey(struct qemu_syscall *call);
 void qemu_NtDeleteValueKey(struct qemu_syscall *call);
 void qemu_NtDeviceIoControlFile(struct qemu_syscall *call);
 void qemu_NtDisplayString(struct qemu_syscall *call);
-void qemu_NTDLL__snprintf(struct qemu_syscall *call);
 void qemu_NTDLL__snwprintf(struct qemu_syscall *call);
-void qemu_NTDLL__vsnprintf(struct qemu_syscall *call);
 void qemu_NTDLL__vsnwprintf(struct qemu_syscall *call);
-void qemu_NTDLL_sprintf(struct qemu_syscall *call);
+void qemu_sprintf(struct qemu_syscall *call);
 void qemu_NTDLL_swprintf(struct qemu_syscall *call);
-void qemu_NTDLL_vsprintf(struct qemu_syscall *call);
 void qemu_NtDuplicateObject(struct qemu_syscall *call);
 void qemu_NtDuplicateToken(struct qemu_syscall *call);
 void qemu_NtEnumerateKey(struct qemu_syscall *call);
@@ -1441,6 +1440,10 @@ LPWSTR (* CDECL p__i64tow)(LONGLONG value, LPWSTR str, INT radix);
 LONG (* CDECL p__wtol)(LPCWSTR str);
 int (* CDECL p__wtoi)(LPCWSTR str);
 LONGLONG (* CDECL p__wtoi64)(LPCWSTR str);
+
+int (* CDECL p_vsprintf)(char *str, const char *format, __ms_va_list args);
+int (* CDECL p__vsnprintf)(char *str, SIZE_T len, const char *format, __ms_va_list args);
+int (* CDECL p__vsnprintf_s)(char *str, unsigned int len, unsigned int count, const char *format, __ms_va_list valist);
 
 struct IOSB_data
 {

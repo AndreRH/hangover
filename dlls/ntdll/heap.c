@@ -122,7 +122,7 @@ struct qemu_RtlAllocateHeap
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI PVOID WINAPI RtlAllocateHeap(HANDLE heap, ULONG flags, SIZE_T size)
+WINBASEAPI PVOID WINAPI ntdll_RtlAllocateHeap(HANDLE heap, ULONG flags, SIZE_T size)
 {
     struct qemu_RtlAllocateHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLALLOCATEHEAP);
@@ -156,7 +156,7 @@ struct qemu_RtlFreeHeap
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOLEAN WINAPI RtlFreeHeap(HANDLE heap, ULONG flags, PVOID ptr)
+BOOLEAN WINAPI ntdll_RtlFreeHeap(HANDLE heap, ULONG flags, PVOID ptr)
 {
     struct qemu_RtlFreeHeap call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLFREEHEAP);
