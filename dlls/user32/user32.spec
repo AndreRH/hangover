@@ -685,6 +685,7 @@
 @ stdcall SetPhysicalCursorPos(long long)
 @ stdcall SetProcessDPIAware()
 @ stdcall SetProcessDefaultLayout(long)
+@ stdcall SetProcessDpiAwarenessInternal(long)
 @ stdcall SetProcessWindowStation(long)
 @ stdcall SetProgmanWindow (long)
 @ stdcall SetPropA(long str long)

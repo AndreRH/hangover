@@ -1175,3 +1175,33 @@ void qemu_PhysicalToLogicalPointForPerMonitorDPI(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_SetProcessDpiAwarenessInternal
+{
+    struct qemu_syscall super;
+    uint64_t awareness;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOL WINAPI SetProcessDpiAwarenessInternal(DPI_AWARENESS awareness)
+{
+    struct qemu_SetProcessDpiAwarenessInternal call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SETPROCESSDPIAWARENESSINTERNAL);
+    call.awareness = awareness;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_SetProcessDpiAwarenessInternal(struct qemu_syscall *call)
+{
+    struct qemu_SetProcessDpiAwarenessInternal *c = (struct qemu_SetProcessDpiAwarenessInternal *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = SetProcessDpiAwarenessInternal(c->awareness);
+}
+
+#endif

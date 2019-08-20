@@ -879,6 +879,7 @@ static const syscall_handler dll_functions[] =
     qemu_SetPhysicalCursorPos,
     qemu_SetProcessDefaultLayout,
     qemu_SetProcessDPIAware,
+    qemu_SetProcessDpiAwarenessInternal,
     qemu_SetProcessWindowStation,
     qemu_SetProgmanWindow,
     qemu_SetPropA,

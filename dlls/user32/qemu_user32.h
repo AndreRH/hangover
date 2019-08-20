@@ -624,6 +624,7 @@ enum user32_calls
     CALL_SETPHYSICALCURSORPOS,
     CALL_SETPROCESSDEFAULTLAYOUT,
     CALL_SETPROCESSDPIAWARE,
+    CALL_SETPROCESSDPIAWARENESSINTERNAL,
     CALL_SETPROCESSWINDOWSTATION,
     CALL_SETPROGMANWINDOW,
     CALL_SETPROPA,
@@ -1348,6 +1349,7 @@ void qemu_SetParent(struct qemu_syscall *call);
 void qemu_SetPhysicalCursorPos(struct qemu_syscall *call);
 void qemu_SetProcessDefaultLayout(struct qemu_syscall *call);
 void qemu_SetProcessDPIAware(struct qemu_syscall *call);
+void qemu_SetProcessDpiAwarenessInternal(struct qemu_syscall *call);
 void qemu_SetProcessWindowStation(struct qemu_syscall *call);
 void qemu_SetProgmanWindow(struct qemu_syscall *call);
 void qemu_SetPropA(struct qemu_syscall *call);
