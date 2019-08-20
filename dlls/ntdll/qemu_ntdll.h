@@ -173,6 +173,7 @@ enum ntdll_calls
     CALL_NTQUERYATTRIBUTESFILE,
     CALL_NTQUERYDEFAULTLOCALE,
     CALL_NTQUERYDEFAULTUILANGUAGE,
+    CALL_NTQUERYDIRECTORYFILE,
     CALL_NTQUERYDIRECTORYOBJECT,
     CALL_NTQUERYEAFILE,
     CALL_NTQUERYEVENT,
@@ -347,6 +348,7 @@ enum ntdll_calls
     CALL_RTLDESTROYHEAP,
     CALL_RTLDESTROYPROCESSPARAMETERS,
     CALL_RTLDETERMINEDOSPATHNAMETYPE_U,
+    CALL_RTLDOESFILEEXISTS_U,
     CALL_RTLDOSPATHNAMETONTPATHNAME_U,
     CALL_RTLDOSSEARCHPATH_U,
     CALL_RTLDOWNCASEUNICODECHAR,
@@ -564,6 +566,8 @@ enum ntdll_calls
     CALL_RTLWAKEALLCONDITIONVARIABLE,
     CALL_RTLWAKECONDITIONVARIABLE,
     CALL_RTLWALKHEAP,
+    CALL_RTLWOW64ENABLEFSREDIRECTION,
+    CALL_RTLWOW64ENABLEFSREDIRECTIONEX,
     CALL_RTLWRITEREGISTRYVALUE,
     CALL_RTLZEROMEMORY,
     CALL_RTLZOMBIFYACTIVATIONCONTEXT,
@@ -831,6 +835,7 @@ void qemu_NtPulseEvent(struct qemu_syscall *call);
 void qemu_NtQueryAttributesFile(struct qemu_syscall *call);
 void qemu_NtQueryDefaultLocale(struct qemu_syscall *call);
 void qemu_NtQueryDefaultUILanguage(struct qemu_syscall *call);
+void qemu_NtQueryDirectoryFile(struct qemu_syscall *call);
 void qemu_NtQueryDirectoryObject(struct qemu_syscall *call);
 void qemu_NtQueryEaFile(struct qemu_syscall *call);
 void qemu_NtQueryEvent(struct qemu_syscall *call);
@@ -1005,6 +1010,7 @@ void qemu_RtlDestroyEnvironment(struct qemu_syscall *call);
 void qemu_RtlDestroyHeap(struct qemu_syscall *call);
 void qemu_RtlDestroyProcessParameters(struct qemu_syscall *call);
 void qemu_RtlDetermineDosPathNameType_U(struct qemu_syscall *call);
+void qemu_RtlDoesFileExists_U(struct qemu_syscall *call);
 void qemu_RtlDosPathNameToNtPathName_U(struct qemu_syscall *call);
 void qemu_RtlDosSearchPath_U(struct qemu_syscall *call);
 void qemu_RtlDowncaseUnicodeChar(struct qemu_syscall *call);
@@ -1222,6 +1228,8 @@ void qemu_RtlVirtualUnwind(struct qemu_syscall *call);
 void qemu_RtlWakeAllConditionVariable(struct qemu_syscall *call);
 void qemu_RtlWakeConditionVariable(struct qemu_syscall *call);
 void qemu_RtlWalkHeap(struct qemu_syscall *call);
+void qemu_RtlWow64EnableFsRedirection(struct qemu_syscall *call);
+void qemu_RtlWow64EnableFsRedirectionEx(struct qemu_syscall *call);
 void qemu_RtlWriteRegistryValue(struct qemu_syscall *call);
 void qemu_RtlZeroMemory(struct qemu_syscall *call);
 void qemu_RtlZombifyActivationContext(struct qemu_syscall *call);

@@ -218,7 +218,7 @@
 # @ stub NtQueryDebugFilterState
 @ stdcall NtQueryDefaultLocale(long ptr)
 @ stdcall NtQueryDefaultUILanguage(ptr)
-# @ stdcall NtQueryDirectoryFile(long long ptr ptr ptr ptr long long long ptr long)
+@ stdcall NtQueryDirectoryFile(long long ptr ptr ptr ptr long long long ptr long)
 @ stdcall NtQueryDirectoryObject(long ptr long long long ptr ptr)
 @ stdcall NtQueryEaFile(long ptr ptr long long ptr long ptr long)
 @ stdcall NtQueryEvent(long long ptr long ptr)
@@ -525,7 +525,7 @@
 @ stdcall RtlDetermineDosPathNameType_U(wstr)
 # @ stdcall RtlDllShutdownInProgress()
 # @ stub RtlDnsHostNameToComputerName
-# @ stdcall RtlDoesFileExists_U(wstr)
+@ stdcall RtlDoesFileExists_U(wstr)
 # @ stub RtlDosApplyFileIsolationRedirection_Ustr
 @ stdcall RtlDosPathNameToNtPathName_U(wstr ptr ptr ptr)
 @ stdcall RtlDosSearchPath_U(wstr wstr wstr long ptr ptr)
@@ -937,8 +937,8 @@
 @ stdcall RtlWakeConditionVariable(ptr)
 @ stub RtlWalkFrameChain
 @ stdcall RtlWalkHeap(long ptr)
-# @ stdcall RtlWow64EnableFsRedirection(long)
-# @ stdcall RtlWow64EnableFsRedirectionEx(long ptr)
+@ stdcall RtlWow64EnableFsRedirection(long)
+@ stdcall RtlWow64EnableFsRedirectionEx(long ptr)
 @ stub RtlWriteMemoryStream
 @ stdcall RtlWriteRegistryValue(long ptr ptr long ptr long)
 @ stub RtlZeroHeap
