@@ -1332,7 +1332,7 @@ WINBASEAPI WCHAR* CDECL MSVCRT_wcspbrk(const WCHAR* str, const WCHAR* accept)
 void qemu_wcspbrk(struct qemu_syscall *call)
 {
     struct qemu_wcspbrk *c = (struct qemu_wcspbrk *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_wcspbrk(QEMU_G2H(c->str), QEMU_G2H(c->accept)));
 }
 
