@@ -435,8 +435,8 @@
 @ stub RtlApplyRXactNoFlush
 @ stdcall RtlAreAllAccessesGranted(long long)
 @ stdcall RtlAreAnyAccessesGranted(long long)
-# # @ stdcall RtlAreBitsClear(ptr long long)
-# @ stdcall RtlAreBitsSet(ptr long long)
+@ stdcall RtlAreBitsClear(ptr long long)
+@ stdcall RtlAreBitsSet(ptr long long)
 # @ stub RtlAssert2
 @ stdcall RtlAssert(ptr ptr long str)
 # @ stub RtlCancelTimer
@@ -447,8 +447,8 @@
 # @ stub RtlCheckForOrphanedCriticalSections
 # @ stub RtlCheckProcessParameters
 @ stdcall RtlCheckRegistryKey(long ptr)
-# @ stdcall RtlClearAllBits(ptr)
-# @ stdcall RtlClearBits(ptr long long)
+@ stdcall RtlClearAllBits(ptr)
+@ stdcall RtlClearBits(ptr long long)
 # @ stub RtlCloneMemoryStream
 @ stub RtlClosePropertySet
 # @ stub RtlCommitMemoryStream
@@ -589,22 +589,22 @@
 @ stdcall RtlFindActivationContextSectionGuid(long ptr long ptr ptr)
 @ stdcall RtlFindActivationContextSectionString(long ptr long ptr ptr)
 @ stdcall RtlFindCharInUnicodeString(long ptr ptr ptr)
-# @ stdcall RtlFindClearBits(ptr long long)
-# @ stdcall RtlFindClearBitsAndSet(ptr long long)
-# @ stdcall RtlFindClearRuns(ptr ptr long long)
-# @ stdcall RtlFindLastBackwardRunClear(ptr long ptr)
-# @ stdcall RtlFindLastBackwardRunSet(ptr long ptr)
-# @ stdcall RtlFindLeastSignificantBit(int64)
-# @ stdcall RtlFindLongestRunClear(ptr ptr)
-# @ stdcall RtlFindLongestRunSet(ptr ptr)
+@ stdcall RtlFindClearBits(ptr long long)
+@ stdcall RtlFindClearBitsAndSet(ptr long long)
+@ stdcall RtlFindClearRuns(ptr ptr long long)
+@ stdcall RtlFindLastBackwardRunClear(ptr long ptr)
+@ stdcall RtlFindLastBackwardRunSet(ptr long ptr)
+@ stdcall RtlFindLeastSignificantBit(int64)
+@ stdcall RtlFindLongestRunClear(ptr ptr)
+@ stdcall RtlFindLongestRunSet(ptr ptr)
 @ stdcall RtlFindMessage(long long long long ptr)
-# @ stdcall RtlFindMostSignificantBit(int64)
-# @ stdcall RtlFindNextForwardRunClear(ptr long ptr)
-# @ stdcall RtlFindNextForwardRunSet(ptr long ptr)
+@ stdcall RtlFindMostSignificantBit(int64)
+@ stdcall RtlFindNextForwardRunClear(ptr long ptr)
+@ stdcall RtlFindNextForwardRunSet(ptr long ptr)
 @ stub RtlFindRange
-# @ stdcall RtlFindSetBits(ptr long long)
-# @ stdcall RtlFindSetBitsAndClear(ptr long long)
-# @ stdcall RtlFindSetRuns(ptr ptr long long)
+@ stdcall RtlFindSetBits(ptr long long)
+@ stdcall RtlFindSetBitsAndClear(ptr long long)
+@ stdcall RtlFindSetRuns(ptr ptr long long)
 @ stdcall RtlFirstEntrySList(ptr)
 @ stdcall RtlFirstFreeAce(ptr ptr)
 @ stub RtlFlushPropertySet
@@ -678,7 +678,7 @@
 @ stdcall RtlInitUnicodeString(ptr wstr)
 @ stdcall RtlInitUnicodeStringEx(ptr wstr)
 # @ stub RtlInitializeAtomPackage
-# @ stdcall RtlInitializeBitMap(ptr ptr long)
+@ stdcall RtlInitializeBitMap(ptr ptr long)
 @ stdcall RtlInitializeConditionVariable(ptr)
 @ stub RtlInitializeContext
 @ stdcall RtlInitializeCriticalSection(ptr)
@@ -775,8 +775,8 @@
 @ stdcall RtlNtStatusToDosErrorNoTeb(long)
 # @ stdcall RtlNumberGenericTableElements(ptr)
 # @ stub RtlNumberGenericTableElementsAvl
-# @ stdcall RtlNumberOfClearBits(ptr)
-# @ stdcall RtlNumberOfSetBits(ptr)
+@ stdcall RtlNumberOfClearBits(ptr)
+@ stdcall RtlNumberOfSetBits(ptr)
 @ stdcall RtlOemStringToUnicodeSize(ptr)
 @ stdcall RtlOemStringToUnicodeString(ptr ptr long)
 @ stdcall RtlOemToUnicodeN(ptr long ptr ptr long)
@@ -847,9 +847,9 @@
 # @ stub RtlSeekMemoryStream
 # @ stub RtlSelfRelativeToAbsoluteSD2
 @ stdcall RtlSelfRelativeToAbsoluteSD(ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr)
-# @ stdcall RtlSetAllBits(ptr)
+@ stdcall RtlSetAllBits(ptr)
 # @ stub RtlSetAttributesSecurityDescriptor
-# @ stdcall RtlSetBits(ptr long long)
+@ stdcall RtlSetBits(ptr long long)
 @ stdcall RtlSetControlSecurityDescriptor(ptr long long)
 @ stdcall RtlSetCriticalSectionSpinCount(ptr long)
 @ stdcall RtlSetCurrentDirectory_U(ptr)

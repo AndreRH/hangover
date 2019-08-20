@@ -314,10 +314,14 @@ enum ntdll_calls
     CALL_RTLAPPENDUNICODETOSTRING,
     CALL_RTLAREALLACCESSESGRANTED,
     CALL_RTLAREANYACCESSESGRANTED,
+    CALL_RTLAREBITSCLEAR,
+    CALL_RTLAREBITSSET,
     CALL_RTLASSERT,
     CALL_RTLCAPTURESTACKBACKTRACE,
     CALL_RTLCHARTOINTEGER,
     CALL_RTLCHECKREGISTRYKEY,
+    CALL_RTLCLEARALLBITS,
+    CALL_RTLCLEARBITS,
     CALL_RTLCOMPACTHEAP,
     CALL_RTLCOMPAREMEMORY,
     CALL_RTLCOMPAREMEMORYULONG,
@@ -393,7 +397,21 @@ enum ntdll_calls
     CALL_RTLFINDACTIVATIONCONTEXTSECTIONGUID,
     CALL_RTLFINDACTIVATIONCONTEXTSECTIONSTRING,
     CALL_RTLFINDCHARINUNICODESTRING,
+    CALL_RTLFINDCLEARBITS,
+    CALL_RTLFINDCLEARBITSANDSET,
+    CALL_RTLFINDCLEARRUNS,
+    CALL_RTLFINDLASTBACKWARDRUNCLEAR,
+    CALL_RTLFINDLASTBACKWARDRUNSET,
+    CALL_RTLFINDLEASTSIGNIFICANTBIT,
+    CALL_RTLFINDLONGESTRUNCLEAR,
+    CALL_RTLFINDLONGESTRUNSET,
     CALL_RTLFINDMESSAGE,
+    CALL_RTLFINDMOSTSIGNIFICANTBIT,
+    CALL_RTLFINDNEXTFORWARDRUNCLEAR,
+    CALL_RTLFINDNEXTFORWARDRUNSET,
+    CALL_RTLFINDSETBITS,
+    CALL_RTLFINDSETBITSANDCLEAR,
+    CALL_RTLFINDSETRUNS,
     CALL_RTLFIRSTENTRYSLIST,
     CALL_RTLFIRSTFREEACE,
     CALL_RTLFORMATCURRENTUSERKEYPATH,
@@ -435,6 +453,7 @@ enum ntdll_calls
     CALL_RTLIMPERSONATESELF,
     CALL_RTLINITANSISTRING,
     CALL_RTLINITANSISTRINGEX,
+    CALL_RTLINITIALIZEBITMAP,
     CALL_RTLINITIALIZECONDITIONVARIABLE,
     CALL_RTLINITIALIZECRITICALSECTION,
     CALL_RTLINITIALIZECRITICALSECTIONANDSPINCOUNT,
@@ -483,6 +502,8 @@ enum ntdll_calls
     CALL_RTLNORMALIZEPROCESSPARAMS,
     CALL_RTLNTSTATUSTODOSERROR,
     CALL_RTLNTSTATUSTODOSERRORNOTEB,
+    CALL_RTLNUMBEROFCLEARBITS,
+    CALL_RTLNUMBEROFSETBITS,
     CALL_RTLOEMSTRINGTOUNICODESIZE,
     CALL_RTLOEMSTRINGTOUNICODESTRING,
     CALL_RTLOEMTOUNICODEN,
@@ -527,6 +548,8 @@ enum ntdll_calls
     CALL_RTLSECONDSSINCE1970TOTIME,
     CALL_RTLSECONDSSINCE1980TOTIME,
     CALL_RTLSELFRELATIVETOABSOLUTESD,
+    CALL_RTLSETALLBITS,
+    CALL_RTLSETBITS,
     CALL_RTLSETCONTROLSECURITYDESCRIPTOR,
     CALL_RTLSETCRITICALSECTIONSPINCOUNT,
     CALL_RTLSETCURRENTDIRECTORY_U,
@@ -825,7 +848,6 @@ void qemu_NtDeviceIoControlFile(struct qemu_syscall *call);
 void qemu_NtDisplayString(struct qemu_syscall *call);
 void qemu_NTDLL__snwprintf(struct qemu_syscall *call);
 void qemu_NTDLL__vsnwprintf(struct qemu_syscall *call);
-void qemu_sprintf(struct qemu_syscall *call);
 void qemu_NTDLL_swprintf(struct qemu_syscall *call);
 void qemu_NtDuplicateObject(struct qemu_syscall *call);
 void qemu_NtDuplicateToken(struct qemu_syscall *call);
@@ -998,10 +1020,14 @@ void qemu_RtlAppendUnicodeStringToString(struct qemu_syscall *call);
 void qemu_RtlAppendUnicodeToString(struct qemu_syscall *call);
 void qemu_RtlAreAllAccessesGranted(struct qemu_syscall *call);
 void qemu_RtlAreAnyAccessesGranted(struct qemu_syscall *call);
+void qemu_RtlAreBitsClear(struct qemu_syscall *call);
+void qemu_RtlAreBitsSet(struct qemu_syscall *call);
 void qemu_RtlAssert(struct qemu_syscall *call);
 void qemu_RtlCaptureStackBackTrace(struct qemu_syscall *call);
 void qemu_RtlCharToInteger(struct qemu_syscall *call);
 void qemu_RtlCheckRegistryKey(struct qemu_syscall *call);
+void qemu_RtlClearAllBits(struct qemu_syscall *call);
+void qemu_RtlClearBits(struct qemu_syscall *call);
 void qemu_RtlCompactHeap(struct qemu_syscall *call);
 void qemu_RtlCompareMemory(struct qemu_syscall *call);
 void qemu_RtlCompareMemoryUlong(struct qemu_syscall *call);
@@ -1077,7 +1103,21 @@ void qemu_RtlFillMemoryUlong(struct qemu_syscall *call);
 void qemu_RtlFindActivationContextSectionGuid(struct qemu_syscall *call);
 void qemu_RtlFindActivationContextSectionString(struct qemu_syscall *call);
 void qemu_RtlFindCharInUnicodeString(struct qemu_syscall *call);
+void qemu_RtlFindClearBits(struct qemu_syscall *call);
+void qemu_RtlFindClearBitsAndSet(struct qemu_syscall *call);
+void qemu_RtlFindClearRuns(struct qemu_syscall *call);
+void qemu_RtlFindLastBackwardRunClear(struct qemu_syscall *call);
+void qemu_RtlFindLastBackwardRunSet(struct qemu_syscall *call);
+void qemu_RtlFindLeastSignificantBit(struct qemu_syscall *call);
+void qemu_RtlFindLongestRunClear(struct qemu_syscall *call);
+void qemu_RtlFindLongestRunSet(struct qemu_syscall *call);
 void qemu_RtlFindMessage(struct qemu_syscall *call);
+void qemu_RtlFindMostSignificantBit(struct qemu_syscall *call);
+void qemu_RtlFindNextForwardRunClear(struct qemu_syscall *call);
+void qemu_RtlFindNextForwardRunSet(struct qemu_syscall *call);
+void qemu_RtlFindSetBits(struct qemu_syscall *call);
+void qemu_RtlFindSetBitsAndClear(struct qemu_syscall *call);
+void qemu_RtlFindSetRuns(struct qemu_syscall *call);
 void qemu_RtlFirstEntrySList(struct qemu_syscall *call);
 void qemu_RtlFirstFreeAce(struct qemu_syscall *call);
 void qemu_RtlFormatCurrentUserKeyPath(struct qemu_syscall *call);
@@ -1119,6 +1159,7 @@ void qemu_RtlIdentifierAuthoritySid(struct qemu_syscall *call);
 void qemu_RtlImpersonateSelf(struct qemu_syscall *call);
 void qemu_RtlInitAnsiString(struct qemu_syscall *call);
 void qemu_RtlInitAnsiStringEx(struct qemu_syscall *call);
+void qemu_RtlInitializeBitMap(struct qemu_syscall *call);
 void qemu_RtlInitializeConditionVariable(struct qemu_syscall *call);
 void qemu_RtlInitializeCriticalSection(struct qemu_syscall *call);
 void qemu_RtlInitializeCriticalSectionAndSpinCount(struct qemu_syscall *call);
@@ -1167,6 +1208,8 @@ void qemu_RtlNewSecurityObject(struct qemu_syscall *call);
 void qemu_RtlNormalizeProcessParams(struct qemu_syscall *call);
 void qemu_RtlNtStatusToDosError(struct qemu_syscall *call);
 void qemu_RtlNtStatusToDosErrorNoTeb(struct qemu_syscall *call);
+void qemu_RtlNumberOfClearBits(struct qemu_syscall *call);
+void qemu_RtlNumberOfSetBits(struct qemu_syscall *call);
 void qemu_RtlOemStringToUnicodeSize(struct qemu_syscall *call);
 void qemu_RtlOemStringToUnicodeString(struct qemu_syscall *call);
 void qemu_RtlOemToUnicodeN(struct qemu_syscall *call);
@@ -1211,6 +1254,8 @@ void qemu_RtlRunOnceInitialize(struct qemu_syscall *call);
 void qemu_RtlSecondsSince1970ToTime(struct qemu_syscall *call);
 void qemu_RtlSecondsSince1980ToTime(struct qemu_syscall *call);
 void qemu_RtlSelfRelativeToAbsoluteSD(struct qemu_syscall *call);
+void qemu_RtlSetAllBits(struct qemu_syscall *call);
+void qemu_RtlSetBits(struct qemu_syscall *call);
 void qemu_RtlSetControlSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlSetCriticalSectionSpinCount(struct qemu_syscall *call);
 void qemu_RtlSetCurrentDirectory_U(struct qemu_syscall *call);
@@ -1278,6 +1323,7 @@ void qemu_RtlWow64EnableFsRedirectionEx(struct qemu_syscall *call);
 void qemu_RtlWriteRegistryValue(struct qemu_syscall *call);
 void qemu_RtlZeroMemory(struct qemu_syscall *call);
 void qemu_RtlZombifyActivationContext(struct qemu_syscall *call);
+void qemu_sprintf(struct qemu_syscall *call);
 void qemu_strcat(struct qemu_syscall *call);
 void qemu_strchr(struct qemu_syscall *call);
 void qemu_strcmp(struct qemu_syscall *call);
