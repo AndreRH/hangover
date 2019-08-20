@@ -260,7 +260,7 @@ WINBASEAPI char * CDECL NTDLL_strchr(const char *str, int c)
 void qemu_strchr(struct qemu_syscall *call)
 {
     struct qemu_strchr *c = (struct qemu_strchr *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_strchr(QEMU_G2H(c->str), c->c));
 }
 
@@ -552,7 +552,7 @@ WINBASEAPI char * CDECL NTDLL_strrchr(const char *str, int c)
 void qemu_strrchr(struct qemu_syscall *call)
 {
     struct qemu_strrchr *c = (struct qemu_strrchr *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_strrchr(QEMU_G2H(c->str), c->c));
 }
 

@@ -181,7 +181,7 @@ WINBASEAPI WCHAR CDECL NTDLL_towlower(WCHAR ch)
 void qemu_towlower(struct qemu_syscall *call)
 {
     struct qemu_towlower *c = (struct qemu_towlower *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_towlower(c->ch);
 }
 
@@ -211,7 +211,7 @@ WINBASEAPI WCHAR CDECL NTDLL_towupper(WCHAR ch)
 void qemu_towupper(struct qemu_syscall *call)
 {
     struct qemu_towupper *c = (struct qemu_towupper *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_towupper(c->ch);
 }
 
