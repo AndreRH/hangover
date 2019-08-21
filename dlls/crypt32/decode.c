@@ -145,11 +145,10 @@ WINBASEAPI BOOL WINAPI CryptDecodeObjectEx(DWORD dwCertEncodingType, LPCSTR lpsz
 void qemu_CryptDecodeObjectEx(struct qemu_syscall *call)
 {
     struct qemu_CryptDecodeObjectEx *c = (struct qemu_CryptDecodeObjectEx *)call;
-    const char *type = QEMU_G2H(c->pvStructInfo);
 
     WINE_FIXME("Unverified!\n");
 
-    c->super.iret = CryptDecodeObjectEx(c->dwCertEncodingType, QEMU_G2H(c->lpszStructType), QEMU_G2H(c->pbEncoded), c->cbEncoded, c->dwFlags, QEMU_G2H(c->pDecodePara), type, QEMU_G2H(c->pcbStructInfo));
+    c->super.iret = CryptDecodeObjectEx(c->dwCertEncodingType, QEMU_G2H(c->lpszStructType), QEMU_G2H(c->pbEncoded), c->cbEncoded, c->dwFlags, QEMU_G2H(c->pDecodePara), QEMU_G2H(c->pvStructInfo), QEMU_G2H(c->pcbStructInfo));
 }
 
 #endif
