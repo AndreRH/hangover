@@ -76,7 +76,7 @@ void qemu_CryptDecodeObject(struct qemu_syscall *call)
     const char *type = QEMU_G2H(c->lpszStructType);
 
     WINE_FIXME("Unverified!\n");
-    c->super.iret = CryptDecodeObject(c->dwCertEncodingType, QEMU_G2H(c->lpszStructType), QEMU_G2H(c->pbEncoded),
+    c->super.iret = CryptDecodeObject(c->dwCertEncodingType, type, QEMU_G2H(c->pbEncoded),
             c->cbEncoded, c->dwFlags, QEMU_G2H(c->pvStructInfo), QEMU_G2H(c->pcbStructInfo));
 
     if (c->pvStructInfo)
