@@ -99,6 +99,7 @@ void qemu_CryptDecodeObjectEx(struct qemu_syscall *call)
             c->dwFlags & CRYPT_ENCODE_ALLOC_FLAG ? &alloc : QEMU_G2H(c->pvStructInfo),
             QEMU_G2H(c->pcbStructInfo));
 
+    WINE_TRACE("Host result %x\n", (BOOL)c->super.iret);
     if (!c->super.iret)
         return;
 
@@ -186,7 +187,7 @@ void qemu_CryptDecodeObjectEx(struct qemu_syscall *call)
                     WINE_FIXME("X509_ENUMERATED\n");
                     break;
                 case LOWORD(X509_CHOICE_OF_TIME):
-                    WINE_FIXME("X509_CHOICE_OF_TIME\n");
+                    WINE_TRACE("X509_CHOICE_OF_TIME - nothing to do.\n");
                     break;
                 case LOWORD(X509_AUTHORITY_KEY_ID2):
                     WINE_FIXME("X509_AUTHORITY_KEY_ID2\n");
@@ -234,7 +235,8 @@ void qemu_CryptDecodeObjectEx(struct qemu_syscall *call)
                     WINE_FIXME("X509_POLICY_CONSTRAINTS\n");
                     break;
                 case LOWORD(PKCS7_SIGNER_INFO):
-                    WINE_FIXME("PKCS7_SIGNER_INFO\n");
+                    WINE_FIXME("Converting CMSG_SIGNER_INFO %p\n", QEMU_G2H(c->pvStructInfo));
+                    CMSG_SIGNER_INFO_h2g(QEMU_G2H(c->pvStructInfo), QEMU_G2H(c->pvStructInfo));
                     break;
                 case LOWORD(CMS_SIGNER_INFO):
                     WINE_TRACE("Converting CMSG_CMS_SIGNER_INFO %p\n", QEMU_G2H(c->pvStructInfo));
@@ -246,11 +248,13 @@ void qemu_CryptDecodeObjectEx(struct qemu_syscall *call)
                 case LOWORD(X509_ECC_SIGNATURE):
                     WINE_FIXME("X509_ECC_SIGNATURE\n");
                     break;
+                default:
+                    WINE_FIXME("Unknown? %x\n", LOWORD(type));
                 }
             }
             else if (!strcmp(type, SPC_INDIRECT_DATA_OBJID))
             {
-                WINE_FIXME("Indirect data\n");
+                WINE_TRACE("Converting SIP_INDIRECT_DATA.\n");
                 SIP_INDIRECT_DATA_h2g(QEMU_G2H(c->pvStructInfo), QEMU_G2H(c->pvStructInfo));
             }
             else
