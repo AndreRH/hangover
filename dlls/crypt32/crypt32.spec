@@ -111,7 +111,7 @@
 @ stub CryptCreateAsyncHandle
 @ stub CryptDecodeMessage
 @ stdcall CryptDecodeObject(long str ptr long long ptr ptr)
-@ stdcall CryptDecodeObjectEx(long str ptr long long ptr ptr ptr)
+@ stdcall CryptDecodeObjectEx(long str ptr long long ptr ptr ptr) qemu_CryptDecodeObjectEx
 @ stub CryptDecryptAndVerifyMessageSignature
 @ stub CryptDecryptMessage
 @ stdcall CryptEncodeObject(long str ptr ptr ptr)

@@ -950,7 +950,6 @@ static const syscall_handler dll_functions[] =
     qemu_CryptAcquireCertificatePrivateKey,
     qemu_CryptBinaryToStringA,
     qemu_CryptBinaryToStringW,
-    qemu_CryptDecodeObject,
     qemu_CryptDecodeObjectEx,
     qemu_CryptEncodeObject,
     qemu_CryptEncodeObjectEx,
