@@ -201,7 +201,7 @@ void qemu_CertGetCertificateChain(struct qemu_syscall *call)
 #endif
 
     c->super.iret = CertGetCertificateChain(QEMU_G2H(c->hChainEngine), context,
-            QEMU_G2H(c->pTime), QEMU_G2H(c->hAdditionalStore), para, c->dwFlags,
+            QEMU_G2H(c->pTime), cert_store_g2h(c->hAdditionalStore), para, c->dwFlags,
             QEMU_G2H(c->pvReserved), chain64);
 
 #if GUEST_BIT != HOST_BIT
