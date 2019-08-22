@@ -381,6 +381,53 @@ static inline void CERT_CHAIN_PARA_g2h(CERT_CHAIN_PARA *host, const struct qemu_
 }
 #endif
 
+struct qemu_CRYPT_ATTRIBUTE
+{
+    qemu_ptr         pszObjId;
+    DWORD            cValue;
+    qemu_ptr         rgValue;
+};
+
+/* This only supports destructive in-place conversion. */
+static inline void CRYPT_ATTRIBUTE_h2g(struct qemu_CRYPT_ATTRIBUTE *guest, const CRYPT_ATTRIBUTE *host)
+{
+    struct qemu_CRYPT_DATA_BLOB *blob32;
+    const CRYPT_DATA_BLOB *blob64;
+    DWORD i;
+
+    guest->pszObjId = (ULONG_PTR)host->pszObjId;
+    guest->cValue = host->cValue;
+    guest->rgValue = (ULONG_PTR)host->rgValue;
+
+    blob32 = (struct qemu_CRYPT_DATA_BLOB *)host->rgValue;
+    blob64 = host->rgValue;
+
+    for (i = 0; i < host->cValue; ++i)
+        CRYPT_DATA_BLOB_h2g(blob32, blob64);
+}
+
+struct qemu_CRYPT_ATTRIBUTES
+{
+    DWORD            cAttr;
+    qemu_ptr         rgAttr;
+};
+
+/* This only supports destructive in-place conversion. */
+static inline void CRYPT_ATTRIBUTES_h2g(struct qemu_CRYPT_ATTRIBUTES *guest, const CRYPT_ATTRIBUTES *host)
+{
+    struct qemu_CRYPT_ATTRIBUTE *attr32;
+    const CRYPT_ATTRIBUTE *attr64;
+    DWORD i;
+
+    guest->cAttr = host->cAttr;
+    guest->rgAttr = (ULONG_PTR)host->rgAttr;
+    attr32 = (struct qemu_CRYPT_ATTRIBUTE *)host->rgAttr;
+    attr64 = host->rgAttr;
+
+    for (i = 0; i < host->cAttr; ++i)
+        CRYPT_ATTRIBUTE_h2g(attr32, attr64);
+}
+
 struct qemu_CMSG_SIGNER_INFO
 {
     DWORD                                   dwVersion;
@@ -389,10 +436,11 @@ struct qemu_CMSG_SIGNER_INFO
     struct qemu_CRYPT_ALGORITHM_IDENTIFIER  HashAlgorithm;
     struct qemu_CRYPT_ALGORITHM_IDENTIFIER  HashEncryptionAlgorithm;
     struct qemu_CRYPT_DATA_BLOB             EncryptedHash;
-    CRYPT_ATTRIBUTES                        AuthAttrs;
-    CRYPT_ATTRIBUTES                        UnauthAttrs;
+    struct qemu_CRYPT_ATTRIBUTES            AuthAttrs;
+    struct qemu_CRYPT_ATTRIBUTES            UnauthAttrs;
 };
 
+/* This only supports destructive in-place conversion. */
 static inline void CMSG_SIGNER_INFO_h2g(struct qemu_CMSG_SIGNER_INFO *guest, const CMSG_SIGNER_INFO *host)
 {
     guest->dwVersion = host->dwVersion;
@@ -401,7 +449,8 @@ static inline void CMSG_SIGNER_INFO_h2g(struct qemu_CMSG_SIGNER_INFO *guest, con
     CRYPT_ALGORITHM_IDENTIFIER_h2g(&guest->HashAlgorithm, &host->HashAlgorithm);
     CRYPT_ALGORITHM_IDENTIFIER_h2g(&guest->HashEncryptionAlgorithm, &host->HashEncryptionAlgorithm);
     CRYPT_DATA_BLOB_h2g(&guest->EncryptedHash, &host->EncryptedHash);
-    /* FIXME Needs more complicated data */
+    CRYPT_ATTRIBUTES_h2g(&guest->AuthAttrs, &host->AuthAttrs);
+    CRYPT_ATTRIBUTES_h2g(&guest->UnauthAttrs, &host->UnauthAttrs);
 }
 
 struct qemu_CERT_CHAIN_POLICY_STATUS
