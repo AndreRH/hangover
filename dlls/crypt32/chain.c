@@ -554,7 +554,7 @@ void qemu_CertVerifyCertificateChainPolicy(struct qemu_syscall *call)
                     struct qemu_cert_context *cert_context;
 
                     elem_array[j] = &elem64[j];
-                    CERT_CHAIN_ELEMENT_g2h(&elem64[j], QEMU_G2H((ULONG_PTR)elem32[i]));
+                    CERT_CHAIN_ELEMENT_g2h(&elem64[j], QEMU_G2H((ULONG_PTR)elem32[j]));
                     cert_context = context_impl_from_context32(QEMU_G2H(elem64[j].pCertContext));
                     elem64[j].pCertContext = cert_context ? cert_context->cert64 : NULL;
                 }
