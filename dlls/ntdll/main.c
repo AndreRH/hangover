@@ -587,6 +587,8 @@ static const syscall_handler dll_functions[] =
     qemu_RtlQueryHeapInformation,
     qemu_RtlQueryInformationAcl,
     qemu_RtlQueryInformationActivationContext,
+    qemu_RtlQueryPerformanceCounter,
+    qemu_RtlQueryPerformanceFrequency,
     qemu_RtlQueryRegistryValues,
     qemu_RtlQueryTimeZoneInformation,
     qemu_RtlQueryUnbiasedInterruptTime,

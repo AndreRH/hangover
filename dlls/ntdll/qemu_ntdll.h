@@ -525,6 +525,8 @@ enum ntdll_calls
     CALL_RTLQUERYHEAPINFORMATION,
     CALL_RTLQUERYINFORMATIONACL,
     CALL_RTLQUERYINFORMATIONACTIVATIONCONTEXT,
+    CALL_RTLQUERYPERFORMANCECOUNTER,
+    CALL_RTLQUERYPERFORMANCEFREQUENCY,
     CALL_RTLQUERYREGISTRYVALUES,
     CALL_RTLQUERYTIMEZONEINFORMATION,
     CALL_RTLQUERYUNBIASEDINTERRUPTTIME,
@@ -1231,6 +1233,8 @@ void qemu_RtlQueryEnvironmentVariable_U(struct qemu_syscall *call);
 void qemu_RtlQueryHeapInformation(struct qemu_syscall *call);
 void qemu_RtlQueryInformationAcl(struct qemu_syscall *call);
 void qemu_RtlQueryInformationActivationContext(struct qemu_syscall *call);
+void qemu_RtlQueryPerformanceCounter(struct qemu_syscall *call);
+void qemu_RtlQueryPerformanceFrequency(struct qemu_syscall *call);
 void qemu_RtlQueryRegistryValues(struct qemu_syscall *call);
 void qemu_RtlQueryTimeZoneInformation(struct qemu_syscall *call);
 void qemu_RtlQueryUnbiasedInterruptTime(struct qemu_syscall *call);

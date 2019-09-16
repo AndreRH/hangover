@@ -561,3 +561,62 @@ void qemu_RtlQueryUnbiasedInterruptTime(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_RtlQueryPerformanceCounter
+{
+    struct qemu_syscall super;
+    uint64_t counter;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+BOOL WINAPI RtlQueryPerformanceCounter( LARGE_INTEGER *counter )
+{
+    struct qemu_RtlQueryPerformanceCounter call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLQUERYPERFORMANCECOUNTER);
+    call.counter = (ULONG_PTR)counter;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlQueryPerformanceCounter(struct qemu_syscall *call)
+{
+    struct qemu_RtlQueryPerformanceCounter *c = (struct qemu_RtlQueryPerformanceCounter *)call;
+    WINE_TRACE("\n");
+    c->super.iret = RtlQueryPerformanceCounter(QEMU_G2H(c->counter));
+}
+
+#endif
+
+struct qemu_RtlQueryPerformanceFrequency
+{
+    struct qemu_syscall super;
+    uint64_t frequency;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+BOOL WINAPI RtlQueryPerformanceFrequency( LARGE_INTEGER *frequency )
+{
+    struct qemu_RtlQueryPerformanceFrequency call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLQUERYPERFORMANCEFREQUENCY);
+    call.frequency = (ULONG_PTR)frequency;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlQueryPerformanceFrequency(struct qemu_syscall *call)
+{
+    struct qemu_RtlQueryPerformanceFrequency *c = (struct qemu_RtlQueryPerformanceFrequency *)call;
+    WINE_TRACE("\n");
+    c->super.iret = RtlQueryPerformanceFrequency(QEMU_G2H(c->frequency));
+}
+
+#endif
