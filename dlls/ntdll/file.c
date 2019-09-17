@@ -578,27 +578,40 @@ WINBASEAPI NTSTATUS WINAPI NtFsControlFile(HANDLE handle, HANDLE event, PIO_APC_
 void qemu_NtFsControlFile(struct qemu_syscall *call)
 {
     struct qemu_NtFsControlFile *c = (struct qemu_NtFsControlFile *)call;
-    IO_STATUS_BLOCK stack, *iosb = &stack;
+    struct IOSB_data *io_wrapper;
+    IO_STATUS_BLOCK *iosb;
+    HANDLE guest_event, host_event;
+
     WINE_TRACE("\n");
     if (c->apc)
         WINE_FIXME("Handle APC routine.\n");
 
 #if GUEST_BIT == HOST_BIT
     iosb = QEMU_G2H(c->io);
+    host_event = QEMU_G2H(c->event);
 #else
-    if (c->io)
-        IO_STATUS_BLOCK_g2h(iosb, QEMU_G2H(c->io));
-    else
-        iosb = NULL;
+    if (!c->io)
+    {
+        /* This will do nothing and just return an error. */
+        c->super.iret = NtFsControlFile(QEMU_G2H(c->handle), QEMU_G2H(c->event), QEMU_G2H(c->apc),
+                QEMU_G2H(c->apc_context), NULL, c->code, QEMU_G2H(c->in_buffer), c->in_size,
+                QEMU_G2H(c->out_buffer), c->out_size);
+        return;
+    }
+    io_wrapper = alloc_io_wrapper(QEMU_G2H(c->io));
+
+    iosb = &io_wrapper->iosb;
+    guest_event = QEMU_G2H(c->event);
+    host_event = io_wrapper->host_event;
+    io_wrapper->guest_event = guest_event;
 #endif
 
-    c->super.iret = NtFsControlFile(QEMU_G2H(c->handle), QEMU_G2H(c->event), QEMU_G2H(c->apc),
+    c->super.iret = NtFsControlFile(QEMU_G2H(c->handle), host_event, QEMU_G2H(c->apc),
             QEMU_G2H(c->apc_context), iosb, c->code, QEMU_G2H(c->in_buffer), c->in_size,
             QEMU_G2H(c->out_buffer), c->out_size);
 
 #if GUEST_BIT != HOST_BIT
-    if (c->io)
-        IO_STATUS_BLOCK_h2g(QEMU_G2H(c->io), iosb);
+    process_io_status(c->super.iret, io_wrapper);
 #endif
 }
 
