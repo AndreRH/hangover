@@ -9,10 +9,10 @@ VPATH=$(SRCDIR)
 all: bcrypt.dll qemu_bcrypt.dll.so
 
 bcrypt.dll: bcrypt.spec main_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/bcrypt.spec *_g.o -o bcrypt.dll -L../../$(WINE_DIR)/dlls/winecrt0
+	$(WINEGCC) --wine-objdir $(DESTDIR)/build/$(WINE_DIR) -shared -b $(GUEST_CC) $(SRCDIR)/bcrypt.spec *_g.o -o bcrypt.dll
 
 qemu_bcrypt.dll.so: main_h.o qemu_bcrypt.spec
-	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_bcrypt.spec *_h.o -o qemu_bcrypt.dll.so -lbcrypt
+	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_bcrypt.spec *_h.o -o qemu_bcrypt.dll.so -lbcrypt
 
 %_g.o: %.c qemu_bcrypt.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../../wine/include/wine -Wno-format

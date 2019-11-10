@@ -2,17 +2,17 @@
 DESTDIR?=../..
 CURRENT_DLL=DLL_WINDOWSCODECS
 CFLAGS+=-I$(SRCDIR)/../include -I$(SRCDIR)/../../qemu/include -DQEMU_CURRENT_DLL=$(CURRENT_DLL) -O2 -DGUEST_BIT=$(GUEST_BIT) -DHOST_BIT=$(HOST_BIT) -DCONST_VTABLE -D_WIN32_WINNT=0x0603
-WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc --winebuild $(DESTDIR)/build/wine-host/tools/winebuild/winebuild --wine-objdir $(DESTDIR)/build/wine-host -I$(DESTDIR)/build/wine-host/include -I$(DESTDIR)/wine/include
+WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc --winebuild $(DESTDIR)/build/wine-host/tools/winebuild/winebuild -I$(DESTDIR)/build/wine-host/include -I$(DESTDIR)/wine/include
 
 VPATH=$(SRCDIR)
 
 all: windowscodecs.dll qemu_windowscodecs.dll.so
 
 windowscodecs.dll: bitmap_g.o clipper_g.o clsfactory_g.o colorcontext_g.o converter_g.o decode_g.o dlldata.o encode_g.o imgfactory_g.o info_g.o main_g.o metadatahandler_g.o metadataquery_g.o palette_g.o propertybag_g.o proxy_g.o stream_g.o windowscodecs.spec windowscodecs_wincodec_p.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/windowscodecs.spec *_g.o dlldata.o windowscodecs_wincodec_p.o -o windowscodecs.dll -luuid -lole32 -loleaut32 -lrpcrt4 -L../../$(WINE_DIR)/dlls/winecrt0
+	$(WINEGCC) --wine-objdir $(DESTDIR)/build/$(WINE_DIR) -shared -b $(GUEST_CC) $(SRCDIR)/windowscodecs.spec *_g.o dlldata.o windowscodecs_wincodec_p.o -o windowscodecs.dll -luuid -lole32 -loleaut32 -lrpcrt4
 
 qemu_windowscodecs.dll.so: bitmap_h.o clipper_h.o clsfactory_h.o colorcontext_h.o converter_h.o decode_h.o encode_h.o imgfactory_h.o info_h.o main_h.o metadatahandler_h.o metadataquery_h.o palette_h.o propertybag_h.o proxy_h.o qemu_windowscodecs.spec stream_h.o
-	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_windowscodecs.spec *_h.o -o qemu_windowscodecs.dll.so -lwindowscodecs
+	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_windowscodecs.spec *_h.o -o qemu_windowscodecs.dll.so -lwindowscodecs
 
 %_g.o: %.c qemu_windowscodecs.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../wine-guest32/include -I../../../wine/include -Wno-format

@@ -2,17 +2,17 @@
 DESTDIR?=../..
 CURRENT_DLL=DLL_DSOUND
 CFLAGS+=-I$(SRCDIR)/../include -I$(SRCDIR)/../../qemu/include -DQEMU_CURRENT_DLL=$(CURRENT_DLL) -O2 -DCONST_VTABLE -D_WIN32_WINNT=0x0603 -DSECURITY_WIN32 -DGUEST_BIT=$(GUEST_BIT) -DHOST_BIT=$(HOST_BIT)
-WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc --winebuild $(DESTDIR)/build/wine-host/tools/winebuild/winebuild --wine-objdir $(DESTDIR)/build/wine-host -I$(DESTDIR)/build/wine-host/include -I$(DESTDIR)/wine/include
+WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc --winebuild $(DESTDIR)/build/wine-host/tools/winebuild/winebuild -I$(DESTDIR)/build/wine-host/include -I$(DESTDIR)/wine/include
 
 VPATH=$(SRCDIR)
 
 all: dsound.dll qemu_dsound.dll.so
 
 dsound.dll: buffer_g.o capture_g.o dsound.spec dsound_g.o dsound_main_g.o duplex_g.o main_g.o propset_g.o sound3d_g.o
-	$(WINEGCC) -shared --sysroot=../.. -b $(GUEST_CC) $(SRCDIR)/dsound.spec *_g.o -o dsound.dll -luuid -Wl,--image-base,0x1c0000000 -L../../$(WINE_DIR)/dlls/winecrt0
+	$(WINEGCC) --wine-objdir $(DESTDIR)/build/$(WINE_DIR) -shared -b $(GUEST_CC) $(SRCDIR)/dsound.spec *_g.o -o dsound.dll -luuid -Wl,--image-base,0x1c0000000
 
 qemu_dsound.dll.so: buffer_h.o capture_h.o dsound_h.o dsound_main_h.o duplex_h.o main_h.o propset_h.o qemu_dsound.spec sound3d_h.o
-	$(WINEGCC) -shared $(HOST_CC) $(SRCDIR)/qemu_dsound.spec *_h.o -o qemu_dsound.dll.so -ldsound -lole32
+	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_dsound.spec *_h.o -o qemu_dsound.dll.so -ldsound -lole32
 
 %_g.o: %.c qemu_dsound.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../../wine/include/wine -Wno-format

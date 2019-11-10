@@ -23,9 +23,9 @@
 
 #define COBJMACROS
 
+#include <initguid.h>
 #include <windows.h>
 #include <stdio.h>
-#include <initguid.h>
 
 #include "thunk/qemu_windows.h"
 
