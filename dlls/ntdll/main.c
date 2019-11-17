@@ -106,6 +106,8 @@ static const syscall_handler dll_functions[] =
     qemu__wtol,
     qemu_atoi,
     qemu_atol,
+    qemu_DbgUiIssueRemoteBreakin,
+    qemu_DbgUiRemoteBreakin,
     qemu_EtwEventEnabled,
     qemu_EtwEventRegister,
     qemu_EtwEventSetInformation,

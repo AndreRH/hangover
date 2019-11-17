@@ -44,6 +44,8 @@ enum ntdll_calls
     CALL__WTOL,
     CALL_ATOI,
     CALL_ATOL,
+    CALL_DBGUIISSUEREMOTEBREAKIN,
+    CALL_DBGUIREMOTEBREAKIN,
     CALL_ETWEVENTENABLED,
     CALL_ETWEVENTREGISTER,
     CALL_ETWEVENTSETINFORMATION,
@@ -785,6 +787,8 @@ void qemu__wtoi64(struct qemu_syscall *call);
 void qemu__wtol(struct qemu_syscall *call);
 void qemu_atoi(struct qemu_syscall *call);
 void qemu_atol(struct qemu_syscall *call);
+void qemu_DbgUiIssueRemoteBreakin(struct qemu_syscall *call);
+void qemu_DbgUiRemoteBreakin(struct qemu_syscall *call);
 void qemu_EtwEventEnabled(struct qemu_syscall *call);
 void qemu_EtwEventRegister(struct qemu_syscall *call);
 void qemu_EtwEventSetInformation(struct qemu_syscall *call);

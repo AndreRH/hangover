@@ -35,7 +35,7 @@
 
 /* I can't make mingw's ddk headers work :-( . */
 typedef void *LPRTL_RWLOCK, *PRTL_AVL_TABLE, *PRTL_AVL_COMPARE_ROUTINE, *PRTL_AVL_ALLOCATE_ROUTINE;
-typedef void RTL_USER_PROCESS_INFORMATION, *PRTL_AVL_FREE_ROUTINE;
+typedef void *PRTL_AVL_FREE_ROUTINE;
 
 #else
 
@@ -1987,54 +1987,6 @@ void qemu_RtlInsertElementGenericTableAvl(struct qemu_syscall *call)
     struct qemu_RtlInsertElementGenericTableAvl *c = (struct qemu_RtlInsertElementGenericTableAvl *)call;
     WINE_FIXME("Unverified!\n");
     RtlInsertElementGenericTableAvl(QEMU_G2H(c->table), QEMU_G2H(c->buffer), c->size, QEMU_G2H(c->element));
-}
-
-#endif
-
-struct qemu_RtlCreateUserProcess
-{
-    struct qemu_syscall super;
-    uint64_t path;
-    uint64_t attributes;
-    uint64_t parameters;
-    uint64_t process_descriptor;
-    uint64_t thread_descriptor;
-    uint64_t parent;
-    uint64_t inherit;
-    uint64_t debug;
-    uint64_t exception;
-    uint64_t info;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-WINBASEAPI NTSTATUS WINAPI RtlCreateUserProcess(UNICODE_STRING *path, ULONG attributes, RTL_USER_PROCESS_PARAMETERS *parameters, SECURITY_DESCRIPTOR *process_descriptor, SECURITY_DESCRIPTOR *thread_descriptor, HANDLE parent, BOOLEAN inherit, HANDLE debug, HANDLE exception, RTL_USER_PROCESS_INFORMATION *info)
-{
-    struct qemu_RtlCreateUserProcess call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_RTLCREATEUSERPROCESS);
-    call.path = (ULONG_PTR)path;
-    call.attributes = (ULONG_PTR)attributes;
-    call.parameters = (ULONG_PTR)parameters;
-    call.process_descriptor = (ULONG_PTR)process_descriptor;
-    call.thread_descriptor = (ULONG_PTR)thread_descriptor;
-    call.parent = (ULONG_PTR)parent;
-    call.inherit = (ULONG_PTR)inherit;
-    call.debug = (ULONG_PTR)debug;
-    call.exception = (ULONG_PTR)exception;
-    call.info = (ULONG_PTR)info;
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-void qemu_RtlCreateUserProcess(struct qemu_syscall *call)
-{
-    struct qemu_RtlCreateUserProcess *c = (struct qemu_RtlCreateUserProcess *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlCreateUserProcess(QEMU_G2H(c->path), c->attributes, QEMU_G2H(c->parameters), QEMU_G2H(c->process_descriptor), QEMU_G2H(c->thread_descriptor), QEMU_G2H(c->parent), c->inherit, QEMU_G2H(c->debug), QEMU_G2H(c->exception), QEMU_G2H(c->info));
 }
 
 #endif

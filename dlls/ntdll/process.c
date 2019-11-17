@@ -32,6 +32,7 @@
 #ifdef QEMU_DLL_GUEST
 
 /* I can't make mingw's ddk headers work :-( . */
+typedef void RTL_USER_PROCESS_INFORMATION;
 
 #else
 
@@ -310,3 +311,108 @@ void qemu_NtSuspendProcess(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_DbgUiIssueRemoteBreakin
+{
+    struct qemu_syscall super;
+    uint64_t process;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI DbgUiIssueRemoteBreakin(HANDLE process)
+{
+    struct qemu_DbgUiIssueRemoteBreakin call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DBGUIISSUEREMOTEBREAKIN);
+    call.process = (ULONG_PTR)process;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_DbgUiIssueRemoteBreakin(struct qemu_syscall *call)
+{
+    struct qemu_DbgUiIssueRemoteBreakin *c = (struct qemu_DbgUiIssueRemoteBreakin *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = DbgUiIssueRemoteBreakin(QEMU_G2H(c->process));
+}
+
+#endif
+
+struct qemu_DbgUiRemoteBreakin
+{
+    struct qemu_syscall super;
+    uint64_t arg;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI DbgUiRemoteBreakin(void *arg)
+{
+    struct qemu_DbgUiRemoteBreakin call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DBGUIREMOTEBREAKIN);
+    call.arg = (ULONG_PTR)arg;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_DbgUiRemoteBreakin(struct qemu_syscall *call)
+{
+    struct qemu_DbgUiRemoteBreakin *c = (struct qemu_DbgUiRemoteBreakin *)call;
+    WINE_FIXME("Unverified!\n");
+    DbgUiRemoteBreakin(QEMU_G2H(c->arg));
+}
+
+#endif
+
+struct qemu_RtlCreateUserProcess
+{
+    struct qemu_syscall super;
+    uint64_t path;
+    uint64_t attributes;
+    uint64_t params;
+    uint64_t process_descr;
+    uint64_t thread_descr;
+    uint64_t parent;
+    uint64_t inherit;
+    uint64_t debug;
+    uint64_t exception;
+    uint64_t info;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlCreateUserProcess(UNICODE_STRING *path, ULONG attributes, RTL_USER_PROCESS_PARAMETERS *params, SECURITY_DESCRIPTOR *process_descr, SECURITY_DESCRIPTOR *thread_descr, HANDLE parent, BOOLEAN inherit, HANDLE debug, HANDLE exception, RTL_USER_PROCESS_INFORMATION *info)
+{
+    struct qemu_RtlCreateUserProcess call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLCREATEUSERPROCESS);
+    call.path = (ULONG_PTR)path;
+    call.attributes = attributes;
+    call.params = (ULONG_PTR)params;
+    call.process_descr = (ULONG_PTR)process_descr;
+    call.thread_descr = (ULONG_PTR)thread_descr;
+    call.parent = (ULONG_PTR)parent;
+    call.inherit = inherit;
+    call.debug = (ULONG_PTR)debug;
+    call.exception = (ULONG_PTR)exception;
+    call.info = (ULONG_PTR)info;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlCreateUserProcess(struct qemu_syscall *call)
+{
+    struct qemu_RtlCreateUserProcess *c = (struct qemu_RtlCreateUserProcess *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlCreateUserProcess(QEMU_G2H(c->path), c->attributes, QEMU_G2H(c->params), QEMU_G2H(c->process_descr), QEMU_G2H(c->thread_descr), QEMU_G2H(c->parent), c->inherit, QEMU_G2H(c->debug), QEMU_G2H(c->exception), QEMU_G2H(c->info));
+}
+
+#endif
