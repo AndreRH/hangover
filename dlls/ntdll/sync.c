@@ -62,6 +62,9 @@ typedef enum _IO_COMPLETION_INFORMATION_CLASS
 IO_COMPLETION_INFORMATION_CLASS, *PIO_COMPLETION_INFORMATION_CLASS;
 
 typedef void *PTIMER_APC_ROUTINE;
+
+typedef struct _FILE_IO_COMPLETION_INFORMATION FILE_IO_COMPLETION_INFORMATION;
+
 #else
 
 #include <ddk/ntddk.h>
@@ -2105,3 +2108,134 @@ void qemu_RtlSleepConditionVariableSRW(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_RtlWaitOnAddress
+{
+    struct qemu_syscall super;
+    uint64_t addr;
+    uint64_t cmp;
+    uint64_t size;
+    uint64_t timeout;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlWaitOnAddress(const void *addr, const void *cmp, SIZE_T size, const LARGE_INTEGER *timeout)
+{
+    struct qemu_RtlWaitOnAddress call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLWAITONADDRESS);
+    call.addr = (ULONG_PTR)addr;
+    call.cmp = (ULONG_PTR)cmp;
+    call.size = size;
+    call.timeout = (ULONG_PTR)timeout;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlWaitOnAddress(struct qemu_syscall *call)
+{
+    struct qemu_RtlWaitOnAddress *c = (struct qemu_RtlWaitOnAddress *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlWaitOnAddress(QEMU_G2H(c->addr), QEMU_G2H(c->cmp), c->size, QEMU_G2H(c->timeout));
+}
+
+#endif
+
+struct qemu_RtlWakeAddressAll
+{
+    struct qemu_syscall super;
+    uint64_t addr;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI RtlWakeAddressAll(const void *addr)
+{
+    struct qemu_RtlWakeAddressAll call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLWAKEADDRESSALL);
+    call.addr = (ULONG_PTR)addr;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_RtlWakeAddressAll(struct qemu_syscall *call)
+{
+    struct qemu_RtlWakeAddressAll *c = (struct qemu_RtlWakeAddressAll *)call;
+    WINE_FIXME("Unverified!\n");
+    RtlWakeAddressAll(QEMU_G2H(c->addr));
+}
+
+#endif
+
+struct qemu_RtlWakeAddressSingle
+{
+    struct qemu_syscall super;
+    uint64_t addr;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI RtlWakeAddressSingle(const void *addr)
+{
+    struct qemu_RtlWakeAddressSingle call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLWAKEADDRESSSINGLE);
+    call.addr = (ULONG_PTR)addr;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_RtlWakeAddressSingle(struct qemu_syscall *call)
+{
+    struct qemu_RtlWakeAddressSingle *c = (struct qemu_RtlWakeAddressSingle *)call;
+    WINE_FIXME("Unverified!\n");
+    RtlWakeAddressSingle(QEMU_G2H(c->addr));
+}
+
+#endif
+
+struct qemu_NtRemoveIoCompletionEx
+{
+    struct qemu_syscall super;
+    uint64_t port;
+    uint64_t info;
+    uint64_t count;
+    uint64_t written;
+    uint64_t timeout;
+    uint64_t alertable;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI NtRemoveIoCompletionEx(HANDLE port, FILE_IO_COMPLETION_INFORMATION *info, ULONG count, ULONG *written, LARGE_INTEGER *timeout, BOOLEAN alertable)
+{
+    struct qemu_NtRemoveIoCompletionEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTREMOVEIOCOMPLETIONEX);
+    call.port = (ULONG_PTR)port;
+    call.info = (ULONG_PTR)info;
+    call.count = count;
+    call.written = (ULONG_PTR)written;
+    call.timeout = (ULONG_PTR)timeout;
+    call.alertable = alertable;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_NtRemoveIoCompletionEx(struct qemu_syscall *call)
+{
+    struct qemu_NtRemoveIoCompletionEx *c = (struct qemu_NtRemoveIoCompletionEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = NtRemoveIoCompletionEx(QEMU_G2H(c->port), QEMU_G2H(c->info), c->count, QEMU_G2H(c->written), QEMU_G2H(c->timeout), c->alertable);
+}
+
+#endif

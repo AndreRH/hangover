@@ -35,6 +35,7 @@
  * are missing definitions of these types. */
 typedef void *PLPC_SECTION_WRITE, *PLPC_SECTION_READ, *PLPC_MESSAGE;
 typedef unsigned int SHUTDOWN_ACTION, KPROFILE_SOURCE, SYSDBG_COMMAND;
+typedef struct _COUNTED_REASON_CONTEXT COUNTED_REASON_CONTEXT;
 
 #else
 
@@ -1253,3 +1254,160 @@ void qemu_NtSetLdtEntries(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_RtlIsProcessorFeaturePresent
+{
+    struct qemu_syscall super;
+    uint64_t feature;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOLEAN WINAPI RtlIsProcessorFeaturePresent(UINT feature)
+{
+    struct qemu_RtlIsProcessorFeaturePresent call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLISPROCESSORFEATUREPRESENT);
+    call.feature = feature;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlIsProcessorFeaturePresent(struct qemu_syscall *call)
+{
+    struct qemu_RtlIsProcessorFeaturePresent *c = (struct qemu_RtlIsProcessorFeaturePresent *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlIsProcessorFeaturePresent(c->feature);
+}
+
+#endif
+
+struct qemu_NtSetPowerRequest
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t type;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI NtSetPowerRequest(HANDLE handle, POWER_REQUEST_TYPE type)
+{
+    struct qemu_NtSetPowerRequest call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTSETPOWERREQUEST);
+    call.handle = (ULONG_PTR)handle;
+    call.type = type;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_NtSetPowerRequest(struct qemu_syscall *call)
+{
+    struct qemu_NtSetPowerRequest *c = (struct qemu_NtSetPowerRequest *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = NtSetPowerRequest(QEMU_G2H(c->handle), c->type);
+}
+
+#endif
+
+struct qemu_NtClearPowerRequest
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t type;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI NtClearPowerRequest(HANDLE handle, POWER_REQUEST_TYPE type)
+{
+    struct qemu_NtClearPowerRequest call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTCLEARPOWERREQUEST);
+    call.handle = (ULONG_PTR)handle;
+    call.type = type;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_NtClearPowerRequest(struct qemu_syscall *call)
+{
+    struct qemu_NtClearPowerRequest *c = (struct qemu_NtClearPowerRequest *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = NtClearPowerRequest(QEMU_G2H(c->handle), c->type);
+}
+
+#endif
+
+struct qemu_NtCreatePowerRequest
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t context;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI NtCreatePowerRequest(HANDLE *handle, COUNTED_REASON_CONTEXT *context)
+{
+    struct qemu_NtCreatePowerRequest call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATEPOWERREQUEST);
+    call.handle = (ULONG_PTR)handle;
+    call.context = (ULONG_PTR)context;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_NtCreatePowerRequest(struct qemu_syscall *call)
+{
+    struct qemu_NtCreatePowerRequest *c = (struct qemu_NtCreatePowerRequest *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = NtCreatePowerRequest(QEMU_G2H(c->handle), QEMU_G2H(c->context));
+}
+
+#endif
+
+struct qemu_NtSetThreadExecutionState
+{
+    struct qemu_syscall super;
+    uint64_t new_state;
+    uint64_t old_state;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI NtSetThreadExecutionState(EXECUTION_STATE new_state, EXECUTION_STATE *old_state)
+{
+    struct qemu_NtSetThreadExecutionState call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTSETTHREADEXECUTIONSTATE);
+    call.new_state = new_state;
+    call.old_state = (ULONG_PTR)old_state;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_NtSetThreadExecutionState(struct qemu_syscall *call)
+{
+    struct qemu_NtSetThreadExecutionState *c = (struct qemu_NtSetThreadExecutionState *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = NtSetThreadExecutionState(c->new_state, QEMU_G2H(c->old_state));
+}
+
+#endif

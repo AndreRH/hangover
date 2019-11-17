@@ -475,3 +475,44 @@ void qemu_RtlFindActivationContextSectionGuid(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_RtlQueryActivationContextApplicationSettings
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t handle;
+    uint64_t ns;
+    uint64_t settings;
+    uint64_t buffer;
+    uint64_t size;
+    uint64_t written;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlQueryActivationContextApplicationSettings(DWORD flags, HANDLE handle, const WCHAR *ns, const WCHAR *settings, WCHAR *buffer, SIZE_T size, SIZE_T *written)
+{
+    struct qemu_RtlQueryActivationContextApplicationSettings call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLQUERYACTIVATIONCONTEXTAPPLICATIONSETTINGS);
+    call.flags = flags;
+    call.handle = (ULONG_PTR)handle;
+    call.ns = (ULONG_PTR)ns;
+    call.settings = (ULONG_PTR)settings;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = size;
+    call.written = (ULONG_PTR)written;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlQueryActivationContextApplicationSettings(struct qemu_syscall *call)
+{
+    struct qemu_RtlQueryActivationContextApplicationSettings *c = (struct qemu_RtlQueryActivationContextApplicationSettings *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlQueryActivationContextApplicationSettings(c->flags, QEMU_G2H(c->handle), QEMU_G2H(c->ns), QEMU_G2H(c->settings), QEMU_G2H(c->buffer), c->size, QEMU_G2H(c->written));
+}
+
+#endif

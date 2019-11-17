@@ -620,3 +620,31 @@ void qemu_RtlQueryPerformanceFrequency(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_RtlGetSystemTimePrecise
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI LONGLONG WINAPI RtlGetSystemTimePrecise(void)
+{
+    struct qemu_RtlGetSystemTimePrecise call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETSYSTEMTIMEPRECISE);
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlGetSystemTimePrecise(struct qemu_syscall *call)
+{
+    struct qemu_RtlGetSystemTimePrecise *c = (struct qemu_RtlGetSystemTimePrecise *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlGetSystemTimePrecise();
+}
+
+#endif

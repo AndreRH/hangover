@@ -2054,3 +2054,67 @@ void qemu__local_unwind(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_NtGetContextThread
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t context;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI NtGetContextThread(HANDLE handle, CONTEXT *context)
+{
+    struct qemu_NtGetContextThread call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTGETCONTEXTTHREAD);
+    call.handle = (ULONG_PTR)handle;
+    call.context = (ULONG_PTR)context;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_NtGetContextThread(struct qemu_syscall *call)
+{
+    struct qemu_NtGetContextThread *c = (struct qemu_NtGetContextThread *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = NtGetContextThread(QEMU_G2H(c->handle), QEMU_G2H(c->context));
+}
+
+#endif
+
+struct qemu_RtlWow64GetThreadContext
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t context;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlWow64GetThreadContext(HANDLE handle, WOW64_CONTEXT *context)
+{
+    struct qemu_RtlWow64GetThreadContext call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLWOW64GETTHREADCONTEXT);
+    call.handle = (ULONG_PTR)handle;
+    call.context = (ULONG_PTR)context;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlWow64GetThreadContext(struct qemu_syscall *call)
+{
+    struct qemu_RtlWow64GetThreadContext *c = (struct qemu_RtlWow64GetThreadContext *)call;
+    WINE_FIXME("Stub!\n");
+    c->super.iret = STATUS_NOT_IMPLEMENTED;
+}
+
+#endif

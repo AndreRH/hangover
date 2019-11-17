@@ -124,6 +124,7 @@
 @ stdcall NtCancelIoFileEx(long ptr ptr)
 @ stdcall NtCancelTimer(long ptr)
 @ stdcall NtClearEvent(long)
+@ stdcall NtClearPowerRequest(long long)
 @ stdcall NtClose(long)
 @ stub NtCloseObjectAuditAlarm
 # @ stub NtCompactKeys
@@ -148,6 +149,7 @@
 @ stdcall NtCreateNamedPipeFile(ptr long ptr ptr long long long long long long long long long ptr)
 @ stdcall NtCreatePagingFile(ptr ptr ptr ptr)
 @ stdcall NtCreatePort(ptr ptr long long ptr)
+@ stdcall NtCreatePowerRequest(ptr ptr)
 @ stub NtCreateProcess
 # @ stub NtCreateProcessEx
 @ stub NtCreateProfile
@@ -186,6 +188,7 @@
 # @ stub NtFreeUserPhysicalPages
 @ stdcall NtFreeVirtualMemory(long ptr ptr long)
 @ stdcall NtFsControlFile(long long ptr ptr ptr long ptr long ptr long)
+@ stdcall -norelay NtGetContextThread(long ptr)
 @ stdcall NtGetCurrentProcessorNumber()
 # @ stub NtGetDevicePowerState
 @ stub NtGetPlugPlayEvent
@@ -303,6 +306,7 @@
 @ stub NtReleaseProcessMutant
 @ stdcall NtReleaseSemaphore(long long ptr)
 @ stdcall NtRemoveIoCompletion(ptr ptr ptr ptr ptr)
+@ stdcall NtRemoveIoCompletionEx(ptr ptr long ptr ptr long)
 # @ stub NtRemoveProcessDebug
 @ stdcall NtRenameKey(long ptr)
 @ stdcall NtReplaceKey(ptr long ptr)
@@ -350,6 +354,7 @@
 @ stub NtSetLowEventPair
 @ stub NtSetLowWaitHighEventPair
 @ stub NtSetLowWaitHighThread
+@ stdcall NtSetPowerRequest(long long)
 # @ stub NtSetQuotaInformationFile
 @ stdcall NtSetSecurityObject(long long ptr)
 @ stub NtSetSystemEnvironmentValue
@@ -357,7 +362,7 @@
 @ stdcall NtSetSystemInformation(long ptr long)
 @ stub NtSetSystemPowerState
 @ stdcall NtSetSystemTime(ptr ptr)
-# @ stub NtSetThreadExecutionState
+@ stdcall NtSetThreadExecutionState(long ptr)
 @ stdcall NtSetTimer(long ptr ptr ptr long long ptr)
 @ stdcall NtSetTimerResolution(long long ptr)
 # @ stub NtSetUuidSeed
@@ -562,6 +567,7 @@
 @ stdcall RtlDoesFileExists_U(wstr)
 # @ stub RtlDosApplyFileIsolationRedirection_Ustr
 @ stdcall RtlDosPathNameToNtPathName_U(wstr ptr ptr ptr)
+@ stdcall RtlDosPathNameToNtPathName_U_WithStatus(wstr ptr ptr ptr)
 @ stdcall RtlDosSearchPath_U(wstr wstr wstr long ptr ptr)
 # @ stub RtlDosSearchPath_Ustr
 @ stdcall RtlDowncaseUnicodeChar(long)
@@ -592,7 +598,7 @@
 @ stdcall RtlEqualUnicodeString(ptr ptr long)
 @ stdcall RtlEraseUnicodeString(ptr)
 @ stdcall RtlExitUserProcess(long)
-# @ stdcall RtlExitUserThread(long)
+@ stdcall RtlExitUserThread(long)
 @ stdcall RtlExpandEnvironmentStrings(ptr wstr long ptr long ptr)
 @ stdcall RtlExpandEnvironmentStrings_U(ptr ptr ptr ptr)
 @ stub RtlExtendHeap
@@ -674,6 +680,7 @@
 @ stdcall RtlGetSearchPath(ptr)
 # @ stub RtlGetSecurityDescriptorRMControl
 # @ stub RtlGetSetBootStatusData
+@ stdcall -ret64 RtlGetSystemTimePrecise()
 @ stdcall RtlGetThreadErrorMode()
 @ stdcall RtlGetUnloadEventTrace()
 @ stdcall RtlGetUnloadEventTraceEx(ptr ptr ptr)
@@ -749,6 +756,7 @@
 @ stub RtlIsGenericTableEmpty
 # @ stub RtlIsGenericTableEmptyAvl
 @ stdcall RtlIsNameLegalDOS8Dot3(ptr ptr ptr)
+@ stdcall RtlIsProcessorFeaturePresent(long)
 # @ stub RtlIsRangeAvailable
 @ stdcall RtlIsTextUnicode(ptr long ptr)
 # @ stub RtlIsThreadWithinLoaderCallout
@@ -808,6 +816,7 @@
 @ stub RtlPropertySetNameToGuid
 @ stub RtlProtectHeap
 # @ stub RtlPushFrame
+@ stdcall RtlQueryActivationContextApplicationSettings(long ptr wstr wstr ptr long ptr)
 # @ stdcall RtlQueryAtomInAtomTable(ptr long ptr ptr ptr ptr)
 @ stdcall RtlQueryDepthSList(ptr)
 @ stdcall RtlQueryDynamicTimeZoneInformation(ptr)
@@ -975,12 +984,16 @@
 # @ stub RtlValidateUnicodeString
 @ stdcall RtlVerifyVersionInfo(ptr long int64)
 @ stdcall -arch=x86_64 RtlVirtualUnwind(long long long ptr ptr ptr ptr ptr) ntdll_RtlVirtualUnwind
+@ stdcall RtlWaitOnAddress(ptr ptr long ptr)
+@ stdcall RtlWakeAddressAll(ptr)
+@ stdcall RtlWakeAddressSingle(ptr)
 @ stdcall RtlWakeAllConditionVariable(ptr)
 @ stdcall RtlWakeConditionVariable(ptr)
 @ stub RtlWalkFrameChain
 @ stdcall RtlWalkHeap(long ptr)
 @ stdcall RtlWow64EnableFsRedirection(long)
 @ stdcall RtlWow64EnableFsRedirectionEx(long ptr)
+@ stdcall -arch=x86_64 RtlWow64GetThreadContext(long ptr)
 @ stub RtlWriteMemoryStream
 @ stdcall RtlWriteRegistryValue(long ptr ptr long ptr long)
 @ stub RtlZeroHeap
@@ -1059,6 +1072,7 @@
 @ stdcall -private ZwCancelIoFileEx(long ptr ptr) NtCancelIoFileEx
 @ stdcall -private ZwCancelTimer(long ptr) NtCancelTimer
 @ stdcall -private ZwClearEvent(long) NtClearEvent
+@ stdcall -private ZwClearPowerRequest(long long) NtClearPowerRequest
 @ stdcall -private ZwClose(long) NtClose
 @ stub ZwCloseObjectAuditAlarm
 # @ stub ZwCompactKeys
@@ -1083,6 +1097,7 @@
 @ stdcall -private ZwCreateNamedPipeFile(ptr long ptr ptr long long long long long long long long long ptr) NtCreateNamedPipeFile
 @ stdcall -private ZwCreatePagingFile(ptr ptr ptr ptr) NtCreatePagingFile
 @ stdcall -private ZwCreatePort(ptr ptr long long ptr) NtCreatePort
+@ stdcall -private ZwCreatePowerRequest(ptr ptr) NtCreatePowerRequest
 @ stub ZwCreateProcess
 # @ stub ZwCreateProcessEx
 @ stub ZwCreateProfile
@@ -1233,6 +1248,7 @@
 @ stub ZwReleaseProcessMutant
 @ stdcall -private ZwReleaseSemaphore(long long ptr) NtReleaseSemaphore
 @ stdcall -private ZwRemoveIoCompletion(ptr ptr ptr ptr ptr) NtRemoveIoCompletion
+@ stdcall -private ZwRemoveIoCompletionEx(ptr ptr long ptr ptr long) NtRemoveIoCompletionEx
 # @ stub ZwRemoveProcessDebug
 @ stdcall -private ZwRenameKey(long ptr) NtRenameKey
 @ stdcall -private ZwReplaceKey(ptr long ptr) NtReplaceKey
@@ -1280,6 +1296,7 @@
 @ stub ZwSetLowEventPair
 @ stub ZwSetLowWaitHighEventPair
 @ stub ZwSetLowWaitHighThread
+@ stdcall -private ZwSetPowerRequest(long long) NtSetPowerRequest
 # @ stub ZwSetQuotaInformationFile
 @ stdcall -private ZwSetSecurityObject(long long ptr) NtSetSecurityObject
 @ stub ZwSetSystemEnvironmentValue
@@ -1287,7 +1304,7 @@
 @ stdcall -private ZwSetSystemInformation(long ptr long) NtSetSystemInformation
 @ stub ZwSetSystemPowerState
 # @ stdcall -private ZwSetSystemTime(ptr ptr) NtSetSystemTime
-# @ stub ZwSetThreadExecutionState
+@ stdcall ZwSetThreadExecutionState(long ptr) NtSetThreadExecutionState
 @ stdcall -private ZwSetTimer(long ptr ptr ptr long long ptr) NtSetTimer
 @ stdcall -private ZwSetTimerResolution(long long ptr) NtSetTimerResolution
 # @ stub ZwSetUuidSeed

@@ -383,3 +383,38 @@ void qemu_RtlSetCurrentDirectory_U(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_RtlDosPathNameToNtPathName_U_WithStatus
+{
+    struct qemu_syscall super;
+    uint64_t dos_path;
+    uint64_t ntpath;
+    uint64_t file_part;
+    uint64_t cd;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlDosPathNameToNtPathName_U_WithStatus(const WCHAR *dos_path, UNICODE_STRING *ntpath, WCHAR **file_part, VOID *cd)
+{
+    struct qemu_RtlDosPathNameToNtPathName_U_WithStatus call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLDOSPATHNAMETONTPATHNAME_U_WITHSTATUS);
+    call.dos_path = (ULONG_PTR)dos_path;
+    call.ntpath = (ULONG_PTR)ntpath;
+    call.file_part = (ULONG_PTR)file_part;
+    call.cd = (ULONG_PTR)cd;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlDosPathNameToNtPathName_U_WithStatus(struct qemu_syscall *call)
+{
+    struct qemu_RtlDosPathNameToNtPathName_U_WithStatus *c = (struct qemu_RtlDosPathNameToNtPathName_U_WithStatus *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlDosPathNameToNtPathName_U_WithStatus(QEMU_G2H(c->dos_path), QEMU_G2H(c->ntpath), QEMU_G2H(c->file_part), QEMU_G2H(c->cd));
+}
+
+#endif

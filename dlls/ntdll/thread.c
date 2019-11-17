@@ -453,3 +453,30 @@ void qemu_NtGetCurrentProcessorNumber(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_RtlExitUserThread
+{
+    struct qemu_syscall super;
+    uint64_t status;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI RtlExitUserThread(ULONG status)
+{
+    struct qemu_RtlExitUserThread call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLEXITUSERTHREAD);
+    call.status = status;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_RtlExitUserThread(struct qemu_syscall *call)
+{
+    struct qemu_RtlExitUserThread *c = (struct qemu_RtlExitUserThread *)call;
+    WINE_FIXME("Unverified!\n");
+    RtlExitUserThread(c->status);
+}
+
+#endif
