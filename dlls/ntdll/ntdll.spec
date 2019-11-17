@@ -190,7 +190,7 @@
 @ stub NtGetPlugPlayEvent
 @ stdcall NtGetTickCount()
 @ stdcall NtGetWriteWatch(long long ptr long ptr ptr ptr)
-# @ stdcall NtImpersonateAnonymousToken(long)
+@ stdcall NtImpersonateAnonymousToken(long)
 @ stub NtImpersonateClientOfPort
 @ stub NtImpersonateThread
 @ stub NtInitializeRegistry
@@ -324,7 +324,7 @@
 @ stdcall NtSecureConnectPort(ptr ptr ptr ptr ptr ptr ptr ptr ptr)
 # @ stub NtSetBootEntryOrder
 # @ stub NtSetBootOptions
-# @ stdcall NtSetContextThread(long ptr)
+@ stdcall NtSetContextThread(long ptr)
 @ stub NtSetDebugFilterState
 @ stub NtSetDefaultHardErrorPort
 @ stdcall NtSetDefaultLocale(long long)
@@ -544,7 +544,7 @@
 @ stdcall RtlDeleteRegistryValue(long ptr ptr)
 @ stdcall RtlDeleteResource(ptr)
 @ stdcall RtlDeleteSecurityObject(ptr)
-# @ stdcall RtlDeleteTimer(ptr ptr ptr)
+@ stdcall RtlDeleteTimer(ptr ptr ptr)
 # @ stub RtlDeleteTimerQueue
 @ stdcall RtlDeleteTimerQueueEx(ptr ptr)
 @ stdcall RtlDeregisterWait(ptr)
@@ -781,7 +781,7 @@
 @ stdcall RtlMoveMemory(ptr ptr long) ntdll_RtlMoveMemory
 # @ stub RtlMultiAppendUnicodeStringBuffer
 @ stdcall RtlMultiByteToUnicodeN(ptr long ptr ptr long)
-# @ stdcall RtlMultiByteToUnicodeSize(ptr str long)
+@ stdcall RtlMultiByteToUnicodeSize(ptr str long)
 @ stub RtlNewInstanceSecurityObject
 @ stub RtlNewSecurityGrantedAccess
 @ stdcall RtlNewSecurityObject(ptr ptr ptr long ptr ptr)
@@ -960,7 +960,7 @@
 @ stub RtlUpcaseUnicodeToCustomCPN
 @ stdcall RtlUpcaseUnicodeToMultiByteN(ptr long ptr ptr long)
 @ stdcall RtlUpcaseUnicodeToOemN(ptr long ptr ptr long)
-# @ stdcall RtlUpdateTimer(ptr ptr long long)
+@ stdcall RtlUpdateTimer(ptr ptr long long)
 @ stdcall RtlUpperChar(long)
 @ stdcall RtlUpperString(ptr ptr)
 @ stub RtlUsageHeap
@@ -1254,7 +1254,7 @@
 @ stdcall -private ZwSecureConnectPort(ptr ptr ptr ptr ptr ptr ptr ptr ptr) NtSecureConnectPort
 # @ stub ZwSetBootEntryOrder
 # @ stub ZwSetBootOptions
-# @ stdcall -private ZwSetContextThread(long ptr) NtSetContextThread
+@ stdcall -private ZwSetContextThread(long ptr) NtSetContextThread
 @ stub ZwSetDebugFilterState
 @ stub ZwSetDefaultHardErrorPort
 # @ stdcall -private ZwSetDefaultLocale(long long) NtSetDefaultLocale
