@@ -1040,3 +1040,311 @@ void qemu_NtUnloadDriver(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_LdrGetDllDirectory
+{
+    struct qemu_syscall super;
+    uint64_t dir;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI LdrGetDllDirectory(UNICODE_STRING *dir)
+{
+    struct qemu_LdrGetDllDirectory call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LDRGETDLLDIRECTORY);
+    call.dir = (ULONG_PTR)dir;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_LdrGetDllDirectory(struct qemu_syscall *call)
+{
+    struct qemu_LdrGetDllDirectory *c = (struct qemu_LdrGetDllDirectory *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LdrGetDllDirectory(QEMU_G2H(c->dir));
+}
+
+#endif
+
+struct qemu_LdrSetDllDirectory
+{
+    struct qemu_syscall super;
+    uint64_t dir;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI LdrSetDllDirectory(const UNICODE_STRING *dir)
+{
+    struct qemu_LdrSetDllDirectory call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LDRSETDLLDIRECTORY);
+    call.dir = (ULONG_PTR)dir;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_LdrSetDllDirectory(struct qemu_syscall *call)
+{
+    struct qemu_LdrSetDllDirectory *c = (struct qemu_LdrSetDllDirectory *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LdrSetDllDirectory(QEMU_G2H(c->dir));
+}
+
+#endif
+
+struct qemu_LdrAddDllDirectory
+{
+    struct qemu_syscall super;
+    uint64_t dir;
+    uint64_t cookie;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI LdrAddDllDirectory(const UNICODE_STRING *dir, void **cookie)
+{
+    struct qemu_LdrAddDllDirectory call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LDRADDDLLDIRECTORY);
+    call.dir = (ULONG_PTR)dir;
+    call.cookie = (ULONG_PTR)cookie;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_LdrAddDllDirectory(struct qemu_syscall *call)
+{
+    struct qemu_LdrAddDllDirectory *c = (struct qemu_LdrAddDllDirectory *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LdrAddDllDirectory(QEMU_G2H(c->dir), QEMU_G2H(c->cookie));
+}
+
+#endif
+
+struct qemu_LdrGetDllPath
+{
+    struct qemu_syscall super;
+    uint64_t module;
+    uint64_t flags;
+    uint64_t path;
+    uint64_t unknown;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI LdrGetDllPath(PCWSTR module, ULONG flags, PWSTR *path, PWSTR *unknown)
+{
+    struct qemu_LdrGetDllPath call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LDRGETDLLPATH);
+    call.module = (ULONG_PTR)module;
+    call.flags = flags;
+    call.path = (ULONG_PTR)path;
+    call.unknown = (ULONG_PTR)unknown;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_LdrGetDllPath(struct qemu_syscall *call)
+{
+    struct qemu_LdrGetDllPath *c = (struct qemu_LdrGetDllPath *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LdrGetDllPath(QEMU_G2H(c->module), c->flags, QEMU_G2H(c->path), QEMU_G2H(c->unknown));
+}
+
+#endif
+
+struct qemu_LdrRemoveDllDirectory
+{
+    struct qemu_syscall super;
+    uint64_t cookie;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI LdrRemoveDllDirectory(void *cookie)
+{
+    struct qemu_LdrRemoveDllDirectory call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LDRREMOVEDLLDIRECTORY);
+    call.cookie = (ULONG_PTR)cookie;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_LdrRemoveDllDirectory(struct qemu_syscall *call)
+{
+    struct qemu_LdrRemoveDllDirectory *c = (struct qemu_LdrRemoveDllDirectory *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LdrRemoveDllDirectory(QEMU_G2H(c->cookie));
+}
+
+#endif
+
+struct qemu_LdrSetDefaultDllDirectories
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI LdrSetDefaultDllDirectories(ULONG flags)
+{
+    struct qemu_LdrSetDefaultDllDirectories call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LDRSETDEFAULTDLLDIRECTORIES);
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_LdrSetDefaultDllDirectories(struct qemu_syscall *call)
+{
+    struct qemu_LdrSetDefaultDllDirectories *c = (struct qemu_LdrSetDefaultDllDirectories *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = LdrSetDefaultDllDirectories(c->flags);
+}
+
+#endif
+
+struct qemu_RtlSetSearchPathMode
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlSetSearchPathMode(ULONG flags)
+{
+    struct qemu_RtlSetSearchPathMode call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETSEARCHPATHMODE);
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlSetSearchPathMode(struct qemu_syscall *call)
+{
+    struct qemu_RtlSetSearchPathMode *c = (struct qemu_RtlSetSearchPathMode *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlSetSearchPathMode(c->flags);
+}
+
+#endif
+
+struct qemu_RtlGetExePath
+{
+    struct qemu_syscall super;
+    uint64_t name;
+    uint64_t path;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlGetExePath(PCWSTR name, PWSTR *path)
+{
+    struct qemu_RtlGetExePath call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETEXEPATH);
+    call.name = (ULONG_PTR)name;
+    call.path = (ULONG_PTR)path;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlGetExePath(struct qemu_syscall *call)
+{
+    struct qemu_RtlGetExePath *c = (struct qemu_RtlGetExePath *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlGetExePath(QEMU_G2H(c->name), QEMU_G2H(c->path));
+}
+
+#endif
+
+struct qemu_RtlGetSearchPath
+{
+    struct qemu_syscall super;
+    uint64_t path;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlGetSearchPath(PWSTR *path)
+{
+    struct qemu_RtlGetSearchPath call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETSEARCHPATH);
+    call.path = (ULONG_PTR)path;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlGetSearchPath(struct qemu_syscall *call)
+{
+    struct qemu_RtlGetSearchPath *c = (struct qemu_RtlGetSearchPath *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlGetSearchPath(QEMU_G2H(c->path));
+}
+
+#endif
+
+struct qemu_RtlReleasePath
+{
+    struct qemu_syscall super;
+    uint64_t path;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI RtlReleasePath(PWSTR path)
+{
+    struct qemu_RtlReleasePath call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLRELEASEPATH);
+    call.path = (ULONG_PTR)path;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_RtlReleasePath(struct qemu_syscall *call)
+{
+    struct qemu_RtlReleasePath *c = (struct qemu_RtlReleasePath *)call;
+    WINE_FIXME("Unverified!\n");
+    RtlReleasePath(QEMU_G2H(c->path));
+}
+
+#endif

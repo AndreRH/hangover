@@ -70,13 +70,16 @@ enum ntdll_calls
     CALL_ISWXDIGIT,
     CALL_ISXDIGIT,
     CALL_LDRACCESSRESOURCE,
+    CALL_LDRADDDLLDIRECTORY,
     CALL_LDRADDREFDLL,
     CALL_LDRDISABLETHREADCALLOUTSFORDLL,
     CALL_LDRENUMERATELOADEDMODULES,
     CALL_LDRFINDENTRYFORADDRESS,
     CALL_LDRFINDRESOURCE_U,
     CALL_LDRFINDRESOURCEDIRECTORY_U,
+    CALL_LDRGETDLLDIRECTORY,
     CALL_LDRGETDLLHANDLE,
+    CALL_LDRGETDLLPATH,
     CALL_LDRGETPROCEDUREADDRESS,
     CALL_LDRINITIALIZETHUNK,
     CALL_LDRLOADDLL,
@@ -85,7 +88,10 @@ enum ntdll_calls
     CALL_LDRQUERYIMAGEFILEEXECUTIONOPTIONS,
     CALL_LDRQUERYPROCESSMODULEINFORMATION,
     CALL_LDRREGISTERDLLNOTIFICATION,
+    CALL_LDRREMOVEDLLDIRECTORY,
     CALL_LDRRESOLVEDELAYLOADEDAPI,
+    CALL_LDRSETDEFAULTDLLDIRECTORIES,
+    CALL_LDRSETDLLDIRECTORY,
     CALL_LDRSHUTDOWNPROCESS,
     CALL_LDRSHUTDOWNTHREAD,
     CALL_LDRUNLOADDLL,
@@ -431,6 +437,7 @@ enum ntdll_calls
     CALL_RTLGETCURRENTPROCESSORNUMBEREX,
     CALL_RTLGETCURRENTTRANSACTION,
     CALL_RTLGETDACLSECURITYDESCRIPTOR,
+    CALL_RTLGETEXEPATH,
     CALL_RTLGETFULLPATHNAME_U,
     CALL_RTLGETGROUPSECURITYDESCRIPTOR,
     CALL_RTLGETLASTNTSTATUS,
@@ -443,6 +450,7 @@ enum ntdll_calls
     CALL_RTLGETPROCESSHEAPS,
     CALL_RTLGETPRODUCTINFO,
     CALL_RTLGETSACLSECURITYDESCRIPTOR,
+    CALL_RTLGETSEARCHPATH,
     CALL_RTLGETTHREADERRORMODE,
     CALL_RTLGETUNLOADEVENTTRACE,
     CALL_RTLGETUNLOADEVENTTRACEEX,
@@ -536,6 +544,7 @@ enum ntdll_calls
     CALL_RTLREALLOCATEHEAP,
     CALL_RTLREGISTERWAIT,
     CALL_RTLRELEASEACTIVATIONCONTEXT,
+    CALL_RTLRELEASEPATH,
     CALL_RTLRELEASEPEBLOCK,
     CALL_RTLRELEASERESOURCE,
     CALL_RTLRELEASESRWLOCKEXCLUSIVE,
@@ -566,6 +575,7 @@ enum ntdll_calls
     CALL_RTLSETLASTWIN32ERRORANDNTSTATUSFROMNTSTATUS,
     CALL_RTLSETOWNERSECURITYDESCRIPTOR,
     CALL_RTLSETSACLSECURITYDESCRIPTOR,
+    CALL_RTLSETSEARCHPATHMODE,
     CALL_RTLSETTHREADERRORMODE,
     CALL_RTLSETTIMEZONEINFORMATION,
     CALL_RTLSIZEHEAP,
@@ -782,13 +792,16 @@ void qemu_iswspace(struct qemu_syscall *call);
 void qemu_iswxdigit(struct qemu_syscall *call);
 void qemu_isxdigit(struct qemu_syscall *call);
 void qemu_LdrAccessResource(struct qemu_syscall *call);
+void qemu_LdrAddDllDirectory(struct qemu_syscall *call);
 void qemu_LdrAddRefDll(struct qemu_syscall *call);
 void qemu_LdrDisableThreadCalloutsForDll(struct qemu_syscall *call);
 void qemu_LdrEnumerateLoadedModules(struct qemu_syscall *call);
 void qemu_LdrFindEntryForAddress(struct qemu_syscall *call);
 void qemu_LdrFindResource_U(struct qemu_syscall *call);
 void qemu_LdrFindResourceDirectory_U(struct qemu_syscall *call);
+void qemu_LdrGetDllDirectory(struct qemu_syscall *call);
 void qemu_LdrGetDllHandle(struct qemu_syscall *call);
+void qemu_LdrGetDllPath(struct qemu_syscall *call);
 void qemu_LdrGetProcedureAddress(struct qemu_syscall *call);
 void qemu_LdrInitializeThunk(struct qemu_syscall *call);
 void qemu_LdrLoadDll(struct qemu_syscall *call);
@@ -797,7 +810,10 @@ void qemu_LdrProcessRelocationBlock(struct qemu_syscall *call);
 void qemu_LdrQueryImageFileExecutionOptions(struct qemu_syscall *call);
 void qemu_LdrQueryProcessModuleInformation(struct qemu_syscall *call);
 void qemu_LdrRegisterDllNotification(struct qemu_syscall *call);
+void qemu_LdrRemoveDllDirectory(struct qemu_syscall *call);
 void qemu_LdrResolveDelayLoadedAPI(struct qemu_syscall *call);
+void qemu_LdrSetDefaultDllDirectories(struct qemu_syscall *call);
+void qemu_LdrSetDllDirectory(struct qemu_syscall *call);
 void qemu_LdrShutdownProcess(struct qemu_syscall *call);
 void qemu_LdrShutdownThread(struct qemu_syscall *call);
 void qemu_LdrUnloadDll(struct qemu_syscall *call);
@@ -1139,6 +1155,7 @@ void qemu_RtlGetCurrentPeb(struct qemu_syscall *call);
 void qemu_RtlGetCurrentProcessorNumberEx(struct qemu_syscall *call);
 void qemu_RtlGetCurrentTransaction(struct qemu_syscall *call);
 void qemu_RtlGetDaclSecurityDescriptor(struct qemu_syscall *call);
+void qemu_RtlGetExePath(struct qemu_syscall *call);
 void qemu_RtlGetFullPathName_U(struct qemu_syscall *call);
 void qemu_RtlGetGroupSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlGetLastNtStatus(struct qemu_syscall *call);
@@ -1151,6 +1168,7 @@ void qemu_RtlGetOwnerSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlGetProcessHeaps(struct qemu_syscall *call);
 void qemu_RtlGetProductInfo(struct qemu_syscall *call);
 void qemu_RtlGetSaclSecurityDescriptor(struct qemu_syscall *call);
+void qemu_RtlGetSearchPath(struct qemu_syscall *call);
 void qemu_RtlGetThreadErrorMode(struct qemu_syscall *call);
 void qemu_RtlGetUnloadEventTrace(struct qemu_syscall *call);
 void qemu_RtlGetUnloadEventTraceEx(struct qemu_syscall *call);
@@ -1244,6 +1262,7 @@ void qemu_RtlRandom(struct qemu_syscall *call);
 void qemu_RtlReAllocateHeap(struct qemu_syscall *call);
 void qemu_RtlRegisterWait(struct qemu_syscall *call);
 void qemu_RtlReleaseActivationContext(struct qemu_syscall *call);
+void qemu_RtlReleasePath(struct qemu_syscall *call);
 void qemu_RtlReleasePebLock(struct qemu_syscall *call);
 void qemu_RtlReleaseResource(struct qemu_syscall *call);
 void qemu_RtlReleaseSRWLockExclusive(struct qemu_syscall *call);
@@ -1274,6 +1293,7 @@ void qemu_RtlSetLastWin32Error(struct qemu_syscall *call);
 void qemu_RtlSetLastWin32ErrorAndNtStatusFromNtStatus(struct qemu_syscall *call);
 void qemu_RtlSetOwnerSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlSetSaclSecurityDescriptor(struct qemu_syscall *call);
+void qemu_RtlSetSearchPathMode(struct qemu_syscall *call);
 void qemu_RtlSetThreadErrorMode(struct qemu_syscall *call);
 void qemu_RtlSetTimeZoneInformation(struct qemu_syscall *call);
 void qemu_RtlSizeHeap(struct qemu_syscall *call);
