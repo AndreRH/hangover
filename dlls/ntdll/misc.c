@@ -445,3 +445,65 @@ void qemu_EtwEventWrite(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_wine_server_call
+{
+    struct qemu_syscall super;
+    uint64_t req_ptr;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI unsigned int CDECL wine_server_call(void *req_ptr)
+{
+    struct qemu_wine_server_call call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_WINE_SERVER_CALL);
+    call.req_ptr = (ULONG_PTR)req_ptr;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_wine_server_call(struct qemu_syscall *call)
+{
+    struct qemu_wine_server_call *c = (struct qemu_wine_server_call *)call;
+    WINE_FIXME("Server call out of the VM? I am not playing any more!\n");
+    ExitProcess(1);
+}
+
+#endif
+
+struct qemu_qsort
+{
+    struct qemu_syscall super;
+    uint64_t base;
+    uint64_t nmemb;
+    uint64_t size;
+    uint64_t compar;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void __cdecl NTDLL_qsort(void *base, size_t nmemb, size_t size, int(__cdecl *compar)(const void *, const void *))
+{
+    struct qemu_qsort call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_QSORT);
+    call.base = (ULONG_PTR)base;
+    call.nmemb = nmemb;
+    call.size = size;
+    call.compar = (ULONG_PTR)compar;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_qsort(struct qemu_syscall *call)
+{
+    struct qemu_qsort *c = (struct qemu_qsort *)call;
+    WINE_FIXME("Stub!\n");
+}
+
+#endif

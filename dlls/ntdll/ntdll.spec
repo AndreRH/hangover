@@ -1437,11 +1437,11 @@
 @ cdecl -private memmove(ptr ptr long) NTDLL_memmove
 @ cdecl -private memset(ptr long long) NTDLL_memset
 # @ cdecl -private pow(double double) NTDLL_pow
-# @ cdecl -private qsort(ptr long long ptr) NTDLL_qsort
+@ cdecl -private qsort(ptr long long ptr) NTDLL_qsort
 # @ cdecl -private sin(double) NTDLL_sin
 @ varargs -private sprintf(ptr str) NTDLL_sprintf
 # @ cdecl -private sqrt(double) NTDLL_sqrt
-# @ varargs -private sscanf(str str) NTDLL_sscanf
+@ varargs -private sscanf(str str) NTDLL_sscanf
 @ cdecl -private strcat(str str) NTDLL_strcat
 @ cdecl -private strchr(str long) NTDLL_strchr
 @ cdecl -private strcmp(str str) NTDLL_strcmp
@@ -1489,3 +1489,12 @@
 @ cdecl -norelay __wine_dbg_header(long long str)
 @ cdecl -norelay __wine_dbg_output(str)
 @ cdecl -norelay __wine_dbg_strdup(str)
+
+##################
+# Wine extensions
+#
+# All functions must be prefixed with '__wine_' (for internal functions)
+# or 'wine_' (for user-visible functions) to avoid namespace conflicts.
+
+# Server interface
+@ cdecl -norelay wine_server_call(ptr)

@@ -1752,3 +1752,34 @@ void qemu__splitpath(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_sscanf
+{
+    struct qemu_syscall super;
+    uint64_t str;
+    uint64_t format;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int WINAPIV NTDLL_sscanf(const char *str, const char *format, ...)
+{
+    struct qemu_sscanf call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTDLL_SSCANF);
+    call.str = (ULONG_PTR)str;
+    call.format = (ULONG_PTR)format;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_NTDLL_sscanf(struct qemu_syscall *call)
+{
+    struct qemu_sscanf *c = (struct qemu_sscanf *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = 0;
+}
+
+#endif

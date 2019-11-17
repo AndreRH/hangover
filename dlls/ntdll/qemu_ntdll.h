@@ -154,6 +154,7 @@ enum ntdll_calls
     CALL_NTDLL__VSNPRINTF,
     CALL_NTDLL__VSNWPRINTF,
     CALL_NTDLL_SPRINTF,
+    CALL_NTDLL_SSCANF,
     CALL_NTDLL_SWPRINTF,
     CALL_NTDLL_VSPRINTF,
     CALL_NTDUPLICATEOBJECT,
@@ -311,6 +312,7 @@ enum ntdll_calls
     CALL_NTWRITEFILEGATHER,
     CALL_NTWRITEVIRTUALMEMORY,
     CALL_NTYIELDEXECUTION,
+    CALL_QSORT,
     CALL_RTLABSOLUTETOSELFRELATIVESD,
     CALL_RTLACQUIREPEBLOCK,
     CALL_RTLACQUIRERESOURCEEXCLUSIVE,
@@ -731,6 +733,7 @@ enum ntdll_calls
     CALL_WCSTOL,
     CALL_WCSTOMBS,
     CALL_WCSTOUL,
+    CALL_WINE_SERVER_CALL,
     CALL_WINSQMENDSESSION,
     CALL_WINSQMISOPTEDIN,
     CALL_WINSQMSTARTSESSION,
@@ -909,6 +912,7 @@ void qemu_NtDeviceIoControlFile(struct qemu_syscall *call);
 void qemu_NtDisplayString(struct qemu_syscall *call);
 void qemu_NTDLL__snwprintf(struct qemu_syscall *call);
 void qemu_NTDLL__vsnwprintf(struct qemu_syscall *call);
+void qemu_NTDLL_sscanf(struct qemu_syscall *call);
 void qemu_NTDLL_swprintf(struct qemu_syscall *call);
 void qemu_NtDuplicateObject(struct qemu_syscall *call);
 void qemu_NtDuplicateToken(struct qemu_syscall *call);
@@ -1065,6 +1069,7 @@ void qemu_NtWriteFile(struct qemu_syscall *call);
 void qemu_NtWriteFileGather(struct qemu_syscall *call);
 void qemu_NtWriteVirtualMemory(struct qemu_syscall *call);
 void qemu_NtYieldExecution(struct qemu_syscall *call);
+void qemu_qsort(struct qemu_syscall *call);
 void qemu_RtlAbsoluteToSelfRelativeSD(struct qemu_syscall *call);
 void qemu_RtlAcquirePebLock(struct qemu_syscall *call);
 void qemu_RtlAcquireResourceExclusive(struct qemu_syscall *call);
@@ -1485,6 +1490,7 @@ void qemu_wcstok(struct qemu_syscall *call);
 void qemu_wcstol(struct qemu_syscall *call);
 void qemu_wcstombs(struct qemu_syscall *call);
 void qemu_wcstoul(struct qemu_syscall *call);
+void qemu_wine_server_call(struct qemu_syscall *call);
 void qemu_WinSqmEndSession(struct qemu_syscall *call);
 void qemu_WinSqmIsOptedIn(struct qemu_syscall *call);
 void qemu_WinSqmStartSession(struct qemu_syscall *call);
