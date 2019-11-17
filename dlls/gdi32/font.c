@@ -3165,3 +3165,38 @@ void qemu_GdiRealizationInfo(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_GetCharWidthInfo
+{
+    struct qemu_syscall super;
+    uint64_t hdc;
+    uint64_t info;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+/* This struct is undocumented, but according to wine/dlls/gdi32/gdi_private.h consists only of INTs. */
+struct char_width_info;
+
+WINBASEAPI BOOL WINAPI GetCharWidthInfo(HDC hdc, struct char_width_info *info)
+{
+    struct qemu_GetCharWidthInfo call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_GETCHARWIDTHINFO);
+    call.hdc = (ULONG_PTR)hdc;
+    call.info = (ULONG_PTR)info;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+WINBASEAPI BOOL WINAPI GetCharWidthInfo(HDC hdc, void *info);
+void qemu_GetCharWidthInfo(struct qemu_syscall *call)
+{
+    struct qemu_GetCharWidthInfo *c = (struct qemu_GetCharWidthInfo *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = GetCharWidthInfo(QEMU_G2H(c->hdc), QEMU_G2H(c->info));
+}
+
+#endif

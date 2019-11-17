@@ -235,6 +235,7 @@ static const syscall_handler dll_functions[] =
     qemu_GetCharWidthFloatA,
     qemu_GetCharWidthFloatW,
     qemu_GetCharWidthI,
+    qemu_GetCharWidthInfo,
     qemu_GetClipBox,
     qemu_GetClipRgn,
     qemu_GetColorAdjustment,

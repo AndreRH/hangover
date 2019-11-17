@@ -158,6 +158,7 @@ enum gdi32_calls
     CALL_GETCHARWIDTHFLOATA,
     CALL_GETCHARWIDTHFLOATW,
     CALL_GETCHARWIDTHI,
+    CALL_GETCHARWIDTHINFO,
     CALL_GETCLIPBOX,
     CALL_GETCLIPRGN,
     CALL_GETCOLORADJUSTMENT,
@@ -531,6 +532,7 @@ void qemu_GetCharWidth32W(struct qemu_syscall *call);
 void qemu_GetCharWidthFloatA(struct qemu_syscall *call);
 void qemu_GetCharWidthFloatW(struct qemu_syscall *call);
 void qemu_GetCharWidthI(struct qemu_syscall *call);
+void qemu_GetCharWidthInfo(struct qemu_syscall *call);
 void qemu_GetClipBox(struct qemu_syscall *call);
 void qemu_GetClipRgn(struct qemu_syscall *call);
 void qemu_GetColorAdjustment(struct qemu_syscall *call);
