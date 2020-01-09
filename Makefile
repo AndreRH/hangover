@@ -70,11 +70,11 @@ libxslt/configure: libxslt/autogen.sh
 
 build/libxslt32/Makefile: libxslt/configure build/i686-w64-mingw32/bin/libxml2-2.dll
 	@mkdir -p $(@D)
-	cd $(@D) ; ../../libxslt/configure --host=i686-w64-mingw32 --enable-static=no --enable-shared=yes --without-python --without-plugins --without-crypto --prefix=$(abspath build/i686-w64-mingw32) PATH=$(abspath build/i686-w64-mingw32/bin):$(PATH) PKG_CONFIG_PATH=$(abspath build/i686-w64-mingw32/lib/pkgconfig)
+	cd $(@D) ; ../../libxslt/configure --host=i686-w64-mingw32 --enable-static=no --enable-shared=yes --without-python --without-plugins --without-crypto --prefix=$(abspath build/i686-w64-mingw32) PATH=$(abspath build/i686-w64-mingw32/bin):$(PATH) PKG_CONFIG_PATH=$(abspath build/i686-w64-mingw32/lib/pkgconfig) LDFLAGS="-L$(abspath build/i686-w64-mingw32/lib) -lxml2 -liconv"
 
 build/libxslt64/Makefile: libxslt/configure build/x86_64-w64-mingw32/bin/libxml2-2.dll
 	@mkdir -p $(@D)
-	cd $(@D) ; ../../libxslt/configure --host=x86_64-w64-mingw32 --enable-static=no --enable-shared=yes --without-python --without-plugins --without-crypto --prefix=$(abspath build/x86_64-w64-mingw32) PATH=$(abspath build/x86_64-w64-mingw32/bin):$(PATH) PKG_CONFIG_PATH=$(abspath build/x86_64-w64-mingw32/lib/pkgconfig)
+	cd $(@D) ; ../../libxslt/configure --host=x86_64-w64-mingw32 --enable-static=no --enable-shared=yes --without-python --without-plugins --without-crypto --prefix=$(abspath build/x86_64-w64-mingw32) PATH=$(abspath build/x86_64-w64-mingw32/bin):$(PATH) PKG_CONFIG_PATH=$(abspath build/x86_64-w64-mingw32/lib/pkgconfig) LDFLAGS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxml2 -liconv"
 
 build/i686-w64-mingw32/bin/libxslt-1.dll: build/libxslt32/Makefile
 	@mkdir -p $(@D)
