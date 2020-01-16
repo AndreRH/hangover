@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Checkout submodules
+      shell: bash
+      run: |
+        auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+        git submodule sync --recursive
+        git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+    - uses: Trass3r/setup-cpp@master
+    - name: build image
+      run: docker build -f Dockerfile.android -t hob .
+    - name: build
+      run: docker run --rm hob tar -C /root/hangover/build.android/wine-host/dlls/wineandroid.drv/ -cf - hangover-debug.apk | tar -xvf -
+    - uses: actions/upload-artifact@v1
+      with:
+        name: apk
+        path: hangover-debug.apk
