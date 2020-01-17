@@ -26,7 +26,7 @@ RUN	cd /opt/ && wget -q --output-document=android-ndk.zip https://dl.google.com/
 	echo STEP1 && \
 	mv android-ndk-r21 android-ndk-linux && \
 	echo STEP2 && \
-	cd /opt/android-ndk-linux && build/tools/make_standalone_toolchain.py --arch arm64 --api 21 --install-dir /opt/ndk && cd .. && rm -rf /opt/android-ndk-linux
+	cd /opt/android-ndk-linux && build/tools/make_standalone_toolchain.py --arch arm64 --api 24 --install-dir /opt/ndk && cd .. && rm -rf /opt/android-ndk-linux
 
 ENV NDK_SYSROOT /opt/ndk/sysroot
 ENV PATH /opt/ndk/bin:${PATH}
