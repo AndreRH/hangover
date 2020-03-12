@@ -52,4 +52,5 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 
 RUN mkdir -p /root/hangover ; mkdir -p /root/.gradle ; echo "org.gradle.jvmargs=-XX:MaxHeapSize=2048m -Xmx2048m" > /root/.gradle/gradle.properties
 COPY . /root/hangover/
+RUN sed -i "s/JOB_STATUS_PAUSED/JOB_STATUS_PAUSED_HACK/g" /root/hangover/wine/include/winspool.h
 RUN make -C /root/hangover -f Makefile.android
