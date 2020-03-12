@@ -118,7 +118,7 @@ build.android/i686-w64-mingw32/bin/libxslt-1.dll: build.android/libxslt/Makefile
 # Build the wine tools for crosscompilation
 build.android/wine-tools/Makefile: wine/configure build.android/aarch64-linux-android/lib/libfreetype.so
 	@mkdir -p $(@D)
-	cd $(@D) ; ../../wine/configure --enable-win64 --with-freetype --with-gettext --disable-tests --disable-win16 --without-alsa --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-dbus --without-fontconfig --without-gphoto --without-glu --without-gnutls --without-gsm --without-gstreamer --without-hal --without-jpeg --without-krb5 --without-ldap --without-mpg123 --without-netapi --without-openal --without-opencl --without-opengl --without-osmesa --without-oss --without-pcap --without-pulse --without-png --without-sane --without-tiff --without-v4l --without-x --without-xcomposite --without-xcursor --without-xinerama --without-xinput --without-xinput2 --without-xml --without-xrandr --without-xrender --without-xshape --without-xshm --without-xslt --without-xxf86vm --without-zlib
+	cd $(@D) ; ../../wine/configure --enable-win64 --with-freetype --with-gettext --disable-tests --disable-win16 --without-alsa --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-dbus --without-fontconfig --without-gphoto --without-glu --without-gnutls --without-gsm --without-gstreamer --without-hal --without-jpeg --without-krb5 --without-ldap --without-mpg123 --without-netapi --without-openal --without-opencl --without-opengl --without-osmesa --without-oss --without-pcap --without-pulse --without-png --without-sane --without-tiff --without-v4l2 --without-x --without-xcomposite --without-xcursor --without-xinerama --without-xinput --without-xinput2 --without-xml --without-xrandr --without-xrender --without-xshape --without-xshm --without-xslt --without-xxf86vm --without-zlib
 
 build.android/wine-tools/.built: build.android/wine-tools/Makefile
 	+$(MAKE) -C build.android/wine-tools tools tools/sfnt2fon tools/widl tools/winebuild tools/winegcc tools/wmc tools/wrc
@@ -341,7 +341,7 @@ build.android/wine-host/dlls/wineandroid.drv/hangover-debug.apk: build.android/w
 #configure: libdbus development files not found, no dynamic device support.
 #configure: lib(n)curses development files not found, curses won't be supported.
 #configure: libsane development files not found, scanners won't be supported.
-#configure: libv4l development files not found.
+#configure: libv4l2 development files not found.
 #configure: libgphoto2 development files not found, digital cameras won't be supported.
 #configure: libgphoto2_port development files not found, digital cameras won't be auto-detected.
 #configure: liblcms2 development files not found, Color Management won't be supported.
