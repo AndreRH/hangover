@@ -317,7 +317,7 @@ build.android/wine-host/dlls/wineandroid.drv/hangover-debug.apk: build.android/w
 	cp -lf $(abspath build.android/aarch64-linux-android/lib)/lib*.so build.android/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib/
 	+$(MAKE) -C build.android/wine-host install
 	@mkdir -p build.android/npp
-	cd build.android/npp ; rm -rf * ; wget https://notepad-plus-plus.org/repository/7.x/7.5.1/npp.7.5.1.bin.x64.7z ; 7z x npp.7.5.1.bin.x64.7z ; rm -f npp.7.5.1.bin.x64.7z
+	cd build.android/npp ; rm -rf * ; wget https://notepad-plus-plus.org/repository/7.x/7.5.6/npp.7.5.6.bin.x64.7z ; 7z x npp.7.5.6.bin.x64.7z ; rm -f npp.7.5.6.bin.x64.7z
 	rm -rf build.android/npp/themes/Bl* build.android/npp/themes/De* build.android/npp/themes/He* build.android/npp/themes/Mo* build.android/npp/themes/Pl* build.android/npp/themes/Ru* build.android/npp/themes/Vi* build.android/npp/themes/vi*
 	@mkdir -p build.android/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/x86
 	cp -rf build.android/npp build.android/wine-host/dlls/wineandroid.drv/assets/prefix/drive_c/x86/
