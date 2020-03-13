@@ -143,6 +143,7 @@ build.android/wine-guest/Makefile: build.android/wine-tools/.built wine/configur
 	cd $(@D) ; ../../wine/configure --host=x86_64-w64-mingw32 --with-wine-tools=../wine-tools --without-freetype --disable-tests
 
 wine-guest: build.android/wine-guest/Makefile
+	+$(MAKE) -C build.android/wine-guest/libs/port
 	+$(MAKE) -C build.android/wine-guest $(patsubst %,dlls/%,$(WINEDLLS))
 
 # Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
@@ -151,6 +152,7 @@ build.android/wine-guest32/Makefile: build.android/wine-tools/.built wine/config
 	cd $(@D) ; ../../wine/configure --host=i686-w64-mingw32 --with-wine-tools=../wine-tools --without-freetype --disable-tests --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build.android/i686-w64-mingw32/include/libxml2) -I$(abspath build.android/i686-w64-mingw32/include)" XML2_LIBS="-L$(abspath build.android/i686-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build.android/i686-w64-mingw32/include/libxml2) -I$(abspath build.android/i686-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build.android/i686-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
 
 wine-guest32: build.android/wine-guest32/Makefile
+	+$(MAKE) -C build.android/wine-guest32/libs/port
 	+$(MAKE) -C build.android/wine-guest32 $(patsubst %,dlls/%,$(WINEDLLS))
 
 # Build qemu
