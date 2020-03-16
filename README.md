@@ -49,7 +49,7 @@ The Android Makefile script is poorly tested though.
 To then extract the .apk file, run:
 
 ```bash
-$ docker run --rm hob tar -C /root/hangover/build.android/wine-host/dlls/wineandroid.drv/ -cf - hangover-debug.apk | tar -xvf -
+$ docker run --rm hob tar -C /root/hangover/build/wine-host/dlls/wineandroid.drv/ -cf - hangover-debug.apk | tar -xvf -
 ```
 
 #### 3.b) Linux / MacOS build:
