@@ -305,14 +305,8 @@ build/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll: wine-guest32 build/qem
 endef
 $(foreach mod,$(EXTDLLS),$(eval $(call EXTDLLS_RULE,$(mod))))
 
-# Link libwine
-build/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll: wine-guest32 build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	cp -lf build/wine-guest32/libs/wine/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll
-build/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll: wine-guest build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-	cp -lf build/wine-guest/libs/wine/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
-
 # Resetup the apk with qemu
-build/wine-host/dlls/wineandroid.drv/hangover-debug.apk: build/wine-host/.built build/qemu/x86_64-windows-user/qemu-x86_64.exe.so wine-guest wine-guest32 $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32) build/qemu/x86_64-windows-user/qemu_guest_dll32/libwine.dll build/qemu/x86_64-windows-user/qemu_guest_dll64/libwine.dll
+build/wine-host/dlls/wineandroid.drv/hangover-debug.apk: build/wine-host/.built build/qemu/x86_64-windows-user/qemu-x86_64.exe.so wine-guest wine-guest32 $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32)
 	mkdir -p build/wine-host/dlls/wineandroid.drv/lib/arm64-v8a
 	mkdir -p build/wine-host/dlls/wineandroid.drv/assets/arm64-v8a/lib
 	cp -lf $(abspath build/aarch64-linux-android/lib)/lib*.so build/wine-host/dlls/wineandroid.drv/lib/arm64-v8a/
