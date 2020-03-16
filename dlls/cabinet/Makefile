@@ -12,7 +12,7 @@ cabinet.dll: cabinet.spec fci_g.o fdi_g.o main_g.o
 	$(WINEGCC) --wine-objdir $(DESTDIR)/build/$(WINE_DIR) -shared -b $(GUEST_CC) $(SRCDIR)/cabinet.spec *_g.o -o cabinet.dll
 
 qemu_cabinet.dll.so: fci_h.o fdi_h.o main_h.o qemu_cabinet.spec
-	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_cabinet.spec *_h.o -o qemu_cabinet.dll.so -lcabinet -lpthread
+	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_cabinet.spec *_h.o -o qemu_cabinet.dll.so -lcabinet $(EXTRALIBS)
 
 %_g.o: %.c qemu_cabinet.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../../wine/include/wine -Wno-format

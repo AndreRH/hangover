@@ -171,6 +171,7 @@ build/dlls64/%/Makefile:
 	echo "GUEST_BIT=64" >> $@
 	echo "HOST_BIT=64" >> $@
 	echo "WINE_DIR=wine-guest" >> $@
+	echo "EXTRALIBS=-lpthread" >> $@
 	echo >> $@
 	echo "include ../../../dlls/$(DLL)/Makefile" >> $@
 
@@ -184,6 +185,7 @@ build/dlls32/%/Makefile:
 	echo "GUEST_BIT=32" >> $@
 	echo "HOST_BIT=64" >> $@
 	echo "WINE_DIR=wine-guest32" >> $@
+	echo "EXTRALIBS=-lpthread" >> $@
 	echo >> $@
 	echo "include ../../../dlls/$(DLL)/Makefile" >> $@
 
