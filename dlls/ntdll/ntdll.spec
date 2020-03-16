@@ -329,7 +329,7 @@
 @ stdcall NtSecureConnectPort(ptr ptr ptr ptr ptr ptr ptr ptr ptr)
 # @ stub NtSetBootEntryOrder
 # @ stub NtSetBootOptions
-@ stdcall NtSetContextThread(long ptr)
+@ stdcall -arch=i386 NtSetContextThread(long ptr)
 @ stub NtSetDebugFilterState
 @ stub NtSetDefaultHardErrorPort
 @ stdcall NtSetDefaultLocale(long long)
@@ -1271,7 +1271,7 @@
 @ stdcall -private ZwSecureConnectPort(ptr ptr ptr ptr ptr ptr ptr ptr ptr) NtSecureConnectPort
 # @ stub ZwSetBootEntryOrder
 # @ stub ZwSetBootOptions
-@ stdcall -private ZwSetContextThread(long ptr) NtSetContextThread
+@ stdcall -private -arch=i386 ZwSetContextThread(long ptr) NtSetContextThread
 @ stub ZwSetDebugFilterState
 @ stub ZwSetDefaultHardErrorPort
 # @ stdcall -private ZwSetDefaultLocale(long long) NtSetDefaultLocale
