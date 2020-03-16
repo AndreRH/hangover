@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:19.04
 
 ENV ANDROID_HOME /opt/android-sdk-linux
 ENV PATH ${PATH}:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${PATH}:${ANDROID_HOME}/tools
@@ -51,5 +51,6 @@ RUN	apt-get update && apt-get install -y --no-install-recommends \
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 
 RUN mkdir -p /root/hangover ; mkdir -p /root/.gradle ; echo "org.gradle.jvmargs=-XX:MaxHeapSize=2048m -Xmx2048m" > /root/.gradle/gradle.properties
+RUN ln -s /lib/x86_64-linux-gnu/libtinfo.so.6 /lib/x86_64-linux-gnu/libtinfo.so.5
 COPY . /root/hangover/
 RUN make -C /root/hangover -f Makefile.android
