@@ -6,6 +6,7 @@ ENV PATH ${PATH}:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${PATH
 RUN apt-get update && apt-get install -y --no-install-recommends \
 	unzip wget python \
 	openjdk-8-jdk \
+&&	apt clean \
 &&	rm -rf /var/lib/apt/lists/*
 
 RUN	mkdir -p /opt/android-sdk-linux && mkdir -p ~/.android && touch ~/.android/repositories.cfg && \
@@ -44,6 +45,7 @@ RUN	apt-get update && apt-get install -y --no-install-recommends \
 	automake1.11 autoconf2.13 autoconf2.64 \
 	gtk-doc-tools git gperf groff p7zip-full \
 	gettext \
+&&	apt clean \
 &&	rm -rf /var/lib/apt/lists/* \
 &&	ln -s /usr/bin/autoconf /usr/bin/autoconf-2.69 \
 &&	ln -s /usr/bin/autoheader /usr/bin/autoheader-2.69
