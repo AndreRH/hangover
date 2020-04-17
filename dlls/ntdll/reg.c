@@ -1035,7 +1035,11 @@ struct qemu_NtQueryMultipleValueKey
 
 #ifdef QEMU_DLL_GUEST
 
+#if __MINGW64_VERSION_MAJOR < 7
 WINBASEAPI NTSTATUS WINAPI NtQueryMultipleValueKey(HANDLE KeyHandle, PKEY_MULTIPLE_VALUE_INFORMATION ListOfValuesToQuery, ULONG NumberOfItems, PVOID MultipleValueInformation, ULONG Length, PULONG ReturnLength)
+#else
+WINBASEAPI NTSTATUS NTAPI NtQueryMultipleValueKey(HANDLE KeyHandle, PKEY_VALUE_ENTRY ListOfValuesToQuery, ULONG NumberOfItems, PVOID MultipleValueInformation, PULONG Length, PULONG ReturnLength)
+#endif
 {
     struct qemu_NtQueryMultipleValueKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYMULTIPLEVALUEKEY);
@@ -1173,7 +1177,11 @@ struct qemu_NtSetInformationKey
 
 #ifdef QEMU_DLL_GUEST
 
+#if __MINGW64_VERSION_MAJOR < 7
 WINBASEAPI NTSTATUS WINAPI NtSetInformationKey(HANDLE KeyHandle, const int KeyInformationClass, PVOID KeyInformation, ULONG KeyInformationLength)
+#else
+WINBASEAPI NTSTATUS NTAPI NtSetInformationKey(HANDLE KeyHandle, KEY_SET_INFORMATION_CLASS KeyInformationClass, PVOID KeyInformation, ULONG KeyInformationLength)
+#endif
 {
     struct qemu_NtSetInformationKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSETINFORMATIONKEY);
