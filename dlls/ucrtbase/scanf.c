@@ -1,0 +1,1 @@
+../msvcrt/scanf.c

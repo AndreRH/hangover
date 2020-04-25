@@ -33,5 +33,6 @@
 #define DLL_D3D11           0x1eLL
 #define DLL_MMDEVAPI        0x1fLL
 #define DLL_WINDOWSCODECS   0x20LL
+#define DLL_UCRTBASE        0x21LL
 
 #endif

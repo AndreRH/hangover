@@ -141,6 +141,7 @@ build/dlls32/msvcrt/msvcrt.dll: build/dlls32/kernel32/kernel32.dll build/dlls32/
 build/dlls32/riched20/riched20.dll: build/dlls32/user32/user32.dll
 build/dlls32/riched32/riched32.dll: build/dlls32/riched20/riched20.dll
 build/dlls32/shcore/shcore.dll: build/dlls32/user32/user32.dll build/dlls32/gdi32/gdi32.dll
+build/dlls32/ucrtbase/ucrtbase.dll: build/dlls32/kernel32/kernel32.dll build/dlls32/ntdll/ntdll.dll
 build/dlls32/user32/user32.dll: build/dlls32/ntdll/ntdll.dll
 build/dlls32/winmm/winmm.dll: build/dlls32/user32/user32.dll
 
@@ -159,6 +160,7 @@ build/dlls64/msvcrt/msvcrt.dll: build/dlls64/kernel32/kernel32.dll build/dlls64/
 build/dlls64/riched20/riched20.dll: build/dlls64/user32/user32.dll
 build/dlls64/riched32/riched32.dll: build/dlls64/riched20/riched20.dll
 build/dlls64/shcore/shcore.dll: build/dlls64/user32/user32.dll build/dlls64/gdi32/gdi32.dll
+build/dlls64/ucrtbase/ucrtbase.dll: build/dlls64/kernel32/kernel32.dll build/dlls64/ntdll/ntdll.dll
 build/dlls64/user32/user32.dll: build/dlls64/ntdll/ntdll.dll
 build/dlls64/winmm/winmm.dll: build/dlls64/user32/user32.dll
 

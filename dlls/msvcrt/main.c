@@ -134,6 +134,8 @@ static void qemu_init_dll(struct qemu_syscall *call)
             dll_name = "msvcr100.dll";
         else if (QEMU_CURRENT_DLL == DLL_MSVCR80)
             dll_name = "msvcr80.dll";
+        else if (QEMU_CURRENT_DLL == DLL_UCRTBASE)
+            dll_name = "ucrtbase.dll";
         else
             dll_name = "msvcrt.dll";
 
@@ -2345,6 +2347,8 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         dll_name = "msvcr100.dll";
     else if (QEMU_CURRENT_DLL == DLL_MSVCR80)
         dll_name = "msvcr80.dll";
+    else if (QEMU_CURRENT_DLL == DLL_UCRTBASE)
+        dll_name = "ucrtbase.dll";
     else
         dll_name = "msvcrt.dll";
 
