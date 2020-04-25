@@ -570,6 +570,7 @@
 @ cdecl ___lc_handle_func()
 @ cdecl ___mb_cur_max_func() MSVCRT____mb_cur_max_func
 @ cdecl ___mb_cur_max_l_func(ptr)
+@ cdecl __acrt_iob_func(long) MSVCRT___acrt_iob_func
 @ cdecl ___setlc_active_func() MSVCRT____setlc_active_func
 @ cdecl ___unguarded_readlc_active_add_func() MSVCRT____unguarded_readlc_active_add_func
 @ extern -arch=i386 __argc MSVCRT___argc
@@ -733,6 +734,8 @@
 @ cdecl _commit(long) MSVCRT__commit
 @ extern _commode MSVCRT__commode
 @ cdecl _configthreadlocale(long)
+@ cdecl _configure_narrow_argv(long)
+@ cdecl _configure_wide_argv(long)
 @ cdecl _control87(long long)
 @ cdecl _controlfp(long long)
 @ cdecl _controlfp_s(ptr long long)
@@ -881,6 +884,8 @@
 @ cdecl _get_errno(ptr)
 @ cdecl _get_fmode(ptr) MSVCRT__get_fmode
 @ cdecl _get_heap_handle()
+@ cdecl _get_initial_narrow_environment()
+@ cdecl _get_initial_wide_environment()
 @ cdecl _get_invalid_parameter_handler() MSVCRT__get_invalid_parameter_handler
 @ cdecl _get_osfhandle(long) MSVCRT__get_osfhandle
 #@ cdecl _get_output_format() MSVCRT__get_output_format
@@ -934,6 +939,7 @@
 @ cdecl _i64toa_s(int64 ptr long long) MSVCRT__i64toa_s
 @ cdecl _i64tow(int64 ptr long) ntdll._i64tow
 @ cdecl _i64tow_s(int64 ptr long long) MSVCRT__i64tow_s
+@ cdecl _initialize_narrow_environment()
 @ stub _initptd
 @ cdecl _initterm(ptr ptr)
 @ cdecl _initterm_e(ptr ptr)
@@ -1277,6 +1283,7 @@
 #@ stdcall -arch=i386 _seh_longjmp_unwind(ptr)
 @ cdecl _set_SSE2_enable(long) MSVCRT__set_SSE2_enable
 #@ cdecl _set_abort_behavior(long long) MSVCRT__set_abort_behavior
+@ cdecl _set_app_type(long) MSVCRT___set_app_type
 @ cdecl _set_controlfp(long long)
 @ cdecl _set_doserrno(long) MSVCRT__set_doserrno
 @ cdecl _set_errno(long)
