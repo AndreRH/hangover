@@ -191,6 +191,7 @@
 @ stdcall -norelay NtGetContextThread(long ptr)
 @ stdcall NtGetCurrentProcessorNumber()
 # @ stub NtGetDevicePowerState
+@ stdcall NtGetNlsSectionPtr(long long long ptr ptr)
 @ stub NtGetPlugPlayEvent
 @ stdcall NtGetTickCount()
 @ stdcall NtGetWriteWatch(long long ptr long ptr ptr ptr)
@@ -526,7 +527,7 @@
 @ stub RtlCreateUserSecurityObject
 @ stdcall RtlCreateUserStack(long long long long long ptr)
 @ stdcall RtlCreateUserThread(long ptr long ptr long long ptr ptr ptr ptr)
-@ stub RtlCustomCPToUnicodeN
+@ stdcall RtlCustomCPToUnicodeN(ptr ptr long ptr str long)
 @ stub RtlCutoverTimeToSystemTime
 @ stdcall RtlDeNormalizeProcessParams(ptr)
 @ stdcall RtlDeactivateActivationContext(long long)
@@ -689,6 +690,9 @@
 @ stub RtlGuidToPropertySetName
 @ stdcall RtlHashUnicodeString(ptr long long ptr)
 @ stdcall RtlIdentifierAuthoritySid(ptr)
+@ stdcall RtlIdnToAscii(long wstr long ptr ptr)
+@ stdcall RtlIdnToNameprepUnicode(long wstr long ptr ptr)
+@ stdcall RtlIdnToUnicode(long wstr long ptr ptr)
 @ stdcall RtlImageDirectoryEntryToData(long long long ptr) ntdll_RtlImageDirectoryEntryToData
 @ stdcall RtlImageNtHeader(long) ntdll_RtlImageNtHeader
 @ stdcall RtlImageRvaToSection(ptr long long) ntdll_RtlImageRvaToSection
@@ -696,9 +700,9 @@
 @ stdcall RtlImpersonateSelf(long)
 @ stdcall RtlInitAnsiString(ptr str)
 @ stdcall RtlInitAnsiStringEx(ptr str)
-@ stub RtlInitCodePageTable
+@ stdcall RtlInitCodePageTable(ptr ptr)
 # @ stub RtlInitMemoryStream
-@ stub RtlInitNlsTables
+@ stdcall RtlInitNlsTables(ptr ptr ptr ptr)
 # @ stub RtlInitOutOfProcessMemoryStream
 @ stdcall RtlInitString(ptr str)
 @ stdcall RtlInitUnicodeString(ptr wstr)
@@ -756,6 +760,7 @@
 @ stub RtlIsGenericTableEmpty
 # @ stub RtlIsGenericTableEmptyAvl
 @ stdcall RtlIsNameLegalDOS8Dot3(ptr ptr ptr)
+@ stdcall RtlIsNormalizedString(long wstr long ptr)
 @ stdcall RtlIsProcessorFeaturePresent(long)
 # @ stub RtlIsRangeAvailable
 @ stdcall RtlIsTextUnicode(ptr long ptr)
@@ -775,6 +780,7 @@
 @ stdcall RtlLengthSecurityDescriptor(ptr)
 @ stdcall RtlLengthSid(ptr)
 @ stdcall RtlLocalTimeToSystemTime(ptr ptr)
+@ stdcall RtlLocaleNameToLcid(wstr ptr long)
 # @ stub RtlLockBootStatusData
 @ stdcall RtlLockHeap(long)
 # @ stub RtlLockMemoryStreamRegion
@@ -797,6 +803,7 @@
 # @ stub RtlNewSecurityObjectEx
 # @ stub RtlNewSecurityObjectWithMultipleInheritance
 @ stdcall RtlNormalizeProcessParams(ptr)
+@ stdcall RtlNormalizeString(long wstr long ptr ptr)
 # @ stub RtlNtPathNameToDosPathName
 @ stdcall RtlNtStatusToDosError(long)
 @ stdcall RtlNtStatusToDosErrorNoTeb(long)
@@ -863,7 +870,7 @@
 @ stub RtlRemoteCall
 @ stdcall RtlRemoveVectoredContinueHandler(ptr)
 @ stdcall RtlRemoveVectoredExceptionHandler(ptr)
-@ stub RtlResetRtlTranslations
+@ stdcall RtlResetRtlTranslations(ptr)
 # @ stdcall -arch=x86_64 RtlRestoreContext(ptr ptr)
 @ stdcall RtlRestoreLastWin32Error(long) RtlSetLastWin32Error
 @ stub RtlRevertMemoryStream
@@ -942,6 +949,7 @@
 @ stdcall RtlTryAcquireSRWLockExclusive(ptr)
 @ stdcall RtlTryAcquireSRWLockShared(ptr)
 @ stdcall RtlTryEnterCriticalSection(ptr)
+@ stdcall RtlUTF8ToUnicodeN(ptr long ptr ptr long)
 # @ cdecl -i386 -norelay RtlUlongByteSwap() NTDLL_RtlUlongByteSwap
 @ cdecl -ret64 RtlUlonglongByteSwap(int64)
 # @ stub RtlUnhandledExceptionFilter2
@@ -952,10 +960,11 @@
 @ stdcall RtlUnicodeStringToInteger(ptr long ptr)
 @ stdcall RtlUnicodeStringToOemSize(ptr)
 @ stdcall RtlUnicodeStringToOemString(ptr ptr long)
-@ stub RtlUnicodeToCustomCPN
+@ stdcall RtlUnicodeToCustomCPN(ptr ptr long ptr wstr long)
 @ stdcall RtlUnicodeToMultiByteN(ptr long ptr ptr long)
 @ stdcall RtlUnicodeToMultiByteSize(ptr ptr long)
 @ stdcall RtlUnicodeToOemN(ptr long ptr ptr long)
+@ stdcall RtlUnicodeToUTF8N(ptr long ptr ptr long)
 @ stdcall RtlUniform(ptr)
 # @ stub RtlUnlockBootStatusData
 @ stdcall RtlUnlockHeap(long)
@@ -967,7 +976,7 @@
 @ stdcall RtlUpcaseUnicodeStringToAnsiString(ptr ptr long)
 @ stdcall RtlUpcaseUnicodeStringToCountedOemString(ptr ptr long)
 @ stdcall RtlUpcaseUnicodeStringToOemString(ptr ptr long)
-@ stub RtlUpcaseUnicodeToCustomCPN
+@ stdcall RtlUpcaseUnicodeToCustomCPN(ptr ptr long ptr wstr long)
 @ stdcall RtlUpcaseUnicodeToMultiByteN(ptr long ptr ptr long)
 @ stdcall RtlUpcaseUnicodeToOemN(ptr long ptr ptr long)
 @ stdcall RtlUpdateTimer(ptr ptr long long)
