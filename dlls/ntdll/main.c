@@ -1180,7 +1180,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         WINE_ERR("Could not find \"wcstoul\" in ntdll\n");
 
     /* Hack: Call the host msvcrt functions, the ntdll ones seem broken. */
-    msvcrt = GetModuleHandleA("msvcrt.dll");
+    msvcrt = LoadLibraryA("msvcrt.dll");
     if (!msvcrt)
         WINE_ERR("hmm, msvcrt not loaded\n");
 
