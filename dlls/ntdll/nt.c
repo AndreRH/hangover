@@ -1248,8 +1248,9 @@ WINBASEAPI NTSTATUS WINAPI NtSetLdtEntries(ULONG selector1, ULONG entry1_low, UL
 void qemu_NtSetLdtEntries(struct qemu_syscall *call)
 {
     struct qemu_NtSetLdtEntries *c = (struct qemu_NtSetLdtEntries *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtSetLdtEntries(c->selector1, c->entry1_low, c->entry1_high, c->selector2, c->entry2_low, c->entry2_high);
+    WINE_FIXME("Stub!\n");
+    /* FIXME: The signature changed in wine, I guess low and high should be merged into ULONGLONGs. */
+    c->super.iret = STATUS_NOT_IMPLEMENTED;//NtSetLdtEntries(c->selector1, c->entry1_low, c->entry1_high, c->selector2, c->entry2_low, c->entry2_high);
 }
 
 #endif
