@@ -1450,6 +1450,21 @@ struct qemu_NtSetContextThread
 
 #ifdef QEMU_DLL_GUEST
 
+NTSTATUS WINAPI NtSetContextThread( HANDLE handle, const CONTEXT *context )
+{
+    struct qemu_NtSetContextThread call;
+    /* We can't set debug registers ourselves, and we can't set a context on a different thread from here.
+     * We need help from qemu in both cases. x86 Wine uses wineserver for this. */
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTSETCONTEXTTHREAD);
+    call.handle = guest_HANDLE_g2h(handle);
+    call.context = (ULONG_PTR)context;
+
+    /* This won't return on the current thread, but it does return if it's a different context. */
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
 #ifdef _WIN64
 static DWORD call_handler( EXCEPTION_RECORD *rec, CONTEXT *context, DISPATCHER_CONTEXT *dispatch )
 {
@@ -1661,21 +1676,6 @@ done:
 }
 
 #else
-
-NTSTATUS WINAPI NtSetContextThread( HANDLE handle, const CONTEXT *context )
-{
-    struct qemu_NtSetContextThread call;
-    /* We can't set debug registers ourselves, and we can't set a context on a different thread from here.
-     * We need help from qemu in both cases. x86 Wine uses wineserver for this. */
-    call.super.id = QEMU_SYSCALL_ID(CALL_NTSETCONTEXTTHREAD);
-    call.handle = guest_HANDLE_g2h(handle);
-    call.context = (ULONG_PTR)context;
-
-    /* This won't return on the current thread, but it does return if it's a different context. */
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
 
 static int raise_handler( EXCEPTION_RECORD *rec, void *shutup,
                             CONTEXT *context, void *compiler )
