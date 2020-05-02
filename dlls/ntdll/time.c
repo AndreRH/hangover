@@ -61,7 +61,7 @@ WINBASEAPI VOID WINAPI RtlTimeToTimeFields(const LARGE_INTEGER *liTime, PTIME_FI
 void qemu_RtlTimeToTimeFields(struct qemu_syscall *call)
 {
     struct qemu_RtlTimeToTimeFields *c = (struct qemu_RtlTimeToTimeFields *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlTimeToTimeFields(QEMU_G2H(c->liTime), QEMU_G2H(c->TimeFields));
 }
 
