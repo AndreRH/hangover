@@ -65,7 +65,9 @@ WINBASEAPI NTSTATUS WINAPI NtQueryDefaultLocale(BOOLEAN user, LCID *lcid)
 void qemu_NtQueryDefaultLocale(struct qemu_syscall *call)
 {
     struct qemu_NtQueryDefaultLocale *c = (struct qemu_NtQueryDefaultLocale *)call;
-    WINE_FIXME("Unverified!\n");
+    
+    /* A plain DWORD is hiding behind LCID. */
+    WINE_TRACE("\n");
     c->super.iret = NtQueryDefaultLocale(c->user, QEMU_G2H(c->lcid));
 }
 
