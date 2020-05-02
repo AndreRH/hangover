@@ -95,9 +95,10 @@ WINBASEAPI NTSTATUS WINAPI LdrFindResource_U(HMODULE hmod, const LDR_RESOURCE_IN
     call.hmod = (ULONG_PTR)hmod;
     call.info = (ULONG_PTR)info;
     call.level = level;
-    call.entry = (ULONG_PTR)entry;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == STATUS_SUCCESS)
+        *entry = (void *)(ULONG_PTR)call.entry;
 
     return call.super.iret;
 }
@@ -107,8 +108,23 @@ WINBASEAPI NTSTATUS WINAPI LdrFindResource_U(HMODULE hmod, const LDR_RESOURCE_IN
 void qemu_LdrFindResource_U(struct qemu_syscall *call)
 {
     struct qemu_LdrFindResource_U *c = (struct qemu_LdrFindResource_U *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LdrFindResource_U(QEMU_G2H(c->hmod), QEMU_G2H(c->info), c->level, QEMU_G2H(c->entry));
+    LDR_RESOURCE_INFO stack, *info = &stack;
+    const IMAGE_RESOURCE_DATA_ENTRY *entry;
+    
+    /* I think it's OK to forward this, but make it slightly visible for debugging... */
+    WINE_WARN("Do I need to handle this in qemu/pe.c?\n");
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->info);
+#else
+    if (c->info)
+        LDR_RESOURCE_INFO_g2h(info, QEMU_G2H(c->info));
+    else
+        info = NULL;
+#endif
+
+    c->super.iret = LdrFindResource_U(QEMU_G2H(c->hmod), info, c->level, &entry);
+
+    c->entry = QEMU_H2G(entry);
 }
 
 #endif
@@ -131,10 +147,11 @@ WINBASEAPI NTSTATUS WINAPI LdrAccessResource(HMODULE hmod, const IMAGE_RESOURCE_
     call.super.id = QEMU_SYSCALL_ID(CALL_LDRACCESSRESOURCE);
     call.hmod = (ULONG_PTR)hmod;
     call.entry = (ULONG_PTR)entry;
-    call.ptr = (ULONG_PTR)ptr;
     call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
+    if (ptr && call.super.iret == STATUS_SUCCESS)
+        *ptr = (void *)(ULONG_PTR)call.ptr;
 
     return call.super.iret;
 }
@@ -144,8 +161,12 @@ WINBASEAPI NTSTATUS WINAPI LdrAccessResource(HMODULE hmod, const IMAGE_RESOURCE_
 void qemu_LdrAccessResource(struct qemu_syscall *call)
 {
     struct qemu_LdrAccessResource *c = (struct qemu_LdrAccessResource *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LdrAccessResource(QEMU_G2H(c->hmod), QEMU_G2H(c->entry), QEMU_G2H(c->ptr), QEMU_G2H(c->size));
+    void *ptr;
+
+    /* IMAGE_RESOURCE_DATA_ENTRY has the same layout in 32 and 64 bit. */
+    WINE_TRACE("\n");
+    c->super.iret = LdrAccessResource(QEMU_G2H(c->hmod), QEMU_G2H(c->entry), &ptr, QEMU_G2H(c->size));
+    c->ptr = QEMU_H2G(ptr);
 }
 
 #endif

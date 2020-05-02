@@ -137,4 +137,27 @@ struct qemu_RTL_RWLOCK
     qemu_ptr    pDebugInfo;
 };
 
+struct qemu_LDR_RESOURCE_INFO
+{
+    qemu_ptr Type;
+    qemu_ptr Name;
+    ULONG Language;
+};
+
+#ifndef QEMU_DLL_GUEST
+static inline void LDR_RESOURCE_INFO_g2h(LDR_RESOURCE_INFO *host, const struct qemu_LDR_RESOURCE_INFO *guest)
+{
+    host->Type = guest->Type;
+    host->Name = guest->Name;
+    host->Language = guest->Language;
+}
+
+static inline void LDR_RESOURCE_INFO_h2g(struct qemu_LDR_RESOURCE_INFO *guest, const LDR_RESOURCE_INFO *host)
+{
+    guest->Type = host->Type;
+    guest->Name = host->Name;
+    guest->Language = host->Language;
+}
+#endif
+
 #endif
