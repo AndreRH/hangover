@@ -266,7 +266,7 @@ WINBASEAPI NTSTATUS WINAPI NtClose(HANDLE Handle)
 {
     struct qemu_NtClose call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCLOSE);
-    call.Handle = (ULONG_PTR)Handle;
+    call.Handle = guest_HANDLE_g2h(Handle);
 
     qemu_syscall(&call.super);
 
@@ -278,7 +278,7 @@ WINBASEAPI NTSTATUS WINAPI NtClose(HANDLE Handle)
 void qemu_NtClose(struct qemu_syscall *call)
 {
     struct qemu_NtClose *c = (struct qemu_NtClose *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NtClose(QEMU_G2H(c->Handle));
 }
 
