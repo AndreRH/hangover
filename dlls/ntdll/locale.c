@@ -212,10 +212,11 @@ WINBASEAPI NTSTATUS WINAPI NtGetNlsSectionPtr(ULONG type, ULONG id, void *unknow
     call.type = type;
     call.id = id;
     call.unknown = (ULONG_PTR)unknown;
-    call.ptr = (ULONG_PTR)ptr;
-    call.size = (ULONG_PTR)size;
 
     qemu_syscall(&call.super);
+    *ptr = (void *)(ULONG_PTR)call.ptr;
+    if (!call.super.iret)
+        *size = call.size;
 
     return call.super.iret;
 }
@@ -225,8 +226,16 @@ WINBASEAPI NTSTATUS WINAPI NtGetNlsSectionPtr(ULONG type, ULONG id, void *unknow
 void qemu_NtGetNlsSectionPtr(struct qemu_syscall *call)
 {
     struct qemu_NtGetNlsSectionPtr *c = (struct qemu_NtGetNlsSectionPtr *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtGetNlsSectionPtr(c->type, c->id, QEMU_G2H(c->unknown), QEMU_G2H(c->ptr), QEMU_G2H(c->size));
+    void *ptr;
+    SIZE_T size;
+
+    WINE_TRACE("\n");
+    if (c->unknown)
+        WINE_FIXME("Not sure how to handle void *unknown\n");
+
+    c->super.iret = NtGetNlsSectionPtr(c->type, c->id, QEMU_G2H(c->unknown), &ptr, &size);
+    c->ptr = QEMU_H2G(ptr);
+    c->size = size;
 }
 
 #endif
