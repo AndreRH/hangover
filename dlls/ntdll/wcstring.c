@@ -58,7 +58,7 @@ WINBASEAPI INT CDECL NTDLL__wcsicmp(LPCWSTR str1, LPCWSTR str2)
 void qemu__wcsicmp(struct qemu_syscall *call)
 {
     struct qemu__wcsicmp *c = (struct qemu__wcsicmp *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__wcsicmp(QEMU_G2H(c->str1), QEMU_G2H(c->str2));
 }
 
@@ -340,7 +340,7 @@ WINBASEAPI LPWSTR CDECL NTDLL_wcscpy(LPWSTR dst, LPCWSTR src)
 void qemu_wcscpy(struct qemu_syscall *call)
 {
     struct qemu_wcscpy *c = (struct qemu_wcscpy *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)p_wcscpy(QEMU_G2H(c->dst), QEMU_G2H(c->src));
 }
 
@@ -808,7 +808,7 @@ WINBASEAPI ULONG CDECL NTDLL_wcstoul(LPCWSTR s, LPWSTR *end, INT base)
 void qemu_wcstoul(struct qemu_syscall *call)
 {
     struct qemu_wcstoul *c = (struct qemu_wcstoul *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_wcstoul(QEMU_G2H(c->s), QEMU_G2H(c->end), c->base);
 }
 

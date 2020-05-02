@@ -455,7 +455,7 @@ WINBASEAPI int CDECL NTDLL_strncmp(const char *str1, const char *str2, size_t le
 void qemu_strncmp(struct qemu_syscall *call)
 {
     struct qemu_strncmp *c = (struct qemu_strncmp *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_strncmp(QEMU_G2H(c->str1), QEMU_G2H(c->str2), c->len);
 }
 
