@@ -757,7 +757,8 @@ struct qemu_NtQueryValueKey
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtQueryValueKey(HANDLE handle, const UNICODE_STRING *name, KEY_VALUE_INFORMATION_CLASS info_class, void *info, DWORD length, DWORD *result_len)
+WINBASEAPI NTSTATUS WINAPI NtQueryValueKey(HANDLE handle, const UNICODE_STRING *name,
+        KEY_VALUE_INFORMATION_CLASS info_class, void *info, DWORD length, DWORD *result_len)
 {
     struct qemu_NtQueryValueKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYVALUEKEY);
@@ -778,8 +779,21 @@ WINBASEAPI NTSTATUS WINAPI NtQueryValueKey(HANDLE handle, const UNICODE_STRING *
 void qemu_NtQueryValueKey(struct qemu_syscall *call)
 {
     struct qemu_NtQueryValueKey *c = (struct qemu_NtQueryValueKey *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtQueryValueKey(QEMU_G2H(c->handle), QEMU_G2H(c->name), c->info_class, QEMU_G2H(c->info), c->length, QEMU_G2H(c->result_len));
+    UNICODE_STRING stack, *name = &stack;
+    
+    /* All 3 info classes implemented in Wine have the same layout on 32 and 64 bit. */
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    name = QEMU_G2H(c->name);
+#else
+    if (QEMU_G2H(c->name))
+        UNICODE_STRING_g2h(name, QEMU_G2H(c->name));
+    else
+        name = NULL;
+#endif
+
+    c->super.iret = NtQueryValueKey(QEMU_G2H(c->handle), name, c->info_class, QEMU_G2H(c->info),
+            c->length, QEMU_G2H(c->result_len));
 }
 
 #endif
