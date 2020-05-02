@@ -75,6 +75,16 @@ char*** CDECL __p___initenv(void)
     return &MSVCRT___initenv;
 }
 
+int* CDECL MSVCRT___p___argc(void)
+{
+    return &MSVCRT___argc;
+}
+
+char*** CDECL MSVCRT___p___argv(void)
+{
+    return &MSVCRT___argv;
+}
+
 /*********************************************************************
  *        __p___winitenv (MSVCRT.@)
  */
