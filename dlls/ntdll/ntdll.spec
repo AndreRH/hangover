@@ -1024,6 +1024,7 @@
 @ stdcall RtlxUnicodeStringToAnsiSize(ptr) RtlUnicodeStringToAnsiSize
 @ stdcall RtlxUnicodeStringToOemSize(ptr) RtlUnicodeStringToOemSize
 @ stdcall TpAllocCleanupGroup(ptr)
+@ stdcall TpAllocIoCompletion(ptr ptr ptr ptr ptr)
 @ stdcall TpAllocPool(ptr ptr)
 @ stdcall TpAllocTimer(ptr ptr ptr ptr)
 @ stdcall TpAllocWait(ptr ptr ptr ptr)
@@ -1037,6 +1038,7 @@
 @ stdcall TpDisassociateCallback(ptr)
 @ stdcall TpIsTimerSet(ptr)
 @ stdcall TpPostWork(ptr)
+@ stdcall TpQueryPoolStackInformation(ptr ptr)
 @ stdcall TpReleaseCleanupGroup(ptr)
 @ stdcall TpReleaseCleanupGroupMembers(ptr long ptr)
 @ stdcall TpReleasePool(ptr)
@@ -1045,6 +1047,7 @@
 @ stdcall TpReleaseWork(ptr)
 @ stdcall TpSetPoolMaxThreads(ptr long)
 @ stdcall TpSetPoolMinThreads(ptr long)
+@ stdcall TpSetPoolStackInformation(ptr ptr)
 @ stdcall TpSetTimer(ptr ptr long long)
 @ stdcall TpSetWait(ptr long ptr)
 @ stdcall TpSimpleTryPost(ptr ptr ptr)

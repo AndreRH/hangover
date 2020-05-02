@@ -1313,3 +1313,104 @@ void qemu_TpWaitForWork(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_TpAllocIoCompletion
+{
+    struct qemu_syscall super;
+    uint64_t out;
+    uint64_t file;
+    uint64_t callback;
+    uint64_t userdata;
+    uint64_t environment;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI TpAllocIoCompletion(TP_IO **out, HANDLE file, void *callback, void *userdata, TP_CALLBACK_ENVIRON *environment)
+{
+    struct qemu_TpAllocIoCompletion call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_TPALLOCIOCOMPLETION);
+    call.out = (ULONG_PTR)out;
+    call.file = (ULONG_PTR)file;
+    call.callback = (ULONG_PTR)callback;
+    call.userdata = (ULONG_PTR)userdata;
+    call.environment = (ULONG_PTR)environment;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_TpAllocIoCompletion(struct qemu_syscall *call)
+{
+    struct qemu_TpAllocIoCompletion *c = (struct qemu_TpAllocIoCompletion *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = TpAllocIoCompletion(QEMU_G2H(c->out), QEMU_G2H(c->file), QEMU_G2H(c->callback), QEMU_G2H(c->userdata), QEMU_G2H(c->environment));
+}
+
+#endif
+
+struct qemu_TpQueryPoolStackInformation
+{
+    struct qemu_syscall super;
+    uint64_t pool;
+    uint64_t stack_info;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI TpQueryPoolStackInformation(TP_POOL *pool, TP_POOL_STACK_INFORMATION *stack_info)
+{
+    struct qemu_TpQueryPoolStackInformation call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_TPQUERYPOOLSTACKINFORMATION);
+    call.pool = (ULONG_PTR)pool;
+    call.stack_info = (ULONG_PTR)stack_info;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_TpQueryPoolStackInformation(struct qemu_syscall *call)
+{
+    struct qemu_TpQueryPoolStackInformation *c = (struct qemu_TpQueryPoolStackInformation *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = TpQueryPoolStackInformation(QEMU_G2H(c->pool), QEMU_G2H(c->stack_info));
+}
+
+#endif
+
+struct qemu_TpSetPoolStackInformation
+{
+    struct qemu_syscall super;
+    uint64_t pool;
+    uint64_t stack_info;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI TpSetPoolStackInformation(TP_POOL *pool, TP_POOL_STACK_INFORMATION *stack_info)
+{
+    struct qemu_TpSetPoolStackInformation call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_TPSETPOOLSTACKINFORMATION);
+    call.pool = (ULONG_PTR)pool;
+    call.stack_info = (ULONG_PTR)stack_info;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_TpSetPoolStackInformation(struct qemu_syscall *call)
+{
+    struct qemu_TpSetPoolStackInformation *c = (struct qemu_TpSetPoolStackInformation *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = TpSetPoolStackInformation(QEMU_G2H(c->pool), QEMU_G2H(c->stack_info));
+}
+
+#endif
