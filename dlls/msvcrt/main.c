@@ -278,7 +278,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p___p__tzname = (void *)GetProcAddress(msvcrt, "__p__tzname");
         p___p__wenviron = (void *)GetProcAddress(msvcrt, "__p__wenviron");
         p___pctype_func = (void *)GetProcAddress(msvcrt, "__pctype_func");
-        p___set_app_type = (void *)GetProcAddress(msvcrt, "__set_app_type");
+        p___set_app_type = (void *)GetProcAddress(msvcrt, "_set_app_type");
         p___setusermatherr = (void *)GetProcAddress(msvcrt, "__setusermatherr");
         p___STRINGTOLD = (void *)GetProcAddress(msvcrt, "__STRINGTOLD");
         p___sys_errlist = (void *)GetProcAddress(msvcrt, "__sys_errlist");
