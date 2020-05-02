@@ -502,7 +502,7 @@ WINBASEAPI NTSTATUS WINAPI NtDeleteKey(HANDLE hkey)
 {
     struct qemu_NtDeleteKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTDELETEKEY);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
 
     qemu_syscall(&call.super);
 
@@ -532,7 +532,7 @@ WINBASEAPI NTSTATUS WINAPI RtlpNtMakeTemporaryKey(HANDLE hkey)
 {
     struct qemu_RtlpNtMakeTemporaryKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLPNTMAKETEMPORARYKEY);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
 
     qemu_syscall(&call.super);
 
@@ -565,7 +565,7 @@ WINBASEAPI NTSTATUS WINAPI NtDeleteValueKey(HANDLE hkey, const UNICODE_STRING *n
 {
     struct qemu_NtDeleteValueKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTDELETEVALUEKEY);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
 
     qemu_syscall(&call.super);
@@ -1233,11 +1233,12 @@ struct qemu_NtSetValueKey
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtSetValueKey(HANDLE hkey, const UNICODE_STRING *name, ULONG TitleIndex, ULONG type, const void *data, ULONG count)
+WINBASEAPI NTSTATUS WINAPI NtSetValueKey(HANDLE hkey, const UNICODE_STRING *name, ULONG TitleIndex, ULONG type,
+        const void *data, ULONG count)
 {
     struct qemu_NtSetValueKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSETVALUEKEY);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.name = (ULONG_PTR)name;
     call.TitleIndex = (ULONG_PTR)TitleIndex;
     call.type = (ULONG_PTR)type;
@@ -1254,8 +1255,20 @@ WINBASEAPI NTSTATUS WINAPI NtSetValueKey(HANDLE hkey, const UNICODE_STRING *name
 void qemu_NtSetValueKey(struct qemu_syscall *call)
 {
     struct qemu_NtSetValueKey *c = (struct qemu_NtSetValueKey *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtSetValueKey(QEMU_G2H(c->hkey), QEMU_G2H(c->name), c->TitleIndex, c->type, QEMU_G2H(c->data), c->count);
+    UNICODE_STRING stack, *name = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    name = QEMU_G2H(c->name);
+#else
+    if (QEMU_G2H(c->name))
+        UNICODE_STRING_g2h(name, QEMU_G2H(c->name));
+    else
+        name = NULL;
+#endif
+
+    c->super.iret = NtSetValueKey(QEMU_G2H(c->hkey), name, c->TitleIndex,
+            c->type, QEMU_G2H(c->data), c->count);
 }
 
 #endif
@@ -1275,7 +1288,7 @@ WINBASEAPI NTSTATUS WINAPI RtlpNtSetValueKey(HANDLE hkey, ULONG type, const void
 {
     struct qemu_RtlpNtSetValueKey call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLPNTSETVALUEKEY);
-    call.hkey = (ULONG_PTR)hkey;
+    call.hkey = (LONG_PTR)hkey;
     call.type = (ULONG_PTR)type;
     call.data = (ULONG_PTR)data;
     call.count = (ULONG_PTR)count;
