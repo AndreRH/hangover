@@ -854,8 +854,23 @@ WINBASEAPI NTSTATUS WINAPI RtlUnicodeStringToAnsiString(STRING *ansi, const UNIC
 void qemu_RtlUnicodeStringToAnsiString(struct qemu_syscall *call)
 {
     struct qemu_RtlUnicodeStringToAnsiString *c = (struct qemu_RtlUnicodeStringToAnsiString *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlUnicodeStringToAnsiString(QEMU_G2H(c->ansi), QEMU_G2H(c->uni), c->doalloc);
+    UNICODE_STRING stack, *uni = &stack;
+    STRING ansi_stack, *ansi = &ansi_stack;
+
+    WINE_TRACE("\n");
+#if GUEST_PTR == HOST_PTR
+    uni = QEMU_G2H(c->uni);
+    ansi = QEMU_G2H(c->ansi);
+#else
+    UNICODE_STRING_g2h(uni, QEMU_G2H(c->uni));
+    STRING_g2h(ansi, QEMU_G2H(c->ansi));
+#endif
+
+    c->super.iret = RtlUnicodeStringToAnsiString(ansi, uni, c->doalloc);
+
+#if GUEST_BIT != HOST_BIT
+    STRING_h2g(QEMU_G2H(c->ansi), ansi);
+#endif
 }
 
 #endif
