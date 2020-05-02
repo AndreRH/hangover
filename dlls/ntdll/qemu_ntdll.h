@@ -756,8 +756,7 @@ enum ntdll_calls
 
 #ifdef QEMU_DLL_GUEST
 
-typedef void LDR_MODULE;
-NTSTATUS WINAPI ntdll_LdrFindEntryForAddress(const void *addr, LDR_MODULE **mod);
+NTSTATUS WINAPI ntdll_LdrFindEntryForAddress(const void *addr, LDR_DATA_TABLE_ENTRY **mod);
 PVOID WINAPI ntdll_RtlImageDirectoryEntryToData( HMODULE module, BOOL image, WORD dir, ULONG *size );
 NTSTATUS WINAPI ntdll_NtTerminateProcess(HANDLE handle, LONG exit_code);
 NTSTATUS WINAPI ntdll_NtCreateKeyedEvent(HANDLE *handle, ACCESS_MASK access, const OBJECT_ATTRIBUTES *attr, ULONG flags);

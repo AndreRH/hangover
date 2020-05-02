@@ -77,12 +77,12 @@ struct qemu_LdrFindEntryForAddress
 
 #ifdef QEMU_DLL_GUEST
 
-NTSTATUS WINAPI ntdll_LdrFindEntryForAddress(const void *addr, LDR_MODULE **mod)
+NTSTATUS WINAPI ntdll_LdrFindEntryForAddress(const void *addr, LDR_DATA_TABLE_ENTRY **mod)
 {
     /* FIXME: With proper data in the PEB we should be able to do this on the
      * client side.
      *
-     * FIXME 2: HMODULE != LDR_MODULE, but for now it is good enough for our little
+     * FIXME 2: HMODULE != LDR_DATA_TABLE_ENTRY, but for now it is good enough for our little
      * PE loader. */
     struct qemu_LdrFindEntryForAddress call;
     call.super.id = QEMU_SYSCALL_ID(CALL_LDRFINDENTRYFORADDRESS);
@@ -389,7 +389,7 @@ struct qemu_LdrEnumerateLoadedModules
     uint64_t context;
 };
 
-typedef void  (CALLBACK *LDRENUMPROC)(LDR_MODULE *, void *, BOOLEAN *);
+typedef void  (CALLBACK *LDRENUMPROC)(LDR_DATA_TABLE_ENTRY *, void *, BOOLEAN *);
 
 #ifdef QEMU_DLL_GUEST
 

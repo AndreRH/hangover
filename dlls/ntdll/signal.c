@@ -991,7 +991,7 @@ void qemu_RtlAddFunctionTable(struct qemu_syscall *call)
 #ifdef QEMU_DLL_GUEST
 
 #ifdef _WIN64
-static RUNTIME_FUNCTION *find_function_info( ULONG64 pc, HMODULE module,
+static RUNTIME_FUNCTION *find_function_info( ULONG64 pc, LDR_DATA_TABLE_ENTRY *module,
                                              RUNTIME_FUNCTION *func, ULONG size )
 {
     int min = 0;
@@ -1016,7 +1016,7 @@ static RUNTIME_FUNCTION *find_function_info( ULONG64 pc, HMODULE module,
 PRUNTIME_FUNCTION NTAPI ntdll_RtlLookupFunctionEntry(DWORD64 pc, DWORD64 *base, UNWIND_HISTORY_TABLE *history)
 {
     struct qemu_syscall call;
-    LDR_MODULE *module;
+    LDR_DATA_TABLE_ENTRY *module;
     ULONG size;
     RUNTIME_FUNCTION *func = NULL;
 
@@ -1027,8 +1027,8 @@ PRUNTIME_FUNCTION NTAPI ntdll_RtlLookupFunctionEntry(DWORD64 pc, DWORD64 *base, 
 
     if (!ntdll_LdrFindEntryForAddress( (void *)pc, &module))
     {
-        *base = (DWORD64)module;
-        if ((func = ntdll_RtlImageDirectoryEntryToData(module, TRUE,
+        *base = (DWORD64)module->DllBase;
+        if ((func = ntdll_RtlImageDirectoryEntryToData(module->DllBase, TRUE,
                 IMAGE_DIRECTORY_ENTRY_EXCEPTION, &size)))
         {
             /* lookup in function table */
@@ -1482,7 +1482,7 @@ static NTSTATUS call_stack_handlers( EXCEPTION_RECORD *rec, CONTEXT *orig_contex
     UNWIND_HISTORY_TABLE table;
     DISPATCHER_CONTEXT dispatch;
     CONTEXT context;
-    LDR_MODULE *module;
+    LDR_DATA_TABLE_ENTRY *module;
     NTSTATUS status;
     struct qemu_ExceptDebug call;
 
