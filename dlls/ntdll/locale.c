@@ -452,6 +452,7 @@ WINBASEAPI NTSTATUS WINAPI RtlHashUnicodeString(const UNICODE_STRING *string, BO
 
 #else
 
+extern NTSTATUS WINAPI RtlHashUnicodeString(const UNICODE_STRING *string, BOOLEAN case_insensitive, ULONG alg, ULONG *hash);
 void qemu_RtlHashUnicodeString(struct qemu_syscall *call)
 {
     struct qemu_RtlHashUnicodeString *c = (struct qemu_RtlHashUnicodeString *)call;
