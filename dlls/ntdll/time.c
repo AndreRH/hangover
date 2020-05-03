@@ -463,7 +463,9 @@ WINBASEAPI NTSTATUS WINAPI RtlQueryDynamicTimeZoneInformation(RTL_DYNAMIC_TIME_Z
 void qemu_RtlQueryDynamicTimeZoneInformation(struct qemu_syscall *call)
 {
     struct qemu_RtlQueryDynamicTimeZoneInformation *c = (struct qemu_RtlQueryDynamicTimeZoneInformation *)call;
-    WINE_FIXME("Unverified!\n");
+
+    /* RTL_DYNAMIC_TIME_ZONE_INFORMATION has the same size on 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = RtlQueryDynamicTimeZoneInformation(QEMU_G2H(c->tzinfo));
 }
 
