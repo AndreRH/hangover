@@ -144,7 +144,8 @@ static void qemu_init_dll(struct qemu_syscall *call)
         if (GetModuleHandleA(dll_name))
         {
             int *my_errno;
-            char **environ;
+            char ***my_environ;
+
             /* This happens when a different Wine DLL loaded the host DLL, e.g. version32 loading msvcrt.dll or
              * urctbase.dll. The trouble is that the DLL is probably initialized already and has allocated its
              * thread data above 4 GB. */
@@ -158,8 +159,9 @@ static void qemu_init_dll(struct qemu_syscall *call)
             if (!p__errno)
                 WINE_ERR("Cannot get _errno.\n");
             p___p__environ = (void *)GetProcAddress(msvcrt, "__p__environ");
-            if (!p___p__environ)
-                WINE_ERR("Cannot get __p__environ.\n");
+            my_environ = (void *)GetProcAddress(msvcrt, "_environ");
+            if (!p___p__environ && !my_environ)
+                WINE_ERR("Cannot get __p__environ nor _environ %s.\n", dll_name);
             p__putenv = (void *)GetProcAddress(msvcrt, "_putenv");
             if (!p__putenv)
                 WINE_ERR("Cannot get _putenv.\n");
@@ -208,18 +210,19 @@ static void qemu_init_dll(struct qemu_syscall *call)
             }
 
             /* FIXME: Also fix up the unicode version. */
-            environ = *p___p__environ();
-            if ((ULONG_PTR)environ < ~0U)
+            if (!my_environ)
+                my_environ = p___p__environ();
+
+            if ((ULONG_PTR)(*my_environ) < ~0U)
             {
-                WINE_TRACE("Yay, %s environ data is < 4 GB (%p).\n", dll_name, environ);
+                WINE_TRACE("Yay, %s environ data is < 4 GB (%p).\n", dll_name, *my_environ);
             }
             else
             {
-                WINE_TRACE("Yanking environment away from %p\n", environ);
-                *p___p__environ() = NULL;
+                WINE_TRACE("Yanking environment away from %p\n", *my_environ);
+                *my_environ = NULL;
                 p__putenv("qemudummy=");
-                environ = *p___p__environ();
-                WINE_TRACE("environ now at %p\n", environ);
+                WINE_TRACE("environ now at %p\n", *my_environ);
             }
         }
         else
