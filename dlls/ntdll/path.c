@@ -79,7 +79,7 @@ WINBASEAPI DOS_PATHNAME_TYPE WINAPI RtlDetermineDosPathNameType_U(PCWSTR path)
 void qemu_RtlDetermineDosPathNameType_U(struct qemu_syscall *call)
 {
     struct qemu_RtlDetermineDosPathNameType_U *c = (struct qemu_RtlDetermineDosPathNameType_U *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlDetermineDosPathNameType_U(QEMU_G2H(c->path));
 }
 
