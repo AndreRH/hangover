@@ -58,6 +58,14 @@ void qemu_getenv(struct qemu_syscall *call)
     WINE_TRACE(" %s\n", (char *)QEMU_G2H(c->name));
     c->super.iret = QEMU_H2G(p_getenv(QEMU_G2H(c->name)));
     WINE_TRACE("Ret %p\n", QEMU_G2H(c->super.iret));
+
+#if GUEST_BIT != HOST_BIT
+    if (c->super.iret > ~(0U))
+    {
+        WINE_ERR("env string %s is at unreachable address %p, expect a crash.\n",
+                QEMU_G2H(c->super.iret), QEMU_G2H(c->super.iret));
+    }
+#endif
 }
 
 #endif
