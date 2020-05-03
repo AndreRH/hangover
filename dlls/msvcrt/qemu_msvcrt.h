@@ -973,6 +973,7 @@ enum msvcrt_calls
     CALL_SPINCOUNT__VALUE,
     CALL_SPRINTF,
     CALL_SPRINTF_S,
+    CALL_SPRINTF_UCRTBASE,
     CALL_SQRT,
     CALL_SQRTF,
     CALL_SRAND,
@@ -3357,6 +3358,9 @@ BOOL (* CDECL p___uncaught_exception)(void);
 double *p__HUGE;
 int *p___argc;
 char ***p___argv;
+int (* CDECL p___stdio_common_vsprintf)( unsigned __int64 options, char *str, size_t len, const char *format,
+    MSVCRT__locale_t locale, __ms_va_list valist);
+
 
 DWORD msvcrt_tls;
 size_t guest_FILE_size;

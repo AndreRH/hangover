@@ -660,6 +660,7 @@
 @ stub __set_flsgetvalue
 #@ extern __setlc_active MSVCRT___setlc_active
 @ cdecl __setusermatherr(ptr) MSVCRT___setusermatherr
+@ cdecl -norelay __stdio_common_vsprintf(int64 ptr long str ptr ptr)
 @ stub __strncnt
 #@ varargs  __swprintf_l(ptr wstr ptr) MSVCRT___swprintf_l
 @ cdecl __sys_errlist()

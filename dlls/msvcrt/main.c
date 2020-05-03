@@ -143,19 +143,12 @@ static void qemu_init_dll(struct qemu_syscall *call)
         if (GetModuleHandleA(dll_name))
         {
             int *my_errno;
-            /* This happens when a different Wine DLL loaded the host DLL, e.g. version32 loading msvcrt.dll.
-             * It should only happen with msvcrt.dll. The trouble is that the DLL is probably initialized
-             * already and has allocated its thread data above 4 GB. */
-
-            if (strcmp(dll_name, "msvcrt.dll"))
-            {
-                /* This might happen if the user dropped a native Microsoft host DLL into the
-                 * Wine prefix that depends on msvcr100.dll. */
-                WINE_ERR("Did not expect %s to be loaded already.\n", dll_name);
-            }
+            /* This happens when a different Wine DLL loaded the host DLL, e.g. version32 loading msvcrt.dll or
+             * urctbase.dll. The trouble is that the DLL is probably initialized already and has allocated its
+             * thread data above 4 GB. */
             
             msvcrt = LoadLibraryA(dll_name); /* For symmetry with the path below. */
-            WINE_ERR("loaded %p\n", msvcrt);
+            WINE_TRACE("loaded %s at %p\n", dll_name, msvcrt);
             if (!msvcrt)
                 WINE_ERR("WTF?\n");
 
@@ -172,7 +165,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
             }
             else if ((ULONG_PTR)my_errno < ~0U)
             {
-                WINE_TRACE("Yay, TLS data is < 4 GB (%p).\n", my_errno);
+                WINE_TRACE("Yay, %s TLS data is < 4 GB (%p).\n", dll_name, my_errno);
             }
             else
             {
@@ -196,7 +189,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
 
                 if (!found)
                     WINE_ERR("Did not find msvcrt TLS index.\n");
-                WINE_TRACE("Ripping out msvcrt tls data %p from index %u.\n", host_tls_data, idx);
+                WINE_TRACE("Ripping out %s tls data %p from index %u.\n", dll_name, host_tls_data, idx);
                 TlsSetValue(idx, NULL); /* Don't free. That would put a hole in our memory firewall. */
 
                 my_errno = p__errno();
@@ -280,6 +273,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p___pctype_func = (void *)GetProcAddress(msvcrt, "__pctype_func");
         p___set_app_type = (void *)GetProcAddress(msvcrt, "_set_app_type");
         p___setusermatherr = (void *)GetProcAddress(msvcrt, "__setusermatherr");
+        p___stdio_common_vsprintf = (void *)GetProcAddress(msvcrt, "__stdio_common_vsprintf");
         p___STRINGTOLD = (void *)GetProcAddress(msvcrt, "__STRINGTOLD");
         p___sys_errlist = (void *)GetProcAddress(msvcrt, "__sys_errlist");
         p___sys_nerr = (void *)GetProcAddress(msvcrt, "__sys_nerr");
@@ -1251,7 +1245,25 @@ static void qemu_init_dll(struct qemu_syscall *call)
     guest_FILE_size = c->FILE_size;
     guest_iob = c->iob;
     guest_iob_size = c->iob_size;
-    c->HUGE = *p__HUGE;
+
+    /* Which exports exist depend on the actual msvcrt incarnation. */
+    if (p__HUGE)
+        c->HUGE = *p__HUGE;
+    if (!p___argc)
+    {
+        int* (* CDECL p___p___argc)(void) = (void *)GetProcAddress(msvcrt, "__p___argc");
+        if (!p___p___argc)
+            WINE_ERR("I have neither __argc nor __p___argc\n");
+        p___argc = p___p___argc();
+    }
+    if (!p___argv)
+    {
+        char*** (* CDECL p___p___argv)(void) = (void *)GetProcAddress(msvcrt, "__p___argv");
+        if (!p___p___argv)
+            WINE_ERR("I have neither __argv nor __p___argv\n");
+        p___argv = p___p___argv();
+    }
+
     c->argc = *p___argc;
 
     argv = HeapAlloc(GetProcessHeap(), 0, sizeof(qemu_ptr) * c->argc);
@@ -1272,6 +1284,8 @@ static void qemu_init_dll(struct qemu_syscall *call)
 
     c->argv = QEMU_H2G(argv);
 #endif
+
+    WINE_TRACE("%s init done.\n", dll_name);
 }
 
 static const syscall_handler dll_functions[] =
@@ -2240,6 +2254,7 @@ static const syscall_handler dll_functions[] =
     qemu_sinhf,
     qemu_wscanf,
     qemu_SpinCount__Value,
+    qemu_sprintf,
     qemu_sprintf,
     qemu_sprintf,
     qemu_sqrt,
