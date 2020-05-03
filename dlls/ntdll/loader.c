@@ -614,6 +614,7 @@ WINBASEAPI NTSTATUS WINAPI LdrLoadDll(LPCWSTR path_name, DWORD flags, const UNIC
     call.hModule = (ULONG_PTR)hModule;
 
     qemu_syscall(&call.super);
+    *hModule = (HMODULE)(ULONG_PTR)call.hModule;
 
     return call.super.iret;
 }
@@ -623,8 +624,22 @@ WINBASEAPI NTSTATUS WINAPI LdrLoadDll(LPCWSTR path_name, DWORD flags, const UNIC
 void qemu_LdrLoadDll(struct qemu_syscall *call)
 {
     struct qemu_LdrLoadDll *c = (struct qemu_LdrLoadDll *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LdrLoadDll(QEMU_G2H(c->path_name), c->flags, QEMU_G2H(c->libname), QEMU_G2H(c->hModule));
+    UNICODE_STRING stack, *libname = &stack;
+    HMODULE mod;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    libname = QEMU_G2H(c->libname);
+#else
+    if (QEMU_G2H(c->libname))
+        UNICODE_STRING_g2h(libname, QEMU_G2H(c->libname));
+    else
+        libname = NULL;
+#endif
+    
+    c->super.iret = qemu_ops->qemu_LdrLoadDll(QEMU_G2H(c->path_name), c->flags, libname, &mod);
+    
+    c->hModule = QEMU_H2G(mod);
 }
 
 #endif

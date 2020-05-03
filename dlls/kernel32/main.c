@@ -141,7 +141,7 @@ static BOOL __fastcall guest_register_class_wrapper(WCHAR *name)
 
 static BOOL __fastcall guest_load_comctl32(void *dummy)
 {
-    return !!kernel32_LoadLibraryA("comctl32.dll");
+    return !!LoadLibraryA("comctl32.dll");
 }
 
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
@@ -874,10 +874,6 @@ static const syscall_handler dll_functions[] =
     qemu_LCMapStringA,
     qemu_LCMapStringEx,
     qemu_LCMapStringW,
-    qemu_LoadLibraryA,
-    qemu_LoadLibraryExA,
-    qemu_LoadLibraryExW,
-    qemu_LoadLibraryW,
     qemu_LoadModule,
     qemu_LoadResource,
     qemu_LocalAlloc,

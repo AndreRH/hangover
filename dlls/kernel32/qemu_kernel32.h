@@ -620,10 +620,6 @@ enum kernel32_calls
     CALL_LCMAPSTRINGA,
     CALL_LCMAPSTRINGEX,
     CALL_LCMAPSTRINGW,
-    CALL_LOADLIBRARYA,
-    CALL_LOADLIBRARYEXA,
-    CALL_LOADLIBRARYEXW,
-    CALL_LOADLIBRARYW,
     CALL_LOADMODULE,
     CALL_LOADRESOURCE,
     CALL_LOCALALLOC,
@@ -1628,10 +1624,6 @@ void qemu_LCIDToLocaleName(struct qemu_syscall *call);
 void qemu_LCMapStringA(struct qemu_syscall *call);
 void qemu_LCMapStringEx(struct qemu_syscall *call);
 void qemu_LCMapStringW(struct qemu_syscall *call);
-void qemu_LoadLibraryA(struct qemu_syscall *call);
-void qemu_LoadLibraryExA(struct qemu_syscall *call);
-void qemu_LoadLibraryExW(struct qemu_syscall *call);
-void qemu_LoadLibraryW(struct qemu_syscall *call);
 void qemu_LoadModule(struct qemu_syscall *call);
 void qemu_LoadResource(struct qemu_syscall *call);
 void qemu_LocalAlloc(struct qemu_syscall *call);

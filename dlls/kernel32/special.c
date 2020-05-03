@@ -453,66 +453,6 @@ void qemu_GetProcAddress(struct qemu_syscall *call)
 
 #endif
 
-#ifdef QEMU_DLL_GUEST
-
-HMODULE WINAPI kernel32_LoadLibraryA(const char *name)
-{
-    struct qemu_ModuleOpA call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYA);
-    call.name = (ULONG_PTR)name;
-
-    qemu_syscall(&call.super);
-
-    return (HMODULE)(ULONG_PTR)call.super.iret;
-}
-
-WINBASEAPI HMODULE WINAPI LoadLibraryW(const WCHAR *name)
-{
-    struct qemu_ModuleOpW call;
-    call.super.id = QEMU_SYSCALL_ID(CALL_LOADLIBRARYW);
-    call.name = (ULONG_PTR)name;
-
-    qemu_syscall(&call.super);
-
-    return (HMODULE)(ULONG_PTR)call.super.iret;
-}
-
-#else
-
-void qemu_LoadLibraryA(struct qemu_syscall *call)
-{
-    struct qemu_ModuleOpA *c = (struct qemu_ModuleOpA *)call;
-    WCHAR *nameW = NULL;
-    int size;
-    WINE_TRACE("(\"%s\")\n", (char *)QEMU_G2H(c->name));
-
-    if (c->name)
-    {
-        size = MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, NULL, 0);
-        nameW = HeapAlloc(GetProcessHeap(), 0, size * sizeof(*nameW));
-        MultiByteToWideChar(CP_ACP, 0, QEMU_G2H(c->name), -1, nameW, size);
-    }
-
-    c->super.iret = (ULONG_PTR)qemu_ops->qemu_LoadLibrary(nameW, 0);
-
-    HeapFree(GetProcessHeap(), 0, nameW);
-
-    WINE_TRACE("Returning %p\n", (void *)c->super.iret);
-}
-
-void qemu_LoadLibraryW(struct qemu_syscall *call)
-{
-    struct qemu_ModuleOpW *c = (struct qemu_ModuleOpW *)call;
-    int size;
-    WINE_TRACE("\n");
-
-    c->super.iret = (ULONG_PTR)qemu_ops->qemu_LoadLibrary(QEMU_G2H(c->name), 0);
-
-    WINE_TRACE("Returning %p\n", (void *)c->super.iret);
-}
-
-#endif
-
 struct qemu_FreeLibrary
 {
     struct qemu_syscall super;
