@@ -338,8 +338,19 @@ WINBASEAPI void WINAPI RtlResetRtlTranslations(const NLSTABLEINFO *info)
 void qemu_RtlResetRtlTranslations(struct qemu_syscall *call)
 {
     struct qemu_RtlResetRtlTranslations *c = (struct qemu_RtlResetRtlTranslations *)call;
-    WINE_FIXME("Unverified!\n");
-    RtlResetRtlTranslations(QEMU_G2H(c->info));
+    NLSTABLEINFO stack, *info = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->info);
+#else
+    if (QEMU_G2H(c->info))
+        NLSTABLEINFO_g2h(info, QEMU_G2H(c->info));
+    else
+        info = NULL;
+#endif
+
+    RtlResetRtlTranslations(info);
 }
 
 #endif
