@@ -1400,10 +1400,11 @@ WINBASEAPI NTSTATUS WINAPI RtlOpenCurrentUser(ACCESS_MASK DesiredAccess, PHANDLE
 {
     struct qemu_RtlOpenCurrentUser call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLOPENCURRENTUSER);
-    call.DesiredAccess = (ULONG_PTR)DesiredAccess;
+    call.DesiredAccess = DesiredAccess;
     call.KeyHandle = (ULONG_PTR)KeyHandle;
 
     qemu_syscall(&call.super);
+    *KeyHandle = (HANDLE)(ULONG_PTR)call.KeyHandle;
 
     return call.super.iret;
 }
@@ -1413,8 +1414,11 @@ WINBASEAPI NTSTATUS WINAPI RtlOpenCurrentUser(ACCESS_MASK DesiredAccess, PHANDLE
 void qemu_RtlOpenCurrentUser(struct qemu_syscall *call)
 {
     struct qemu_RtlOpenCurrentUser *c = (struct qemu_RtlOpenCurrentUser *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlOpenCurrentUser(c->DesiredAccess, QEMU_G2H(c->KeyHandle));
+    HANDLE key;
+
+    WINE_TRACE("\n");
+    c->super.iret = RtlOpenCurrentUser(c->DesiredAccess, &key);
+    c->KeyHandle = (ULONG_PTR)key;
 }
 
 #endif
