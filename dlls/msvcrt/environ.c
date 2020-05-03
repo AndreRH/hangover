@@ -63,7 +63,7 @@ void qemu_getenv(struct qemu_syscall *call)
     if (c->super.iret > ~(0U))
     {
         WINE_ERR("env string %s is at unreachable address %p, expect a crash.\n",
-                QEMU_G2H(c->super.iret), QEMU_G2H(c->super.iret));
+                (char *)QEMU_G2H(c->super.iret), QEMU_G2H(c->super.iret));
     }
 #endif
 }
