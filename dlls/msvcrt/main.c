@@ -139,22 +139,30 @@ static void qemu_init_dll(struct qemu_syscall *call)
         else
             dll_name = "msvcrt.dll";
 
+        WINE_TRACE("Loading host side %s\n", dll_name);
 #if GUEST_BIT != HOST_BIT
         if (GetModuleHandleA(dll_name))
         {
             int *my_errno;
+            char **environ;
             /* This happens when a different Wine DLL loaded the host DLL, e.g. version32 loading msvcrt.dll or
              * urctbase.dll. The trouble is that the DLL is probably initialized already and has allocated its
              * thread data above 4 GB. */
             
+            WINE_WARN("%s already at %p\n", dll_name, GetModuleHandleA(dll_name));
             msvcrt = LoadLibraryA(dll_name); /* For symmetry with the path below. */
-            WINE_TRACE("loaded %s at %p\n", dll_name, msvcrt);
             if (!msvcrt)
                 WINE_ERR("WTF?\n");
 
             p__errno = (void *)GetProcAddress(msvcrt, "_errno");
             if (!p__errno)
                 WINE_ERR("Cannot get _errno.\n");
+            p___p__environ = (void *)GetProcAddress(msvcrt, "__p__environ");
+            if (!p___p__environ)
+                WINE_ERR("Cannot get __p__environ.\n");
+            p__putenv = (void *)GetProcAddress(msvcrt, "_putenv");
+            if (!p__putenv)
+                WINE_ERR("Cannot get _putenv.\n");
 
             /* Well, there's _getptd, but not in msvcrt.dll where we need it the most. */
             my_errno = p__errno();
@@ -198,15 +206,33 @@ static void qemu_init_dll(struct qemu_syscall *call)
                 if ((ULONG_PTR)host_tls_data > ~0U)
                     WINE_ERR("%s TLS data is still too high at %p.\n", dll_name, host_tls_data);
             }
+
+            /* FIXME: Also fix up the unicode version. */
+            environ = *p___p__environ();
+            if ((ULONG_PTR)environ < ~0U)
+            {
+                WINE_TRACE("Yay, %s environ data is < 4 GB (%p).\n", dll_name, environ);
+            }
+            else
+            {
+                WINE_TRACE("Yanking environment away from %p\n", environ);
+                *p___p__environ() = NULL;
+                p__putenv("qemudummy=");
+                environ = *p___p__environ();
+                WINE_TRACE("environ now at %p\n", environ);
+            }
         }
         else
 #endif
         {
             msvcrt = LoadLibraryA(dll_name);
+            WINE_TRACE("first load of %s at %p\n", dll_name, msvcrt);
             if (!msvcrt)
                 WINE_ERR("Cannot find %s.\n", dll_name);
 
             p__errno = (void *)GetProcAddress(msvcrt, "_errno");
+            p___p__environ = (void *)GetProcAddress(msvcrt, "__p__environ");
+            p__putenv = (void *)GetProcAddress(msvcrt, "_putenv");
         }
 
         p____lc_codepage_func = (void *)GetProcAddress(msvcrt, "___lc_codepage_func");
@@ -264,7 +290,6 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p___p__amblksiz = (void *)GetProcAddress(msvcrt, "__p__amblksiz");
         p___p__daylight = (void *)GetProcAddress(msvcrt, "__p__daylight");
         p___p__dstbias = (void *)GetProcAddress(msvcrt, "__p__dstbias");
-        p___p__environ = (void *)GetProcAddress(msvcrt, "__p__environ");
         p___p__mbctype = (void *)GetProcAddress(msvcrt, "__p__mbctype");
         p___p__pctype = (void *)GetProcAddress(msvcrt, "__p__pctype");
         p___p__timezone = (void *)GetProcAddress(msvcrt, "__p__timezone");
@@ -647,7 +672,6 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p__purecall = (void *)GetProcAddress(msvcrt, "_purecall");
         p__putch = (void *)GetProcAddress(msvcrt, "_putch");
         p__putch_nolock = (void *)GetProcAddress(msvcrt, "_putch_nolock");
-        p__putenv = (void *)GetProcAddress(msvcrt, "_putenv");
         p__putenv_s = (void *)GetProcAddress(msvcrt, "_putenv_s");
         p__putw = (void *)GetProcAddress(msvcrt, "_putw");
         p__putwch = (void *)GetProcAddress(msvcrt, "_putwch");
