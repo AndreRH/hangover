@@ -632,7 +632,7 @@ WINBASEAPI BOOL WINAPI K32GetModuleInformation(HANDLE process, HMODULE module, M
 void qemu_K32GetModuleInformation(struct qemu_syscall *call)
 {
     struct qemu_K32GetModuleInformation *c = (struct qemu_K32GetModuleInformation *)call;
-    LDR_MODULE *ldr_module;
+    LDR_DATA_TABLE_ENTRY *ldr_module;
     MODULEINFO *modinfo;
 
     WINE_FIXME("Unverified!\n");
@@ -653,7 +653,7 @@ void qemu_K32GetModuleInformation(struct qemu_syscall *call)
         return;
     }
 
-    modinfo->lpBaseOfDll = ldr_module->BaseAddress;
+    modinfo->lpBaseOfDll = ldr_module->DllBase;
     modinfo->SizeOfImage = ldr_module->SizeOfImage;
     modinfo->EntryPoint  = ldr_module->EntryPoint;
 
