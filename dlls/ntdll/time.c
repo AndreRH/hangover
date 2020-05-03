@@ -343,7 +343,7 @@ WINBASEAPI NTSTATUS WINAPI NtQuerySystemTime(PLARGE_INTEGER Time)
 void qemu_NtQuerySystemTime(struct qemu_syscall *call)
 {
     struct qemu_NtQuerySystemTime *c = (struct qemu_NtQuerySystemTime *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NtQuerySystemTime(QEMU_G2H(c->Time));
 }
 
