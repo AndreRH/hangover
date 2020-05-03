@@ -1181,10 +1181,13 @@ WINBASEAPI NTSTATUS WINAPI LdrGetDllPath(PCWSTR module, ULONG flags, PWSTR *path
     call.super.id = QEMU_SYSCALL_ID(CALL_LDRGETDLLPATH);
     call.module = (ULONG_PTR)module;
     call.flags = flags;
-    call.path = (ULONG_PTR)path;
-    call.unknown = (ULONG_PTR)unknown;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == STATUS_INVALID_PARAMETER)
+        return STATUS_INVALID_PARAMETER;
+
+    *path = (WCHAR *)(ULONG_PTR)call.path;
+    *unknown = (WCHAR *)(ULONG_PTR)call.unknown;
 
     return call.super.iret;
 }
@@ -1194,8 +1197,14 @@ WINBASEAPI NTSTATUS WINAPI LdrGetDllPath(PCWSTR module, ULONG flags, PWSTR *path
 void qemu_LdrGetDllPath(struct qemu_syscall *call)
 {
     struct qemu_LdrGetDllPath *c = (struct qemu_LdrGetDllPath *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LdrGetDllPath(QEMU_G2H(c->module), c->flags, QEMU_G2H(c->path), QEMU_G2H(c->unknown));
+    WCHAR *path;
+    WCHAR *unknown;
+
+    /* Note that we fix up host vs guest load paths at a later point. */
+    WINE_TRACE("\n");
+    c->super.iret = LdrGetDllPath(QEMU_G2H(c->module), c->flags, &path, &unknown);
+    c->path = QEMU_H2G(path);
+    c->unknown = QEMU_H2G(unknown);
 }
 
 #endif
