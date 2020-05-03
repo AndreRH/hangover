@@ -25,6 +25,8 @@
 #include <winternl.h>
 #include <ntdef.h>
 
+#include "thunk/qemu_winternl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ntdll.h"
@@ -645,9 +647,9 @@ WINBASEAPI NTSTATUS WINAPI LdrGetDllHandle(LPCWSTR load_path, ULONG flags, const
     call.load_path = (ULONG_PTR)load_path;
     call.flags = flags;
     call.name = (ULONG_PTR)name;
-    call.base = (ULONG_PTR)base;
 
     qemu_syscall(&call.super);
+    *base = (HMODULE)(ULONG_PTR)call.base;
 
     return call.super.iret;
 }
@@ -657,8 +659,22 @@ WINBASEAPI NTSTATUS WINAPI LdrGetDllHandle(LPCWSTR load_path, ULONG flags, const
 void qemu_LdrGetDllHandle(struct qemu_syscall *call)
 {
     struct qemu_LdrGetDllHandle *c = (struct qemu_LdrGetDllHandle *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LdrGetDllHandle(QEMU_G2H(c->load_path), c->flags, QEMU_G2H(c->name), QEMU_G2H(c->base));
+    HMODULE base;
+    UNICODE_STRING stack, *name = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    name = QEMU_G2H(c->name);
+#else
+    if (QEMU_G2H(c->name))
+        UNICODE_STRING_g2h(name, QEMU_G2H(c->name));
+    else
+        name = NULL;
+#endif
+
+    c->super.iret = qemu_ops->qemu_LdrGetDllHandle(QEMU_G2H(c->load_path), c->flags, name, &base);
+    
+    c->base = QEMU_H2G(base);
 }
 
 #endif
