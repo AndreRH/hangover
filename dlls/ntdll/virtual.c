@@ -26,6 +26,8 @@
 #include <winternl.h>
 #include <ntdef.h>
 
+#include "thunk/qemu_winternl.h"
+
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_ntdll.h"
@@ -366,11 +368,11 @@ struct qemu_NtCreateSection
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtCreateSection(HANDLE *handle, ACCESS_MASK access, const OBJECT_ATTRIBUTES *attr, const LARGE_INTEGER *size, ULONG protect, ULONG sec_flags, HANDLE file)
+WINBASEAPI NTSTATUS WINAPI NtCreateSection(HANDLE *handle, ACCESS_MASK access,
+        const OBJECT_ATTRIBUTES *attr, const LARGE_INTEGER *size, ULONG protect, ULONG sec_flags, HANDLE file)
 {
     struct qemu_NtCreateSection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATESECTION);
-    call.handle = (ULONG_PTR)handle;
     call.access = access;
     call.attr = (ULONG_PTR)attr;
     call.size = (ULONG_PTR)size;
@@ -379,6 +381,7 @@ WINBASEAPI NTSTATUS WINAPI NtCreateSection(HANDLE *handle, ACCESS_MASK access, c
     call.file = (ULONG_PTR)file;
 
     qemu_syscall(&call.super);
+    *handle = (HANDLE)(ULONG_PTR)call.handle;
 
     return call.super.iret;
 }
@@ -388,8 +391,21 @@ WINBASEAPI NTSTATUS WINAPI NtCreateSection(HANDLE *handle, ACCESS_MASK access, c
 void qemu_NtCreateSection(struct qemu_syscall *call)
 {
     struct qemu_NtCreateSection *c = (struct qemu_NtCreateSection *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtCreateSection(QEMU_G2H(c->handle), c->access, QEMU_G2H(c->attr), QEMU_G2H(c->size), c->protect, c->sec_flags, QEMU_G2H(c->file));
+    OBJECT_ATTRIBUTES stack, *attr = &stack;
+    UNICODE_STRING name;
+    HANDLE handle;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    attr = QEMU_G2H(c->attr);
+#else
+    OBJECT_ATTRIBUTES_g2h(attr, QEMU_G2H(c->attr), &name);
+#endif
+
+    c->super.iret = NtCreateSection(&handle, c->access, attr, QEMU_G2H(c->size),
+            c->protect, c->sec_flags, QEMU_G2H(c->file));
+    c->handle = QEMU_H2G(handle);
+    WINE_TRACE("ret %lx\n", c->super.iret);
 }
 
 #endif
@@ -445,12 +461,14 @@ struct qemu_NtMapViewOfSection
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtMapViewOfSection(HANDLE handle, HANDLE process, PVOID *addr_ptr, ULONG_PTR zero_bits, SIZE_T commit_size, const LARGE_INTEGER *offset_ptr, SIZE_T *size_ptr, SECTION_INHERIT inherit, ULONG alloc_type, ULONG protect)
+WINBASEAPI NTSTATUS WINAPI NtMapViewOfSection(HANDLE handle, HANDLE process, PVOID *addr_ptr, ULONG_PTR zero_bits,
+        SIZE_T commit_size, const LARGE_INTEGER *offset_ptr, SIZE_T *size_ptr, SECTION_INHERIT inherit,
+        ULONG alloc_type, ULONG protect)
 {
     struct qemu_NtMapViewOfSection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTMAPVIEWOFSECTION);
     call.handle = (ULONG_PTR)handle;
-    call.process = (ULONG_PTR)process;
+    call.process = guest_HANDLE_g2h(process);
     call.addr_ptr = (ULONG_PTR)addr_ptr;
     call.zero_bits = zero_bits;
     call.commit_size = commit_size;
@@ -470,8 +488,33 @@ WINBASEAPI NTSTATUS WINAPI NtMapViewOfSection(HANDLE handle, HANDLE process, PVO
 void qemu_NtMapViewOfSection(struct qemu_syscall *call)
 {
     struct qemu_NtMapViewOfSection *c = (struct qemu_NtMapViewOfSection *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtMapViewOfSection(QEMU_G2H(c->handle), QEMU_G2H(c->process), QEMU_G2H(c->addr_ptr), c->zero_bits, c->commit_size, QEMU_G2H(c->offset_ptr), QEMU_G2H(c->size_ptr), c->inherit, c->alloc_type, c->protect);
+    void *addr_ptr_content;
+    void **addr_ptr = &addr_ptr_content;
+    qemu_ptr *addr_ptr_guest, *size_ptr_guest;
+    SIZE_T size_content, *size_ptr = &size_content;
+    
+    WINE_WARN("A lot of pitfalls here...\n");
+
+#if GUEST_BIT == HOST_BIT
+    addr_ptr = QEMU_G2H(c->addr_ptr);
+    size_ptr = QEMU_G2H(c->size_ptr);
+#else
+    addr_ptr_guest = QEMU_G2H(c->addr_ptr);
+    size_ptr_guest = QEMU_G2H(c->size_ptr);
+    addr_ptr_content = QEMU_G2H((ULONG_PTR)*addr_ptr_guest);
+    size_content = *size_ptr_guest;
+#endif
+
+    WINE_TRACE("handle %p ptr in %p %p size %lx\n", QEMU_G2H(c->handle), addr_ptr, *addr_ptr, *size_ptr);
+
+    c->super.iret = NtMapViewOfSection(QEMU_G2H(c->handle), QEMU_G2H(c->process), addr_ptr, c->zero_bits,
+            c->commit_size, QEMU_G2H(c->offset_ptr), size_ptr,
+            c->inherit, c->alloc_type, c->protect);
+
+    WINE_TRACE("ret %lx ptr %p\n", c->super.iret, *addr_ptr);
+#if GUEST_BIT != HOST_BIT
+    *addr_ptr_guest = QEMU_H2G(addr_ptr_content);
+#endif
 }
 
 #endif
@@ -489,7 +532,7 @@ WINBASEAPI NTSTATUS WINAPI NtUnmapViewOfSection(HANDLE process, PVOID addr)
 {
     struct qemu_NtUnmapViewOfSection call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTUNMAPVIEWOFSECTION);
-    call.process = (ULONG_PTR)process;
+    call.process = guest_HANDLE_g2h(process);
     call.addr = (ULONG_PTR)addr;
 
     qemu_syscall(&call.super);
@@ -502,7 +545,7 @@ WINBASEAPI NTSTATUS WINAPI NtUnmapViewOfSection(HANDLE process, PVOID addr)
 void qemu_NtUnmapViewOfSection(struct qemu_syscall *call)
 {
     struct qemu_NtUnmapViewOfSection *c = (struct qemu_NtUnmapViewOfSection *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NtUnmapViewOfSection(QEMU_G2H(c->process), QEMU_G2H(c->addr));
 }
 
