@@ -303,7 +303,7 @@ void CDECL MSVCRT___set_app_type(int type)
 void qemu___set_app_type(struct qemu_syscall *call)
 {
     struct qemu___set_app_type *c = (struct qemu___set_app_type *)(ULONG_PTR)call;
-    WINE_TRACE("\n");
+    WINE_TRACE("%p\n", p___set_app_type);
     /* No harm in forwarding this. If there is a conflict with qemu then qemu should
      * leave this thing alone. */
     p___set_app_type(c->type);
