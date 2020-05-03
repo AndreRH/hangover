@@ -578,6 +578,8 @@ WINBASEAPI NTSTATUS WINAPI LdrGetProcedureAddress(HMODULE module, const ANSI_STR
     call.address = (ULONG_PTR)address;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == STATUS_SUCCESS)
+        *address = (void *)(ULONG_PTR)call.address;
 
     return call.super.iret;
 }
@@ -587,8 +589,23 @@ WINBASEAPI NTSTATUS WINAPI LdrGetProcedureAddress(HMODULE module, const ANSI_STR
 void qemu_LdrGetProcedureAddress(struct qemu_syscall *call)
 {
     struct qemu_LdrGetProcedureAddress *c = (struct qemu_LdrGetProcedureAddress *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LdrGetProcedureAddress(QEMU_G2H(c->module), QEMU_G2H(c->name), c->ord, QEMU_G2H(c->address));
+    void *address;
+    ANSI_STRING stack, *name = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    name = QEMU_G2H(c->name);
+#else
+    if (QEMU_G2H(c->name))
+        STRING_g2h(name, QEMU_G2H(c->name));
+    else
+        name = NULL;
+#endif
+
+    c->super.iret = qemu_ops->qemu_LdrGetProcedureAddress(QEMU_G2H(c->module), name, c->ord, &address);
+    WINE_TRACE("ret %lx got addr %p\n", c->super.iret, address);
+
+    c->address = QEMU_H2G(address);
 }
 
 #endif

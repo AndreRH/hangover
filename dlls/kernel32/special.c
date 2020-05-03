@@ -445,10 +445,38 @@ FARPROC WINAPI kernel32_GetProcAddress(HMODULE module, const char *name)
 void qemu_GetProcAddress(struct qemu_syscall *call)
 {
     struct qemu_GetProcAddress *c = (struct qemu_GetProcAddress *)call;
-    WINE_TRACE("\n");
+    const char *name;
+    HMODULE module;
+    NTSTATUS nts;
+    FARPROC fp;
 
-    c->super.iret = QEMU_H2G(qemu_ops->qemu_GetProcAddress((HMODULE)c->module,
-            QEMU_G2H(c->name)));
+    WINE_TRACE("\n");
+    module = QEMU_G2H(c->module);
+    name = QEMU_G2H(c->name);
+
+    if (!module)
+    {
+        TEB *guest_teb64 = qemu_ops->qemu_getTEB();
+        module = guest_teb64->Peb->ImageBaseAddress;
+    }
+
+    if ((ULONG_PTR)name >> 16)
+    {
+        ANSI_STRING     str;
+
+        RtlInitAnsiString( &str, name );
+        nts = qemu_ops->qemu_LdrGetProcedureAddress( module, &str, 0, (void**)&fp );
+    }
+    else
+        nts = qemu_ops->qemu_LdrGetProcedureAddress( module, NULL, LOWORD(name), (void**)&fp );
+
+    if (nts)
+    {
+        SetLastError( RtlNtStatusToDosError( nts ) );
+        fp = NULL;
+    }
+
+    c->super.iret = QEMU_H2G(fp);
 }
 
 #endif
