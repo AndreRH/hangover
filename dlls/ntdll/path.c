@@ -224,9 +224,10 @@ WINBASEAPI DWORD WINAPI RtlGetFullPathName_U(const WCHAR* name, ULONG size, WCHA
     call.name = (ULONG_PTR)name;
     call.size = (ULONG_PTR)size;
     call.buffer = (ULONG_PTR)buffer;
-    call.file_part = (ULONG_PTR)file_part;
 
     qemu_syscall(&call.super);
+    if (file_part)
+        *file_part = (WCHAR *)(ULONG_PTR)call.file_part;
 
     return call.super.iret;
 }
@@ -236,8 +237,11 @@ WINBASEAPI DWORD WINAPI RtlGetFullPathName_U(const WCHAR* name, ULONG size, WCHA
 void qemu_RtlGetFullPathName_U(struct qemu_syscall *call)
 {
     struct qemu_RtlGetFullPathName_U *c = (struct qemu_RtlGetFullPathName_U *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlGetFullPathName_U(QEMU_G2H(c->name), c->size, QEMU_G2H(c->buffer), QEMU_G2H(c->file_part));
+    WCHAR *file_part;
+
+    WINE_TRACE("\n");
+    c->super.iret = RtlGetFullPathName_U(QEMU_G2H(c->name), c->size, QEMU_G2H(c->buffer), &file_part);
+    c->file_part = QEMU_H2G(file_part);
 }
 
 #endif
