@@ -660,7 +660,7 @@ WINBASEAPI int CDECL _configure_narrow_argv(int mode)
 void qemu__configure_narrow_argv(struct qemu_syscall *call)
 {
     struct qemu__configure_narrow_argv *c = (struct qemu__configure_narrow_argv *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__configure_narrow_argv(c->mode);
 }
 
