@@ -1008,6 +1008,7 @@ enum msvcrt_calls
     CALL_STRTOUL_L,
     CALL_STRXFRM,
     CALL_SWPRINTF_S,
+    CALL_SWPRINTF_UCRTBASE,
     CALL_SWSCANF_S,
     CALL_SYSTEM,
     CALL_TAN,
@@ -3359,6 +3360,8 @@ double *p__HUGE;
 int *p___argc;
 char ***p___argv;
 int (* CDECL p___stdio_common_vsprintf)( unsigned __int64 options, char *str, size_t len, const char *format,
+    MSVCRT__locale_t locale, __ms_va_list valist);
+int (* CDECL p___stdio_common_vswprintf)( unsigned __int64 options, wchar_t *str, size_t len, const wchar_t *format,
     MSVCRT__locale_t locale, __ms_va_list valist);
 
 
