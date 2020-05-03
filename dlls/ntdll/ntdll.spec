@@ -1510,3 +1510,6 @@
 
 # Server interface
 @ cdecl -norelay wine_server_call(ptr)
+
+# Codepages
+@ cdecl __wine_get_unix_codepage()
