@@ -327,7 +327,8 @@ struct qemu_RtlExpandEnvironmentStrings_U
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI RtlExpandEnvironmentStrings_U(const WCHAR *env, const UNICODE_STRING *src, UNICODE_STRING *dst, ULONG *plen)
+WINBASEAPI NTSTATUS WINAPI RtlExpandEnvironmentStrings_U(const WCHAR *env, const UNICODE_STRING *src,
+        UNICODE_STRING *dst, ULONG *plen)
 {
     struct qemu_RtlExpandEnvironmentStrings_U call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLEXPANDENVIRONMENTSTRINGS_U);
@@ -346,8 +347,19 @@ WINBASEAPI NTSTATUS WINAPI RtlExpandEnvironmentStrings_U(const WCHAR *env, const
 void qemu_RtlExpandEnvironmentStrings_U(struct qemu_syscall *call)
 {
     struct qemu_RtlExpandEnvironmentStrings_U *c = (struct qemu_RtlExpandEnvironmentStrings_U *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlExpandEnvironmentStrings_U(QEMU_G2H(c->env), QEMU_G2H(c->src), QEMU_G2H(c->dst), QEMU_G2H(c->plen));
+    UNICODE_STRING src_stack, *src = &src_stack;
+    UNICODE_STRING dst_stack, *dst = &dst_stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    src = QEMU_G2H(c->src);
+    dst = QEMU_G2H(c->dst);
+#else
+    UNICODE_STRING_g2h(src, QEMU_G2H(c->src));
+    UNICODE_STRING_g2h(dst, QEMU_G2H(c->dst));
+#endif
+
+    c->super.iret = RtlExpandEnvironmentStrings_U(QEMU_G2H(c->env), src, dst, QEMU_G2H(c->plen));
 }
 
 #endif
