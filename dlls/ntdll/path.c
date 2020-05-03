@@ -109,7 +109,7 @@ WINBASEAPI ULONG WINAPI RtlIsDosDeviceName_U(PCWSTR dos_name)
 void qemu_RtlIsDosDeviceName_U(struct qemu_syscall *call)
 {
     struct qemu_RtlIsDosDeviceName_U *c = (struct qemu_RtlIsDosDeviceName_U *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlIsDosDeviceName_U(QEMU_G2H(c->dos_name));
 }
 

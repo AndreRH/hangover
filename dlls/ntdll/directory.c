@@ -170,7 +170,7 @@ WINBASEAPI BOOLEAN WINAPI RtlDoesFileExists_U(LPCWSTR file_name)
 void qemu_RtlDoesFileExists_U(struct qemu_syscall *call)
 {
     struct qemu_RtlDoesFileExists_U *c = (struct qemu_RtlDoesFileExists_U *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlDoesFileExists_U(QEMU_G2H(c->file_name));
 }
 
