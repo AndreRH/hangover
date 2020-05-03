@@ -1374,7 +1374,7 @@ WINBASEAPI void WINAPI RtlReleasePath(PWSTR path)
 void qemu_RtlReleasePath(struct qemu_syscall *call)
 {
     struct qemu_RtlReleasePath *c = (struct qemu_RtlReleasePath *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     RtlReleasePath(QEMU_G2H(c->path));
 }
 
