@@ -104,7 +104,9 @@ WINBASEAPI NTSTATUS WINAPI RtlGetVersion(RTL_OSVERSIONINFOEXW *info)
 void qemu_RtlGetVersion(struct qemu_syscall *call)
 {
     struct qemu_RtlGetVersion *c = (struct qemu_RtlGetVersion *)call;
-    WINE_FIXME("Unverified!\n");
+
+    /* RTL_OSVERSIONINFOEXW has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = RtlGetVersion(QEMU_G2H(c->info));
 }
 
@@ -202,7 +204,9 @@ WINBASEAPI NTSTATUS WINAPI RtlVerifyVersionInfo(const RTL_OSVERSIONINFOEXW *info
 void qemu_RtlVerifyVersionInfo(struct qemu_syscall *call)
 {
     struct qemu_RtlVerifyVersionInfo *c = (struct qemu_RtlVerifyVersionInfo *)call;
-    WINE_FIXME("Unverified!\n");
+
+    /* RTL_OSVERSIONINFOEXW has the same size in 32 and 64 bit. */
+    WINE_TRACE("\n");
     c->super.iret = RtlVerifyVersionInfo(QEMU_G2H(c->info), c->dwTypeMask, c->dwlConditionMask);
 }
 
