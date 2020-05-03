@@ -300,8 +300,18 @@ WINBASEAPI void WINAPI RtlInitNlsTables(USHORT *ansi, USHORT *oem, USHORT *caset
 void qemu_RtlInitNlsTables(struct qemu_syscall *call)
 {
     struct qemu_RtlInitNlsTables *c = (struct qemu_RtlInitNlsTables *)call;
-    WINE_FIXME("Unverified!\n");
-    RtlInitNlsTables(QEMU_G2H(c->ansi), QEMU_G2H(c->oem), QEMU_G2H(c->casetable), QEMU_G2H(c->info));
+    NLSTABLEINFO stack, *info = &stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    info = QEMU_G2H(c->info);
+#endif
+
+    RtlInitNlsTables(QEMU_G2H(c->ansi), QEMU_G2H(c->oem), QEMU_G2H(c->casetable), info);
+
+#if GUEST_BIT != HOST_BIT
+    NLSTABLEINFO_h2g(QEMU_G2H(c->info), info);
+#endif
 }
 
 #endif
