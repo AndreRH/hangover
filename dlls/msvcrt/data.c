@@ -622,7 +622,7 @@ WINBASEAPI char** CDECL _get_initial_narrow_environment(void)
 
     qemu_syscall(&call.super);
 
-    return (char **)(ULONG_PTR)call.super.iret;
+    return MSVCRT___initenv;
 }
 
 #else
@@ -630,8 +630,7 @@ WINBASEAPI char** CDECL _get_initial_narrow_environment(void)
 void qemu__get_initial_narrow_environment(struct qemu_syscall *call)
 {
     struct qemu__get_initial_narrow_environment *c = (struct qemu__get_initial_narrow_environment *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p__get_initial_narrow_environment());
+    WINE_TRACE("\n"); /* Just logging. */
 }
 
 #endif
@@ -688,7 +687,7 @@ WINBASEAPI int CDECL _initialize_narrow_environment(void)
 void qemu__initialize_narrow_environment(struct qemu_syscall *call)
 {
     struct qemu__initialize_narrow_environment *c = (struct qemu__initialize_narrow_environment *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__initialize_narrow_environment();
 }
 
