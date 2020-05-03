@@ -377,8 +377,8 @@ WINBASEAPI NTSTATUS WINAPI LdrDisableThreadCalloutsForDll(HMODULE hModule)
 void qemu_LdrDisableThreadCalloutsForDll(struct qemu_syscall *call)
 {
     struct qemu_LdrDisableThreadCalloutsForDll *c = (struct qemu_LdrDisableThreadCalloutsForDll *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = LdrDisableThreadCalloutsForDll(QEMU_G2H(c->hModule));
+    WINE_TRACE("\n");
+    c->super.iret = qemu_ops->qemu_LdrDisableThreadCalloutsForDll(QEMU_G2H(c->hModule));
 }
 
 #endif
