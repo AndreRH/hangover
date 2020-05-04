@@ -205,6 +205,7 @@ WINBASEAPI BOOL WINAPI CreateProcessW(LPCWSTR app_name, LPWSTR cmd_line, LPSECUR
 
 #else
 
+extern int WINAPIV swprintf( WCHAR *str, const WCHAR *format, ... );
 void qemu_CreateProcessW(struct qemu_syscall *call)
 {
     struct qemu_CreateProcessW *c = (struct qemu_CreateProcessW *)call;
@@ -264,7 +265,7 @@ void qemu_CreateProcessW(struct qemu_syscall *call)
                  * CreateProcess(qemu, argv0, executable, argv1, argv2, ...) */
                 len = strlenW(app_name) + strlenW(cmd_line) + 6;
                 combined = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*combined));
-                sprintfW(combined, s_s, app_name, cmd_line);
+                swprintf(combined, s_s, app_name, cmd_line);
                 cmd_line = combined;
             }
             else
@@ -272,7 +273,7 @@ void qemu_CreateProcessW(struct qemu_syscall *call)
                 /* Add a dummy argv[0] for qemu. */
                 len = strlenW(app_name) + 6;
                 combined = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*combined));
-                sprintfW(combined, qemu_s, app_name);
+                swprintf(combined, qemu_s, app_name);
                 cmd_line = combined;
             }
         }
@@ -283,7 +284,7 @@ void qemu_CreateProcessW(struct qemu_syscall *call)
              * command line. */
             len = strlenW(cmd_line) + 6;
             combined = HeapAlloc(GetProcessHeap(), 0, len * sizeof(*combined));
-            sprintfW(combined, qemu_s, cmd_line);
+            swprintf(combined, qemu_s, cmd_line);
             cmd_line = combined;
         }
 
