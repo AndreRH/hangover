@@ -51,6 +51,9 @@ struct qemu_GetSystemRegistryQuota
 
 #ifdef QEMU_DLL_GUEST
 
+void (* WINAPI pRtlRaiseException)(PEXCEPTION_RECORD);
+
+
 static uint64_t __fastcall guest_completion_cb(struct qemu_completion_cb *data)
 {
     LPOVERLAPPED_COMPLETION_ROUTINE completion = (LPOVERLAPPED_COMPLETION_ROUTINE)(ULONG_PTR)data->func;

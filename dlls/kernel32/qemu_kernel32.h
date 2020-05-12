@@ -983,7 +983,7 @@ HMODULE WINAPI kernel32_GetModuleHandleW(const WCHAR *name);
 FARPROC WINAPI kernel32_GetProcAddress(HMODULE module, const char *name);
 HMODULE WINAPI kernel32_LoadLibraryA(const char *name);
 
-void (* WINAPI pRtlRaiseException)(PEXCEPTION_RECORD);
+extern void (* WINAPI pRtlRaiseException)(PEXCEPTION_RECORD);
 
 #include "my_winternl.h"
 

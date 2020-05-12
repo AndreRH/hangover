@@ -226,7 +226,7 @@ struct qemu_dxgi_swapchain
 
 #ifdef QEMU_DLL_GUEST
 
-const GUID IID_IDXGISurface1;
+extern const GUID IID_IDXGISurface1;
 
 static inline struct qemu_dxgi_surface *impl_from_IDXGISurface1(IDXGISurface1 *iface)
 {
