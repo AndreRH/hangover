@@ -24,6 +24,7 @@ RUN	apt-get update && apt-get install -y --no-install-recommends \
 	automake1.11 autoconf2.13 autoconf2.64 \
 	gtk-doc-tools git gperf groff p7zip-full \
 	gettext \
+	g++ \
 	make \
 &&	apt clean \
 &&	rm -rf /var/lib/apt/lists/* \
