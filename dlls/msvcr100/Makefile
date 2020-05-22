@@ -18,7 +18,7 @@ qemu_msvcr100.dll.so: qemu_msvcr100.spec cpp_h.o ctype_h.o data_h.o dir_h.o envi
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
 %_h.o: %.c qemu_msvcrt.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) $(HOST_CC) $< -c -o $@ $(CFLAGS)
+	$(WINEGCC) $(HOST_CC) $< -c -o $@ $(CFLAGS) -fcommon
 
 clean:
 	rm -rf *o *.dll *.so
