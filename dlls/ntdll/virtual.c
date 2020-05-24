@@ -405,7 +405,7 @@ void qemu_NtCreateSection(struct qemu_syscall *call)
     c->super.iret = NtCreateSection(&handle, c->access, attr, QEMU_G2H(c->size),
             c->protect, c->sec_flags, QEMU_G2H(c->file));
     c->handle = QEMU_H2G(handle);
-    WINE_TRACE("ret %lx\n", c->super.iret);
+    WINE_TRACE("ret %p\n", (void *)c->super.iret);
 }
 
 #endif
@@ -511,7 +511,7 @@ void qemu_NtMapViewOfSection(struct qemu_syscall *call)
             c->commit_size, QEMU_G2H(c->offset_ptr), size_ptr,
             c->inherit, c->alloc_type, c->protect);
 
-    WINE_TRACE("ret %lx ptr %p\n", c->super.iret, *addr_ptr);
+    WINE_TRACE("ret %p ptr %p\n", (void *)c->super.iret, *addr_ptr);
 #if GUEST_BIT != HOST_BIT
     *addr_ptr_guest = QEMU_H2G(addr_ptr_content);
 #endif
