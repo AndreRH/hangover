@@ -1876,7 +1876,7 @@ WINBASEAPI INT CDECL MSVCRT_iswprint(WCHAR wc)
 void qemu_iswprint(struct qemu_syscall *call)
 {
     struct qemu_iswprint *c = (struct qemu_iswprint *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_iswprint(c->wc);
 }
 
