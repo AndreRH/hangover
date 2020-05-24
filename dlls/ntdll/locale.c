@@ -1424,3 +1424,219 @@ void qemu___wine_get_unix_codepage(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_RtlGetProcessPreferredUILanguages
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t count;
+    uint64_t buffer;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlGetProcessPreferredUILanguages(DWORD flags, ULONG *count, WCHAR *buffer, ULONG *size)
+{
+    struct qemu_RtlGetProcessPreferredUILanguages call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETPROCESSPREFERREDUILANGUAGES);
+    call.flags = flags;
+    call.count = (ULONG_PTR)count;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlGetProcessPreferredUILanguages(struct qemu_syscall *call)
+{
+    struct qemu_RtlGetProcessPreferredUILanguages *c = (struct qemu_RtlGetProcessPreferredUILanguages *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlGetProcessPreferredUILanguages(c->flags, QEMU_G2H(c->count), QEMU_G2H(c->buffer), QEMU_G2H(c->size));
+}
+
+#endif
+
+struct qemu_RtlGetSystemPreferredUILanguages
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t unknown;
+    uint64_t count;
+    uint64_t buffer;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlGetSystemPreferredUILanguages(DWORD flags, ULONG unknown, ULONG *count, WCHAR *buffer, ULONG *size)
+{
+    struct qemu_RtlGetSystemPreferredUILanguages call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETSYSTEMPREFERREDUILANGUAGES);
+    call.flags = flags;
+    call.unknown = unknown;
+    call.count = (ULONG_PTR)count;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlGetSystemPreferredUILanguages(struct qemu_syscall *call)
+{
+    struct qemu_RtlGetSystemPreferredUILanguages *c = (struct qemu_RtlGetSystemPreferredUILanguages *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlGetSystemPreferredUILanguages(c->flags, c->unknown, QEMU_G2H(c->count), QEMU_G2H(c->buffer), QEMU_G2H(c->size));
+}
+
+#endif
+
+struct qemu_RtlGetThreadPreferredUILanguages
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t count;
+    uint64_t buffer;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlGetThreadPreferredUILanguages(DWORD flags, ULONG *count, WCHAR *buffer, ULONG *size)
+{
+    struct qemu_RtlGetThreadPreferredUILanguages call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETTHREADPREFERREDUILANGUAGES);
+    call.flags = flags;
+    call.count = (ULONG_PTR)count;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlGetThreadPreferredUILanguages(struct qemu_syscall *call)
+{
+    struct qemu_RtlGetThreadPreferredUILanguages *c = (struct qemu_RtlGetThreadPreferredUILanguages *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlGetThreadPreferredUILanguages(c->flags, QEMU_G2H(c->count), QEMU_G2H(c->buffer), QEMU_G2H(c->size));
+}
+
+#endif
+
+struct qemu_RtlGetUserPreferredUILanguages
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t unknown;
+    uint64_t count;
+    uint64_t buffer;
+    uint64_t size;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlGetUserPreferredUILanguages(DWORD flags, ULONG unknown, ULONG *count, WCHAR *buffer, ULONG *size)
+{
+    struct qemu_RtlGetUserPreferredUILanguages call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETUSERPREFERREDUILANGUAGES);
+    call.flags = flags;
+    call.unknown = unknown;
+    call.count = (ULONG_PTR)count;
+    call.buffer = (ULONG_PTR)buffer;
+    call.size = (ULONG_PTR)size;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlGetUserPreferredUILanguages(struct qemu_syscall *call)
+{
+    struct qemu_RtlGetUserPreferredUILanguages *c = (struct qemu_RtlGetUserPreferredUILanguages *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlGetUserPreferredUILanguages(c->flags, c->unknown, QEMU_G2H(c->count), QEMU_G2H(c->buffer), QEMU_G2H(c->size));
+}
+
+#endif
+
+struct qemu_RtlSetProcessPreferredUILanguages
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t buffer;
+    uint64_t count;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlSetProcessPreferredUILanguages(DWORD flags, PCZZWSTR buffer, ULONG *count)
+{
+    struct qemu_RtlSetProcessPreferredUILanguages call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETPROCESSPREFERREDUILANGUAGES);
+    call.flags = flags;
+    call.buffer = buffer;
+    call.count = (ULONG_PTR)count;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlSetProcessPreferredUILanguages(struct qemu_syscall *call)
+{
+    struct qemu_RtlSetProcessPreferredUILanguages *c = (struct qemu_RtlSetProcessPreferredUILanguages *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlSetProcessPreferredUILanguages(c->flags, c->buffer, QEMU_G2H(c->count));
+}
+
+#endif
+
+struct qemu_RtlSetThreadPreferredUILanguages
+{
+    struct qemu_syscall super;
+    uint64_t flags;
+    uint64_t buffer;
+    uint64_t count;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlSetThreadPreferredUILanguages(DWORD flags, PCZZWSTR buffer, ULONG *count)
+{
+    struct qemu_RtlSetThreadPreferredUILanguages call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETTHREADPREFERREDUILANGUAGES);
+    call.flags = flags;
+    call.buffer = buffer;
+    call.count = (ULONG_PTR)count;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlSetThreadPreferredUILanguages(struct qemu_syscall *call)
+{
+    struct qemu_RtlSetThreadPreferredUILanguages *c = (struct qemu_RtlSetThreadPreferredUILanguages *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlSetThreadPreferredUILanguages(c->flags, c->buffer, QEMU_G2H(c->count));
+}
+
+#endif

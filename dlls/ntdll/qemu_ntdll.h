@@ -482,13 +482,17 @@ enum ntdll_calls
     CALL_RTLGETNTVERSIONNUMBERS,
     CALL_RTLGETOWNERSECURITYDESCRIPTOR,
     CALL_RTLGETPROCESSHEAPS,
+    CALL_RTLGETPROCESSPREFERREDUILANGUAGES,
     CALL_RTLGETPRODUCTINFO,
     CALL_RTLGETSACLSECURITYDESCRIPTOR,
     CALL_RTLGETSEARCHPATH,
+    CALL_RTLGETSYSTEMPREFERREDUILANGUAGES,
     CALL_RTLGETSYSTEMTIMEPRECISE,
     CALL_RTLGETTHREADERRORMODE,
+    CALL_RTLGETTHREADPREFERREDUILANGUAGES,
     CALL_RTLGETUNLOADEVENTTRACE,
     CALL_RTLGETUNLOADEVENTTRACEEX,
+    CALL_RTLGETUSERPREFERREDUILANGUAGES,
     CALL_RTLGETVERSION,
     CALL_RTLGUIDFROMSTRING,
     CALL_RTLHASHUNICODESTRING,
@@ -620,9 +624,11 @@ enum ntdll_calls
     CALL_RTLSETLASTWIN32ERROR,
     CALL_RTLSETLASTWIN32ERRORANDNTSTATUSFROMNTSTATUS,
     CALL_RTLSETOWNERSECURITYDESCRIPTOR,
+    CALL_RTLSETPROCESSPREFERREDUILANGUAGES,
     CALL_RTLSETSACLSECURITYDESCRIPTOR,
     CALL_RTLSETSEARCHPATHMODE,
     CALL_RTLSETTHREADERRORMODE,
+    CALL_RTLSETTHREADPREFERREDUILANGUAGES,
     CALL_RTLSETTIMEZONEINFORMATION,
     CALL_RTLSIZEHEAP,
     CALL_RTLSLEEPCONDITIONVARIABLECS,
@@ -1531,6 +1537,12 @@ void qemu_wcstol(struct qemu_syscall *call);
 void qemu_wcstombs(struct qemu_syscall *call);
 void qemu_wcstoul(struct qemu_syscall *call);
 void qemu_wine_server_call(struct qemu_syscall *call);
+void qemu_RtlGetProcessPreferredUILanguages(struct qemu_syscall *call);
+void qemu_RtlGetSystemPreferredUILanguages(struct qemu_syscall *call);
+void qemu_RtlGetThreadPreferredUILanguages(struct qemu_syscall *call);
+void qemu_RtlGetUserPreferredUILanguages(struct qemu_syscall *call);
+void qemu_RtlSetProcessPreferredUILanguages(struct qemu_syscall *call);
+void qemu_RtlSetThreadPreferredUILanguages(struct qemu_syscall *call);
 
 WCHAR *(* CDECL p_wcsrchr)(WCHAR *str, WCHAR ch);
 void * (* CDECL p_memchr)(const void *ptr, int c, size_t n);
