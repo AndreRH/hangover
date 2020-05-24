@@ -968,12 +968,12 @@ static uint64_t CDECL sprintf_wrapper(void *ctx, ...)
             break;
 
         case QEMU_SYSCALL_ID(CALL_SPRINTF_UCRTBASE):
-            WINE_ERR("nasty new printf, dst func %p\n", p___stdio_common_vsprintf);
             ret = p___stdio_common_vsprintf(data->options, data->dst, data->len, data->fmt, data->locale, list);
+            break;
 
         case QEMU_SYSCALL_ID(CALL_SWPRINTF_UCRTBASE):
-            WINE_ERR("nasty new printf, dst func %p\n", p___stdio_common_vswprintf);
             ret = p___stdio_common_vswprintf(data->options, data->dst, data->len, data->fmt, data->locale, list);
+            break;
     }
     __ms_va_end(list);
 
