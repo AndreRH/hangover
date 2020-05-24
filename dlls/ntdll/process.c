@@ -137,19 +137,59 @@ WINBASEAPI NTSTATUS WINAPI NtQueryInformationProcess(IN HANDLE ProcessHandle,
 void qemu_NtQueryInformationProcess(struct qemu_syscall *call)
 {
     struct qemu_NtQueryInformationProcess *c = (struct qemu_NtQueryInformationProcess *)call;
+    HANDLE process;
     PROCESSINFOCLASS class;
+    ULONG len;
+    ULONG_PTR wow64;
+    void *info;
 
     WINE_TRACE("\n");
+    process = (HANDLE)c->ProcessHandle;
     class = c->ProcessInformationClass;
+    len = c->ProcessInformationLength;
+    info = QEMU_G2H(c->ProcessInformation);
 
     switch (class)
     {
+        case ProcessWow64Information:
+            /* 32 bit is complicated. On the one hand we're clearly a 32 bit program running on a 64 bit Wine or Windows,
+             * but Windows understands us as a 64 bit process (because qemu is built for 64 bit). In the case of Wine we
+             * probably don't even have a 32 bit Wine around. So the system itself is probably missing wow-related registry
+             * keys, etc. So the correct answer is probably no, we're not a wow64 process. The application also doesn't
+             * have to look for wow64 DLLs or keys, we'll load the 64 bit ones and translate the calls. Note that we'll
+             * get a "no" from the system when we invoke IsWow64Process below.
+             *
+             * On the other hand it is plausible that the application knows it is 32 bit, looks at some registry keys or
+             * other system properties and concludes it is running on 64 bit windows and can reasonably expect this call
+             * to return TRUE. Report TRUE to x86 guests to match the mismatch between GetSystemInfo and
+             * GetNativeSystemInfo and one day get an aarch64 Windows box and see what Microsoft's x86 emulator does.
+             * Report FALSE to x86_64 guests. */
+#if GUEST_BIT != HOST_BIT
+            if (len == sizeof(qemu_ptr))
+                len = sizeof(wow64);
+            if (info)
+                info = &wow64;
+#endif
+            c->super.iret = NtQueryInformationProcess(process, class, info, len, QEMU_G2H(c->ReturnLength));
+
+            if (process == GetCurrentProcess() && !c->super.iret && *((ULONG_PTR *)info))
+                WINE_FIXME("The host reported we are WoW64. This is unexpected.\n");
+
+#if GUEST_BIT != HOST_BIT
+            if (!c->super.iret)
+            {
+                qemu_ptr *wow64_32 = QEMU_G2H(c->ProcessInformation);
+                *wow64_32 = process == GetCurrentProcess() ? 1 : wow64;
+            }
+#endif
+            break;
+
         default:
             WINE_FIXME("Unhandled info class %u.\n", class);
             /* Drop through */
 
         case ProcessDefaultHardErrorMode: /* UINT */
-            c->super.iret = NtQueryInformationProcess((HANDLE)c->ProcessHandle, class, QEMU_G2H(c->ProcessInformation), c->ProcessInformationLength, QEMU_G2H(c->ReturnLength));
+            c->super.iret = NtQueryInformationProcess(process, class, info, len, QEMU_G2H(c->ReturnLength));
     }
 }
 
