@@ -115,7 +115,7 @@ wine-guest32: build/wine-guest32/Makefile
 # Build qemu
 build/qemu/Makefile: build/wine-host/.built qemu/configure
 	@mkdir -p $(@D)
-	cd build/qemu ; LIBS="-lwine -lpthread" CC="$(WINE_HOST)/tools/winegcc/winegcc --winebuild $(WINE_HOST)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI" CXX="$(WINE_HOST)/tools/winegcc/wineg++ --winebuild $(WINE_HOST)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI" ../../qemu/configure --python=/usr/bin/python2.7 --enable-windows-user $(QEMU_DISABLES); cd ../.. ; touch $@
+	cd build/qemu ; LIBS="-lwine -lpthread" CC="$(WINE_HOST)/tools/winegcc/winegcc --winebuild $(WINE_HOST)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI -Wno-pragma-pack" CXX="$(WINE_HOST)/tools/winegcc/wineg++ --winebuild $(WINE_HOST)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI -Wno-pragma-pack" ../../qemu/configure --python=/usr/bin/python2.7 --enable-windows-user $(QEMU_DISABLES); cd ../.. ; touch $@
 
 build/qemu/x86_64-windows-user/qemu-x86_64.exe.so: build/qemu/Makefile
 	+$(MAKE) -C build/qemu
