@@ -109,6 +109,8 @@ void qemu_SystemParametersInfo(struct qemu_syscall *call)
         case SPI_GETBEEP:
         case SPI_SETBEEP:
         case SPI_ICONVERTICALSPACING:
+        case SPI_GETICONTITLELOGFONT:
+        case SPI_SETICONTITLELOGFONT:
         case SPI_GETNONCLIENTMETRICS:
         case SPI_GETMINIMIZEDMETRICS:
         case SPI_SETMINIMIZEDMETRICS:
