@@ -115,7 +115,9 @@ struct qemu_NtQueryInformationProcess
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtQueryInformationProcess(IN HANDLE ProcessHandle, IN PROCESSINFOCLASS ProcessInformationClass, OUT PVOID ProcessInformation, IN ULONG ProcessInformationLength, OUT PULONG ReturnLength)
+WINBASEAPI NTSTATUS WINAPI NtQueryInformationProcess(IN HANDLE ProcessHandle,
+        IN PROCESSINFOCLASS ProcessInformationClass, OUT PVOID ProcessInformation,
+        IN ULONG ProcessInformationLength, OUT PULONG ReturnLength)
 {
     struct qemu_NtQueryInformationProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTQUERYINFORMATIONPROCESS);
@@ -135,8 +137,20 @@ WINBASEAPI NTSTATUS WINAPI NtQueryInformationProcess(IN HANDLE ProcessHandle, IN
 void qemu_NtQueryInformationProcess(struct qemu_syscall *call)
 {
     struct qemu_NtQueryInformationProcess *c = (struct qemu_NtQueryInformationProcess *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtQueryInformationProcess((HANDLE)c->ProcessHandle, c->ProcessInformationClass, QEMU_G2H(c->ProcessInformation), c->ProcessInformationLength, QEMU_G2H(c->ReturnLength));
+    PROCESSINFOCLASS class;
+
+    WINE_TRACE("\n");
+    class = c->ProcessInformationClass;
+
+    switch (class)
+    {
+        default:
+            WINE_FIXME("Unhandled info class %u.\n", class);
+            /* Drop through */
+
+        case ProcessDefaultHardErrorMode: /* UINT */
+            c->super.iret = NtQueryInformationProcess((HANDLE)c->ProcessHandle, class, QEMU_G2H(c->ProcessInformation), c->ProcessInformationLength, QEMU_G2H(c->ReturnLength));
+    }
 }
 
 #endif
@@ -152,7 +166,9 @@ struct qemu_NtSetInformationProcess
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtSetInformationProcess(IN HANDLE ProcessHandle, IN PROCESSINFOCLASS ProcessInformationClass, IN PVOID ProcessInformation, IN ULONG ProcessInformationLength)
+WINBASEAPI NTSTATUS WINAPI NtSetInformationProcess(IN HANDLE ProcessHandle,
+        IN PROCESSINFOCLASS ProcessInformationClass, IN PVOID ProcessInformation,
+        IN ULONG ProcessInformationLength)
 {
     struct qemu_NtSetInformationProcess call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTSETINFORMATIONPROCESS);
@@ -171,8 +187,21 @@ WINBASEAPI NTSTATUS WINAPI NtSetInformationProcess(IN HANDLE ProcessHandle, IN P
 void qemu_NtSetInformationProcess(struct qemu_syscall *call)
 {
     struct qemu_NtSetInformationProcess *c = (struct qemu_NtSetInformationProcess *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = NtSetInformationProcess((HANDLE)c->ProcessHandle, c->ProcessInformationClass, QEMU_G2H(c->ProcessInformation), c->ProcessInformationLength);
+    PROCESSINFOCLASS class;
+
+    WINE_TRACE("\n");
+    class = c->ProcessInformationClass;
+
+    switch (class)
+    {
+        default:
+            WINE_FIXME("Unhandled info class %u\n", class);
+            /* drop through*/
+
+        case ProcessDefaultHardErrorMode:
+            c->super.iret = NtSetInformationProcess((HANDLE)c->ProcessHandle, class,
+                    QEMU_G2H(c->ProcessInformation), c->ProcessInformationLength);
+    }
 }
 
 #endif
