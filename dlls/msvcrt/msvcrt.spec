@@ -281,7 +281,7 @@
 @ extern __pioinfo msvcrt.__qemu_native_data__
 # stub __pwctype_func()
 # @ cdecl __pxcptinfoptrs() MSVCRT___pxcptinfoptrs
-@ cdecl _set_app_type(long) MSVCRT___set_app_type
+@ cdecl __set_app_type(long) MSVCRT___set_app_type
 # @ extern __setlc_active MSVCRT___setlc_active
 @ cdecl __setusermatherr(ptr) MSVCRT___setusermatherr
 # stub __strncnt(str long)

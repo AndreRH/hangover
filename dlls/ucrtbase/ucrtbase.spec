@@ -656,7 +656,6 @@
 @ stub __pwctype_func
 #@ cdecl __pxcptinfoptrs() MSVCRT___pxcptinfoptrs
 @ stub __report_gsfailure
-@ cdecl __set_app_type(long) MSVCRT___set_app_type
 @ stub __set_flsgetvalue
 #@ extern __setlc_active MSVCRT___setlc_active
 @ cdecl __setusermatherr(ptr) MSVCRT___setusermatherr
