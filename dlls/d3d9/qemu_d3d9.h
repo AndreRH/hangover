@@ -757,9 +757,6 @@ extern const GUID qemu_d3d9_buffer_guid;
 extern const GUID qemu_d3d9_standalone_surface_guid;
 extern const GUID qemu_d3d9_volume_guid;
 
-const GUID *pIID_IDirect3DDevice9;
-const GUID *pIID_IDirect3DDevice9Ex;
-
 extern uint64_t qemu_d3d9_buffer_destroyed;
 extern uint64_t qemu_d3d9_texture_destroyed;
 extern uint64_t qemu_d3d9_subresource_destroyed;
