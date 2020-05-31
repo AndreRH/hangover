@@ -85,10 +85,12 @@ build/x86_64-w64-mingw32/bin/libxslt-1.dll: build/libxslt64/Makefile
 	@mkdir -p $(@D)
 	+$(MAKE) -C build/libxslt64/ install
 
-# Build the Host (e.g. arm64) wine
+# Build the Host (e.g. arm64) wine.
+# FIXME: If $HANGOVER_WINE_CC is not set this will define CC to an empty string, which still makes configure
+# happy. Is there a nicer way?
 build/wine-host/Makefile: wine/configure
 	@mkdir -p $(@D)
-	cd build/wine-host ; ../../wine/configure --enable-win64 $(TESTS)
+	cd build/wine-host ; CC=$(HANGOVER_WINE_CC) ../../wine/configure --enable-win64 $(TESTS)
 
 wine-host build/wine-host/.built: build/wine-host/Makefile
 	+$(MAKE) -C build/wine-host
