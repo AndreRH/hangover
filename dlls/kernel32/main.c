@@ -1410,6 +1410,7 @@ static CRITICAL_SECTION ov_cs = {0, -1, 0, 0, 0, 0};
 static struct list ov_free_list = LIST_INIT(ov_free_list);
 static struct wine_rb_tree ov_rbtree;
 unsigned int free_list_space = 1024;
+DWORD kernel32_tls;
 
 void free_OVERLAPPED(struct OVERLAPPED_data *ov)
 {

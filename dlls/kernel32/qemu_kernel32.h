@@ -1960,7 +1960,7 @@ void qemu_WriteTapemark(struct qemu_syscall *call);
 void qemu_WTSGetActiveConsoleSessionId(struct qemu_syscall *call);
 void qemu_ZombifyActCtx(struct qemu_syscall *call);
 
-DWORD kernel32_tls;
+extern DWORD kernel32_tls;
 
 extern struct callback_entry_table *overlapped_wrappers;
 DWORD CALLBACK overlapped32_wait_func(void *ctx);
