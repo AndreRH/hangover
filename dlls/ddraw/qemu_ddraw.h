@@ -1236,8 +1236,8 @@ extern uint64_t ddraw_surface_destroy_cb;
 extern uint64_t ddraw_delete_detach_cb;
 extern uint64_t surface_guest_init_complex;
 
-const struct IUnknownVtbl surface_priv_vtbl;
-const GUID surface_priv_uuid;
+extern const struct IUnknownVtbl surface_priv_vtbl;
+extern const GUID surface_priv_uuid;
 
 static inline struct qemu_surface *surface_impl_from_IUnknown(IUnknown *iface)
 {
