@@ -636,7 +636,7 @@ struct qemu_RtlCompareMemoryUlong
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI SIZE_T WINAPI RtlCompareMemoryUlong(const ULONG *Source1, SIZE_T Length, ULONG dwVal)
+WINBASEAPI SIZE_T WINAPI RtlCompareMemoryUlong(const void *Source1, SIZE_T Length, ULONG dwVal)
 {
     struct qemu_RtlCompareMemoryUlong call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLCOMPAREMEMORYULONG);
@@ -651,8 +651,6 @@ WINBASEAPI SIZE_T WINAPI RtlCompareMemoryUlong(const ULONG *Source1, SIZE_T Leng
 
 #else
 
-/* TODO: Add RtlCompareMemoryUlong to Wine headers? */
-extern SIZE_T WINAPI RtlCompareMemoryUlong(const ULONG *Source1, SIZE_T Length, ULONG dwVal);
 void qemu_RtlCompareMemoryUlong(struct qemu_syscall *call)
 {
     struct qemu_RtlCompareMemoryUlong *c = (struct qemu_RtlCompareMemoryUlong *)call;
