@@ -167,6 +167,8 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_user32);
 uint64_t reverse_wndproc_func;
 
 pthread_key_t user32_tls;
+ATOM msg_FINDMSGSTRING;
+HMODULE wrapper_mod, host_mod, guest_mod;
 
 #define REVERSE_WNDPROC_WRAPPER_COUNT 1024
 static struct reverse_wndproc_wrapper *reverse_wndproc_wrappers;

@@ -1506,7 +1506,7 @@ WNDPROC wndproc_guest_to_host(uint64_t guest_func);
 uint64_t wndproc_host_to_guest(WNDPROC host_func);
 extern pthread_key_t user32_tls;
 
-HMODULE wrapper_mod, host_mod, guest_mod;
+extern HMODULE wrapper_mod, host_mod, guest_mod;
 
 extern struct wine_rb_tree win_event_tree;
 int win_event_compare(const void *key, const struct wine_rb_entry *entry);
@@ -1518,7 +1518,7 @@ void msg_guest_to_host(MSG *msg_out, const MSG *msg_in);
 void msg_guest_to_host_return(MSG *orig, MSG *conv);
 
 /* Registered messages that need translation */
-ATOM msg_FINDMSGSTRING;
+extern ATOM msg_FINDMSGSTRING;
 
 BOOL init_hook_wrappers(void);
 
