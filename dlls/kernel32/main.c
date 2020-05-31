@@ -135,7 +135,7 @@ static BOOL __fastcall guest_register_class_wrapper(WCHAR *name)
     comctl32 = kernel32_GetModuleHandleW(comctl32W);
     if (!comctl32)
         return FALSE;
-    p_RegisterClassNameW = kernel32_GetProcAddress(comctl32, "RegisterClassNameW");
+    p_RegisterClassNameW = (void *)kernel32_GetProcAddress(comctl32, "RegisterClassNameW");
     if (!p_RegisterClassNameW)
         return FALSE;
 
