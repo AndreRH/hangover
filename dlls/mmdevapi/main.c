@@ -378,6 +378,7 @@ static const syscall_handler dll_functions[] =
 };
 
 int (*WINAPIV p_swscanf)(const WCHAR *str, const WCHAR *format, ...);
+HMODULE mmdevapi_mod;
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {

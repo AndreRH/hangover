@@ -235,7 +235,7 @@ void qemu_volume_guest_init(struct qemu_volume *volume);
 
 #else
 
-HMODULE mmdevapi_mod;
+extern HMODULE mmdevapi_mod;
 extern const struct qemu_ops *qemu_ops;
 
 void qemu_AEV_AddRef(struct qemu_syscall *call);
