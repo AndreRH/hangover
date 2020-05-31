@@ -35,8 +35,10 @@
 #ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_secur32);
-#endif
 
+const CERT_CONTEXT * (* WINAPI p_CERT_CONTEXT_g2h)(qemu_ptr cert32);
+const qemu_ptr (* WINAPI p_CERT_CONTEXT_h2g)(CERT_CONTEXT *cert64);
+#endif
 
 struct qemu_AcquireCredentialsHandle
 {

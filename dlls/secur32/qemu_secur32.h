@@ -112,9 +112,6 @@ void qemu_TranslateNameA(struct qemu_syscall *call);
 void qemu_TranslateNameW(struct qemu_syscall *call);
 void qemu_VerifySignature(struct qemu_syscall *call);
 
-const CERT_CONTEXT * (* WINAPI p_CERT_CONTEXT_g2h)(qemu_ptr cert32);
-const qemu_ptr (* WINAPI p_CERT_CONTEXT_h2g)(CERT_CONTEXT *cert64);
-
 #endif
 
 #endif
