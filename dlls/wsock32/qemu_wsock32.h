@@ -48,13 +48,13 @@ void qemu_WsControl(struct qemu_syscall *call);
 void qemu_WSOCK32_getnetbyname(struct qemu_syscall *call);
 void qemu_WSOCK32_inet_network(struct qemu_syscall *call);
 
-INT (* WINAPI p_EnumProtocolsA)(LPINT protocols, LPVOID buffer, LPDWORD buflen);
-INT (* WINAPI p_EnumProtocolsW)(LPINT protocols, LPVOID buffer, LPDWORD buflen);
-struct netent *(* WINAPI p_getnetbyname)(const char *name);
-INT (* WINAPI p_getsockopt)(SOCKET s, INT level, INT optname, char *optval, INT *optlen);
-UINT (* WINAPI p_inet_network)(const char *cp);
-INT (* WINAPI p_setsockopt)(SOCKET s, INT level, INT optname, char *optval, INT optlen);
-DWORD (* WINAPI p_WsControl)(DWORD protocol, DWORD action, LPVOID pRequestInfo, LPDWORD pcbRequestInfoLen, LPVOID pResponseInfo, LPDWORD pcbResponseInfoLen);
+extern INT (* WINAPI p_EnumProtocolsA)(LPINT protocols, LPVOID buffer, LPDWORD buflen);
+extern INT (* WINAPI p_EnumProtocolsW)(LPINT protocols, LPVOID buffer, LPDWORD buflen);
+extern struct netent *(* WINAPI p_getnetbyname)(const char *name);
+extern INT (* WINAPI p_getsockopt)(SOCKET s, INT level, INT optname, char *optval, INT *optlen);
+extern UINT (* WINAPI p_inet_network)(const char *cp);
+extern INT (* WINAPI p_setsockopt)(SOCKET s, INT level, INT optname, char *optval, INT optlen);
+extern DWORD (* WINAPI p_WsControl)(DWORD protocol, DWORD action, LPVOID pRequestInfo, LPDWORD pcbRequestInfoLen, LPVOID pResponseInfo, LPDWORD pcbResponseInfoLen);
 
 #endif
 

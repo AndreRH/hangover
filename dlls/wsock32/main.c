@@ -60,6 +60,14 @@ static const syscall_handler dll_functions[] =
     qemu_WSOCK32_inet_network,
 };
 
+INT (* WINAPI p_EnumProtocolsA)(LPINT protocols, LPVOID buffer, LPDWORD buflen);
+INT (* WINAPI p_EnumProtocolsW)(LPINT protocols, LPVOID buffer, LPDWORD buflen);
+struct netent *(* WINAPI p_getnetbyname)(const char *name);
+INT (* WINAPI p_getsockopt)(SOCKET s, INT level, INT optname, char *optval, INT *optlen);
+UINT (* WINAPI p_inet_network)(const char *cp);
+INT (* WINAPI p_setsockopt)(SOCKET s, INT level, INT optname, char *optval, INT optlen);
+DWORD (* WINAPI p_WsControl)(DWORD protocol, DWORD action, LPVOID pRequestInfo, LPDWORD pcbRequestInfoLen, LPVOID pResponseInfo, LPDWORD pcbResponseInfoLen);
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     HMODULE wsock32;
