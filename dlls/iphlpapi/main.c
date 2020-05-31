@@ -147,6 +147,13 @@ static const syscall_handler dll_functions[] =
     qemu_UnenableRouter,
 };
 
+CHAR * (* WINAPI p_if_indextoname)(NET_IFINDEX index, CHAR *name);
+IF_INDEX (* WINAPI p_if_nametoindex)(const char *name);
+DWORD (* WINAPI p__PfCreateInterface)(DWORD dwName,PFFORWARD_ACTION inAction,PFFORWARD_ACTION outAction,BOOL bUseLog,BOOL bMustBeUnique,INTERFACE_HANDLE *ppInterface);
+DWORD (* WINAPI p__PfUnBindInterface)(INTERFACE_HANDLE interfaceXX);
+DWORD (* WINAPI p__PfDeleteInterface)(INTERFACE_HANDLE interfaceXX);
+DWORD (* WINAPI p__PfBindInterfaceToIPAddress)(INTERFACE_HANDLE interfaceXX, PFADDRESSTYPE type, PBYTE ip);
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     HMODULE iphlpapi;

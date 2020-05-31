@@ -206,12 +206,12 @@ void qemu_SetPerTcpConnectionEStats(struct qemu_syscall *call);
 void qemu_SetTcpEntry(struct qemu_syscall *call);
 void qemu_UnenableRouter(struct qemu_syscall *call);
 
-CHAR * (* WINAPI p_if_indextoname)(NET_IFINDEX index, CHAR *name);
-IF_INDEX (* WINAPI p_if_nametoindex)(const char *name);
-DWORD (* WINAPI p__PfCreateInterface)(DWORD dwName,PFFORWARD_ACTION inAction,PFFORWARD_ACTION outAction,BOOL bUseLog,BOOL bMustBeUnique,INTERFACE_HANDLE *ppInterface);
-DWORD (* WINAPI p__PfUnBindInterface)(INTERFACE_HANDLE interfaceXX);
-DWORD (* WINAPI p__PfDeleteInterface)(INTERFACE_HANDLE interfaceXX);
-DWORD (* WINAPI p__PfBindInterfaceToIPAddress)(INTERFACE_HANDLE interfaceXX, PFADDRESSTYPE type, PBYTE ip);
+extern CHAR * (* WINAPI p_if_indextoname)(NET_IFINDEX index, CHAR *name);
+extern IF_INDEX (* WINAPI p_if_nametoindex)(const char *name);
+extern DWORD (* WINAPI p__PfCreateInterface)(DWORD dwName,PFFORWARD_ACTION inAction,PFFORWARD_ACTION outAction,BOOL bUseLog,BOOL bMustBeUnique,INTERFACE_HANDLE *ppInterface);
+extern DWORD (* WINAPI p__PfUnBindInterface)(INTERFACE_HANDLE interfaceXX);
+extern DWORD (* WINAPI p__PfDeleteInterface)(INTERFACE_HANDLE interfaceXX);
+extern DWORD (* WINAPI p__PfBindInterfaceToIPAddress)(INTERFACE_HANDLE interfaceXX, PFADDRESSTYPE type, PBYTE ip);
 
 #endif
 
