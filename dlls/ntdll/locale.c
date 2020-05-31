@@ -1588,7 +1588,7 @@ WINBASEAPI NTSTATUS WINAPI RtlSetProcessPreferredUILanguages(DWORD flags, PCZZWS
     struct qemu_RtlSetProcessPreferredUILanguages call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETPROCESSPREFERREDUILANGUAGES);
     call.flags = flags;
-    call.buffer = buffer;
+    call.buffer = (ULONG_PTR)buffer;
     call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
@@ -1602,7 +1602,7 @@ void qemu_RtlSetProcessPreferredUILanguages(struct qemu_syscall *call)
 {
     struct qemu_RtlSetProcessPreferredUILanguages *c = (struct qemu_RtlSetProcessPreferredUILanguages *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlSetProcessPreferredUILanguages(c->flags, c->buffer, QEMU_G2H(c->count));
+    c->super.iret = RtlSetProcessPreferredUILanguages(c->flags, QEMU_G2H(c->buffer), QEMU_G2H(c->count));
 }
 
 #endif
@@ -1622,7 +1622,7 @@ WINBASEAPI NTSTATUS WINAPI RtlSetThreadPreferredUILanguages(DWORD flags, PCZZWST
     struct qemu_RtlSetThreadPreferredUILanguages call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLSETTHREADPREFERREDUILANGUAGES);
     call.flags = flags;
-    call.buffer = buffer;
+    call.buffer = (ULONG_PTR)buffer;
     call.count = (ULONG_PTR)count;
 
     qemu_syscall(&call.super);
@@ -1636,7 +1636,7 @@ void qemu_RtlSetThreadPreferredUILanguages(struct qemu_syscall *call)
 {
     struct qemu_RtlSetThreadPreferredUILanguages *c = (struct qemu_RtlSetThreadPreferredUILanguages *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlSetThreadPreferredUILanguages(c->flags, c->buffer, QEMU_G2H(c->count));
+    c->super.iret = RtlSetThreadPreferredUILanguages(c->flags, QEMU_G2H(c->buffer), QEMU_G2H(c->count));
 }
 
 #endif
