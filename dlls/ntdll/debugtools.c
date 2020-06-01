@@ -72,8 +72,25 @@ WINBASEAPI const char * __cdecl __wine_dbg_strdup(const char *str)
 void qemu___wine_dbg_strdup(struct qemu_syscall *call)
 {
     struct qemu___wine_dbg_strdup *c = (struct qemu___wine_dbg_strdup *)call;
+    const char *ret;
+
     WINE_TRACE("\n");
-    c->super.iret = QEMU_H2G(__wine_dbg_strdup(QEMU_G2H(c->str)));
+    ret = __wine_dbg_strdup(QEMU_G2H(c->str));
+
+    /* With the introduction of the .so side ntdll module the static strings are out of reach.
+     * I guess Wine will eventually have its own way to force it back down, so use this for now.*/
+#if GUEST_BIT != HOST_BIT
+    if ((ULONG_PTR)ret > ~(0U))
+    {
+        static char *replace;
+        WINE_WARN("String \"%s\" is unrechable fo the client.\n", ret);
+        if (!replace)
+            replace = HeapAlloc(GetProcessHeap(), 0, 1024);
+        strcpy(replace, ret);
+        ret = replace;
+    }
+#endif
+    c->super.iret = QEMU_H2G(ret);
 }
 
 #endif
