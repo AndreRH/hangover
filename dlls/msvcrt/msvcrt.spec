@@ -202,7 +202,7 @@
 @ extern -arch=x86_64 __argc msvcrt.__qemu_native_data__
 @ extern -arch=i386 __argv MSVCRT___argv
 @ extern -arch=x86_64 __argv msvcrt.__qemu_native_data__
-@ extern __badioinfo msvcr100.__qemu_native_data__
+@ extern __badioinfo msvcrt.__qemu_native_data__
 @ cdecl __crtCompareStringA(long long str long str long)
 @ cdecl __crtCompareStringW(long long wstr long wstr long)
 @ cdecl __crtGetLocaleInfoW(long long ptr long)
