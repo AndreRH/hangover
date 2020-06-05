@@ -530,7 +530,7 @@
 @ cdecl _Getmonths()
 @ cdecl _Gettnames()
 @ extern -arch=i386 _HUGE MSVCRT__HUGE
-@ extern -arch=x86_64 _HUGE msvcr100.__qemu_native_data__
+@ extern -arch=x86_64 _HUGE ucrtbase.__qemu_native_data__
 @ cdecl _IsExceptionObjectToBeDestroyed(ptr)
 @ stub _NLG_Dispatch2
 @ stub _NLG_Return
@@ -574,10 +574,10 @@
 @ cdecl ___setlc_active_func() MSVCRT____setlc_active_func
 @ cdecl ___unguarded_readlc_active_add_func() MSVCRT____unguarded_readlc_active_add_func
 @ extern -arch=i386 __argc MSVCRT___argc
-@ extern -arch=x86_64 __argc msvcr100.__qemu_native_data__
+@ extern -arch=x86_64 __argc ucrtbase.__qemu_native_data__
 @ extern -arch=i386 __argv MSVCRT___argv
-@ extern -arch=x86_64 __argv msvcr100.__qemu_native_data__
-@ extern __badioinfo msvcr100.__qemu_native_data__
+@ extern -arch=x86_64 __argv ucrtbase.__qemu_native_data__
+@ extern __badioinfo ucrtbase.__qemu_native_data__
 @ cdecl __clean_type_info_names_internal(ptr)
 @ cdecl -arch=i386 __control87_2(long long ptr ptr)
 @ stub __create_locale
@@ -627,7 +627,7 @@
 @ cdecl -arch=i386 -norelay __libm_sse2_sinf() MSVCRT___libm_sse2_sinf
 @ cdecl -arch=i386 -norelay __libm_sse2_tan() MSVCRT___libm_sse2_tan
 @ cdecl -arch=i386 -norelay __libm_sse2_tanf() MSVCRT___libm_sse2_tanf
-@ extern __mb_cur_max msvcr100.__qemu_native_data__
+@ extern __mb_cur_max ucrtbase.__qemu_native_data__
 @ cdecl __p___argc() MSVCRT___p___argc
 @ cdecl __p___argv() MSVCRT___p___argv
 #@ cdecl __p___initenv()
@@ -652,7 +652,7 @@
 @ cdecl __p__wenviron() MSVCRT___p__wenviron
 #@ cdecl __p__wpgmptr() MSVCRT___p__wpgmptr
 @ cdecl __pctype_func() MSVCRT___pctype_func
-@ extern __pioinfo msvcr100.__qemu_native_data__
+@ extern __pioinfo ucrtbase.__qemu_native_data__
 @ stub __pwctype_func
 #@ cdecl __pxcptinfoptrs() MSVCRT___pxcptinfoptrs
 @ stub __report_gsfailure
@@ -1235,7 +1235,7 @@
 @ stub -arch=i386 _outpd(long long)
 @ stub -arch=i386 _outpw(long long)
 @ cdecl _pclose(ptr) MSVCRT__pclose
-@ extern _pctype msvcr100.__qemu_native_data__
+@ extern _pctype ucrtbase.__qemu_native_data__
 #@ extern _pgmptr MSVCRT__pgmptr
 @ cdecl _pipe(ptr long long) MSVCRT__pipe
 @ cdecl _popen(str str) MSVCRT__popen
