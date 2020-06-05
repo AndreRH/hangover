@@ -197,10 +197,16 @@ extern void* WINAPI Direct3DShaderValidatorCreate9(void);
 void qemu_Direct3DShaderValidatorCreate9(struct qemu_syscall *call)
 {
     struct qemu_Direct3DShaderValidatorCreate9 *c = (struct qemu_Direct3DShaderValidatorCreate9 *)call;
+    IUnknown *validator;
+
     WINE_TRACE("\n");
-    c->super.iret = QEMU_H2G(Direct3DShaderValidatorCreate9());
-    if (c->super.iret)
+    validator = Direct3DShaderValidatorCreate9();
+    if (validator)
+    {
         WINE_FIXME("Handle a non-NULL result\n");
+        IUnknown_Release(validator);
+    }
+    c->super.iret = 0;
 }
 
 #endif
