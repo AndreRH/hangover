@@ -1257,7 +1257,7 @@
 @ cdecl -arch=arm,x86_64,arm64 asinf(float) MSVCRT_asinf
 @ cdecl -arch=arm,x86_64,arm64 atanf(float) MSVCRT_atanf
 @ cdecl -arch=arm,x86_64,arm64 atan2f(float float) MSVCRT_atan2f
-# @ cdecl -private atexit(ptr) MSVCRT_atexit  # not imported to avoid conflicts with Mingw
+@ cdecl -private atexit(ptr) MSVCRT_atexit  # not imported to avoid conflicts with Mingw
 @ cdecl atof(str) MSVCRT_atof
 @ cdecl atoi(str) MSVCRT_atoi
 @ cdecl atol(str) ntdll.atol

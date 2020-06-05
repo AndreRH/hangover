@@ -126,6 +126,11 @@ MSVCRT__onexit_t CDECL MSVCRT__onexit(MSVCRT__onexit_t func)
     return func;
 }
 
+int CDECL MSVCRT_atexit(void (__cdecl *func)(void))
+{
+    return MSVCRT__onexit((MSVCRT__onexit_t)func) == (MSVCRT__onexit_t)func ? 0 : -1;
+}
+
 #else
 
 static void *guest_onexit_callback = 0;
