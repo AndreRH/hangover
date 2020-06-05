@@ -488,8 +488,13 @@ WINBASEAPI char*** CDECL MSVCRT___p__environ(void)
 void qemu___p__environ(struct qemu_syscall *call)
 {
     struct qemu___p__environ *c = (struct qemu___p__environ *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p___p__environ());
+    WINE_TRACE("\n");
+    if (p__environ)
+        c->super.iret = p__environ;
+    else if (p___p__environ)
+        c->super.iret = QEMU_H2G(p___p__environ());
+    else
+        WINE_ERR("I have neither p__environ nor p___p__environ().\n");
 }
 
 #endif
