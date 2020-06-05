@@ -414,7 +414,7 @@
 @ cdecl _ecvt_s(str long double long ptr ptr) MSVCRT__ecvt_s
 @ cdecl _endthread () MSVCRT__endthread
 @ cdecl _endthreadex(long) MSVCRT__endthreadex
-@ extern _environ msvcrt.__qemu_native_data__
+@ extern _environ MSVCRT__environ
 @ cdecl _eof(long) MSVCRT__eof
 @ cdecl _errno() MSVCRT__errno
 # @ cdecl -arch=i386 _except_handler2(ptr ptr ptr ptr)

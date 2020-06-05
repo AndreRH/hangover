@@ -105,6 +105,7 @@ struct qemu__putenv
 {
     struct qemu_syscall super;
     uint64_t str;
+    uint64_t new_environ;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -116,6 +117,7 @@ int CDECL MSVCRT__putenv(const char *str)
     call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
+    MSVCRT__environ = (char **)(ULONG_PTR)call.new_environ;
 
     return call.super.iret;
 }
@@ -125,8 +127,16 @@ int CDECL MSVCRT__putenv(const char *str)
 void qemu__putenv(struct qemu_syscall *call)
 {
     struct qemu__putenv *c = (struct qemu__putenv *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+
+    WINE_TRACE("");
     c->super.iret = p__putenv(QEMU_G2H(c->str));
+    c->new_environ = QEMU_H2G(*p__environ);
+
+#if GUEST_BIT != HOST_BIT
+    WINE_FIXME("Convert _environ array\n");
+    if (c->new_environ > ~0U)
+        WINE_FIXME("New enironment is unreachable.\n");
+#endif
 }
 
 #endif
@@ -135,6 +145,7 @@ struct qemu__wputenv
 {
     struct qemu_syscall super;
     uint64_t str;
+    uint64_t new_environ;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -146,6 +157,7 @@ int CDECL MSVCRT__wputenv(const WCHAR *str)
     call.str = (ULONG_PTR)str;
 
     qemu_syscall(&call.super);
+    MSVCRT__environ = (char **)(ULONG_PTR)call.new_environ;
 
     return call.super.iret;
 }
@@ -155,8 +167,16 @@ int CDECL MSVCRT__wputenv(const WCHAR *str)
 void qemu__wputenv(struct qemu_syscall *call)
 {
     struct qemu__wputenv *c = (struct qemu__wputenv *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+
+    WINE_TRACE("\n");
     c->super.iret = p__wputenv(QEMU_G2H(c->str));
+    c->new_environ = QEMU_H2G(*p__environ);
+
+#if GUEST_BIT != HOST_BIT
+    WINE_FIXME("Convert _environ array\n");
+    if (c->new_environ > ~0U)
+        WINE_FIXME("New enironment is unreachable.\n");
+#endif
 }
 
 #endif
@@ -166,11 +186,12 @@ struct qemu__putenv_s
     struct qemu_syscall super;
     uint64_t name;
     uint64_t value;
+    uint64_t new_environ;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-int CDECL _putenv_s(const char *name, const char *value)
+WINBASEAPI int CDECL _putenv_s(const char *name, const char *value)
 {
     struct qemu__putenv_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__PUTENV_S);
@@ -178,6 +199,7 @@ int CDECL _putenv_s(const char *name, const char *value)
     call.value = (ULONG_PTR)value;
 
     qemu_syscall(&call.super);
+    MSVCRT__environ = (char **)(ULONG_PTR)call.new_environ;
 
     return call.super.iret;
 }
@@ -187,8 +209,16 @@ int CDECL _putenv_s(const char *name, const char *value)
 void qemu__putenv_s(struct qemu_syscall *call)
 {
     struct qemu__putenv_s *c = (struct qemu__putenv_s *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+
+    WINE_TRACE("\n");
     c->super.iret = p__putenv_s(QEMU_G2H(c->name), QEMU_G2H(c->value));
+    c->new_environ = QEMU_H2G(*p__environ);
+
+#if GUEST_BIT != HOST_BIT
+    WINE_FIXME("Convert _environ array\n");
+    if (c->new_environ > ~0U)
+        WINE_FIXME("New enironment is unreachable.\n");
+#endif
 }
 
 #endif
@@ -198,11 +228,12 @@ struct qemu__wputenv_s
     struct qemu_syscall super;
     uint64_t name;
     uint64_t value;
+    uint64_t new_environ;
 };
 
 #ifdef QEMU_DLL_GUEST
 
-int CDECL _wputenv_s(const WCHAR *name, const WCHAR *value)
+WINBASEAPI int CDECL _wputenv_s(const WCHAR *name, const WCHAR *value)
 {
     struct qemu__wputenv_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__WPUTENV_S);
@@ -210,6 +241,7 @@ int CDECL _wputenv_s(const WCHAR *name, const WCHAR *value)
     call.value = (ULONG_PTR)value;
 
     qemu_syscall(&call.super);
+    MSVCRT__environ = (char **)(ULONG_PTR)call.new_environ;
 
     return call.super.iret;
 }
@@ -219,8 +251,16 @@ int CDECL _wputenv_s(const WCHAR *name, const WCHAR *value)
 void qemu__wputenv_s(struct qemu_syscall *call)
 {
     struct qemu__wputenv_s *c = (struct qemu__wputenv_s *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+
+    WINE_TRACE("\n");
     c->super.iret = p__wputenv_s(QEMU_G2H(c->name), QEMU_G2H(c->value));
+    c->new_environ = QEMU_H2G(*p__environ);
+
+#if GUEST_BIT != HOST_BIT
+    WINE_FIXME("Convert _environ array\n");
+    if (c->new_environ > ~0U)
+        WINE_FIXME("New enironment is unreachable.\n");
+#endif
 }
 
 #endif
@@ -235,7 +275,7 @@ struct qemu__dupenv_s
 
 #ifdef QEMU_DLL_GUEST
 
-int CDECL _dupenv_s(char **buffer, size_t *numberOfElements, const char *varname)
+WINBASEAPI int CDECL _dupenv_s(char **buffer, size_t *numberOfElements, const char *varname)
 {
     struct qemu__dupenv_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__DUPENV_S);
@@ -269,7 +309,7 @@ struct qemu__wdupenv_s
 
 #ifdef QEMU_DLL_GUEST
 
-int CDECL _wdupenv_s(WCHAR **buffer, size_t *numberOfElements, const WCHAR *varname)
+WINBASEAPI int CDECL _wdupenv_s(WCHAR **buffer, size_t *numberOfElements, const WCHAR *varname)
 {
     struct qemu__wdupenv_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__WDUPENV_S);
@@ -340,7 +380,7 @@ struct qemu__wgetenv_s
 
 #ifdef QEMU_DLL_GUEST
 
-int CDECL _wgetenv_s(size_t *pReturnValue, WCHAR *buffer, size_t numberOfElements, const WCHAR *varname)
+WINBASEAPI int CDECL _wgetenv_s(size_t *pReturnValue, WCHAR *buffer, size_t numberOfElements, const WCHAR *varname)
 {
     struct qemu__wgetenv_s call;
     call.super.id = QEMU_SYSCALL_ID(CALL__WGETENV_S);

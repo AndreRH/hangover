@@ -44,6 +44,7 @@ struct qemu_init_dll
     uint64_t FILE_size;
     uint64_t iob_size;
     uint64_t argc, argv;
+    uint64_t new_environ;
     double HUGE;
 };
 
@@ -104,6 +105,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 
             MSVCRT__acmdln = MSVCRT__strdup(GetCommandLineA());
             MSVCRT__wcmdln = msvcrt_wstrdupa(MSVCRT__acmdln);
+            MSVCRT__environ = (char **)(ULONG_PTR)call.new_environ;
             return TRUE;
 
         default:
@@ -144,7 +146,6 @@ static void qemu_init_dll(struct qemu_syscall *call)
         if (GetModuleHandleA(dll_name))
         {
             int *my_errno;
-            char ***my_environ;
 
             /* This happens when a different Wine DLL loaded the host DLL, e.g. version32 loading msvcrt.dll or
              * urctbase.dll. The trouble is that the DLL is probably initialized already and has allocated its
@@ -159,8 +160,8 @@ static void qemu_init_dll(struct qemu_syscall *call)
             if (!p__errno)
                 WINE_ERR("Cannot get _errno.\n");
             p___p__environ = (void *)GetProcAddress(msvcrt, "__p__environ");
-            my_environ = (void *)GetProcAddress(msvcrt, "_environ");
-            if (!p___p__environ && !my_environ)
+            p__environ = (void *)GetProcAddress(msvcrt, "_environ");
+            if (!p___p__environ && !p__environ)
                 WINE_ERR("Cannot get __p__environ nor _environ %s.\n", dll_name);
             p__putenv = (void *)GetProcAddress(msvcrt, "_putenv");
             if (!p__putenv)
@@ -210,19 +211,19 @@ static void qemu_init_dll(struct qemu_syscall *call)
             }
 
             /* FIXME: Also fix up the unicode version. */
-            if (!my_environ)
-                my_environ = p___p__environ();
+            if (!p__environ)
+                p__environ = p___p__environ();
 
-            if ((ULONG_PTR)(*my_environ) < ~0U)
+            if ((ULONG_PTR)(*p__environ) < ~0U)
             {
-                WINE_TRACE("Yay, %s environ data is < 4 GB (%p).\n", dll_name, *my_environ);
+                WINE_TRACE("Yay, %s environ data is < 4 GB (%p).\n", dll_name, *p__environ);
             }
             else
             {
-                WINE_TRACE("Yanking environment away from %p\n", *my_environ);
-                *my_environ = NULL;
+                WINE_TRACE("Yanking environment away from %p\n", *p__environ);
+                *p__environ = NULL;
                 p__putenv("qemudummy=");
-                WINE_TRACE("environ now at %p\n", *my_environ);
+                WINE_TRACE("environ now at %p\n", *p__environ);
             }
         }
         else
@@ -235,6 +236,9 @@ static void qemu_init_dll(struct qemu_syscall *call)
 
             p__errno = (void *)GetProcAddress(msvcrt, "_errno");
             p___p__environ = (void *)GetProcAddress(msvcrt, "__p__environ");
+            p__environ = (void *)GetProcAddress(msvcrt, "p__environ");
+            if (!p__environ)
+                p__environ = p___p__environ();
             p__putenv = (void *)GetProcAddress(msvcrt, "_putenv");
         }
 
@@ -1316,6 +1320,9 @@ static void qemu_init_dll(struct qemu_syscall *call)
 
     c->argv = QEMU_H2G(argv);
 #endif
+
+    /* FIXME: I need to convert this like argv. */
+    c->new_environ = QEMU_H2G(*p__environ);
 
     WINE_TRACE("%s init done.\n", dll_name);
 }

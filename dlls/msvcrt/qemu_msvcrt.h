@@ -1174,6 +1174,7 @@ extern thread_data_t *msvcrt_get_thread_data(void);
 
 extern char *MSVCRT__acmdln;
 extern WCHAR *MSVCRT__wcmdln;
+extern char **MSVCRT__environ;
 void msvcrt_data_init(double huge, int argc, char **argv);
 
 CDECL void _amsg_exit(int errnum);
@@ -3313,6 +3314,7 @@ int (* CDECL p__get_wpgmptr)(WCHAR** p);
 int (* CDECL p__set_fmode)(int mode);
 int (* CDECL p__get_fmode)(int *mode);
 char*** (* CDECL p___p__environ)(void);
+char ***p__environ;
 WCHAR*** (* CDECL p___p__wenviron)(void);
 int (* CDECL p__get_osplatform)(int *pValue);
 unsigned int * (* CDECL p____unguarded_readlc_active_add_func)(void);

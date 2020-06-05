@@ -32,10 +32,10 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 #else
 
-/* FIXME: This needs DllMain support to grab the pointer from the host. */
 char **MSVCRT___initenv = NULL;
 char *MSVCRT__acmdln = NULL;
 WCHAR *MSVCRT__wcmdln = NULL;
+char **MSVCRT__environ = NULL;
 
 unsigned int MSVCRT__commode = 0;
 unsigned int MSVCRT__fmode = 0;
@@ -48,6 +48,8 @@ WCHAR **MSVCRT___winitenv = NULL;
 void msvcrt_data_init(double huge, int argc, char **argv)
 {
     MSVCRT__HUGE = huge;
+    MSVCRT___argc = argc;
+    MSVCRT___argv = argv;
 }
 
 unsigned int* CDECL __p__commode(void)
@@ -478,9 +480,10 @@ WINBASEAPI char*** CDECL MSVCRT___p__environ(void)
     struct qemu___p__environ call;
     call.super.id = QEMU_SYSCALL_ID(CALL___P__ENVIRON);
 
+    /* Trace only */
     qemu_syscall(&call.super);
 
-    return (char***)(ULONG_PTR)call.super.iret;
+    return &MSVCRT__environ;
 }
 
 #else
@@ -489,12 +492,6 @@ void qemu___p__environ(struct qemu_syscall *call)
 {
     struct qemu___p__environ *c = (struct qemu___p__environ *)(ULONG_PTR)call;
     WINE_TRACE("\n");
-    if (p__environ)
-        c->super.iret = p__environ;
-    else if (p___p__environ)
-        c->super.iret = QEMU_H2G(p___p__environ());
-    else
-        WINE_ERR("I have neither p__environ nor p___p__environ().\n");
 }
 
 #endif
