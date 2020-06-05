@@ -247,7 +247,7 @@
 @ cdecl -arch=i386 -norelay __libm_sse2_sinf() MSVCRT___libm_sse2_sinf
 @ cdecl -arch=i386 -norelay __libm_sse2_tan() MSVCRT___libm_sse2_tan
 @ cdecl -arch=i386 -norelay __libm_sse2_tanf() MSVCRT___libm_sse2_tanf
-@ extern __mb_cur_max msvcrt.__qemu_native_data__
+@ extern __mb_cur_max MSVCRT___mb_cur_max
 # @ cdecl __p___argc() MSVCRT___p___argc
 # @ cdecl __p___argv() MSVCRT___p___argv
 @ cdecl __p___initenv()

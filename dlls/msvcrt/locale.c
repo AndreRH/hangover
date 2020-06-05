@@ -31,7 +31,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 #endif
 
-
 struct qemu__Getdays
 {
     struct qemu_syscall super;
@@ -855,9 +854,12 @@ struct qemu_setlocale
     struct qemu_syscall super;
     uint64_t category;
     uint64_t locale;
+    uint64_t mb_cur_max;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+int MSVCRT___mb_cur_max = 1;
 
 char * CDECL MSVCRT_setlocale(int category, const char *locale)
 {
@@ -867,6 +869,7 @@ char * CDECL MSVCRT_setlocale(int category, const char *locale)
     call.locale = (ULONG_PTR)locale;
 
     qemu_syscall(&call.super);
+    MSVCRT___mb_cur_max = call.mb_cur_max;
 
     return (char *)(ULONG_PTR)call.super.iret;
 }
@@ -878,6 +881,8 @@ void qemu_setlocale(struct qemu_syscall *call)
     struct qemu_setlocale *c = (struct qemu_setlocale *)(ULONG_PTR)call;
     WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p_setlocale(c->category, QEMU_G2H(c->locale)));
+    if (p___mb_cur_max)
+        c->mb_cur_max = *p___mb_cur_max;
 }
 
 #endif

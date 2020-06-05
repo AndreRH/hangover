@@ -1175,6 +1175,7 @@ extern thread_data_t *msvcrt_get_thread_data(void);
 extern char *MSVCRT__acmdln;
 extern WCHAR *MSVCRT__wcmdln;
 extern char **MSVCRT__environ;
+extern int MSVCRT___mb_cur_max;
 void msvcrt_data_init(double huge, int argc, char **argv);
 
 CDECL void _amsg_exit(int errnum);
@@ -3365,6 +3366,7 @@ int (* CDECL p___stdio_common_vsprintf)( unsigned __int64 options, char *str, si
     MSVCRT__locale_t locale, __ms_va_list valist);
 int (* CDECL p___stdio_common_vswprintf)( unsigned __int64 options, wchar_t *str, size_t len, const wchar_t *format,
     MSVCRT__locale_t locale, __ms_va_list valist);
+int *p___mb_cur_max;
 
 
 DWORD msvcrt_tls;

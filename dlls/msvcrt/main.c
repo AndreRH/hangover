@@ -45,6 +45,7 @@ struct qemu_init_dll
     uint64_t iob_size;
     uint64_t argc, argv;
     uint64_t new_environ;
+    uint64_t mb_cur_max;
     double HUGE;
 };
 
@@ -106,6 +107,8 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
             MSVCRT__acmdln = MSVCRT__strdup(GetCommandLineA());
             MSVCRT__wcmdln = msvcrt_wstrdupa(MSVCRT__acmdln);
             MSVCRT__environ = (char **)(ULONG_PTR)call.new_environ;
+
+            MSVCRT___mb_cur_max = call.mb_cur_max;
             return TRUE;
 
         default:
@@ -293,6 +296,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p___libm_sse2_sqrt_precise = (void *)GetProcAddress(msvcrt, "__libm_sse2_sqrt_precise");
         p___libm_sse2_tan = (void *)GetProcAddress(msvcrt, "__libm_sse2_tan");
         p___libm_sse2_tanf = (void *)GetProcAddress(msvcrt, "__libm_sse2_tanf");
+        p___mb_cur_max = (void *)GetProcAddress(msvcrt, "__mb_cur_max");
         p___p___mb_cur_max = (void *)GetProcAddress(msvcrt, "__p___mb_cur_max");
         p___p__amblksiz = (void *)GetProcAddress(msvcrt, "__p__amblksiz");
         p___p__daylight = (void *)GetProcAddress(msvcrt, "__p__daylight");
@@ -1323,6 +1327,8 @@ static void qemu_init_dll(struct qemu_syscall *call)
 
     /* FIXME: I need to convert this like argv. */
     c->new_environ = QEMU_H2G(*p__environ);
+    if (p___mb_cur_max)
+        c->mb_cur_max = *p___mb_cur_max;
 
     WINE_TRACE("%s init done.\n", dll_name);
 }
