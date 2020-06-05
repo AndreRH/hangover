@@ -879,10 +879,40 @@ char * CDECL MSVCRT_setlocale(int category, const char *locale)
 void qemu_setlocale(struct qemu_syscall *call)
 {
     struct qemu_setlocale *c = (struct qemu_setlocale *)(ULONG_PTR)call;
+    char *ret;
+    int cat;
+
     WINE_TRACE("\n");
-    c->super.iret = QEMU_H2G(p_setlocale(c->category, QEMU_G2H(c->locale)));
+    cat = c->category;
+
+    ret = p_setlocale(cat, QEMU_G2H(c->locale));
     if (p___mb_cur_max)
         c->mb_cur_max = *p___mb_cur_max;
+
+    /* This can point to data initialized before we restricted address space. */
+    c->super.iret = QEMU_H2G(ret);
+#if HOST_BIT != GUEST_BIT
+    if (!ret || c->super.iret < ~0U)
+        return;
+
+    if (cat < 6)
+    {
+        static char *category[6];
+        if (category[cat])
+        {
+            if (strcmp(ret, category[cat]))
+                WINE_FIXME("Replacing locale string\n");
+            free(category[cat]);
+        }
+        category[cat] = strdup(ret);
+        c->super.iret = QEMU_H2G(category[cat]);
+    }
+    else
+    {
+        WINE_FIXME("Category %d, ret string %p (\"%s\"), leaking memory\n", cat, ret, ret);
+        c->super.iret = QEMU_H2G(strdup(ret));
+    }
+#endif
 }
 
 #endif
