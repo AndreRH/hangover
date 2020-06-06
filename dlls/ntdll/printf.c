@@ -365,19 +365,8 @@ void qemu_sprintf(struct qemu_syscall *call)
     int ret;
     static int once;
 
-    /* FIXME: It seems that the ntdll functions are broken on aarch64. At least I can't get a direct
-     * printf call to produce anything of value.
-     *
-     * My arm-native comctl32 build does not call the ntdll functions, presumably because it is built
-     * without mingw. This might have something to do with the aarch64 __ms_va revert. */
     WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
             (char *)QEMU_G2H(c->format));
-
-    if (!once)
-    {
-        WINE_FIXME("Calling host msvcrt instead of ntdll for now.\n");
-        once = 1;
-    }
 
     data.op = c->super.id;
     data.len = c->len;

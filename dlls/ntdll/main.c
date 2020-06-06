@@ -829,7 +829,7 @@ static const syscall_handler dll_functions[] =
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
-    HMODULE ntdll, msvcrt;
+    HMODULE ntdll;
 
     WINE_TRACE("Loading host-side ntdll wrapper.\n");
 
@@ -1205,22 +1205,17 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!p_wcstoul)
         WINE_ERR("Could not find \"wcstoul\" in ntdll\n");
 
-    /* Hack: Call the host msvcrt functions, the ntdll ones seem broken. */
-    msvcrt = LoadLibraryA("msvcrt.dll");
-    if (!msvcrt)
-        WINE_ERR("hmm, msvcrt not loaded\n");
-
-    p_vsprintf = (void *)GetProcAddress(msvcrt, "vsprintf");
+    p_vsprintf = (void *)GetProcAddress(ntdll, "vsprintf");
     if (!p_vsprintf)
-        WINE_ERR("Could not find \"vsprintf\" in msvcrt\n");
+        WINE_ERR("Could not find \"vsprintf\" in ntdll\n");
 
-    p__vsnprintf = (void *)GetProcAddress(msvcrt, "_vsnprintf");
+    p__vsnprintf = (void *)GetProcAddress(ntdll, "_vsnprintf");
     if (!p__vsnprintf)
-        WINE_ERR("Could not find \"_vsnprintf\" in msvcrt\n");
+        WINE_ERR("Could not find \"_vsnprintf\" in ntdll\n");
 
-    p__vsnprintf_s = (void *)GetProcAddress(msvcrt, "_vsnprintf_s");
+    p__vsnprintf_s = (void *)GetProcAddress(ntdll, "_vsnprintf_s");
     if (!p__vsnprintf_s)
-        WINE_ERR("Could not find \"_vsnprintf_s\" in msvcrt\n");
+        WINE_ERR("Could not find \"_vsnprintf_s\" in ntdll\n");
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
