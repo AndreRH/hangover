@@ -239,7 +239,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
 
             p__errno = (void *)GetProcAddress(msvcrt, "_errno");
             p___p__environ = (void *)GetProcAddress(msvcrt, "__p__environ");
-            p__environ = (void *)GetProcAddress(msvcrt, "p__environ");
+            p__environ = (void *)GetProcAddress(msvcrt, "_environ");
             if (!p__environ)
                 p__environ = p___p__environ();
             p__putenv = (void *)GetProcAddress(msvcrt, "_putenv");
