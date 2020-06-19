@@ -159,7 +159,7 @@ build/qemu/Makefile: build/aarch64-linux-android/lib/libglib-2.0.so build/wine-t
 	@mkdir -p $(@D)
 	+$(MAKE) -C build/glib/ install
 	rm -f build/aarch64-linux-android/lib/pkgconfig/gio-2.0.pc
-	cd $(@D) ; PKG_CONFIG_PATH=$(abspath build/aarch64-linux-android/lib/pkgconfig) CFLAGS="-fPIC $(CFLAGS)" CC="$(WINE_HOST)/tools/winegcc/winegcc -Wno-macro-redefined -D__ANDROID_API__=22 -I$(NDK_SYSROOT)/usr/include -L$(abspath build/aarch64-linux-android/lib) --sysroot=$(NDK_SYSROOT) -b aarch64-linux-android --winebuild $(WINE_HOST)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -lwine -Wl,--no-as-needed -DMAP_ANONYMOUS=0x20 -DMAP_PRIVATE=2 -DMAP_SHARED=1 -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI" CXX="" ../../qemu/configure --python=/usr/bin/python3 --enable-windows-user $(QEMU_DISABLES); cd ../.. ; touch $@
+	cd $(@D) ; PKG_CONFIG_PATH=$(abspath build/aarch64-linux-android/lib/pkgconfig) CFLAGS="-fPIC $(CFLAGS)" CC="$(WINE_HOST)/tools/winegcc/winegcc -Wno-macro-redefined -D__ANDROID_API__=22 -I$(NDK_SYSROOT)/usr/include -L$(abspath build/aarch64-linux-android/lib) --sysroot=$(NDK_SYSROOT) -b aarch64-linux-android --winebuild $(WINE_HOST)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -lwine -Wl,--no-as-needed -DMAP_ANONYMOUS=0x20 -DMAP_PRIVATE=2 -DMAP_SHARED=1 -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI" CXX="" ../../qemu/configure --python=/usr/bin/python3 --enable-windows-user --target-list=x86_64-windows-user $(QEMU_DISABLES); cd ../.. ; touch $@
 
 build/qemu/x86_64-windows-user/qemu-x86_64.exe.so: build/qemu/Makefile
 	+$(MAKE) -C build/qemu
