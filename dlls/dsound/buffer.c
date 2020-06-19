@@ -1116,6 +1116,11 @@ static HRESULT WINAPI IDirectSoundBufferImpl_QueryInterface(IDirectSoundBuffer8 
             WINE_ERR("app requested IDirectSoundNotify on primary buffer\n");
             return E_NOINTERFACE;
         }
+        else if (!(buffer->flags & DSBCAPS_CTRLPOSITIONNOTIFY))
+        {
+            WINE_WARN("app requested IDirectSoundNotify on primary buffer\n");
+            return E_NOINTERFACE;
+        }
         IDirectSoundNotify_AddRef(&buffer->IDirectSoundNotify_iface);
         *obj = &buffer->IDirectSoundNotify_iface;
         return S_OK;
