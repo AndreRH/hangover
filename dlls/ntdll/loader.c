@@ -519,7 +519,7 @@ WINBASEAPI NTSTATUS WINAPI LdrLockLoaderLock(ULONG flags, ULONG *result, ULONG_P
 void qemu_LdrLockLoaderLock(struct qemu_syscall *call)
 {
     struct qemu_LdrLockLoaderLock *c = (struct qemu_LdrLockLoaderLock *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LdrLockLoaderLock(c->flags, QEMU_G2H(c->result), QEMU_G2H(c->magic));
 }
 
@@ -551,7 +551,7 @@ WINBASEAPI NTSTATUS WINAPI LdrUnlockLoaderLock(ULONG flags, ULONG_PTR magic)
 void qemu_LdrUnlockLoaderLock(struct qemu_syscall *call)
 {
     struct qemu_LdrUnlockLoaderLock *c = (struct qemu_LdrUnlockLoaderLock *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = LdrUnlockLoaderLock(c->flags, c->magic);
 }
 
