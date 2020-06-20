@@ -244,7 +244,7 @@ WINBASEAPI LPWSTR CDECL NTDLL_wcscat(LPWSTR dst, LPCWSTR src)
 void qemu_wcscat(struct qemu_syscall *call)
 {
     struct qemu_wcscat *c = (struct qemu_wcscat *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = (uint64_t)p_wcscat(QEMU_G2H(c->dst), QEMU_G2H(c->src));
 }
 

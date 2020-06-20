@@ -2690,7 +2690,7 @@ WINBASEAPI int CDECL MSVCRT_wcslen(const WCHAR *str)
 void qemu_wcslen(struct qemu_syscall *call)
 {
     struct qemu_wcslen *c = (struct qemu_wcslen *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_wcslen(QEMU_G2H(c->str));
 }
 
