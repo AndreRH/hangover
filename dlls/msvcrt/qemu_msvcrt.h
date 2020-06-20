@@ -818,6 +818,7 @@ enum msvcrt_calls
     CALL_FOPEN,
     CALL_FOPEN_S,
     CALL_FPRINTF,
+    CALL_FPRINTF_UCRTBASE,
     CALL_FPUTC,
     CALL_FPUTS,
     CALL_FPUTWC,
@@ -3367,6 +3368,8 @@ int (* CDECL p___stdio_common_vsprintf)( unsigned __int64 options, char *str, si
 int (* CDECL p___stdio_common_vswprintf)( unsigned __int64 options, wchar_t *str, size_t len, const wchar_t *format,
     MSVCRT__locale_t locale, __ms_va_list valist);
 int *p___mb_cur_max;
+int (* CDECL p___stdio_common_vfprintf)(unsigned __int64 options, MSVCRT_FILE *file, const char *format,
+    MSVCRT__locale_t locale, __ms_va_list valist);
 
 
 DWORD msvcrt_tls;

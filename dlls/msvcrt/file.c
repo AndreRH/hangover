@@ -305,6 +305,8 @@ struct qemu_fprintf
     uint64_t argcount, argcount_float;
     uint64_t file;
     uint64_t format;
+    uint64_t options;
+    uint64_t locale;
     struct va_array args[1];
 };
 
@@ -369,7 +371,7 @@ unsigned int count_printf_argsA(const char *format, char *fmts)
 
 /* Looking up "stdout" requires a call out of the VM to get __iob, so do
  * the printf(...) -> fprintf(stdout, ...) wrapping outside the VM. */
-static int CDECL vfprintf_helper(uint64_t op, FILE *file, const char *format, va_list args)
+static int CDECL vfprintf_helper(uint64_t op, FILE *file, const char *format, unsigned __int64 options, _locale_t locale, va_list args)
 {
     struct qemu_fprintf *call;
     int ret;
@@ -386,6 +388,8 @@ static int CDECL vfprintf_helper(uint64_t op, FILE *file, const char *format, va
     call->argcount = count;
     call->file = (ULONG_PTR)file;
     call->format = (ULONG_PTR)format;
+    call->options = options;
+    call->locale = (ULONG_PTR)locale;
     call->argcount_float = 0;
 
     for (i = 0; i < count; ++i)
@@ -421,9 +425,15 @@ static int CDECL vfprintf_helper(uint64_t op, FILE *file, const char *format, va
     return ret;
 }
 
+int CDECL MSVCRT__stdio_common_vfprintf(unsigned __int64 options, FILE *file, const char *format,
+        _locale_t locale, va_list list)
+{
+    return vfprintf_helper(QEMU_SYSCALL_ID(CALL_FPRINTF_UCRTBASE), file, format, options, locale, list);
+}
+
 int CDECL MSVCRT_vfprintf(FILE *file, const char *format, va_list args)
 {
-    return vfprintf_helper(QEMU_SYSCALL_ID(CALL_FPRINTF), file, format, args);
+    return vfprintf_helper(QEMU_SYSCALL_ID(CALL_FPRINTF), file, format, 0, 0, args);
 }
 
 int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
@@ -432,7 +442,7 @@ int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
     va_list list;
 
     va_start(list, format);
-    ret = vfprintf_helper(QEMU_SYSCALL_ID(CALL_FPRINTF), file, format, list);
+    ret = vfprintf_helper(QEMU_SYSCALL_ID(CALL_FPRINTF), file, format, 0, 0, list);
     va_end(list);
 
     return ret;
@@ -444,7 +454,7 @@ int CDECL MSVCRT_printf(const char *format, ...)
     va_list list;
 
     va_start(list, format);
-    ret = vfprintf_helper(QEMU_SYSCALL_ID(CALL_PRINTF), NULL, format, list);
+    ret = vfprintf_helper(QEMU_SYSCALL_ID(CALL_PRINTF), NULL, format, 0, 0, list);
     va_end(list);
 
     return ret;
@@ -452,7 +462,7 @@ int CDECL MSVCRT_printf(const char *format, ...)
 
 int CDECL MSVCRT_vprintf(const char *format, va_list list)
 {
-    return vfprintf_helper(QEMU_SYSCALL_ID(CALL_PRINTF), NULL, format, list);
+    return vfprintf_helper(QEMU_SYSCALL_ID(CALL_PRINTF), NULL, format, 0, 0, list);
 }
 
 unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts)
@@ -599,7 +609,9 @@ struct printf_data
 {
     void *file;
     void *fmt; 
-    BOOL unicode;
+    __int64 options;
+    MSVCRT__locale_t locale;
+    uint64_t op;
 };
 
 static uint64_t CDECL printf_wrapper(void *ctx, ...)
@@ -609,10 +621,20 @@ static uint64_t CDECL printf_wrapper(void *ctx, ...)
     int ret;
 
     __ms_va_start(list, ctx);
-    if (data->unicode)
-        ret = p_vfwprintf(data->file, data->fmt, list);
-    else
-        ret = p_vfprintf(data->file, data->fmt, list);
+    switch (data->op)
+    {
+        case QEMU_SYSCALL_ID(CALL_PRINTF):
+        case QEMU_SYSCALL_ID(CALL_FPRINTF):
+            ret = p_vfprintf(data->file, data->fmt, list);
+            break;
+        case QEMU_SYSCALL_ID(CALL_WPRINTF):
+        case QEMU_SYSCALL_ID(CALL_FWPRINTF):
+            ret = p_vfwprintf(data->file, data->fmt, list);
+            break;
+        case QEMU_SYSCALL_ID(CALL_FPRINTF_UCRTBASE):
+            ret = p___stdio_common_vfprintf(data->options, data->file, data->fmt, data->locale, list);
+            break;
+    }
     __ms_va_end(list);
 
     return ret;
@@ -622,39 +644,35 @@ void qemu_fprintf(struct qemu_syscall *call)
 {
     struct qemu_fprintf *c = (struct qemu_fprintf *)(ULONG_PTR)call;
     int ret;
-    void *file;
     struct printf_data data;
 
     WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
             (char *)QEMU_G2H(c->format));
 
+    data.op = c->super.id;
+    data.fmt = QEMU_G2H(c->format);
+
     switch (c->super.id)
     {
         case QEMU_SYSCALL_ID(CALL_PRINTF):
+        case QEMU_SYSCALL_ID(CALL_WPRINTF):
             /* Don't put "stdout" here, it will call the Linux libc __iob_func export. */
             data.file = p___iob_func() + 1;
-            data.unicode = FALSE;
             break;
 
+        case QEMU_SYSCALL_ID(CALL_FPRINTF_UCRTBASE):
+            WINE_FIXME("__stdio_common_vfprintf is not tested yet.\n");
+            data.options = c->options;
+            data.locale = QEMU_G2H(c->locale);
+            /* Drop through */
         case QEMU_SYSCALL_ID(CALL_FPRINTF):
-            data.file = FILE_g2h(c->file);
-            data.unicode = FALSE;
-            break;
-
-        case QEMU_SYSCALL_ID(CALL_WPRINTF):
-            data.file = p___iob_func() + 1;
-            data.unicode = TRUE;
-            break;
-
         case QEMU_SYSCALL_ID(CALL_FWPRINTF):
             data.file = FILE_g2h(c->file);
-            data.unicode = TRUE;
             break;
 
         default:
             WINE_ERR("Unexpected op %lx\n", (unsigned long)c->super.id);
     }
-    data.fmt = QEMU_G2H(c->format);
 
     ret = call_va(printf_wrapper, &data, c->argcount, c->argcount_float, c->args);
 

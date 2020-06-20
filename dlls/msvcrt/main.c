@@ -313,6 +313,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
         if (!p___set_app_type)
             WINE_ERR("Cannot get _set_app_type.\n");
         p___setusermatherr = (void *)GetProcAddress(msvcrt, "__setusermatherr");
+        p___stdio_common_vfprintf = (void *)GetProcAddress(msvcrt, "__stdio_common_vfprintf");
         p___stdio_common_vsprintf = (void *)GetProcAddress(msvcrt, "__stdio_common_vsprintf");
         p___stdio_common_vswprintf = (void *)GetProcAddress(msvcrt, "__stdio_common_vswprintf");
         p___STRINGTOLD = (void *)GetProcAddress(msvcrt, "__STRINGTOLD");
@@ -2145,6 +2146,7 @@ static const syscall_handler dll_functions[] =
     qemu_fmodf,
     qemu_fopen,
     qemu_fopen_s,
+    qemu_fprintf,
     qemu_fprintf,
     qemu_fputc,
     qemu_fputs,
