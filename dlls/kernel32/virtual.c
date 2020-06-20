@@ -974,7 +974,8 @@ WINBASEAPI BOOL WINAPI IsBadCodePtr(FARPROC ptr)
 void qemu_IsBadCodePtr(struct qemu_syscall *call)
 {
     struct qemu_IsBadCodePtr *c = (struct qemu_IsBadCodePtr *)call;
-    WINE_FIXME("Unverified!\n");
+    /* This just calls IsBadReadPtr and doesn't care about execute permissions. */
+    WINE_TRACE("\n");
     c->super.iret = IsBadCodePtr(QEMU_G2H(c->ptr));
 }
 
