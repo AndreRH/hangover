@@ -2782,7 +2782,7 @@ WINBASEAPI BOOL WINAPI WaitNamedPipeW (LPCWSTR name, DWORD nTimeOut)
 void qemu_WaitNamedPipeW(struct qemu_syscall *call)
 {
     struct qemu_WaitNamedPipeW *c = (struct qemu_WaitNamedPipeW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WaitNamedPipeW(QEMU_G2H(c->name), c->nTimeOut);
 }
 
