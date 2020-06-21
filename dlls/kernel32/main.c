@@ -1632,7 +1632,7 @@ struct OVERLAPPED_data *get_OVERLAPPED_data(void *guest)
 
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
-    HANDLE kernel32;
+    HANDLE kernelbase;
 
     WINE_TRACE("Loading host-side kernel32 wrapper.\n");
     qemu_ops = ops;
@@ -1643,10 +1643,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
         WINE_ERR("Out of TLS indices\n");
 
     /* The function pointers provided by the linker point into the IAT, not the actual function. */
-    kernel32 = GetModuleHandleA("kernel32");
-    hook(GetProcAddress(kernel32, "SetCurrentDirectoryA"), hook_SetCurrentDirectoryA);
-    hook(GetProcAddress(kernel32, "SetCurrentDirectoryW"), hook_SetCurrentDirectoryW);
-    hook(GetProcAddress(kernel32, "LoadLibraryW"), hook_LoadLibraryW);
+    kernelbase = GetModuleHandleA("kernelbase");
+    hook(GetProcAddress(kernelbase, "SetCurrentDirectoryA"), hook_SetCurrentDirectoryA);
+    hook(GetProcAddress(kernelbase, "SetCurrentDirectoryW"), hook_SetCurrentDirectoryW);
+    hook(GetProcAddress(kernelbase, "LoadLibraryW"), hook_LoadLibraryW);
 
     /* We're searching through this array every time there's an IO request. If 32 entries are not enough for
      * an application, then the linear search isn't good enough. Before growing this array find a way to do
