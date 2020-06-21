@@ -660,6 +660,7 @@
 @ cdecl __setusermatherr(ptr) MSVCRT___setusermatherr
 @ cdecl __stdio_common_vfprintf(int64 ptr str ptr ptr) MSVCRT__stdio_common_vfprintf
 @ cdecl -norelay __stdio_common_vsprintf(int64 ptr long str ptr ptr)
+@ cdecl __stdio_common_vsscanf(int64 ptr long str ptr ptr) MSVCRT__stdio_common_vsscanf
 @ cdecl __stdio_common_vswprintf(int64 ptr long wstr ptr ptr)
 @ stub __strncnt
 #@ varargs  __swprintf_l(ptr wstr ptr) MSVCRT___swprintf_l

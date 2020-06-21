@@ -39,14 +39,15 @@ struct qemu_scanf
     uint64_t length;
     uint64_t fmt;
     uint64_t locale;
+    uint64_t options;
     struct va_array args[1];
 };
 
 
 #ifdef QEMU_DLL_GUEST
 
-static int scanf_helper(const void *input, size_t length, const char *fmt, MSVCRT__locale_t locale,
-        uint64_t id, va_list args)
+static int scanf_helper(unsigned __int64 options, const void *input, size_t length, const char *fmt,
+        MSVCRT__locale_t locale, uint64_t id, va_list args)
 {
     struct qemu_scanf *call;
     int ret;
@@ -55,6 +56,7 @@ static int scanf_helper(const void *input, size_t length, const char *fmt, MSVCR
     call = MSVCRT_malloc(offsetof(struct qemu_scanf, args[count]));
 
     call->super.id = id;
+    call->options = options;
     call->input = (ULONG_PTR)input;
     call->fmt = (ULONG_PTR)fmt;
     call->locale = (ULONG_PTR)locale;
@@ -79,7 +81,7 @@ static int scanf_helper(const void *input, size_t length, const char *fmt, MSVCR
 int CDECL MSVCRT_vsscanf_l(const char *str, const char *fmt, MSVCRT__locale_t locale, va_list list)
 {
 
-    return scanf_helper(str, 0, fmt, locale, QEMU_SYSCALL_ID(CALL_VSSCANF), list);
+    return scanf_helper(0, str, 0, fmt, locale, QEMU_SYSCALL_ID(CALL_VSSCANF), list);
 }
 
 int WINAPIV MSVCRT_sscanf_s(const char *str, const char *fmt, ...)
@@ -88,7 +90,7 @@ int WINAPIV MSVCRT_sscanf_s(const char *str, const char *fmt, ...)
     int res;
 
     va_start(valist, fmt);
-    res = scanf_helper(str, 0, fmt, 0, QEMU_SYSCALL_ID(CALL_VSSCANF_S), valist);
+    res = scanf_helper(0, str, 0, fmt, 0, QEMU_SYSCALL_ID(CALL_VSSCANF_S), valist);
     va_end(valist);
 
     return res;
@@ -109,7 +111,7 @@ int CDECL MSVCRT_sscanf(const char *str, const char *fmt, ...)
 int CDECL MSVCRT_vfscanf_l(FILE *f, const char *fmt, MSVCRT__locale_t locale, va_list list)
 {
 
-    return scanf_helper(f, 0, fmt, locale, QEMU_SYSCALL_ID(CALL_VFSCANF), list);
+    return scanf_helper(0, f, 0, fmt, locale, QEMU_SYSCALL_ID(CALL_VFSCANF), list);
 }
 
 int CDECL MSVCRT_fscanf(FILE *f, const char *fmt, ...)
@@ -127,7 +129,7 @@ int CDECL MSVCRT_fscanf(FILE *f, const char *fmt, ...)
 int CDECL MSVCRT_vsnscanf_l(const char *input, size_t length, const char *fmt, MSVCRT__locale_t locale, va_list list)
 {
 
-    return scanf_helper(input, length, fmt, locale, QEMU_SYSCALL_ID(CALL_VSNSCANF), list);
+    return scanf_helper(0, input, length, fmt, locale, QEMU_SYSCALL_ID(CALL_VSNSCANF), list);
 }
 
 int WINAPIV MSVCRT__snscanf(char *input, size_t length, const char *format, ...)
@@ -139,6 +141,13 @@ int WINAPIV MSVCRT__snscanf(char *input, size_t length, const char *format, ...)
     res = MSVCRT_vsnscanf_l(input, length, format, NULL, valist);
     va_end(valist);
     return res;
+}
+
+int CDECL MSVCRT__stdio_common_vsscanf(unsigned __int64 options,
+        const char *input, size_t length, const char *format,
+        MSVCRT__locale_t locale, va_list valist)
+{
+    return scanf_helper(options, input, length, format, locale, QEMU_SYSCALL_ID(CALL_VSSCANF_UCRTBASE), valist);
 }
 
 static int swscanf_helper(const WCHAR *input, size_t length, const WCHAR *fmt, MSVCRT__locale_t locale, uint64_t id, va_list args)
@@ -221,6 +230,11 @@ void qemu_scanf(struct qemu_syscall *call)
                     c->argcount, c->argcount_float, c->args);
             break;
 
+        case QEMU_SYSCALL_ID(CALL_VSSCANF_UCRTBASE):
+            /* Since this is a va_list call we could relatively easily write a wrapper. Right now
+             * I did not find a program that calls it, just some wine DLLs that link to the export. */
+            WINE_FIXME("__stdio_common_vsscanf is not properly handled yet.\n");
+            /* Drop through. */
         case QEMU_SYSCALL_ID(CALL_VSNSCANF):
             /* Need a call_va version with 3 fixed args. */
             if (warn)

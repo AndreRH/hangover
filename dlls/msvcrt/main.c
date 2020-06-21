@@ -315,6 +315,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p___setusermatherr = (void *)GetProcAddress(msvcrt, "__setusermatherr");
         p___stdio_common_vfprintf = (void *)GetProcAddress(msvcrt, "__stdio_common_vfprintf");
         p___stdio_common_vsprintf = (void *)GetProcAddress(msvcrt, "__stdio_common_vsprintf");
+        p___stdio_common_vsscanf = (void *)GetProcAddress(msvcrt, "__stdio_common_vsscanf");
         p___stdio_common_vswprintf = (void *)GetProcAddress(msvcrt, "__stdio_common_vswprintf");
         p___STRINGTOLD = (void *)GetProcAddress(msvcrt, "__STRINGTOLD");
         p___sys_errlist = (void *)GetProcAddress(msvcrt, "__sys_errlist");
@@ -2361,6 +2362,7 @@ static const syscall_handler dll_functions[] =
     qemu_type_info_dtor,
     qemu_ungetc,
     qemu_ungetwc,
+    qemu_scanf,
     qemu_scanf,
     qemu_scanf,
     qemu_scanf,

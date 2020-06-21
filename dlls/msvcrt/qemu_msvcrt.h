@@ -1036,6 +1036,7 @@ enum msvcrt_calls
     CALL_VSNSCANF,
     CALL_VSSCANF,
     CALL_VSSCANF_S,
+    CALL_VSSCANF_UCRTBASE,
     CALL_WCRTOMB,
     CALL_WCSCAT_S,
     CALL_WCSCHR,
@@ -3370,6 +3371,9 @@ int (* CDECL p___stdio_common_vswprintf)( unsigned __int64 options, wchar_t *str
 int *p___mb_cur_max;
 int (* CDECL p___stdio_common_vfprintf)(unsigned __int64 options, MSVCRT_FILE *file, const char *format,
     MSVCRT__locale_t locale, __ms_va_list valist);
+int (* CDECL p___stdio_common_vsscanf)(unsigned __int64 options,
+        const char *input, size_t length, const char *format,
+        MSVCRT__locale_t locale, __ms_va_list valist);
 
 
 DWORD msvcrt_tls;
