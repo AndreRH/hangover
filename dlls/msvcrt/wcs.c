@@ -1632,7 +1632,7 @@ WINBASEAPI INT CDECL MSVCRT_iswalnum(WCHAR wc)
 void qemu_iswalnum(struct qemu_syscall *call)
 {
     struct qemu_iswalnum *c = (struct qemu_iswalnum *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_iswalnum(c->wc);
 }
 
@@ -2000,7 +2000,7 @@ WINBASEAPI INT CDECL MSVCRT_iswspace(WCHAR wc)
 void qemu_iswspace(struct qemu_syscall *call)
 {
     struct qemu_iswspace *c = (struct qemu_iswspace *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_iswspace(c->wc);
 }
 
@@ -3196,10 +3196,13 @@ WINBASEAPI ULONG CDECL MSVCRT_wcstoul(const WCHAR *s, WCHAR **end, int base)
     struct qemu_wcstoul call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WCSTOUL);
     call.s = (ULONG_PTR)s;
-    call.end = (ULONG_PTR)end;
     call.base = base;
 
+    if (end)
+        call.end = (ULONG_PTR)*end;
     qemu_syscall(&call.super);
+    if (end)
+        *end = (WCHAR *)(ULONG_PTR)call.end;
 
     return call.super.iret;
 }
@@ -3209,8 +3212,12 @@ WINBASEAPI ULONG CDECL MSVCRT_wcstoul(const WCHAR *s, WCHAR **end, int base)
 void qemu_wcstoul(struct qemu_syscall *call)
 {
     struct qemu_wcstoul *c = (struct qemu_wcstoul *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wcstoul(QEMU_G2H(c->s), QEMU_G2H(c->end), c->base);
+    WCHAR *end;
+
+    WINE_TRACE("\n");
+    end = QEMU_G2H(c->end);
+    c->super.iret = p_wcstoul(QEMU_G2H(c->s), &end, c->base);
+    c->end = QEMU_H2G(end);
 }
 
 #endif
