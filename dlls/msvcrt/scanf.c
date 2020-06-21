@@ -205,10 +205,34 @@ int WINAPIV MSVCRT__snwscanf(wchar_t *str, size_t len, const wchar_t *fmt, ...)
 
 #else
 
+struct scanf_data
+{
+    uint64_t options;
+    void *input;
+    size_t length;
+    void *fmt;
+    MSVCRT__locale_t locale;
+    uint64_t op;
+};
+
+static uint64_t CDECL scanf_wrapper(void *ctx, ...)
+{
+    __ms_va_list list;
+    const struct scanf_data *data = ctx;
+    int ret;
+
+    __ms_va_start(list, ctx);
+    ret = p___stdio_common_vsscanf(data->options, data->input, data->length, data->fmt, data->locale, list);
+    __ms_va_end(list);
+
+    return ret;
+}
+
 void qemu_scanf(struct qemu_syscall *call)
 {
     static BOOL warn = TRUE;
     struct qemu_scanf *c = (struct qemu_scanf *)(ULONG_PTR)call;
+    struct scanf_data data;
 
     WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
             (char *)QEMU_G2H(c->fmt));
@@ -230,11 +254,6 @@ void qemu_scanf(struct qemu_syscall *call)
                     c->argcount, c->argcount_float, c->args);
             break;
 
-        case QEMU_SYSCALL_ID(CALL_VSSCANF_UCRTBASE):
-            /* Since this is a va_list call we could relatively easily write a wrapper. Right now
-             * I did not find a program that calls it, just some wine DLLs that link to the export. */
-            WINE_FIXME("__stdio_common_vsscanf is not properly handled yet.\n");
-            /* Drop through. */
         case QEMU_SYSCALL_ID(CALL_VSNSCANF):
             /* Need a call_va version with 3 fixed args. */
             if (warn)
@@ -244,6 +263,16 @@ void qemu_scanf(struct qemu_syscall *call)
             }
             c->super.iret = call_va2((void *)p_sscanf, QEMU_G2H(c->input), QEMU_G2H(c->fmt),
                     c->argcount, c->argcount_float, c->args);
+            break;
+
+        case QEMU_SYSCALL_ID(CALL_VSSCANF_UCRTBASE):
+            data.op = c->super.id;
+            data.options = c->options;
+            data.input = QEMU_G2H(c->input);
+            data.length = c->length;
+            data.fmt = QEMU_G2H(c->fmt);
+            data.locale = QEMU_G2H(c->locale);
+            c->super.iret = call_va(scanf_wrapper, &data, c->argcount, c->argcount_float, c->args);
             break;
     }
 }
