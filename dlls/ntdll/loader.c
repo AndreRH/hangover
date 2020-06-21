@@ -1360,9 +1360,10 @@ WINBASEAPI NTSTATUS WINAPI RtlGetSearchPath(PWSTR *path)
 {
     struct qemu_RtlGetSearchPath call;
     call.super.id = QEMU_SYSCALL_ID(CALL_RTLGETSEARCHPATH);
-    call.path = (ULONG_PTR)path;
 
     qemu_syscall(&call.super);
+    if (!call.super.iret)
+        *path = (WCHAR *)(ULONG_PTR)call.path;
 
     return call.super.iret;
 }
@@ -1372,8 +1373,11 @@ WINBASEAPI NTSTATUS WINAPI RtlGetSearchPath(PWSTR *path)
 void qemu_RtlGetSearchPath(struct qemu_syscall *call)
 {
     struct qemu_RtlGetSearchPath *c = (struct qemu_RtlGetSearchPath *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlGetSearchPath(QEMU_G2H(c->path));
+    WCHAR *path;
+
+    WINE_TRACE("\n");
+    c->super.iret = RtlGetSearchPath(&path);
+    c->path = QEMU_H2G(path);
 }
 
 #endif

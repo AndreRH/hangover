@@ -191,6 +191,8 @@ WINBASEAPI ULONG WINAPI RtlDosSearchPath_U(LPCWSTR paths, LPCWSTR search, LPCWST
     call.file_part = (ULONG_PTR)file_part;
 
     qemu_syscall(&call.super);
+    if (file_part)
+        *file_part = (WCHAR *)(ULONG_PTR)call.file_part;
 
     return call.super.iret;
 }
@@ -200,8 +202,12 @@ WINBASEAPI ULONG WINAPI RtlDosSearchPath_U(LPCWSTR paths, LPCWSTR search, LPCWST
 void qemu_RtlDosSearchPath_U(struct qemu_syscall *call)
 {
     struct qemu_RtlDosSearchPath_U *c = (struct qemu_RtlDosSearchPath_U *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlDosSearchPath_U(QEMU_G2H(c->paths), QEMU_G2H(c->search), QEMU_G2H(c->ext), c->buffer_size, QEMU_G2H(c->buffer), QEMU_G2H(c->file_part));
+    WCHAR *file_part;
+
+    WINE_TRACE("\n");
+    c->super.iret = RtlDosSearchPath_U(QEMU_G2H(c->paths), QEMU_G2H(c->search), QEMU_G2H(c->ext), c->buffer_size,
+            QEMU_G2H(c->buffer), &file_part);
+    c->file_part = QEMU_H2G(file_part);
 }
 
 #endif
