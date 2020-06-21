@@ -290,6 +290,8 @@ WINBASEAPI NTSTATUS WINAPI BCryptEnumAlgorithms(ULONG dwAlgOperations, ULONG *pA
     call.dwFlags = dwFlags;
 
     qemu_syscall(&call.super);
+    if (!call.super.iret)
+        *ppAlgList = (BCRYPT_ALGORITHM_IDENTIFIER *)(ULONG_PTR)call.ppAlgList;
 
     return call.super.iret;
 }
@@ -299,9 +301,23 @@ WINBASEAPI NTSTATUS WINAPI BCryptEnumAlgorithms(ULONG dwAlgOperations, ULONG *pA
 static void qemu_BCryptEnumAlgorithms(struct qemu_syscall *call)
 {
     struct qemu_BCryptEnumAlgorithms *c = (struct qemu_BCryptEnumAlgorithms *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = BCryptEnumAlgorithms(c->dwAlgOperations, QEMU_G2H(c->pAlgCount), QEMU_G2H(c->ppAlgList),
-            c->dwFlags);
+    BCRYPT_ALGORITHM_IDENTIFIER *list;
+    struct qemu_BCRYPT_ALGORITHM_IDENTIFIER *list32;
+    ULONG *ret_count, i;
+
+    WINE_TRACE("\n");
+    ret_count = QEMU_G2H(c->pAlgCount);
+    c->super.iret = BCryptEnumAlgorithms(c->dwAlgOperations, ret_count,
+            QEMU_G2H(c->ppAlgList) ? &list : NULL, c->dwFlags);
+    if (c->super.iret)
+        return;
+
+    c->ppAlgList = QEMU_H2G(list);
+#if GUEST_BIT != HOST_BIT
+    list32 = (struct qemu_BCRYPT_ALGORITHM_IDENTIFIER *)list;
+    for (i = 0; i < *ret_count; ++i)
+        BCRYPT_ALGORITHM_IDENTIFIER_h2g(&list32[i], &list[i]);
+#endif
 }
 
 #endif
@@ -949,6 +965,8 @@ WINBASEAPI NTSTATUS WINAPI BCryptImportKeyPair(BCRYPT_ALG_HANDLE algorithm, BCRY
     call.flags = flags;
 
     qemu_syscall(&call.super);
+    if (call.super.iret == STATUS_SUCCESS)
+        *ret_key = (BCRYPT_KEY_HANDLE *)(ULONG_PTR)call.ret_key;
 
     return call.super.iret;
 }
@@ -958,9 +976,12 @@ WINBASEAPI NTSTATUS WINAPI BCryptImportKeyPair(BCRYPT_ALG_HANDLE algorithm, BCRY
 static void qemu_BCryptImportKeyPair(struct qemu_syscall *call)
 {
     struct qemu_BCryptImportKeyPair *c = (struct qemu_BCryptImportKeyPair *)call;
+    BCRYPT_KEY_HANDLE ret_key;
+
     WINE_TRACE("\n");
     c->super.iret = BCryptImportKeyPair(QEMU_G2H(c->algorithm), QEMU_G2H(c->decrypt_key), QEMU_G2H(c->type),
-            QEMU_G2H(c->ret_key), QEMU_G2H(c->input), c->input_len, c->flags);
+            QEMU_G2H(c->ret_key) ? &ret_key : NULL, QEMU_G2H(c->input), c->input_len, c->flags);
+    c->ret_key = QEMU_H2G(ret_key);
 }
 
 #endif
@@ -1273,6 +1294,420 @@ static void qemu_BCryptSetProperty(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_BCryptSignHash
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t padding;
+    uint64_t input;
+    uint64_t input_len;
+    uint64_t output;
+    uint64_t output_len;
+    uint64_t ret_len;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI BCryptSignHash(BCRYPT_KEY_HANDLE handle, void *padding, UCHAR *input, ULONG input_len,
+        UCHAR *output, ULONG output_len, ULONG *ret_len, ULONG flags)
+{
+    struct qemu_BCryptSignHash call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTSIGNHASH);
+    call.handle = (ULONG_PTR)handle;
+    call.padding = (ULONG_PTR)padding;
+    call.input = (ULONG_PTR)input;
+    call.input_len = input_len;
+    call.output = (ULONG_PTR)output;
+    call.output_len = output_len;
+    call.ret_len = (ULONG_PTR)ret_len;
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+static void qemu_BCryptSignHash(struct qemu_syscall *call)
+{
+    struct qemu_BCryptSignHash *c = (struct qemu_BCryptSignHash *)call;
+    BCRYPT_PKCS1_PADDING_INFO stack, *pad = &stack;
+    struct qemu_BCRYPT_PKCS1_PADDING_INFO *pad32;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    pad = QEMU_G2H(c->padding);
+#else
+    pad32 = QEMU_G2H(c->padding);
+    if (!pad32)
+        pad = NULL;
+    else
+        BCRYPT_PKCS1_PADDING_INFO_g2h(pad, pad32);
+#endif
+
+    c->super.iret = BCryptSignHash(QEMU_G2H(c->handle), pad, QEMU_G2H(c->input), c->input_len,
+            QEMU_G2H(c->output), c->output_len, QEMU_G2H(c->ret_len), c->flags);
+}
+
+#endif
+
+struct qemu_BCryptSecretAgreement
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t key;
+    uint64_t secret;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI BCryptSecretAgreement(BCRYPT_KEY_HANDLE handle, BCRYPT_KEY_HANDLE key, BCRYPT_SECRET_HANDLE *secret, ULONG flags)
+{
+    struct qemu_BCryptSecretAgreement call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTSECRETAGREEMENT);
+    call.handle = (ULONG_PTR)handle;
+    call.key = (ULONG_PTR)key;
+    call.secret = (ULONG_PTR)secret;
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+    if (secret)
+        *secret = (BCRYPT_SECRET_HANDLE *)(ULONG_PTR)call.secret;
+
+    return call.super.iret;
+}
+
+#else
+
+static void qemu_BCryptSecretAgreement(struct qemu_syscall *call)
+{
+    struct qemu_BCryptSecretAgreement *c = (struct qemu_BCryptSecretAgreement *)call;
+    BCRYPT_SECRET_HANDLE secret;
+
+    WINE_TRACE("\n");
+    c->super.iret = BCryptSecretAgreement(QEMU_G2H(c->handle), QEMU_G2H(c->key),
+            QEMU_G2H(c->secret) ? &secret : NULL, c->flags);
+    c->secret = QEMU_H2G(secret);
+}
+
+#endif
+
+struct qemu_BCryptGenerateKeyPair
+{
+    struct qemu_syscall super;
+    uint64_t algorithm;
+    uint64_t handle;
+    uint64_t key_len;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI BCryptGenerateKeyPair(BCRYPT_ALG_HANDLE algorithm, BCRYPT_KEY_HANDLE *handle,
+        ULONG key_len, ULONG flags)
+{
+    struct qemu_BCryptGenerateKeyPair call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTGENERATEKEYPAIR);
+    call.algorithm = (ULONG_PTR)algorithm;
+    call.handle = (ULONG_PTR)handle;
+    call.key_len = key_len;
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+    if (call.super.iret == STATUS_SUCCESS)
+        *handle = (BCRYPT_KEY_HANDLE)(ULONG_PTR)call.handle;
+
+    return call.super.iret;
+}
+
+#else
+
+static void qemu_BCryptGenerateKeyPair(struct qemu_syscall *call)
+{
+    struct qemu_BCryptGenerateKeyPair *c = (struct qemu_BCryptGenerateKeyPair *)call;
+    HANDLE h;
+
+    WINE_TRACE("\n");
+    c->super.iret = BCryptGenerateKeyPair(QEMU_G2H(c->algorithm), c->handle ? &h : NULL, c->key_len, c->flags);
+    c->handle = QEMU_H2G(h);
+}
+
+#endif
+
+struct qemu_BCryptFreeBuffer
+{
+    struct qemu_syscall super;
+    uint64_t buffer;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI BCryptFreeBuffer(void *buffer)
+{
+    struct qemu_BCryptFreeBuffer call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTFREEBUFFER);
+    call.buffer = (ULONG_PTR)buffer;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+static void qemu_BCryptFreeBuffer(struct qemu_syscall *call)
+{
+    struct qemu_BCryptFreeBuffer *c = (struct qemu_BCryptFreeBuffer *)call;
+    WINE_TRACE("\n");
+    BCryptFreeBuffer(QEMU_G2H(c->buffer));
+}
+
+#endif
+
+struct qemu_BCryptEnumContextFunctions
+{
+    struct qemu_syscall super;
+    uint64_t table;
+    uint64_t ctx;
+    uint64_t iface;
+    uint64_t buflen;
+    uint64_t buffer;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI BCryptEnumContextFunctions(ULONG table, const WCHAR *ctx, ULONG iface, ULONG *buflen, CRYPT_CONTEXT_FUNCTIONS **buffer)
+{
+    struct qemu_BCryptEnumContextFunctions call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTENUMCONTEXTFUNCTIONS);
+    call.table = table;
+    call.ctx = (ULONG_PTR)ctx;
+    call.iface = iface;
+    call.buflen = (ULONG_PTR)buflen;
+    call.buffer = (ULONG_PTR)buffer;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+static void qemu_BCryptEnumContextFunctions(struct qemu_syscall *call)
+{
+    struct qemu_BCryptEnumContextFunctions *c = (struct qemu_BCryptEnumContextFunctions *)call;
+    CRYPT_CONTEXT_FUNCTIONS *buffer;
+
+    WINE_TRACE("\n");
+    c->super.iret = BCryptEnumContextFunctions(c->table, QEMU_G2H(c->ctx), c->iface, QEMU_G2H(c->buflen), &buffer);
+
+    if (c->super.iret != STATUS_NOT_IMPLEMENTED)
+        WINE_FIXME("The Wine stub graduated to an actual implementation.\n");
+}
+
+#endif
+
+struct qemu_BCryptDestroySecret
+{
+    struct qemu_syscall super;
+    uint64_t secret;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI BCryptDestroySecret(BCRYPT_SECRET_HANDLE secret)
+{
+    struct qemu_BCryptDestroySecret call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTDESTROYSECRET);
+    call.secret = (ULONG_PTR)secret;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+static void qemu_BCryptDestroySecret(struct qemu_syscall *call)
+{
+    struct qemu_BCryptDestroySecret *c = (struct qemu_BCryptDestroySecret *)call;
+    WINE_TRACE("\n");
+    c->super.iret = BCryptDestroySecret(QEMU_G2H(c->secret));
+}
+
+#endif
+
+struct qemu_BCryptDeriveKey
+{
+    struct qemu_syscall super;
+    uint64_t secret;
+    uint64_t kdf;
+    uint64_t parameter;
+    uint64_t derived;
+    uint64_t derived_size;
+    uint64_t result;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI BCryptDeriveKey(BCRYPT_SECRET_HANDLE secret, LPCWSTR kdf, BCryptBufferDesc *parameter,
+        PUCHAR derived, ULONG derived_size, ULONG *result, ULONG flags)
+{
+    struct qemu_BCryptDeriveKey call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTDERIVEKEY);
+    call.secret = (ULONG_PTR)secret;
+    call.kdf = (ULONG_PTR)kdf;
+    call.parameter = (ULONG_PTR)parameter;
+    call.derived = (ULONG_PTR)derived;
+    call.derived_size = derived_size;
+    call.result = (ULONG_PTR)result;
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+static void qemu_BCryptDeriveKey(struct qemu_syscall *call)
+{
+    struct qemu_BCryptDeriveKey *c = (struct qemu_BCryptDeriveKey *)call;
+    WINE_TRACE("\n");
+    c->super.iret = BCryptDeriveKey(QEMU_G2H(c->secret), QEMU_G2H(c->kdf), QEMU_G2H(c->parameter),
+            QEMU_G2H(c->derived), c->derived_size, QEMU_G2H(c->result), c->flags);
+    if (!c->super.iret)
+        WINE_FIXME("The Wine stub graduated to an actual implementation.\n");
+}
+
+#endif
+
+struct qemu_BCryptDeriveKeyCapi
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t halg;
+    uint64_t key;
+    uint64_t keylen;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI BCryptDeriveKeyCapi(BCRYPT_HASH_HANDLE handle, BCRYPT_ALG_HANDLE halg, UCHAR *key,
+        ULONG keylen, ULONG flags)
+{
+    struct qemu_BCryptDeriveKeyCapi call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTDERIVEKEYCAPI);
+    call.handle = (ULONG_PTR)handle;
+    call.halg = (ULONG_PTR)halg;
+    call.key = (ULONG_PTR)key;
+    call.keylen = keylen;
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+static void qemu_BCryptDeriveKeyCapi(struct qemu_syscall *call)
+{
+    struct qemu_BCryptDeriveKeyCapi *c = (struct qemu_BCryptDeriveKeyCapi *)call;
+
+    WINE_TRACE("\n");
+    if (c->halg)
+        WINE_FIXME("BCRYPT_ALG_HANDLE not handled\n");
+    c->super.iret = BCryptDeriveKeyCapi(QEMU_G2H(c->handle), QEMU_G2H(c->halg), QEMU_G2H(c->key), c->keylen, c->flags);
+}
+
+#endif
+
+struct qemu_BCryptDeriveKeyPBKDF2
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t pwd;
+    uint64_t pwd_len;
+    uint64_t salt;
+    uint64_t salt_len;
+    uint64_t iterations;
+    uint64_t dk;
+    uint64_t dk_len;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI BCryptDeriveKeyPBKDF2(BCRYPT_ALG_HANDLE handle, UCHAR *pwd, ULONG pwd_len,
+        UCHAR *salt, ULONG salt_len, ULONGLONG iterations, UCHAR *dk, ULONG dk_len, ULONG flags)
+{
+    struct qemu_BCryptDeriveKeyPBKDF2 call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTDERIVEKEYPBKDF2);
+    call.handle = (ULONG_PTR)handle;
+    call.pwd = (ULONG_PTR)pwd;
+    call.pwd_len = pwd_len;
+    call.salt = (ULONG_PTR)salt;
+    call.salt_len = salt_len;
+    call.iterations = iterations;
+    call.dk = (ULONG_PTR)dk;
+    call.dk_len = dk_len;
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+static void qemu_BCryptDeriveKeyPBKDF2(struct qemu_syscall *call)
+{
+    struct qemu_BCryptDeriveKeyPBKDF2 *c = (struct qemu_BCryptDeriveKeyPBKDF2 *)call;
+    WINE_TRACE("\n");
+    c->super.iret = BCryptDeriveKeyPBKDF2(QEMU_G2H(c->handle), QEMU_G2H(c->pwd), c->pwd_len, QEMU_G2H(c->salt),
+            c->salt_len, c->iterations, QEMU_G2H(c->dk), c->dk_len, c->flags);
+}
+
+#endif
+
+struct qemu_BCryptFinalizeKeyPair
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI BCryptFinalizeKeyPair(BCRYPT_KEY_HANDLE handle, ULONG flags)
+{
+    struct qemu_BCryptFinalizeKeyPair call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_BCRYPTFINALIZEKEYPAIR);
+    call.handle = (ULONG_PTR)handle;
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+static void qemu_BCryptFinalizeKeyPair(struct qemu_syscall *call)
+{
+    struct qemu_BCryptFinalizeKeyPair *c = (struct qemu_BCryptFinalizeKeyPair *)call;
+
+    WINE_TRACE("\n");
+    c->super.iret = BCryptFinalizeKeyPair(QEMU_G2H(c->handle), c->flags);
+}
+
+#endif
+
 #ifdef QEMU_DLL_GUEST
 
 BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
@@ -1292,14 +1727,22 @@ static const syscall_handler dll_functions[] =
     qemu_BCryptCloseAlgorithmProvider,
     qemu_BCryptCreateHash,
     qemu_BCryptDecrypt,
+    qemu_BCryptDeriveKey,
+    qemu_BCryptDeriveKeyCapi,
+    qemu_BCryptDeriveKeyPBKDF2,
     qemu_BCryptDestroyHash,
     qemu_BCryptDestroyKey,
+    qemu_BCryptDestroySecret,
     qemu_BCryptDuplicateHash,
     qemu_BCryptDuplicateKey,
     qemu_BCryptEncrypt,
     qemu_BCryptEnumAlgorithms,
+    qemu_BCryptEnumContextFunctions,
     qemu_BCryptExportKey,
+    qemu_BCryptFinalizeKeyPair,
     qemu_BCryptFinishHash,
+    qemu_BCryptFreeBuffer,
+    qemu_BCryptGenerateKeyPair,
     qemu_BCryptGenerateSymmetricKey,
     qemu_BCryptGenRandom,
     qemu_BCryptGetFipsAlgorithmMode,
@@ -1312,7 +1755,9 @@ static const syscall_handler dll_functions[] =
     qemu_BCryptRegisterProvider,
     qemu_BCryptRemoveContextFunction,
     qemu_BCryptRemoveContextFunctionProvider,
+    qemu_BCryptSecretAgreement,
     qemu_BCryptSetProperty,
+    qemu_BCryptSignHash,
     qemu_BCryptUnregisterProvider,
     qemu_BCryptVerifySignature,
 };

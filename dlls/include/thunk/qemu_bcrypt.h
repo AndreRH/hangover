@@ -47,4 +47,27 @@ static inline void BCRYPT_PKCS1_PADDING_INFO_g2h(BCRYPT_PKCS1_PADDING_INFO *host
     host->pszAlgId = (WCHAR *)(ULONG_PTR)guest->pszAlgId;
 }
 
+struct qemu_BCRYPT_ALGORITHM_IDENTIFIER
+{
+    qemu_ptr pszName;
+    ULONG  dwClass;
+    ULONG  dwFlags;
+};
+
+static inline void BCRYPT_ALGORITHM_IDENTIFIER_g2h(BCRYPT_ALGORITHM_IDENTIFIER *host,
+        const struct qemu_BCRYPT_ALGORITHM_IDENTIFIER *guest)
+{
+    host->pszName = (WCHAR *)(ULONG_PTR)guest->pszName;
+    host->dwClass = guest->dwClass;
+    host->dwFlags = guest->dwFlags;
+}
+
+static inline void BCRYPT_ALGORITHM_IDENTIFIER_h2g(struct qemu_BCRYPT_ALGORITHM_IDENTIFIER *guest,
+        const BCRYPT_ALGORITHM_IDENTIFIER *host)
+{
+    guest->pszName = (ULONG_PTR)host->pszName;
+    guest->dwClass = host->dwClass;
+    guest->dwFlags = host->dwFlags;
+}
+
 #endif
