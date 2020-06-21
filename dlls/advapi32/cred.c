@@ -354,21 +354,28 @@ void qemu_CredReadDomainCredentialsA(struct qemu_syscall *call)
     CREDENTIALW **creds;
     qemu_ptr *ptr32;
     DWORD *size, i;
+    CREDENTIAL_TARGET_INFORMATIONW stack, *target_info = &stack;
 
-    /* I noticed the Wine function is a stub after writing the wrapper. Keep it, but keep in mind that I
-     * never tested it with non-NULL output data from CredReadDomainCredentialsW... */
-    WINE_FIXME("Untested\n");
+    WINE_TRACE("\n");
     size = QEMU_G2H(c->Size);
+#if GUEST_BIT == HOST_BIT
+    target_info = QEMU_G2H(c->TargetInformation);
+#else
+    if (c->TargetInformation)
+        CREDENTIAL_TARGET_INFORMATION_g2h(target_info, QEMU_G2H(c->TargetInformation));
+    else
+        target_info = NULL;
+#endif
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_CREDREADDOMAINCREDENTIALSW))
     {
-        c->super.iret = CredReadDomainCredentialsW(QEMU_G2H(c->TargetInformation), c->Flags, QEMU_G2H(c->Size),
+        c->super.iret = CredReadDomainCredentialsW(target_info, c->Flags, QEMU_G2H(c->Size),
                 &creds);
     }
     else
     {
-        c->super.iret = CredReadDomainCredentialsA(QEMU_G2H(c->TargetInformation), c->Flags, QEMU_G2H(c->Size),
-                (CREDENTIALA ***)&creds);
+        c->super.iret = CredReadDomainCredentialsA((CREDENTIAL_TARGET_INFORMATIONA *)target_info,
+                c->Flags, QEMU_G2H(c->Size), (CREDENTIALA ***)&creds);
     }
 
 #if HOST_BIT != GUEST_BIT
