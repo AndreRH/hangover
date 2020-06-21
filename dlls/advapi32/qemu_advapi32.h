@@ -160,9 +160,6 @@ enum advapi32_calls
     CALL_ENUMSERVICESSTATUSW,
     CALL_EQUALPREFIXSID,
     CALL_EQUALSID,
-    CALL_EVENTACTIVITYIDCONTROL,
-    CALL_EVENTPROVIDERENABLED,
-    CALL_EVENTWRITETRANSFER,
     CALL_FILEENCRYPTIONSTATUSA,
     CALL_FILEENCRYPTIONSTATUSW,
     CALL_FINDFIRSTFREEACE,
@@ -652,9 +649,6 @@ void qemu_EnumServicesStatusExW(struct qemu_syscall *call);
 void qemu_EnumServicesStatusW(struct qemu_syscall *call);
 void qemu_EqualPrefixSid(struct qemu_syscall *call);
 void qemu_EqualSid(struct qemu_syscall *call);
-void qemu_EventActivityIdControl(struct qemu_syscall *call);
-void qemu_EventProviderEnabled(struct qemu_syscall *call);
-void qemu_EventWriteTransfer(struct qemu_syscall *call);
 void qemu_FileEncryptionStatusA(struct qemu_syscall *call);
 void qemu_FileEncryptionStatusW(struct qemu_syscall *call);
 void qemu_FindFirstFreeAce(struct qemu_syscall *call);

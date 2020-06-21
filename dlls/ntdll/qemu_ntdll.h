@@ -47,13 +47,23 @@ enum ntdll_calls
     CALL_ATOL,
     CALL_DBGUIISSUEREMOTEBREAKIN,
     CALL_DBGUIREMOTEBREAKIN,
+    CALL_ETWEVENTACTIVITYIDCONTROL,
     CALL_ETWEVENTENABLED,
+    CALL_ETWEVENTPROVIDERENABLED,
     CALL_ETWEVENTREGISTER,
     CALL_ETWEVENTSETINFORMATION,
     CALL_ETWEVENTUNREGISTER,
     CALL_ETWEVENTWRITE,
+    CALL_ETWEVENTWRITESTRING,
+    CALL_ETWEVENTWRITETRANSFER,
+    CALL_ETWGETTRACEENABLEFLAGS,
+    CALL_ETWGETTRACEENABLELEVEL,
+    CALL_ETWGETTRACELOGGERHANDLE,
+    CALL_ETWLOGTRACEEVENT,
     CALL_ETWREGISTERTRACEGUIDSA,
     CALL_ETWREGISTERTRACEGUIDSW,
+    CALL_ETWTRACEMESSAGE,
+    CALL_ETWTRACEMESSAGEVA,
     CALL_ETWUNREGISTERTRACEGUIDS,
     CALL_ISALNUM,
     CALL_ISALPHA,
@@ -790,13 +800,23 @@ extern const struct qemu_ops *qemu_ops;
 
 void qemu_DbgUiIssueRemoteBreakin(struct qemu_syscall *call);
 void qemu_DbgUiRemoteBreakin(struct qemu_syscall *call);
+void qemu_EtwEventActivityIdControl(struct qemu_syscall *call);
 void qemu_EtwEventEnabled(struct qemu_syscall *call);
+void qemu_EtwEventProviderEnabled(struct qemu_syscall *call);
 void qemu_EtwEventRegister(struct qemu_syscall *call);
 void qemu_EtwEventSetInformation(struct qemu_syscall *call);
 void qemu_EtwEventUnregister(struct qemu_syscall *call);
 void qemu_EtwEventWrite(struct qemu_syscall *call);
+void qemu_EtwEventWriteString(struct qemu_syscall *call);
+void qemu_EtwEventWriteTransfer(struct qemu_syscall *call);
+void qemu_EtwGetTraceEnableFlags(struct qemu_syscall *call);
+void qemu_EtwGetTraceEnableLevel(struct qemu_syscall *call);
+void qemu_EtwGetTraceLoggerHandle(struct qemu_syscall *call);
+void qemu_EtwLogTraceEvent(struct qemu_syscall *call);
 void qemu_EtwRegisterTraceGuidsA(struct qemu_syscall *call);
 void qemu_EtwRegisterTraceGuidsW(struct qemu_syscall *call);
+void qemu_EtwTraceMessage(struct qemu_syscall *call);
+void qemu_EtwTraceMessageVa(struct qemu_syscall *call);
 void qemu_EtwUnregisterTraceGuids(struct qemu_syscall *call);
 void qemu_LdrAccessResource(struct qemu_syscall *call);
 void qemu_LdrAddDllDirectory(struct qemu_syscall *call);
@@ -1198,13 +1218,17 @@ void qemu_RtlGetNtProductType(struct qemu_syscall *call);
 void qemu_RtlGetNtVersionNumbers(struct qemu_syscall *call);
 void qemu_RtlGetOwnerSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlGetProcessHeaps(struct qemu_syscall *call);
+void qemu_RtlGetProcessPreferredUILanguages(struct qemu_syscall *call);
 void qemu_RtlGetProductInfo(struct qemu_syscall *call);
 void qemu_RtlGetSaclSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlGetSearchPath(struct qemu_syscall *call);
+void qemu_RtlGetSystemPreferredUILanguages(struct qemu_syscall *call);
 void qemu_RtlGetSystemTimePrecise(struct qemu_syscall *call);
 void qemu_RtlGetThreadErrorMode(struct qemu_syscall *call);
+void qemu_RtlGetThreadPreferredUILanguages(struct qemu_syscall *call);
 void qemu_RtlGetUnloadEventTrace(struct qemu_syscall *call);
 void qemu_RtlGetUnloadEventTraceEx(struct qemu_syscall *call);
+void qemu_RtlGetUserPreferredUILanguages(struct qemu_syscall *call);
 void qemu_RtlGetVersion(struct qemu_syscall *call);
 void qemu_RtlHashUnicodeString(struct qemu_syscall *call);
 void qemu_RtlIdentifierAuthoritySid(struct qemu_syscall *call);
@@ -1327,9 +1351,11 @@ void qemu_RtlSetIoCompletionCallback(struct qemu_syscall *call);
 void qemu_RtlSetLastWin32Error(struct qemu_syscall *call);
 void qemu_RtlSetLastWin32ErrorAndNtStatusFromNtStatus(struct qemu_syscall *call);
 void qemu_RtlSetOwnerSecurityDescriptor(struct qemu_syscall *call);
+void qemu_RtlSetProcessPreferredUILanguages(struct qemu_syscall *call);
 void qemu_RtlSetSaclSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlSetSearchPathMode(struct qemu_syscall *call);
 void qemu_RtlSetThreadErrorMode(struct qemu_syscall *call);
+void qemu_RtlSetThreadPreferredUILanguages(struct qemu_syscall *call);
 void qemu_RtlSetTimeZoneInformation(struct qemu_syscall *call);
 void qemu_RtlSizeHeap(struct qemu_syscall *call);
 void qemu_RtlSleepConditionVariableCS(struct qemu_syscall *call);
@@ -1537,12 +1563,6 @@ void qemu_wcstol(struct qemu_syscall *call);
 void qemu_wcstombs(struct qemu_syscall *call);
 void qemu_wcstoul(struct qemu_syscall *call);
 void qemu_wine_server_call(struct qemu_syscall *call);
-void qemu_RtlGetProcessPreferredUILanguages(struct qemu_syscall *call);
-void qemu_RtlGetSystemPreferredUILanguages(struct qemu_syscall *call);
-void qemu_RtlGetThreadPreferredUILanguages(struct qemu_syscall *call);
-void qemu_RtlGetUserPreferredUILanguages(struct qemu_syscall *call);
-void qemu_RtlSetProcessPreferredUILanguages(struct qemu_syscall *call);
-void qemu_RtlSetThreadPreferredUILanguages(struct qemu_syscall *call);
 
 WCHAR *(* CDECL p_wcsrchr)(WCHAR *str, WCHAR ch);
 void * (* CDECL p_memchr)(const void *ptr, int c, size_t n);

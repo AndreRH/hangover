@@ -507,3 +507,347 @@ void qemu_qsort(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_EtwEventActivityIdControl
+{
+    struct qemu_syscall super;
+    uint64_t code;
+    uint64_t guid;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI ULONG WINAPI EtwEventActivityIdControl(ULONG code, GUID *guid)
+{
+    struct qemu_EtwEventActivityIdControl call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ETWEVENTACTIVITYIDCONTROL);
+    call.code = code;
+    call.guid = (ULONG_PTR)guid;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+extern ULONG WINAPI EtwEventActivityIdControl(ULONG code, GUID *guid);
+void qemu_EtwEventActivityIdControl(struct qemu_syscall *call)
+{
+    struct qemu_EtwEventActivityIdControl *c = (struct qemu_EtwEventActivityIdControl *)call;
+    WINE_TRACE("\n");
+    c->super.iret = EtwEventActivityIdControl(c->code, QEMU_G2H(c->guid));
+}
+
+#endif
+
+struct qemu_EtwEventProviderEnabled
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t level;
+    uint64_t keyword;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI BOOLEAN WINAPI EtwEventProviderEnabled(REGHANDLE handle, UCHAR level, ULONGLONG keyword)
+{
+    struct qemu_EtwEventProviderEnabled call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ETWEVENTPROVIDERENABLED);
+    call.handle = handle;
+    call.level = level;
+    call.keyword = keyword;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+extern BOOLEAN WINAPI EtwEventProviderEnabled(REGHANDLE handle, UCHAR level, ULONGLONG keyword);
+void qemu_EtwEventProviderEnabled(struct qemu_syscall *call)
+{
+    struct qemu_EtwEventProviderEnabled *c = (struct qemu_EtwEventProviderEnabled *)call;
+    WINE_TRACE("\n");
+    c->super.iret = EtwEventProviderEnabled(c->handle, c->level, c->keyword);
+}
+
+#endif
+
+struct qemu_EtwEventWriteString
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t level;
+    uint64_t keyword;
+    uint64_t string;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI ULONG WINAPI EtwEventWriteString(REGHANDLE handle, UCHAR level, ULONGLONG keyword, PCWSTR string)
+{
+    struct qemu_EtwEventWriteString call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ETWEVENTWRITESTRING);
+    call.handle = handle;
+    call.level = level;
+    call.keyword = keyword;
+    call.string = (ULONG_PTR)string;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+extern ULONG WINAPI EtwEventWriteString(REGHANDLE handle, UCHAR level, ULONGLONG keyword, PCWSTR string);
+void qemu_EtwEventWriteString(struct qemu_syscall *call)
+{
+    struct qemu_EtwEventWriteString *c = (struct qemu_EtwEventWriteString *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EtwEventWriteString(c->handle, c->level, c->keyword, QEMU_G2H(c->string));
+}
+
+#endif
+
+struct qemu_EtwEventWriteTransfer
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t descriptor;
+    uint64_t activity;
+    uint64_t related;
+    uint64_t count;
+    uint64_t data;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI ULONG WINAPI EtwEventWriteTransfer(REGHANDLE handle, PCEVENT_DESCRIPTOR descriptor, LPCGUID activity, LPCGUID related, ULONG count, PEVENT_DATA_DESCRIPTOR data)
+{
+    struct qemu_EtwEventWriteTransfer call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ETWEVENTWRITETRANSFER);
+    call.handle = handle;
+    call.descriptor = (ULONG_PTR)descriptor;
+    call.activity = (ULONG_PTR)activity;
+    call.related = (ULONG_PTR)related;
+    call.count = count;
+    call.data = (ULONG_PTR)data;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+extern WINBASEAPI ULONG WINAPI EtwEventWriteTransfer(REGHANDLE handle, PCEVENT_DESCRIPTOR descriptor, LPCGUID activity, LPCGUID related, ULONG count, PEVENT_DATA_DESCRIPTOR data);
+void qemu_EtwEventWriteTransfer(struct qemu_syscall *call)
+{
+    struct qemu_EtwEventWriteTransfer *c = (struct qemu_EtwEventWriteTransfer *)call;
+    WINE_FIXME("\n");
+    c->super.iret = EtwEventWriteTransfer(c->handle, QEMU_G2H(c->descriptor), QEMU_G2H(c->activity), QEMU_G2H(c->related), c->count, QEMU_G2H(c->data));
+}
+
+#endif
+
+struct qemu_EtwGetTraceEnableFlags
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI ULONG WINAPI EtwGetTraceEnableFlags(TRACEHANDLE handle)
+{
+    struct qemu_EtwGetTraceEnableFlags call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ETWGETTRACEENABLEFLAGS);
+    call.handle = handle;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+extern WINBASEAPI ULONG WINAPI EtwGetTraceEnableFlags(TRACEHANDLE handle);
+void qemu_EtwGetTraceEnableFlags(struct qemu_syscall *call)
+{
+    struct qemu_EtwGetTraceEnableFlags *c = (struct qemu_EtwGetTraceEnableFlags *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EtwGetTraceEnableFlags(c->handle);
+}
+
+#endif
+
+struct qemu_EtwGetTraceEnableLevel
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI UCHAR WINAPI EtwGetTraceEnableLevel(TRACEHANDLE handle)
+{
+    struct qemu_EtwGetTraceEnableLevel call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ETWGETTRACEENABLELEVEL);
+    call.handle = handle;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+extern UCHAR WINAPI EtwGetTraceEnableLevel(TRACEHANDLE handle);
+void qemu_EtwGetTraceEnableLevel(struct qemu_syscall *call)
+{
+    struct qemu_EtwGetTraceEnableLevel *c = (struct qemu_EtwGetTraceEnableLevel *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EtwGetTraceEnableLevel(c->handle);
+}
+
+#endif
+
+struct qemu_EtwGetTraceLoggerHandle
+{
+    struct qemu_syscall super;
+    uint64_t buf;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI TRACEHANDLE WINAPI EtwGetTraceLoggerHandle(PVOID buf)
+{
+    struct qemu_EtwGetTraceLoggerHandle call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ETWGETTRACELOGGERHANDLE);
+    call.buf = (ULONG_PTR)buf;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+extern TRACEHANDLE WINAPI EtwGetTraceLoggerHandle(PVOID buf);
+void qemu_EtwGetTraceLoggerHandle(struct qemu_syscall *call)
+{
+    struct qemu_EtwGetTraceLoggerHandle *c = (struct qemu_EtwGetTraceLoggerHandle *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EtwGetTraceLoggerHandle(QEMU_G2H(c->buf));
+}
+
+#endif
+
+struct qemu_EtwLogTraceEvent
+{
+    struct qemu_syscall super;
+    uint64_t SessionHandle;
+    uint64_t EventTrace;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI ULONG WINAPI EtwLogTraceEvent(TRACEHANDLE SessionHandle, PEVENT_TRACE_HEADER EventTrace)
+{
+    struct qemu_EtwLogTraceEvent call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ETWLOGTRACEEVENT);
+    call.SessionHandle = SessionHandle;
+    call.EventTrace = (ULONG_PTR)EventTrace;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+extern ULONG WINAPI EtwLogTraceEvent(TRACEHANDLE SessionHandle, PEVENT_TRACE_HEADER EventTrace);
+void qemu_EtwLogTraceEvent(struct qemu_syscall *call)
+{
+    struct qemu_EtwLogTraceEvent *c = (struct qemu_EtwLogTraceEvent *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = EtwLogTraceEvent(c->SessionHandle, QEMU_G2H(c->EventTrace));
+}
+
+#endif
+
+struct qemu_EtwTraceMessageVa
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t flags;
+    uint64_t guid;
+    uint64_t number;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI ULONG WINAPI EtwTraceMessageVa(TRACEHANDLE handle, ULONG flags, LPGUID guid, USHORT number, va_list va)
+{
+    struct qemu_EtwTraceMessageVa call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ETWTRACEMESSAGEVA);
+    call.handle = handle;
+    call.flags = flags;
+    call.guid = (ULONG_PTR)guid;
+    call.number = number;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EtwTraceMessageVa(struct qemu_syscall *call)
+{
+    struct qemu_EtwTraceMessageVa *c = (struct qemu_EtwTraceMessageVa *)call;
+    WINE_FIXME("Stub!\n");
+    c->super.iret = 0;
+}
+
+#endif
+
+struct qemu_EtwTraceMessage
+{
+    struct qemu_syscall super;
+    uint64_t handle;
+    uint64_t flags;
+    uint64_t guid;
+    uint64_t number;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI ULONG WINAPI EtwTraceMessage(TRACEHANDLE handle, ULONG flags, LPGUID guid, ULONG number, ...)
+{
+    struct qemu_EtwTraceMessage call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ETWTRACEMESSAGE);
+    call.handle = handle;
+    call.flags = flags;
+    call.guid = (ULONG_PTR)guid;
+    call.number = number;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_EtwTraceMessage(struct qemu_syscall *call)
+{
+    struct qemu_EtwTraceMessage *c = (struct qemu_EtwTraceMessage *)call;
+    WINE_FIXME("Stub!\n");
+    c->super.iret = 0;
+}
+
+#endif
