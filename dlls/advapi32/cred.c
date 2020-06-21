@@ -272,7 +272,8 @@ void qemu_CredRead(struct qemu_syscall *call)
 
 #if HOST_BIT != GUEST_BIT
     /* Convert in place, leave empty space between the 32 bit struct and the data. */
-    CREDENTIAL_h2g((struct qemu_CREDENTIAL *)cred, cred);
+    if (c->super.iret)
+        CREDENTIAL_h2g((struct qemu_CREDENTIAL *)cred, cred);
 #endif
     c->Credential = QEMU_H2G(cred);
 }
