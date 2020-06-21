@@ -2680,7 +2680,7 @@ WINBASEAPI UINT WINAPI GetDpiForWindow(HWND hwnd)
 void qemu_GetDpiForWindow(struct qemu_syscall *call)
 {
     struct qemu_GetDpiForWindow *c = (struct qemu_GetDpiForWindow *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = GetDpiForWindow(QEMU_G2H(c->hwnd));
 }
 
