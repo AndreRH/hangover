@@ -1377,6 +1377,12 @@ static BOOL WINAPI hook_RegisterClassNameW(const WCHAR *class)
 static HMODULE WINAPI hook_LoadLibraryW(const WCHAR *name)
 {
     static const WCHAR comctl32W[] = {'c','o','m','c','t','l','3','2','.','d','l','l',0};
+    /* At some point our host side TEB fixup became so good that a host-side LoadLibrary("comctl32")
+     * will try to load the x86 sxs binary when a manifest in the guest.exe asks for it. We need this
+     * library loaded purely to make GetProcAddress return a pointer to RegisterClassNameW that we can
+     * hook and user32 can call. */
+    static const WCHAR winsys32comctl32W[] = {'C',':','\\','w','i','n','d','o','w','s','\\',
+                's','y','s','t','e','m','3','2','\\','c','o','m','c','t','l','3','2','.','d','l','l',0};
 
     if (!strcmpW(name, comctl32W))
     {
@@ -1393,7 +1399,7 @@ static HMODULE WINAPI hook_LoadLibraryW(const WCHAR *name)
         if (!guest_load_ret)
             return NULL;
 
-        ret = LoadLibraryExW(name, 0, 0);
+        ret = LoadLibraryExW(winsys32comctl32W, 0, 0);
         if (ret)
             hook(GetProcAddress(ret, "RegisterClassNameW"), hook_RegisterClassNameW);
 
