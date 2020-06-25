@@ -55,13 +55,14 @@ const struct qemu_ops *qemu_ops;
 static const syscall_handler dll_functions[] =
 {
     qemu_glDebugEntry,
+    qemu_glDebugMessageCallback,
+    qemu_glDebugMessageCallbackAMD,
+    qemu_glDebugMessageCallbackARB,
     qemu_glGetIntegerv,
     qemu_glGetString,
     qemu_glGetStringi,
-    qemu_wglAllocateMemoryNV,
     qemu_wglBindTexImageARB,
     qemu_wglChoosePixelFormat,
-    qemu_wglChoosePixelFormatARB,
     qemu_wglCopyContext,
     qemu_wglCreateContext,
     qemu_wglCreateContextAttribsARB,
@@ -71,36 +72,25 @@ static const syscall_handler dll_functions[] =
     qemu_wglDescribeLayerPlane,
     qemu_wglDescribePixelFormat,
     qemu_wglDestroyPbufferARB,
-    qemu_wglFreeMemoryNV,
     qemu_wglGetCurrentContext,
     qemu_wglGetCurrentDC,
     qemu_wglGetCurrentReadDCARB,
-    qemu_wglGetExtensionsStringARB,
-    qemu_wglGetExtensionsStringEXT,
+    qemu_wglGetDefaultProcAddress,
     qemu_wglGetLayerPaletteEntries,
     qemu_wglGetPbufferDCARB,
     qemu_wglGetPixelFormat,
-    qemu_wglGetPixelFormatAttribfvARB,
-    qemu_wglGetPixelFormatAttribivARB,
     qemu_wglGetProcAddress,
-    qemu_wglGetSwapIntervalEXT,
     qemu_wglMakeContextCurrentARB,
     qemu_wglMakeCurrent,
-    qemu_wglQueryCurrentRendererIntegerWINE,
-    qemu_wglQueryCurrentRendererStringWINE,
     qemu_wglQueryPbufferARB,
-    qemu_wglQueryRendererIntegerWINE,
-    qemu_wglQueryRendererStringWINE,
     qemu_wglRealizeLayerPalette,
     qemu_wglReleasePbufferDCARB,
     qemu_wglReleaseTexImageARB,
     qemu_wglSetLayerPaletteEntries,
     qemu_wglSetPbufferAttribARB,
     qemu_wglSetPixelFormat,
-    qemu_wglSetPixelFormatWINE,
     qemu_wglShareLists,
     qemu_wglSwapBuffers,
-    qemu_wglSwapIntervalEXT,
     qemu_wglSwapLayerBuffers,
     qemu_wglUseFontBitmapsA,
     qemu_wglUseFontBitmapsW,
@@ -129,12 +119,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_glGetStringi = (void *)wglGetProcAddress("glGetStringi");
     if (!p_glGetStringi)
         WINE_WARN("Failed to load glGetStringi.\n");
-    p_wglAllocateMemoryNV = (void *)wglGetProcAddress("wglAllocateMemoryNV");
-    if (!p_wglAllocateMemoryNV)
-        WINE_WARN("Failed to load wglAllocateMemoryNV.\n");
-    p_wglFreeMemoryNV = (void *)wglGetProcAddress("wglFreeMemoryNV");
-    if (!p_wglFreeMemoryNV)
-        WINE_WARN("Failed to load wglFreeMemoryNV.\n");
     p_wglBindTexImageARB = (void *)wglGetProcAddress("wglBindTexImageARB");
     if (!p_wglBindTexImageARB)
         WINE_WARN("Failed to load wglBindTexImageARB.\n");
@@ -144,15 +128,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_wglSetPbufferAttribARB = (void *)wglGetProcAddress("wglSetPbufferAttribARB");
     if (!p_wglSetPbufferAttribARB)
         WINE_WARN("Failed to load wglSetPbufferAttribARB.\n");
-    p_wglChoosePixelFormatARB = (void *)wglGetProcAddress("wglChoosePixelFormatARB");
-    if (!p_wglChoosePixelFormatARB)
-        WINE_WARN("Failed to load wglChoosePixelFormatARB.\n");
-    p_wglGetPixelFormatAttribivARB = (void *)wglGetProcAddress("wglGetPixelFormatAttribivARB");
-    if (!p_wglGetPixelFormatAttribivARB)
-        WINE_WARN("Failed to load wglGetPixelFormatAttribivARB.\n");
-    p_wglGetPixelFormatAttribfvARB = (void *)wglGetProcAddress("wglGetPixelFormatAttribfvARB");
-    if (!p_wglGetPixelFormatAttribfvARB)
-        WINE_WARN("Failed to load wglGetPixelFormatAttribfvARB.\n");
     p_wglCreatePbufferARB = (void *)wglGetProcAddress("wglCreatePbufferARB");
     if (!p_wglCreatePbufferARB)
         WINE_WARN("Failed to load wglCreatePbufferARB.\n");
@@ -171,33 +146,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_wglDescribePixelFormat = (void *)wglGetProcAddress("wglDescribePixelFormat");
     if (!p_wglDescribePixelFormat)
         WINE_WARN("Failed to load wglDescribePixelFormat.\n");
-    p_wglGetExtensionsStringARB = (void *)wglGetProcAddress("wglGetExtensionsStringARB");
-    if (!p_wglGetExtensionsStringARB)
-        WINE_WARN("Failed to load wglGetExtensionsStringARB.\n");
-    p_wglGetExtensionsStringEXT = (void *)wglGetProcAddress("wglGetExtensionsStringEXT");
-    if (!p_wglGetExtensionsStringEXT)
-        WINE_WARN("Failed to load wglGetExtensionsStringEXT.\n");
-    p_wglSwapIntervalEXT = (void *)wglGetProcAddress("wglSwapIntervalEXT");
-    if (!p_wglSwapIntervalEXT)
-        WINE_WARN("Failed to load wglSwapIntervalEXT.\n");
-    p_wglGetSwapIntervalEXT = (void *)wglGetProcAddress("wglGetSwapIntervalEXT");
-    if (!p_wglGetSwapIntervalEXT)
-        WINE_WARN("Failed to load wglGetSwapIntervalEXT.\n");
-    p_wglSetPixelFormatWINE = (void *)wglGetProcAddress("wglSetPixelFormatWINE");
-    if (!p_wglSetPixelFormatWINE)
-        WINE_WARN("Failed to load wglSetPixelFormatWINE.\n");
-    p_wglQueryCurrentRendererIntegerWINE = (void *)wglGetProcAddress("wglQueryCurrentRendererIntegerWINE");
-    if (!p_wglQueryCurrentRendererIntegerWINE)
-        WINE_WARN("Failed to load wglQueryCurrentRendererIntegerWINE.\n");
-    p_wglQueryCurrentRendererStringWINE = (void *)wglGetProcAddress("wglQueryCurrentRendererStringWINE");
-    if (!p_wglQueryCurrentRendererStringWINE)
-        WINE_WARN("Failed to load wglQueryCurrentRendererStringWINE.\n");
-    p_wglQueryRendererIntegerWINE = (void *)wglGetProcAddress("wglQueryRendererIntegerWINE");
-    if (!p_wglQueryRendererIntegerWINE)
-        WINE_WARN("Failed to load wglQueryRendererIntegerWINE.\n");
-    p_wglQueryRendererStringWINE = (void *)wglGetProcAddress("wglQueryRendererStringWINE");
-    if (!p_wglQueryRendererStringWINE)
-        WINE_WARN("Failed to load wglQueryRendererStringWINE.\n");
     p_wglChoosePixelFormat = (void *)wglGetProcAddress("wglChoosePixelFormat");
     if (!p_wglChoosePixelFormat)
         WINE_WARN("Failed to load wglChoosePixelFormat.\n");
@@ -213,6 +161,15 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_glDebugEntry = (void *)wglGetProcAddress("glDebugEntry");
     if (!p_glDebugEntry)
         WINE_WARN("Failed to load glDebugEntry.\n");
+    p_glDebugMessageCallback = (void *)wglGetProcAddress("glDebugMessageCallback");
+    if (!p_glDebugMessageCallback)
+        WINE_WARN("Failed to load glDebugMessageCallback.\n");
+    p_glDebugMessageCallbackARB = (void *)wglGetProcAddress("glDebugMessageCallbackARB");
+    if (!p_glDebugMessageCallbackARB)
+        WINE_WARN("Failed to load glDebugMessageCallbackARB.\n");
+    p_glDebugMessageCallbackAMD = (void *)wglGetProcAddress("glDebugMessageCallbackAMD");
+    if (!p_glDebugMessageCallbackAMD)
+        WINE_WARN("Failed to load glDebugMessageCallbackAMD.\n");
 
     return dll_functions;
 }

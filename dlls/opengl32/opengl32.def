@@ -2,13 +2,14 @@ LIBRARY opengl32.dll BASE=0x140000000
 
 EXPORTS
   glDebugEntry
+  glDebugMessageCallback
+  glDebugMessageCallbackAMD
+  glDebugMessageCallbackARB
   glGetIntegerv
   glGetString
   glGetStringi
-  wglAllocateMemoryNV
   wglBindTexImageARB
   wglChoosePixelFormat
-  wglChoosePixelFormatARB
   wglCopyContext
   wglCreateContext
   wglCreateContextAttribsARB
@@ -18,36 +19,25 @@ EXPORTS
   wglDescribeLayerPlane
   wglDescribePixelFormat
   wglDestroyPbufferARB
-  wglFreeMemoryNV
   wglGetCurrentContext
   wglGetCurrentDC
   wglGetCurrentReadDCARB
-  wglGetExtensionsStringARB
-  wglGetExtensionsStringEXT
+  wglGetDefaultProcAddress
   wglGetLayerPaletteEntries
   wglGetPbufferDCARB
   wglGetPixelFormat
-  wglGetPixelFormatAttribfvARB
-  wglGetPixelFormatAttribivARB
   wglGetProcAddress
-  wglGetSwapIntervalEXT
   wglMakeContextCurrentARB
   wglMakeCurrent
-  wglQueryCurrentRendererIntegerWINE
-  wglQueryCurrentRendererStringWINE
   wglQueryPbufferARB
-  wglQueryRendererIntegerWINE
-  wglQueryRendererStringWINE
   wglRealizeLayerPalette
   wglReleasePbufferDCARB
   wglReleaseTexImageARB
   wglSetLayerPaletteEntries
   wglSetPbufferAttribARB
   wglSetPixelFormat
-  wglSetPixelFormatWINE
   wglShareLists
   wglSwapBuffers
-  wglSwapIntervalEXT
   wglSwapLayerBuffers
   wglUseFontBitmapsA
   wglUseFontBitmapsW
