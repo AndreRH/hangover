@@ -43,7 +43,6 @@
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_opengl32);
 #endif
 
-
 struct qemu_wglCopyContext
 {
     struct qemu_syscall super;
@@ -598,7 +597,7 @@ struct qemu_wglGetLayerPaletteEntries
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI int WINAPI wglGetLayerPaletteEntries(HDC hdc, int iLayerPlane, int iStart, int cEntries, COLORREF *pcr)
+WINBASEAPI int WINAPI wglGetLayerPaletteEntries(HDC hdc, int iLayerPlane, int iStart, int cEntries, const COLORREF *pcr)
 {
     struct qemu_wglGetLayerPaletteEntries call;
     call.super.id = QEMU_SYSCALL_ID(CALL_WGLGETLAYERPALETTEENTRIES);
