@@ -710,11 +710,6 @@ print CALLS "#include \"dll_list.h\"\n";
 print CALLS "#include \"qemu_opengl32.h\"\n";
 print CALLS "const syscall_handler dll_functions[] =\n";
 print CALLS "{\n";
-foreach (sort keys %wgl_functions)
-{
-    next unless defined $supported_wgl_functions{$_};
-    print CALLS "    qemu_" . $_ . ",\n";
-}
 foreach (sort keys %norm_functions)
 {
     print CALLS "    qemu_" . $_ . ",\n";
@@ -723,6 +718,25 @@ foreach (sort keys %ext_functions)
 {
     print CALLS "    qemu_" . $_ . ",\n";
 }
+foreach (sort keys %wgl_functions)
+{
+    next unless defined $supported_wgl_functions{$_};
+    print CALLS "    qemu_" . $_ . ",\n";
+}
+print CALLS "    qemu_wglChoosePixelFormat,\n";
+print CALLS "    qemu_wglCreateLayerContext,\n";
+print CALLS "    qemu_wglDescribeLayerPlane,\n";
+print CALLS "    qemu_wglGetCurrentContext,\n";
+print CALLS "    qemu_wglGetCurrentDC,\n";
+print CALLS "    qemu_wglGetDefaultProcAddress,\n";
+print CALLS "    qemu_wglGetLayerPaletteEntries,\n";
+print CALLS "    qemu_wglRealizeLayerPalette,\n";
+print CALLS "    qemu_wglSetLayerPaletteEntries,\n";
+print CALLS "    qemu_wglSwapLayerBuffers,\n";
+print CALLS "    qemu_wglUseFontBitmapsA,\n";
+print CALLS "    qemu_wglUseFontBitmapsW,\n";
+print CALLS "    qemu_wglUseFontOutlinesA,\n";
+print CALLS "    qemu_wglUseFontOutlinesW,\n";
 print CALLS "};\n";
 print CALLS "#endif\n";
 
@@ -819,6 +833,21 @@ foreach (sort keys %ext_functions)
     print HEADER get_func_proto("%-10s (WINE_GLAPI *p_%s)(%s);\n", $_, $ext_functions{$_}, 1);
     print HEADER "void qemu_" . $_ . "(struct qemu_syscall *call);\n";
 }
+
+print HEADER "void qemu_wglChoosePixelFormat(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglCreateLayerContext(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglDescribeLayerPlane(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglGetCurrentContext(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglGetCurrentDC(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglGetDefaultProcAddress(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglGetLayerPaletteEntries(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglRealizeLayerPalette(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglSetLayerPaletteEntries(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglSwapLayerBuffers(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglUseFontBitmapsA(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglUseFontBitmapsW(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglUseFontOutlinesA(struct qemu_syscall *call);\n";
+print HEADER "void qemu_wglUseFontOutlinesW(struct qemu_syscall *call);\n";
 
 print HEADER "\n\n";
 

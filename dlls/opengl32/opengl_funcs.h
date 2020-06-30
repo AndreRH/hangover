@@ -12206,6 +12206,20 @@ BOOL       (WINE_GLAPI *p_wglSetPixelFormatWINE)( HDC hdc, int format );
 void qemu_wglSetPixelFormatWINE(struct qemu_syscall *call);
 BOOL       (WINE_GLAPI *p_wglSwapIntervalEXT)( int interval );
 void qemu_wglSwapIntervalEXT(struct qemu_syscall *call);
+void qemu_wglChoosePixelFormat(struct qemu_syscall *call);
+void qemu_wglCreateLayerContext(struct qemu_syscall *call);
+void qemu_wglDescribeLayerPlane(struct qemu_syscall *call);
+void qemu_wglGetCurrentContext(struct qemu_syscall *call);
+void qemu_wglGetCurrentDC(struct qemu_syscall *call);
+void qemu_wglGetDefaultProcAddress(struct qemu_syscall *call);
+void qemu_wglGetLayerPaletteEntries(struct qemu_syscall *call);
+void qemu_wglRealizeLayerPalette(struct qemu_syscall *call);
+void qemu_wglSetLayerPaletteEntries(struct qemu_syscall *call);
+void qemu_wglSwapLayerBuffers(struct qemu_syscall *call);
+void qemu_wglUseFontBitmapsA(struct qemu_syscall *call);
+void qemu_wglUseFontBitmapsW(struct qemu_syscall *call);
+void qemu_wglUseFontOutlinesA(struct qemu_syscall *call);
+void qemu_wglUseFontOutlinesW(struct qemu_syscall *call);
 
 
 #endif /* QEMU_DLL_GUEST */
