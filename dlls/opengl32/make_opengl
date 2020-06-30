@@ -257,6 +257,11 @@ sub GenerateThunk($$$)
     $ret .= "void qemu_$name(struct qemu_syscall *call)\n";
     $ret .= "{\n";
     $ret .= "    struct qemu_$name *c = (struct qemu_$name *)call;\n";
+    # FIXME: Even though we are always calling host opengl32.dll its wglGetProcAddress
+    # might switch between a NULL and non-NULL result depending on the GL context, so
+    # we should make the funcs a per-context and thus per-thread property like the host
+    # library. However, as long as NtCurrentTeb() is slow on ARM ignore this detail.
+    $ret .= "    const struct opengl_funcs *funcs = &host_funcs;\n";
     $ret .= "    WINE_FIXME(\"Unverified\\n\");\n";
     if (is_float_func( $func_ref )) {
         $ret .= "    c->super.dret = (";
@@ -267,7 +272,7 @@ sub GenerateThunk($$$)
     } else {
         $ret .= "    (";
     }
-    $ret .= "p_$name($call_arg));\n";
+    $ret .= "funcs->$prefix.p_$name($call_arg));\n";
     $ret .= "}\n\n";
     $ret .= "#endif\n\n";
     return $ret;
@@ -708,6 +713,8 @@ print CALLS "#include <wine/wgl.h>\n";
 print CALLS "#include \"windows-user-services.h\"\n";
 print CALLS "#include \"dll_list.h\"\n";
 print CALLS "#include \"qemu_opengl32.h\"\n";
+print CALLS "#include <wine/debug.h>\n";
+print CALLS "WINE_DEFAULT_DEBUG_CHANNEL(qemu_opengl32);\n";
 print CALLS "const syscall_handler dll_functions[] =\n";
 print CALLS "{\n";
 foreach (sort keys %norm_functions)
@@ -737,7 +744,27 @@ print CALLS "    qemu_wglUseFontBitmapsA,\n";
 print CALLS "    qemu_wglUseFontBitmapsW,\n";
 print CALLS "    qemu_wglUseFontOutlinesA,\n";
 print CALLS "    qemu_wglUseFontOutlinesW,\n";
-print CALLS "};\n";
+print CALLS "};\n\n";
+
+print CALLS "struct opengl_funcs host_funcs;\n";
+print CALLS "void init_norm_funcs(void) {\n";
+print CALLS "    HMODULE host = GetModuleHandleA(\"opengl32.dll\");\n";
+foreach (sort keys %norm_functions)
+{
+    next if $_ eq "glDebugEntry";
+    print CALLS "    host_funcs.gl.p_" . $_ . " = (void *)GetProcAddress(host, \"" . $_ . "\");\n";
+    print CALLS "    if (!host_funcs.gl.p_" . $_ . ")\n";
+    print CALLS "        WINE_ERR(\"Could not load " . $_ . "\\n\");\n\n";
+}
+foreach (sort keys %wgl_functions)
+{
+    next unless defined $supported_wgl_functions{$_};
+    print CALLS "    host_funcs.wgl.p_" . $_ . " = (void *)GetProcAddress(host, \"" . $_ . "\");\n";
+    print CALLS "    if (!host_funcs.wgl.p_" . $_ . ")\n";
+    print CALLS "        WINE_ERR(\"Could not load " . $_ . "\\n\");\n\n";
+}
+print CALLS "}\n\n";
+
 print CALLS "#endif\n";
 
 close(CALLS);
@@ -784,10 +811,10 @@ print HEADER "struct wgl_context;\n";
 print HEADER "struct wgl_pbuffer;\n\n";
 
 print HEADER "#ifndef WINE_GLAPI\n";
-print HEADER "#define WINE_GLAPI\n";
+print HEADER "#define WINE_GLAPI WINAPI\n";
 print HEADER "#endif /* WINE_GLAPI */\n\n";
 
-print HEADER "#ifdef QEMU_DLL_GUEST\n";
+print HEADER "#ifndef QEMU_DLL_GUEST\n";
 
 print HEADER "struct opengl_funcs\n{\n";
 print HEADER "    struct\n    {\n";
@@ -814,23 +841,21 @@ foreach (sort keys %ext_functions)
 print HEADER "    } ext;\n";
 print HEADER "};\n\n";
 
-print HEADER "#else /* WINE_GLAPI */\n\n";
-
 foreach (sort keys %wgl_functions)
 {
     next unless defined $supported_wgl_functions{$_};
-    print HEADER get_func_proto("%-10s (WINAPI *p_%s)(%s);\n", $_, $wgl_functions{$_}, 1);
+#     print HEADER get_func_proto("%-10s (WINAPI *p_%s)(%s);\n", $_, $wgl_functions{$_}, 1);
     print HEADER "void qemu_" . $_ . "(struct qemu_syscall *call);\n";
 }
 foreach (sort keys %norm_functions)
 {
-    next if $_ eq "glDebugEntry";
-    print HEADER get_func_proto("%-10s (WINE_GLAPI *p_%s)(%s);\n", $_, $norm_functions{$_}, 1);
+#     next if $_ eq "glDebugEntry";
+#     print HEADER get_func_proto("%-10s (WINE_GLAPI *p_%s)(%s);\n", $_, $norm_functions{$_}, 1);
     print HEADER "void qemu_" . $_ . "(struct qemu_syscall *call);\n";
 }
 foreach (sort keys %ext_functions)
 {
-    print HEADER get_func_proto("%-10s (WINE_GLAPI *p_%s)(%s);\n", $_, $ext_functions{$_}, 1);
+#     print HEADER get_func_proto("%-10s (WINE_GLAPI *p_%s)(%s);\n", $_, $ext_functions{$_}, 1);
     print HEADER "void qemu_" . $_ . "(struct qemu_syscall *call);\n";
 }
 
@@ -917,7 +942,7 @@ foreach (sort keys %ext_functions) {
     print NORM generate_null_func($_, $ext_functions{$_}, "");
 }
 
-print NORM "#ifdef QEMU_DLL_GUEST\n";
+print NORM "#ifndef QEMU_DLL_GUEST\n";
 print NORM "\nstruct opengl_funcs null_opengl_funcs =\n{\n    {\n";
 foreach (sort keys %wgl_functions)
 {

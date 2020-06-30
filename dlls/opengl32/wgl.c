@@ -101,7 +101,7 @@ WINBASEAPI BOOL WINAPI wglDeleteContext(HGLRC hglrc)
 void qemu_wglDeleteContext(struct qemu_syscall *call)
 {
     struct qemu_wglDeleteContext *c = (struct qemu_wglDeleteContext *)call;
-    WINE_FIXME("Unverified!\n");
+    const struct opengl_funcs *funcs = &host_funcs;
     c->super.iret = wglDeleteContext(QEMU_G2H(c->hglrc));
 }
 
@@ -167,8 +167,9 @@ WINBASEAPI HGLRC WINAPI wglCreateContextAttribsARB(HDC hdc, HGLRC share, const i
 void qemu_wglCreateContextAttribsARB(struct qemu_syscall *call)
 {
     struct qemu_wglCreateContextAttribsARB *c = (struct qemu_wglCreateContextAttribsARB *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p_wglCreateContextAttribsARB(QEMU_G2H(c->hdc), QEMU_G2H(c->share), QEMU_G2H(c->attribs)));
+    c->super.iret = QEMU_H2G(funcs->ext.p_wglCreateContextAttribsARB(QEMU_G2H(c->hdc), QEMU_G2H(c->share), QEMU_G2H(c->attribs)));
 }
 
 #endif
@@ -201,8 +202,9 @@ WINBASEAPI BOOL WINAPI wglMakeContextCurrentARB(HDC draw_hdc, HDC read_hdc, HGLR
 void qemu_wglMakeContextCurrentARB(struct qemu_syscall *call)
 {
     struct qemu_wglMakeContextCurrentARB *c = (struct qemu_wglMakeContextCurrentARB *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wglMakeContextCurrentARB(QEMU_G2H(c->draw_hdc), QEMU_G2H(c->read_hdc), QEMU_G2H(c->hglrc));
+    c->super.iret = funcs->ext.p_wglMakeContextCurrentARB(QEMU_G2H(c->draw_hdc), QEMU_G2H(c->read_hdc), QEMU_G2H(c->hglrc));
 }
 
 #endif
@@ -229,8 +231,9 @@ WINBASEAPI HDC WINAPI wglGetCurrentReadDCARB(void)
 void qemu_wglGetCurrentReadDCARB(struct qemu_syscall *call)
 {
     struct qemu_wglGetCurrentReadDCARB *c = (struct qemu_wglGetCurrentReadDCARB *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p_wglGetCurrentReadDCARB());
+    c->super.iret = QEMU_H2G(funcs->ext.p_wglGetCurrentReadDCARB());
 }
 
 #endif
@@ -383,8 +386,9 @@ WINBASEAPI INT WINAPI wglDescribePixelFormat(HDC hdc, INT format, UINT size, PIX
 void qemu_wglDescribePixelFormat(struct qemu_syscall *call)
 {
     struct qemu_wglDescribePixelFormat *c = (struct qemu_wglDescribePixelFormat *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wglDescribePixelFormat(QEMU_G2H(c->hdc), c->format, c->size, QEMU_G2H(c->descr));
+    c->super.iret = funcs->wgl.p_wglDescribePixelFormat(QEMU_G2H(c->hdc), c->format, c->size, QEMU_G2H(c->descr));
 }
 
 #endif
@@ -412,11 +416,12 @@ WINBASEAPI INT WINAPI wglChoosePixelFormat(HDC hdc, const PIXELFORMATDESCRIPTOR*
 
 #else
 
+extern INT WINAPI wglChoosePixelFormat(HDC hdc, const PIXELFORMATDESCRIPTOR* ppfd);
 void qemu_wglChoosePixelFormat(struct qemu_syscall *call)
 {
     struct qemu_wglChoosePixelFormat *c = (struct qemu_wglChoosePixelFormat *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wglChoosePixelFormat(QEMU_G2H(c->hdc), QEMU_G2H(c->ppfd));
+    c->super.iret = wglChoosePixelFormat(QEMU_G2H(c->hdc), QEMU_G2H(c->ppfd));
 }
 
 #endif
@@ -445,8 +450,9 @@ WINBASEAPI INT WINAPI wglGetPixelFormat(HDC hdc)
 void qemu_wglGetPixelFormat(struct qemu_syscall *call)
 {
     struct qemu_wglGetPixelFormat *c = (struct qemu_wglGetPixelFormat *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wglGetPixelFormat(QEMU_G2H(c->hdc));
+    c->super.iret = funcs->wgl.p_wglGetPixelFormat(QEMU_G2H(c->hdc));
 }
 
 #endif
@@ -479,8 +485,9 @@ WINBASEAPI BOOL WINAPI wglSetPixelFormat(HDC hdc, INT format, const PIXELFORMATD
 void qemu_wglSetPixelFormat(struct qemu_syscall *call)
 {
     struct qemu_wglSetPixelFormat *c = (struct qemu_wglSetPixelFormat *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wglSetPixelFormat(QEMU_G2H(c->hdc), c->format, QEMU_G2H(c->descr));
+    c->super.iret = funcs->wgl.p_wglSetPixelFormat(QEMU_G2H(c->hdc), c->format, QEMU_G2H(c->descr));
 }
 
 #endif
@@ -509,8 +516,9 @@ WINBASEAPI BOOL WINAPI wglSwapBuffers(HDC hdc)
 void qemu_wglSwapBuffers(struct qemu_syscall *call)
 {
     struct qemu_wglSwapBuffers *c = (struct qemu_wglSwapBuffers *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wglSwapBuffers(QEMU_G2H(c->hdc));
+    c->super.iret = funcs->wgl.p_wglSwapBuffers(QEMU_G2H(c->hdc));
 }
 
 #endif
@@ -541,6 +549,7 @@ WINBASEAPI HGLRC WINAPI wglCreateLayerContext(HDC hdc, int iLayerPlane)
 void qemu_wglCreateLayerContext(struct qemu_syscall *call)
 {
     struct qemu_wglCreateLayerContext *c = (struct qemu_wglCreateLayerContext *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(wglCreateLayerContext(QEMU_G2H(c->hdc), c->iLayerPlane));
 }
@@ -579,6 +588,7 @@ WINBASEAPI BOOL WINAPI wglDescribeLayerPlane(HDC hdc, int iPixelFormat, int iLay
 void qemu_wglDescribeLayerPlane(struct qemu_syscall *call)
 {
     struct qemu_wglDescribeLayerPlane *c = (struct qemu_wglDescribeLayerPlane *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
     c->super.iret = wglDescribeLayerPlane(QEMU_G2H(c->hdc), c->iPixelFormat, c->iLayerPlane, c->nBytes, QEMU_G2H(c->plpd));
 }
@@ -617,6 +627,7 @@ WINBASEAPI int WINAPI wglGetLayerPaletteEntries(HDC hdc, int iLayerPlane, int iS
 void qemu_wglGetLayerPaletteEntries(struct qemu_syscall *call)
 {
     struct qemu_wglGetLayerPaletteEntries *c = (struct qemu_wglGetLayerPaletteEntries *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
     c->super.iret = wglGetLayerPaletteEntries(QEMU_G2H(c->hdc), c->iLayerPlane, c->iStart, c->cEntries, QEMU_G2H(c->pcr));
 }
@@ -647,6 +658,7 @@ WINBASEAPI void WINAPI glGetIntegerv(GLenum pname, GLint *data)
 void qemu_glGetIntegerv(struct qemu_syscall *call)
 {
     struct qemu_glGetIntegerv *c = (struct qemu_glGetIntegerv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
     glGetIntegerv(c->pname, QEMU_G2H(c->data));
 }
@@ -679,8 +691,9 @@ WINBASEAPI const GLubyte * WINAPI glGetStringi(GLenum name, GLuint index)
 void qemu_glGetStringi(struct qemu_syscall *call)
 {
     struct qemu_glGetStringi *c = (struct qemu_glGetStringi *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p_glGetStringi(c->name, c->index));
+    c->super.iret = QEMU_H2G(funcs->ext.p_glGetStringi(c->name, c->index));
 }
 
 #endif
@@ -709,6 +722,7 @@ WINBASEAPI PROC WINAPI wglGetProcAddress(LPCSTR name)
 void qemu_wglGetProcAddress(struct qemu_syscall *call)
 {
     struct qemu_wglGetProcAddress *c = (struct qemu_wglGetProcAddress *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Stub!\n");
     c->super.iret = 0;
 }
@@ -743,6 +757,7 @@ WINBASEAPI BOOL WINAPI wglRealizeLayerPalette(HDC hdc, int iLayerPlane, BOOL bRe
 void qemu_wglRealizeLayerPalette(struct qemu_syscall *call)
 {
     struct qemu_wglRealizeLayerPalette *c = (struct qemu_wglRealizeLayerPalette *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
     c->super.iret = wglRealizeLayerPalette(QEMU_G2H(c->hdc), c->iLayerPlane, c->bRealize);
 }
@@ -781,6 +796,7 @@ WINBASEAPI int WINAPI wglSetLayerPaletteEntries(HDC hdc, int iLayerPlane, int iS
 void qemu_wglSetLayerPaletteEntries(struct qemu_syscall *call)
 {
     struct qemu_wglSetLayerPaletteEntries *c = (struct qemu_wglSetLayerPaletteEntries *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
     c->super.iret = wglSetLayerPaletteEntries(QEMU_G2H(c->hdc), c->iLayerPlane, c->iStart, c->cEntries, QEMU_G2H(c->pcr));
 }
@@ -811,8 +827,9 @@ WINBASEAPI PROC WINAPI wglGetDefaultProcAddress(LPCSTR name)
 void qemu_wglGetDefaultProcAddress(struct qemu_syscall *call)
 {
     struct qemu_wglGetDefaultProcAddress *c = (struct qemu_wglGetDefaultProcAddress *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Stub!\n");
-    c->super.iret = 0;/*(uint64_t)p_wglGetDefaultProcAddress(QEMU_G2H(c->name));*/
+    c->super.iret = 0;/*(uint64_t)funcs->wgl.p_wglGetDefaultProcAddress(QEMU_G2H(c->name));*/
 }
 
 #endif
@@ -843,6 +860,7 @@ WINBASEAPI BOOL WINAPI wglSwapLayerBuffers(HDC hdc, UINT fuPlanes)
 void qemu_wglSwapLayerBuffers(struct qemu_syscall *call)
 {
     struct qemu_wglSwapLayerBuffers *c = (struct qemu_wglSwapLayerBuffers *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
     c->super.iret = wglSwapLayerBuffers(QEMU_G2H(c->hdc), c->fuPlanes);
 }
@@ -875,8 +893,9 @@ WINBASEAPI BOOL WINAPI wglBindTexImageARB(HPBUFFERARB handle, int buffer)
 void qemu_wglBindTexImageARB(struct qemu_syscall *call)
 {
     struct qemu_wglBindTexImageARB *c = (struct qemu_wglBindTexImageARB *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wglBindTexImageARB(QEMU_G2H(c->handle), c->buffer);
+    c->super.iret = funcs->ext.p_wglBindTexImageARB(QEMU_G2H(c->handle), c->buffer);
 }
 
 #endif
@@ -907,8 +926,9 @@ WINBASEAPI BOOL WINAPI wglReleaseTexImageARB(HPBUFFERARB handle, int buffer)
 void qemu_wglReleaseTexImageARB(struct qemu_syscall *call)
 {
     struct qemu_wglReleaseTexImageARB *c = (struct qemu_wglReleaseTexImageARB *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wglReleaseTexImageARB(QEMU_G2H(c->handle), c->buffer);
+    c->super.iret = funcs->ext.p_wglReleaseTexImageARB(QEMU_G2H(c->handle), c->buffer);
 }
 
 #endif
@@ -939,8 +959,9 @@ WINBASEAPI BOOL WINAPI wglSetPbufferAttribARB(HPBUFFERARB handle, const int *att
 void qemu_wglSetPbufferAttribARB(struct qemu_syscall *call)
 {
     struct qemu_wglSetPbufferAttribARB *c = (struct qemu_wglSetPbufferAttribARB *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wglSetPbufferAttribARB(QEMU_G2H(c->handle), QEMU_G2H(c->attribs));
+    c->super.iret = funcs->ext.p_wglSetPbufferAttribARB(QEMU_G2H(c->handle), QEMU_G2H(c->attribs));
 }
 
 #endif
@@ -977,8 +998,9 @@ WINBASEAPI HPBUFFERARB WINAPI wglCreatePbufferARB(HDC hdc, int format, int width
 void qemu_wglCreatePbufferARB(struct qemu_syscall *call)
 {
     struct qemu_wglCreatePbufferARB *c = (struct qemu_wglCreatePbufferARB *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p_wglCreatePbufferARB(QEMU_G2H(c->hdc), c->format, c->width, c->height, QEMU_G2H(c->attribs)));
+    c->super.iret = QEMU_H2G(funcs->ext.p_wglCreatePbufferARB(QEMU_G2H(c->hdc), c->format, c->width, c->height, QEMU_G2H(c->attribs)));
 }
 
 #endif
@@ -1007,8 +1029,9 @@ WINBASEAPI HDC WINAPI wglGetPbufferDCARB(HPBUFFERARB handle)
 void qemu_wglGetPbufferDCARB(struct qemu_syscall *call)
 {
     struct qemu_wglGetPbufferDCARB *c = (struct qemu_wglGetPbufferDCARB *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = QEMU_H2G(p_wglGetPbufferDCARB(QEMU_G2H(c->handle)));
+    c->super.iret = QEMU_H2G(funcs->ext.p_wglGetPbufferDCARB(QEMU_G2H(c->handle)));
 }
 
 #endif
@@ -1039,8 +1062,9 @@ WINBASEAPI int WINAPI wglReleasePbufferDCARB(HPBUFFERARB handle, HDC hdc)
 void qemu_wglReleasePbufferDCARB(struct qemu_syscall *call)
 {
     struct qemu_wglReleasePbufferDCARB *c = (struct qemu_wglReleasePbufferDCARB *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wglReleasePbufferDCARB(QEMU_G2H(c->handle), QEMU_G2H(c->hdc));
+    c->super.iret = funcs->ext.p_wglReleasePbufferDCARB(QEMU_G2H(c->handle), QEMU_G2H(c->hdc));
 }
 
 #endif
@@ -1069,8 +1093,9 @@ WINBASEAPI BOOL WINAPI wglDestroyPbufferARB(HPBUFFERARB handle)
 void qemu_wglDestroyPbufferARB(struct qemu_syscall *call)
 {
     struct qemu_wglDestroyPbufferARB *c = (struct qemu_wglDestroyPbufferARB *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wglDestroyPbufferARB(QEMU_G2H(c->handle));
+    c->super.iret = funcs->ext.p_wglDestroyPbufferARB(QEMU_G2H(c->handle));
 }
 
 #endif
@@ -1103,8 +1128,9 @@ WINBASEAPI BOOL WINAPI wglQueryPbufferARB(HPBUFFERARB handle, int attrib, int *v
 void qemu_wglQueryPbufferARB(struct qemu_syscall *call)
 {
     struct qemu_wglQueryPbufferARB *c = (struct qemu_wglQueryPbufferARB *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_wglQueryPbufferARB(QEMU_G2H(c->handle), c->attrib, QEMU_G2H(c->value));
+    c->super.iret = funcs->ext.p_wglQueryPbufferARB(QEMU_G2H(c->handle), c->attrib, QEMU_G2H(c->value));
 }
 
 #endif
@@ -1139,6 +1165,7 @@ WINBASEAPI BOOL WINAPI wglUseFontBitmapsA(HDC hdc, DWORD first, DWORD count, DWO
 void qemu_wglUseFontBitmapsA(struct qemu_syscall *call)
 {
     struct qemu_wglUseFontBitmapsA *c = (struct qemu_wglUseFontBitmapsA *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
     c->super.iret = wglUseFontBitmapsA(QEMU_G2H(c->hdc), c->first, c->count, c->listBase);
 }
@@ -1175,6 +1202,7 @@ WINBASEAPI BOOL WINAPI wglUseFontBitmapsW(HDC hdc, DWORD first, DWORD count, DWO
 void qemu_wglUseFontBitmapsW(struct qemu_syscall *call)
 {
     struct qemu_wglUseFontBitmapsW *c = (struct qemu_wglUseFontBitmapsW *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
     c->super.iret = wglUseFontBitmapsW(QEMU_G2H(c->hdc), c->first, c->count, c->listBase);
 }
@@ -1219,6 +1247,7 @@ WINBASEAPI BOOL WINAPI wglUseFontOutlinesA(HDC hdc, DWORD first, DWORD count, DW
 void qemu_wglUseFontOutlinesA(struct qemu_syscall *call)
 {
     struct qemu_wglUseFontOutlinesA *c = (struct qemu_wglUseFontOutlinesA *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
     c->super.iret = wglUseFontOutlinesA(QEMU_G2H(c->hdc), c->first, c->count, c->listBase, c->deviation, c->extrusion, c->format, QEMU_G2H(c->lpgmf));
 }
@@ -1263,6 +1292,7 @@ WINBASEAPI BOOL WINAPI wglUseFontOutlinesW(HDC hdc, DWORD first, DWORD count, DW
 void qemu_wglUseFontOutlinesW(struct qemu_syscall *call)
 {
     struct qemu_wglUseFontOutlinesW *c = (struct qemu_wglUseFontOutlinesW *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
     c->super.iret = wglUseFontOutlinesW(QEMU_G2H(c->hdc), c->first, c->count, c->listBase, c->deviation, c->extrusion, c->format, QEMU_G2H(c->lpgmf));
 }
@@ -1292,11 +1322,13 @@ WINBASEAPI GLint WINAPI glDebugEntry(GLint unknown1, GLint unknown2)
 
 #else
 
+extern GLint WINAPI glDebugEntry(GLint unknown1, GLint unknown2);
 void qemu_glDebugEntry(struct qemu_syscall *call)
 {
     struct qemu_glDebugEntry *c = (struct qemu_glDebugEntry *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = p_glDebugEntry(c->unknown1, c->unknown2);
+    c->super.iret = glDebugEntry(c->unknown1, c->unknown2);
 }
 
 #endif
@@ -1325,6 +1357,7 @@ WINBASEAPI const GLubyte * WINAPI glGetString(GLenum name)
 void qemu_glGetString(struct qemu_syscall *call)
 {
     struct qemu_glGetString *c = (struct qemu_glGetString *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(glGetString(c->name));
 }
@@ -1355,8 +1388,9 @@ WINBASEAPI void WINAPI glDebugMessageCallback(GLDEBUGPROC callback, const void *
 void qemu_glDebugMessageCallback(struct qemu_syscall *call)
 {
     struct qemu_glDebugMessageCallback *c = (struct qemu_glDebugMessageCallback *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    p_glDebugMessageCallback(QEMU_G2H(c->callback), QEMU_G2H(c->userParam));
+    funcs->ext.p_glDebugMessageCallback(QEMU_G2H(c->callback), QEMU_G2H(c->userParam));
 }
 
 #endif
@@ -1385,8 +1419,9 @@ WINBASEAPI void WINAPI glDebugMessageCallbackAMD(GLDEBUGPROCAMD callback, void *
 void qemu_glDebugMessageCallbackAMD(struct qemu_syscall *call)
 {
     struct qemu_glDebugMessageCallbackAMD *c = (struct qemu_glDebugMessageCallbackAMD *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    p_glDebugMessageCallbackAMD(QEMU_G2H(c->callback), QEMU_G2H(c->userParam));
+    funcs->ext.p_glDebugMessageCallbackAMD(QEMU_G2H(c->callback), QEMU_G2H(c->userParam));
 }
 
 #endif
@@ -1415,8 +1450,9 @@ WINBASEAPI void WINAPI glDebugMessageCallbackARB(GLDEBUGPROCARB callback, const 
 void qemu_glDebugMessageCallbackARB(struct qemu_syscall *call)
 {
     struct qemu_glDebugMessageCallbackARB *c = (struct qemu_glDebugMessageCallbackARB *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified!\n");
-    p_glDebugMessageCallbackARB(QEMU_G2H(c->callback), QEMU_G2H(c->userParam));
+    funcs->ext.p_glDebugMessageCallbackARB(QEMU_G2H(c->callback), QEMU_G2H(c->userParam));
 }
 
 #endif

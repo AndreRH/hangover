@@ -55,8 +55,9 @@ void WINAPI glAccum( GLenum op, GLfloat value )
 void qemu_glAccum(struct qemu_syscall *call)
 {
     struct qemu_glAccum *c = (struct qemu_glAccum *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glAccum( c->op, c->value ));
+    (funcs->gl.p_glAccum( c->op, c->value ));
 }
 
 #endif
@@ -85,8 +86,9 @@ void WINAPI glAlphaFunc( GLenum func, GLfloat ref )
 void qemu_glAlphaFunc(struct qemu_syscall *call)
 {
     struct qemu_glAlphaFunc *c = (struct qemu_glAlphaFunc *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glAlphaFunc( c->func, c->ref ));
+    (funcs->gl.p_glAlphaFunc( c->func, c->ref ));
 }
 
 #endif
@@ -119,8 +121,9 @@ GLboolean WINAPI glAreTexturesResident( GLsizei n, const GLuint *textures, GLboo
 void qemu_glAreTexturesResident(struct qemu_syscall *call)
 {
     struct qemu_glAreTexturesResident *c = (struct qemu_glAreTexturesResident *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    c->super.iret = (p_glAreTexturesResident( c->n, QEMU_G2H(c->textures), QEMU_G2H(c->residences) ));
+    c->super.iret = (funcs->gl.p_glAreTexturesResident( c->n, QEMU_G2H(c->textures), QEMU_G2H(c->residences) ));
 }
 
 #endif
@@ -147,8 +150,9 @@ void WINAPI glArrayElement( GLint i )
 void qemu_glArrayElement(struct qemu_syscall *call)
 {
     struct qemu_glArrayElement *c = (struct qemu_glArrayElement *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glArrayElement( c->i ));
+    (funcs->gl.p_glArrayElement( c->i ));
 }
 
 #endif
@@ -175,8 +179,9 @@ void WINAPI glBegin( GLenum mode )
 void qemu_glBegin(struct qemu_syscall *call)
 {
     struct qemu_glBegin *c = (struct qemu_glBegin *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glBegin( c->mode ));
+    (funcs->gl.p_glBegin( c->mode ));
 }
 
 #endif
@@ -205,8 +210,9 @@ void WINAPI glBindTexture( GLenum target, GLuint texture )
 void qemu_glBindTexture(struct qemu_syscall *call)
 {
     struct qemu_glBindTexture *c = (struct qemu_glBindTexture *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glBindTexture( c->target, c->texture ));
+    (funcs->gl.p_glBindTexture( c->target, c->texture ));
 }
 
 #endif
@@ -245,8 +251,9 @@ void WINAPI glBitmap( GLsizei width, GLsizei height, GLfloat xorig, GLfloat yori
 void qemu_glBitmap(struct qemu_syscall *call)
 {
     struct qemu_glBitmap *c = (struct qemu_glBitmap *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glBitmap( c->width, c->height, c->xorig, c->yorig, c->xmove, c->ymove, QEMU_G2H(c->bitmap) ));
+    (funcs->gl.p_glBitmap( c->width, c->height, c->xorig, c->yorig, c->xmove, c->ymove, QEMU_G2H(c->bitmap) ));
 }
 
 #endif
@@ -275,8 +282,9 @@ void WINAPI glBlendFunc( GLenum sfactor, GLenum dfactor )
 void qemu_glBlendFunc(struct qemu_syscall *call)
 {
     struct qemu_glBlendFunc *c = (struct qemu_glBlendFunc *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glBlendFunc( c->sfactor, c->dfactor ));
+    (funcs->gl.p_glBlendFunc( c->sfactor, c->dfactor ));
 }
 
 #endif
@@ -303,8 +311,9 @@ void WINAPI glCallList( GLuint list )
 void qemu_glCallList(struct qemu_syscall *call)
 {
     struct qemu_glCallList *c = (struct qemu_glCallList *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glCallList( c->list ));
+    (funcs->gl.p_glCallList( c->list ));
 }
 
 #endif
@@ -335,8 +344,9 @@ void WINAPI glCallLists( GLsizei n, GLenum type, const void *lists )
 void qemu_glCallLists(struct qemu_syscall *call)
 {
     struct qemu_glCallLists *c = (struct qemu_glCallLists *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glCallLists( c->n, c->type, QEMU_G2H(c->lists) ));
+    (funcs->gl.p_glCallLists( c->n, c->type, QEMU_G2H(c->lists) ));
 }
 
 #endif
@@ -363,8 +373,9 @@ void WINAPI glClear( GLbitfield mask )
 void qemu_glClear(struct qemu_syscall *call)
 {
     struct qemu_glClear *c = (struct qemu_glClear *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glClear( c->mask ));
+    (funcs->gl.p_glClear( c->mask ));
 }
 
 #endif
@@ -397,8 +408,9 @@ void WINAPI glClearAccum( GLfloat red, GLfloat green, GLfloat blue, GLfloat alph
 void qemu_glClearAccum(struct qemu_syscall *call)
 {
     struct qemu_glClearAccum *c = (struct qemu_glClearAccum *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glClearAccum( c->red, c->green, c->blue, c->alpha ));
+    (funcs->gl.p_glClearAccum( c->red, c->green, c->blue, c->alpha ));
 }
 
 #endif
@@ -431,8 +443,9 @@ void WINAPI glClearColor( GLfloat red, GLfloat green, GLfloat blue, GLfloat alph
 void qemu_glClearColor(struct qemu_syscall *call)
 {
     struct qemu_glClearColor *c = (struct qemu_glClearColor *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glClearColor( c->red, c->green, c->blue, c->alpha ));
+    (funcs->gl.p_glClearColor( c->red, c->green, c->blue, c->alpha ));
 }
 
 #endif
@@ -459,8 +472,9 @@ void WINAPI glClearDepth( GLdouble depth )
 void qemu_glClearDepth(struct qemu_syscall *call)
 {
     struct qemu_glClearDepth *c = (struct qemu_glClearDepth *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glClearDepth( c->depth ));
+    (funcs->gl.p_glClearDepth( c->depth ));
 }
 
 #endif
@@ -487,8 +501,9 @@ void WINAPI glClearIndex( GLfloat c )
 void qemu_glClearIndex(struct qemu_syscall *call)
 {
     struct qemu_glClearIndex *c = (struct qemu_glClearIndex *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glClearIndex( c->c ));
+    (funcs->gl.p_glClearIndex( c->c ));
 }
 
 #endif
@@ -515,8 +530,9 @@ void WINAPI glClearStencil( GLint s )
 void qemu_glClearStencil(struct qemu_syscall *call)
 {
     struct qemu_glClearStencil *c = (struct qemu_glClearStencil *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glClearStencil( c->s ));
+    (funcs->gl.p_glClearStencil( c->s ));
 }
 
 #endif
@@ -545,8 +561,9 @@ void WINAPI glClipPlane( GLenum plane, const GLdouble *equation )
 void qemu_glClipPlane(struct qemu_syscall *call)
 {
     struct qemu_glClipPlane *c = (struct qemu_glClipPlane *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glClipPlane( c->plane, QEMU_G2H(c->equation) ));
+    (funcs->gl.p_glClipPlane( c->plane, QEMU_G2H(c->equation) ));
 }
 
 #endif
@@ -577,8 +594,9 @@ void WINAPI glColor3b( GLbyte red, GLbyte green, GLbyte blue )
 void qemu_glColor3b(struct qemu_syscall *call)
 {
     struct qemu_glColor3b *c = (struct qemu_glColor3b *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3b( c->red, c->green, c->blue ));
+    (funcs->gl.p_glColor3b( c->red, c->green, c->blue ));
 }
 
 #endif
@@ -605,8 +623,9 @@ void WINAPI glColor3bv( const GLbyte *v )
 void qemu_glColor3bv(struct qemu_syscall *call)
 {
     struct qemu_glColor3bv *c = (struct qemu_glColor3bv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3bv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor3bv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -637,8 +656,9 @@ void WINAPI glColor3d( GLdouble red, GLdouble green, GLdouble blue )
 void qemu_glColor3d(struct qemu_syscall *call)
 {
     struct qemu_glColor3d *c = (struct qemu_glColor3d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3d( c->red, c->green, c->blue ));
+    (funcs->gl.p_glColor3d( c->red, c->green, c->blue ));
 }
 
 #endif
@@ -665,8 +685,9 @@ void WINAPI glColor3dv( const GLdouble *v )
 void qemu_glColor3dv(struct qemu_syscall *call)
 {
     struct qemu_glColor3dv *c = (struct qemu_glColor3dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor3dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -697,8 +718,9 @@ void WINAPI glColor3f( GLfloat red, GLfloat green, GLfloat blue )
 void qemu_glColor3f(struct qemu_syscall *call)
 {
     struct qemu_glColor3f *c = (struct qemu_glColor3f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3f( c->red, c->green, c->blue ));
+    (funcs->gl.p_glColor3f( c->red, c->green, c->blue ));
 }
 
 #endif
@@ -725,8 +747,9 @@ void WINAPI glColor3fv( const GLfloat *v )
 void qemu_glColor3fv(struct qemu_syscall *call)
 {
     struct qemu_glColor3fv *c = (struct qemu_glColor3fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor3fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -757,8 +780,9 @@ void WINAPI glColor3i( GLint red, GLint green, GLint blue )
 void qemu_glColor3i(struct qemu_syscall *call)
 {
     struct qemu_glColor3i *c = (struct qemu_glColor3i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3i( c->red, c->green, c->blue ));
+    (funcs->gl.p_glColor3i( c->red, c->green, c->blue ));
 }
 
 #endif
@@ -785,8 +809,9 @@ void WINAPI glColor3iv( const GLint *v )
 void qemu_glColor3iv(struct qemu_syscall *call)
 {
     struct qemu_glColor3iv *c = (struct qemu_glColor3iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor3iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -817,8 +842,9 @@ void WINAPI glColor3s( GLshort red, GLshort green, GLshort blue )
 void qemu_glColor3s(struct qemu_syscall *call)
 {
     struct qemu_glColor3s *c = (struct qemu_glColor3s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3s( c->red, c->green, c->blue ));
+    (funcs->gl.p_glColor3s( c->red, c->green, c->blue ));
 }
 
 #endif
@@ -845,8 +871,9 @@ void WINAPI glColor3sv( const GLshort *v )
 void qemu_glColor3sv(struct qemu_syscall *call)
 {
     struct qemu_glColor3sv *c = (struct qemu_glColor3sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor3sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -877,8 +904,9 @@ void WINAPI glColor3ub( GLubyte red, GLubyte green, GLubyte blue )
 void qemu_glColor3ub(struct qemu_syscall *call)
 {
     struct qemu_glColor3ub *c = (struct qemu_glColor3ub *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3ub( c->red, c->green, c->blue ));
+    (funcs->gl.p_glColor3ub( c->red, c->green, c->blue ));
 }
 
 #endif
@@ -905,8 +933,9 @@ void WINAPI glColor3ubv( const GLubyte *v )
 void qemu_glColor3ubv(struct qemu_syscall *call)
 {
     struct qemu_glColor3ubv *c = (struct qemu_glColor3ubv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3ubv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor3ubv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -937,8 +966,9 @@ void WINAPI glColor3ui( GLuint red, GLuint green, GLuint blue )
 void qemu_glColor3ui(struct qemu_syscall *call)
 {
     struct qemu_glColor3ui *c = (struct qemu_glColor3ui *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3ui( c->red, c->green, c->blue ));
+    (funcs->gl.p_glColor3ui( c->red, c->green, c->blue ));
 }
 
 #endif
@@ -965,8 +995,9 @@ void WINAPI glColor3uiv( const GLuint *v )
 void qemu_glColor3uiv(struct qemu_syscall *call)
 {
     struct qemu_glColor3uiv *c = (struct qemu_glColor3uiv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3uiv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor3uiv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -997,8 +1028,9 @@ void WINAPI glColor3us( GLushort red, GLushort green, GLushort blue )
 void qemu_glColor3us(struct qemu_syscall *call)
 {
     struct qemu_glColor3us *c = (struct qemu_glColor3us *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3us( c->red, c->green, c->blue ));
+    (funcs->gl.p_glColor3us( c->red, c->green, c->blue ));
 }
 
 #endif
@@ -1025,8 +1057,9 @@ void WINAPI glColor3usv( const GLushort *v )
 void qemu_glColor3usv(struct qemu_syscall *call)
 {
     struct qemu_glColor3usv *c = (struct qemu_glColor3usv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor3usv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor3usv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -1059,8 +1092,9 @@ void WINAPI glColor4b( GLbyte red, GLbyte green, GLbyte blue, GLbyte alpha )
 void qemu_glColor4b(struct qemu_syscall *call)
 {
     struct qemu_glColor4b *c = (struct qemu_glColor4b *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4b( c->red, c->green, c->blue, c->alpha ));
+    (funcs->gl.p_glColor4b( c->red, c->green, c->blue, c->alpha ));
 }
 
 #endif
@@ -1087,8 +1121,9 @@ void WINAPI glColor4bv( const GLbyte *v )
 void qemu_glColor4bv(struct qemu_syscall *call)
 {
     struct qemu_glColor4bv *c = (struct qemu_glColor4bv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4bv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor4bv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -1121,8 +1156,9 @@ void WINAPI glColor4d( GLdouble red, GLdouble green, GLdouble blue, GLdouble alp
 void qemu_glColor4d(struct qemu_syscall *call)
 {
     struct qemu_glColor4d *c = (struct qemu_glColor4d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4d( c->red, c->green, c->blue, c->alpha ));
+    (funcs->gl.p_glColor4d( c->red, c->green, c->blue, c->alpha ));
 }
 
 #endif
@@ -1149,8 +1185,9 @@ void WINAPI glColor4dv( const GLdouble *v )
 void qemu_glColor4dv(struct qemu_syscall *call)
 {
     struct qemu_glColor4dv *c = (struct qemu_glColor4dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor4dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -1183,8 +1220,9 @@ void WINAPI glColor4f( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha )
 void qemu_glColor4f(struct qemu_syscall *call)
 {
     struct qemu_glColor4f *c = (struct qemu_glColor4f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4f( c->red, c->green, c->blue, c->alpha ));
+    (funcs->gl.p_glColor4f( c->red, c->green, c->blue, c->alpha ));
 }
 
 #endif
@@ -1211,8 +1249,9 @@ void WINAPI glColor4fv( const GLfloat *v )
 void qemu_glColor4fv(struct qemu_syscall *call)
 {
     struct qemu_glColor4fv *c = (struct qemu_glColor4fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor4fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -1245,8 +1284,9 @@ void WINAPI glColor4i( GLint red, GLint green, GLint blue, GLint alpha )
 void qemu_glColor4i(struct qemu_syscall *call)
 {
     struct qemu_glColor4i *c = (struct qemu_glColor4i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4i( c->red, c->green, c->blue, c->alpha ));
+    (funcs->gl.p_glColor4i( c->red, c->green, c->blue, c->alpha ));
 }
 
 #endif
@@ -1273,8 +1313,9 @@ void WINAPI glColor4iv( const GLint *v )
 void qemu_glColor4iv(struct qemu_syscall *call)
 {
     struct qemu_glColor4iv *c = (struct qemu_glColor4iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor4iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -1307,8 +1348,9 @@ void WINAPI glColor4s( GLshort red, GLshort green, GLshort blue, GLshort alpha )
 void qemu_glColor4s(struct qemu_syscall *call)
 {
     struct qemu_glColor4s *c = (struct qemu_glColor4s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4s( c->red, c->green, c->blue, c->alpha ));
+    (funcs->gl.p_glColor4s( c->red, c->green, c->blue, c->alpha ));
 }
 
 #endif
@@ -1335,8 +1377,9 @@ void WINAPI glColor4sv( const GLshort *v )
 void qemu_glColor4sv(struct qemu_syscall *call)
 {
     struct qemu_glColor4sv *c = (struct qemu_glColor4sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor4sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -1369,8 +1412,9 @@ void WINAPI glColor4ub( GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha 
 void qemu_glColor4ub(struct qemu_syscall *call)
 {
     struct qemu_glColor4ub *c = (struct qemu_glColor4ub *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4ub( c->red, c->green, c->blue, c->alpha ));
+    (funcs->gl.p_glColor4ub( c->red, c->green, c->blue, c->alpha ));
 }
 
 #endif
@@ -1397,8 +1441,9 @@ void WINAPI glColor4ubv( const GLubyte *v )
 void qemu_glColor4ubv(struct qemu_syscall *call)
 {
     struct qemu_glColor4ubv *c = (struct qemu_glColor4ubv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4ubv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor4ubv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -1431,8 +1476,9 @@ void WINAPI glColor4ui( GLuint red, GLuint green, GLuint blue, GLuint alpha )
 void qemu_glColor4ui(struct qemu_syscall *call)
 {
     struct qemu_glColor4ui *c = (struct qemu_glColor4ui *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4ui( c->red, c->green, c->blue, c->alpha ));
+    (funcs->gl.p_glColor4ui( c->red, c->green, c->blue, c->alpha ));
 }
 
 #endif
@@ -1459,8 +1505,9 @@ void WINAPI glColor4uiv( const GLuint *v )
 void qemu_glColor4uiv(struct qemu_syscall *call)
 {
     struct qemu_glColor4uiv *c = (struct qemu_glColor4uiv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4uiv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor4uiv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -1493,8 +1540,9 @@ void WINAPI glColor4us( GLushort red, GLushort green, GLushort blue, GLushort al
 void qemu_glColor4us(struct qemu_syscall *call)
 {
     struct qemu_glColor4us *c = (struct qemu_glColor4us *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4us( c->red, c->green, c->blue, c->alpha ));
+    (funcs->gl.p_glColor4us( c->red, c->green, c->blue, c->alpha ));
 }
 
 #endif
@@ -1521,8 +1569,9 @@ void WINAPI glColor4usv( const GLushort *v )
 void qemu_glColor4usv(struct qemu_syscall *call)
 {
     struct qemu_glColor4usv *c = (struct qemu_glColor4usv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColor4usv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glColor4usv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -1555,8 +1604,9 @@ void WINAPI glColorMask( GLboolean red, GLboolean green, GLboolean blue, GLboole
 void qemu_glColorMask(struct qemu_syscall *call)
 {
     struct qemu_glColorMask *c = (struct qemu_glColorMask *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColorMask( c->red, c->green, c->blue, c->alpha ));
+    (funcs->gl.p_glColorMask( c->red, c->green, c->blue, c->alpha ));
 }
 
 #endif
@@ -1585,8 +1635,9 @@ void WINAPI glColorMaterial( GLenum face, GLenum mode )
 void qemu_glColorMaterial(struct qemu_syscall *call)
 {
     struct qemu_glColorMaterial *c = (struct qemu_glColorMaterial *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColorMaterial( c->face, c->mode ));
+    (funcs->gl.p_glColorMaterial( c->face, c->mode ));
 }
 
 #endif
@@ -1619,8 +1670,9 @@ void WINAPI glColorPointer( GLint size, GLenum type, GLsizei stride, const void 
 void qemu_glColorPointer(struct qemu_syscall *call)
 {
     struct qemu_glColorPointer *c = (struct qemu_glColorPointer *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glColorPointer( c->size, c->type, c->stride, QEMU_G2H(c->pointer) ));
+    (funcs->gl.p_glColorPointer( c->size, c->type, c->stride, QEMU_G2H(c->pointer) ));
 }
 
 #endif
@@ -1655,8 +1707,9 @@ void WINAPI glCopyPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenu
 void qemu_glCopyPixels(struct qemu_syscall *call)
 {
     struct qemu_glCopyPixels *c = (struct qemu_glCopyPixels *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glCopyPixels( c->x, c->y, c->width, c->height, c->type ));
+    (funcs->gl.p_glCopyPixels( c->x, c->y, c->width, c->height, c->type ));
 }
 
 #endif
@@ -1695,8 +1748,9 @@ void WINAPI glCopyTexImage1D( GLenum target, GLint level, GLenum internalformat,
 void qemu_glCopyTexImage1D(struct qemu_syscall *call)
 {
     struct qemu_glCopyTexImage1D *c = (struct qemu_glCopyTexImage1D *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glCopyTexImage1D( c->target, c->level, c->internalformat, c->x, c->y, c->width, c->border ));
+    (funcs->gl.p_glCopyTexImage1D( c->target, c->level, c->internalformat, c->x, c->y, c->width, c->border ));
 }
 
 #endif
@@ -1737,8 +1791,9 @@ void WINAPI glCopyTexImage2D( GLenum target, GLint level, GLenum internalformat,
 void qemu_glCopyTexImage2D(struct qemu_syscall *call)
 {
     struct qemu_glCopyTexImage2D *c = (struct qemu_glCopyTexImage2D *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glCopyTexImage2D( c->target, c->level, c->internalformat, c->x, c->y, c->width, c->height, c->border ));
+    (funcs->gl.p_glCopyTexImage2D( c->target, c->level, c->internalformat, c->x, c->y, c->width, c->height, c->border ));
 }
 
 #endif
@@ -1775,8 +1830,9 @@ void WINAPI glCopyTexSubImage1D( GLenum target, GLint level, GLint xoffset, GLin
 void qemu_glCopyTexSubImage1D(struct qemu_syscall *call)
 {
     struct qemu_glCopyTexSubImage1D *c = (struct qemu_glCopyTexSubImage1D *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glCopyTexSubImage1D( c->target, c->level, c->xoffset, c->x, c->y, c->width ));
+    (funcs->gl.p_glCopyTexSubImage1D( c->target, c->level, c->xoffset, c->x, c->y, c->width ));
 }
 
 #endif
@@ -1817,8 +1873,9 @@ void WINAPI glCopyTexSubImage2D( GLenum target, GLint level, GLint xoffset, GLin
 void qemu_glCopyTexSubImage2D(struct qemu_syscall *call)
 {
     struct qemu_glCopyTexSubImage2D *c = (struct qemu_glCopyTexSubImage2D *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glCopyTexSubImage2D( c->target, c->level, c->xoffset, c->yoffset, c->x, c->y, c->width, c->height ));
+    (funcs->gl.p_glCopyTexSubImage2D( c->target, c->level, c->xoffset, c->yoffset, c->x, c->y, c->width, c->height ));
 }
 
 #endif
@@ -1845,8 +1902,9 @@ void WINAPI glCullFace( GLenum mode )
 void qemu_glCullFace(struct qemu_syscall *call)
 {
     struct qemu_glCullFace *c = (struct qemu_glCullFace *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glCullFace( c->mode ));
+    (funcs->gl.p_glCullFace( c->mode ));
 }
 
 #endif
@@ -1875,8 +1933,9 @@ void WINAPI glDeleteLists( GLuint list, GLsizei range )
 void qemu_glDeleteLists(struct qemu_syscall *call)
 {
     struct qemu_glDeleteLists *c = (struct qemu_glDeleteLists *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glDeleteLists( c->list, c->range ));
+    (funcs->gl.p_glDeleteLists( c->list, c->range ));
 }
 
 #endif
@@ -1905,8 +1964,9 @@ void WINAPI glDeleteTextures( GLsizei n, const GLuint *textures )
 void qemu_glDeleteTextures(struct qemu_syscall *call)
 {
     struct qemu_glDeleteTextures *c = (struct qemu_glDeleteTextures *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glDeleteTextures( c->n, QEMU_G2H(c->textures) ));
+    (funcs->gl.p_glDeleteTextures( c->n, QEMU_G2H(c->textures) ));
 }
 
 #endif
@@ -1933,8 +1993,9 @@ void WINAPI glDepthFunc( GLenum func )
 void qemu_glDepthFunc(struct qemu_syscall *call)
 {
     struct qemu_glDepthFunc *c = (struct qemu_glDepthFunc *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glDepthFunc( c->func ));
+    (funcs->gl.p_glDepthFunc( c->func ));
 }
 
 #endif
@@ -1961,8 +2022,9 @@ void WINAPI glDepthMask( GLboolean flag )
 void qemu_glDepthMask(struct qemu_syscall *call)
 {
     struct qemu_glDepthMask *c = (struct qemu_glDepthMask *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glDepthMask( c->flag ));
+    (funcs->gl.p_glDepthMask( c->flag ));
 }
 
 #endif
@@ -1991,8 +2053,9 @@ void WINAPI glDepthRange( GLdouble n, GLdouble f )
 void qemu_glDepthRange(struct qemu_syscall *call)
 {
     struct qemu_glDepthRange *c = (struct qemu_glDepthRange *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glDepthRange( c->n, c->f ));
+    (funcs->gl.p_glDepthRange( c->n, c->f ));
 }
 
 #endif
@@ -2019,8 +2082,9 @@ void WINAPI glDisable( GLenum cap )
 void qemu_glDisable(struct qemu_syscall *call)
 {
     struct qemu_glDisable *c = (struct qemu_glDisable *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glDisable( c->cap ));
+    (funcs->gl.p_glDisable( c->cap ));
 }
 
 #endif
@@ -2047,8 +2111,9 @@ void WINAPI glDisableClientState( GLenum array )
 void qemu_glDisableClientState(struct qemu_syscall *call)
 {
     struct qemu_glDisableClientState *c = (struct qemu_glDisableClientState *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glDisableClientState( c->array ));
+    (funcs->gl.p_glDisableClientState( c->array ));
 }
 
 #endif
@@ -2079,8 +2144,9 @@ void WINAPI glDrawArrays( GLenum mode, GLint first, GLsizei count )
 void qemu_glDrawArrays(struct qemu_syscall *call)
 {
     struct qemu_glDrawArrays *c = (struct qemu_glDrawArrays *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glDrawArrays( c->mode, c->first, c->count ));
+    (funcs->gl.p_glDrawArrays( c->mode, c->first, c->count ));
 }
 
 #endif
@@ -2107,8 +2173,9 @@ void WINAPI glDrawBuffer( GLenum buf )
 void qemu_glDrawBuffer(struct qemu_syscall *call)
 {
     struct qemu_glDrawBuffer *c = (struct qemu_glDrawBuffer *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glDrawBuffer( c->buf ));
+    (funcs->gl.p_glDrawBuffer( c->buf ));
 }
 
 #endif
@@ -2141,8 +2208,9 @@ void WINAPI glDrawElements( GLenum mode, GLsizei count, GLenum type, const void 
 void qemu_glDrawElements(struct qemu_syscall *call)
 {
     struct qemu_glDrawElements *c = (struct qemu_glDrawElements *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glDrawElements( c->mode, c->count, c->type, QEMU_G2H(c->indices) ));
+    (funcs->gl.p_glDrawElements( c->mode, c->count, c->type, QEMU_G2H(c->indices) ));
 }
 
 #endif
@@ -2177,8 +2245,9 @@ void WINAPI glDrawPixels( GLsizei width, GLsizei height, GLenum format, GLenum t
 void qemu_glDrawPixels(struct qemu_syscall *call)
 {
     struct qemu_glDrawPixels *c = (struct qemu_glDrawPixels *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glDrawPixels( c->width, c->height, c->format, c->type, QEMU_G2H(c->pixels) ));
+    (funcs->gl.p_glDrawPixels( c->width, c->height, c->format, c->type, QEMU_G2H(c->pixels) ));
 }
 
 #endif
@@ -2205,8 +2274,9 @@ void WINAPI glEdgeFlag( GLboolean flag )
 void qemu_glEdgeFlag(struct qemu_syscall *call)
 {
     struct qemu_glEdgeFlag *c = (struct qemu_glEdgeFlag *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEdgeFlag( c->flag ));
+    (funcs->gl.p_glEdgeFlag( c->flag ));
 }
 
 #endif
@@ -2235,8 +2305,9 @@ void WINAPI glEdgeFlagPointer( GLsizei stride, const void *pointer )
 void qemu_glEdgeFlagPointer(struct qemu_syscall *call)
 {
     struct qemu_glEdgeFlagPointer *c = (struct qemu_glEdgeFlagPointer *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEdgeFlagPointer( c->stride, QEMU_G2H(c->pointer) ));
+    (funcs->gl.p_glEdgeFlagPointer( c->stride, QEMU_G2H(c->pointer) ));
 }
 
 #endif
@@ -2263,8 +2334,9 @@ void WINAPI glEdgeFlagv( const GLboolean *flag )
 void qemu_glEdgeFlagv(struct qemu_syscall *call)
 {
     struct qemu_glEdgeFlagv *c = (struct qemu_glEdgeFlagv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEdgeFlagv( QEMU_G2H(c->flag) ));
+    (funcs->gl.p_glEdgeFlagv( QEMU_G2H(c->flag) ));
 }
 
 #endif
@@ -2291,8 +2363,9 @@ void WINAPI glEnable( GLenum cap )
 void qemu_glEnable(struct qemu_syscall *call)
 {
     struct qemu_glEnable *c = (struct qemu_glEnable *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEnable( c->cap ));
+    (funcs->gl.p_glEnable( c->cap ));
 }
 
 #endif
@@ -2319,8 +2392,9 @@ void WINAPI glEnableClientState( GLenum array )
 void qemu_glEnableClientState(struct qemu_syscall *call)
 {
     struct qemu_glEnableClientState *c = (struct qemu_glEnableClientState *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEnableClientState( c->array ));
+    (funcs->gl.p_glEnableClientState( c->array ));
 }
 
 #endif
@@ -2345,8 +2419,9 @@ void WINAPI glEnd(void)
 void qemu_glEnd(struct qemu_syscall *call)
 {
     struct qemu_glEnd *c = (struct qemu_glEnd *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEnd());
+    (funcs->gl.p_glEnd());
 }
 
 #endif
@@ -2371,8 +2446,9 @@ void WINAPI glEndList(void)
 void qemu_glEndList(struct qemu_syscall *call)
 {
     struct qemu_glEndList *c = (struct qemu_glEndList *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEndList());
+    (funcs->gl.p_glEndList());
 }
 
 #endif
@@ -2399,8 +2475,9 @@ void WINAPI glEvalCoord1d( GLdouble u )
 void qemu_glEvalCoord1d(struct qemu_syscall *call)
 {
     struct qemu_glEvalCoord1d *c = (struct qemu_glEvalCoord1d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEvalCoord1d( c->u ));
+    (funcs->gl.p_glEvalCoord1d( c->u ));
 }
 
 #endif
@@ -2427,8 +2504,9 @@ void WINAPI glEvalCoord1dv( const GLdouble *u )
 void qemu_glEvalCoord1dv(struct qemu_syscall *call)
 {
     struct qemu_glEvalCoord1dv *c = (struct qemu_glEvalCoord1dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEvalCoord1dv( QEMU_G2H(c->u) ));
+    (funcs->gl.p_glEvalCoord1dv( QEMU_G2H(c->u) ));
 }
 
 #endif
@@ -2455,8 +2533,9 @@ void WINAPI glEvalCoord1f( GLfloat u )
 void qemu_glEvalCoord1f(struct qemu_syscall *call)
 {
     struct qemu_glEvalCoord1f *c = (struct qemu_glEvalCoord1f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEvalCoord1f( c->u ));
+    (funcs->gl.p_glEvalCoord1f( c->u ));
 }
 
 #endif
@@ -2483,8 +2562,9 @@ void WINAPI glEvalCoord1fv( const GLfloat *u )
 void qemu_glEvalCoord1fv(struct qemu_syscall *call)
 {
     struct qemu_glEvalCoord1fv *c = (struct qemu_glEvalCoord1fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEvalCoord1fv( QEMU_G2H(c->u) ));
+    (funcs->gl.p_glEvalCoord1fv( QEMU_G2H(c->u) ));
 }
 
 #endif
@@ -2513,8 +2593,9 @@ void WINAPI glEvalCoord2d( GLdouble u, GLdouble v )
 void qemu_glEvalCoord2d(struct qemu_syscall *call)
 {
     struct qemu_glEvalCoord2d *c = (struct qemu_glEvalCoord2d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEvalCoord2d( c->u, c->v ));
+    (funcs->gl.p_glEvalCoord2d( c->u, c->v ));
 }
 
 #endif
@@ -2541,8 +2622,9 @@ void WINAPI glEvalCoord2dv( const GLdouble *u )
 void qemu_glEvalCoord2dv(struct qemu_syscall *call)
 {
     struct qemu_glEvalCoord2dv *c = (struct qemu_glEvalCoord2dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEvalCoord2dv( QEMU_G2H(c->u) ));
+    (funcs->gl.p_glEvalCoord2dv( QEMU_G2H(c->u) ));
 }
 
 #endif
@@ -2571,8 +2653,9 @@ void WINAPI glEvalCoord2f( GLfloat u, GLfloat v )
 void qemu_glEvalCoord2f(struct qemu_syscall *call)
 {
     struct qemu_glEvalCoord2f *c = (struct qemu_glEvalCoord2f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEvalCoord2f( c->u, c->v ));
+    (funcs->gl.p_glEvalCoord2f( c->u, c->v ));
 }
 
 #endif
@@ -2599,8 +2682,9 @@ void WINAPI glEvalCoord2fv( const GLfloat *u )
 void qemu_glEvalCoord2fv(struct qemu_syscall *call)
 {
     struct qemu_glEvalCoord2fv *c = (struct qemu_glEvalCoord2fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEvalCoord2fv( QEMU_G2H(c->u) ));
+    (funcs->gl.p_glEvalCoord2fv( QEMU_G2H(c->u) ));
 }
 
 #endif
@@ -2631,8 +2715,9 @@ void WINAPI glEvalMesh1( GLenum mode, GLint i1, GLint i2 )
 void qemu_glEvalMesh1(struct qemu_syscall *call)
 {
     struct qemu_glEvalMesh1 *c = (struct qemu_glEvalMesh1 *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEvalMesh1( c->mode, c->i1, c->i2 ));
+    (funcs->gl.p_glEvalMesh1( c->mode, c->i1, c->i2 ));
 }
 
 #endif
@@ -2667,8 +2752,9 @@ void WINAPI glEvalMesh2( GLenum mode, GLint i1, GLint i2, GLint j1, GLint j2 )
 void qemu_glEvalMesh2(struct qemu_syscall *call)
 {
     struct qemu_glEvalMesh2 *c = (struct qemu_glEvalMesh2 *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEvalMesh2( c->mode, c->i1, c->i2, c->j1, c->j2 ));
+    (funcs->gl.p_glEvalMesh2( c->mode, c->i1, c->i2, c->j1, c->j2 ));
 }
 
 #endif
@@ -2695,8 +2781,9 @@ void WINAPI glEvalPoint1( GLint i )
 void qemu_glEvalPoint1(struct qemu_syscall *call)
 {
     struct qemu_glEvalPoint1 *c = (struct qemu_glEvalPoint1 *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEvalPoint1( c->i ));
+    (funcs->gl.p_glEvalPoint1( c->i ));
 }
 
 #endif
@@ -2725,8 +2812,9 @@ void WINAPI glEvalPoint2( GLint i, GLint j )
 void qemu_glEvalPoint2(struct qemu_syscall *call)
 {
     struct qemu_glEvalPoint2 *c = (struct qemu_glEvalPoint2 *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glEvalPoint2( c->i, c->j ));
+    (funcs->gl.p_glEvalPoint2( c->i, c->j ));
 }
 
 #endif
@@ -2757,8 +2845,9 @@ void WINAPI glFeedbackBuffer( GLsizei size, GLenum type, GLfloat *buffer )
 void qemu_glFeedbackBuffer(struct qemu_syscall *call)
 {
     struct qemu_glFeedbackBuffer *c = (struct qemu_glFeedbackBuffer *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glFeedbackBuffer( c->size, c->type, QEMU_G2H(c->buffer) ));
+    (funcs->gl.p_glFeedbackBuffer( c->size, c->type, QEMU_G2H(c->buffer) ));
 }
 
 #endif
@@ -2783,8 +2872,9 @@ void WINAPI glFinish(void)
 void qemu_glFinish(struct qemu_syscall *call)
 {
     struct qemu_glFinish *c = (struct qemu_glFinish *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glFinish());
+    (funcs->gl.p_glFinish());
 }
 
 #endif
@@ -2809,8 +2899,9 @@ void WINAPI glFlush(void)
 void qemu_glFlush(struct qemu_syscall *call)
 {
     struct qemu_glFlush *c = (struct qemu_glFlush *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glFlush());
+    (funcs->gl.p_glFlush());
 }
 
 #endif
@@ -2839,8 +2930,9 @@ void WINAPI glFogf( GLenum pname, GLfloat param )
 void qemu_glFogf(struct qemu_syscall *call)
 {
     struct qemu_glFogf *c = (struct qemu_glFogf *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glFogf( c->pname, c->param ));
+    (funcs->gl.p_glFogf( c->pname, c->param ));
 }
 
 #endif
@@ -2869,8 +2961,9 @@ void WINAPI glFogfv( GLenum pname, const GLfloat *params )
 void qemu_glFogfv(struct qemu_syscall *call)
 {
     struct qemu_glFogfv *c = (struct qemu_glFogfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glFogfv( c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glFogfv( c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -2899,8 +2992,9 @@ void WINAPI glFogi( GLenum pname, GLint param )
 void qemu_glFogi(struct qemu_syscall *call)
 {
     struct qemu_glFogi *c = (struct qemu_glFogi *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glFogi( c->pname, c->param ));
+    (funcs->gl.p_glFogi( c->pname, c->param ));
 }
 
 #endif
@@ -2929,8 +3023,9 @@ void WINAPI glFogiv( GLenum pname, const GLint *params )
 void qemu_glFogiv(struct qemu_syscall *call)
 {
     struct qemu_glFogiv *c = (struct qemu_glFogiv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glFogiv( c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glFogiv( c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -2957,8 +3052,9 @@ void WINAPI glFrontFace( GLenum mode )
 void qemu_glFrontFace(struct qemu_syscall *call)
 {
     struct qemu_glFrontFace *c = (struct qemu_glFrontFace *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glFrontFace( c->mode ));
+    (funcs->gl.p_glFrontFace( c->mode ));
 }
 
 #endif
@@ -2995,8 +3091,9 @@ void WINAPI glFrustum( GLdouble left, GLdouble right, GLdouble bottom, GLdouble 
 void qemu_glFrustum(struct qemu_syscall *call)
 {
     struct qemu_glFrustum *c = (struct qemu_glFrustum *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glFrustum( c->left, c->right, c->bottom, c->top, c->zNear, c->zFar ));
+    (funcs->gl.p_glFrustum( c->left, c->right, c->bottom, c->top, c->zNear, c->zFar ));
 }
 
 #endif
@@ -3025,8 +3122,9 @@ GLuint WINAPI glGenLists( GLsizei range )
 void qemu_glGenLists(struct qemu_syscall *call)
 {
     struct qemu_glGenLists *c = (struct qemu_glGenLists *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    c->super.iret = (p_glGenLists( c->range ));
+    c->super.iret = (funcs->gl.p_glGenLists( c->range ));
 }
 
 #endif
@@ -3055,8 +3153,9 @@ void WINAPI glGenTextures( GLsizei n, GLuint *textures )
 void qemu_glGenTextures(struct qemu_syscall *call)
 {
     struct qemu_glGenTextures *c = (struct qemu_glGenTextures *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGenTextures( c->n, QEMU_G2H(c->textures) ));
+    (funcs->gl.p_glGenTextures( c->n, QEMU_G2H(c->textures) ));
 }
 
 #endif
@@ -3085,8 +3184,9 @@ void WINAPI glGetBooleanv( GLenum pname, GLboolean *data )
 void qemu_glGetBooleanv(struct qemu_syscall *call)
 {
     struct qemu_glGetBooleanv *c = (struct qemu_glGetBooleanv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetBooleanv( c->pname, QEMU_G2H(c->data) ));
+    (funcs->gl.p_glGetBooleanv( c->pname, QEMU_G2H(c->data) ));
 }
 
 #endif
@@ -3115,8 +3215,9 @@ void WINAPI glGetClipPlane( GLenum plane, GLdouble *equation )
 void qemu_glGetClipPlane(struct qemu_syscall *call)
 {
     struct qemu_glGetClipPlane *c = (struct qemu_glGetClipPlane *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetClipPlane( c->plane, QEMU_G2H(c->equation) ));
+    (funcs->gl.p_glGetClipPlane( c->plane, QEMU_G2H(c->equation) ));
 }
 
 #endif
@@ -3145,8 +3246,9 @@ void WINAPI glGetDoublev( GLenum pname, GLdouble *data )
 void qemu_glGetDoublev(struct qemu_syscall *call)
 {
     struct qemu_glGetDoublev *c = (struct qemu_glGetDoublev *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetDoublev( c->pname, QEMU_G2H(c->data) ));
+    (funcs->gl.p_glGetDoublev( c->pname, QEMU_G2H(c->data) ));
 }
 
 #endif
@@ -3173,8 +3275,9 @@ GLenum WINAPI glGetError(void)
 void qemu_glGetError(struct qemu_syscall *call)
 {
     struct qemu_glGetError *c = (struct qemu_glGetError *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    c->super.iret = (p_glGetError());
+    c->super.iret = (funcs->gl.p_glGetError());
 }
 
 #endif
@@ -3203,8 +3306,9 @@ void WINAPI glGetFloatv( GLenum pname, GLfloat *data )
 void qemu_glGetFloatv(struct qemu_syscall *call)
 {
     struct qemu_glGetFloatv *c = (struct qemu_glGetFloatv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetFloatv( c->pname, QEMU_G2H(c->data) ));
+    (funcs->gl.p_glGetFloatv( c->pname, QEMU_G2H(c->data) ));
 }
 
 #endif
@@ -3235,8 +3339,9 @@ void WINAPI glGetLightfv( GLenum light, GLenum pname, GLfloat *params )
 void qemu_glGetLightfv(struct qemu_syscall *call)
 {
     struct qemu_glGetLightfv *c = (struct qemu_glGetLightfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetLightfv( c->light, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetLightfv( c->light, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3267,8 +3372,9 @@ void WINAPI glGetLightiv( GLenum light, GLenum pname, GLint *params )
 void qemu_glGetLightiv(struct qemu_syscall *call)
 {
     struct qemu_glGetLightiv *c = (struct qemu_glGetLightiv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetLightiv( c->light, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetLightiv( c->light, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3299,8 +3405,9 @@ void WINAPI glGetMapdv( GLenum target, GLenum query, GLdouble *v )
 void qemu_glGetMapdv(struct qemu_syscall *call)
 {
     struct qemu_glGetMapdv *c = (struct qemu_glGetMapdv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetMapdv( c->target, c->query, QEMU_G2H(c->v) ));
+    (funcs->gl.p_glGetMapdv( c->target, c->query, QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -3331,8 +3438,9 @@ void WINAPI glGetMapfv( GLenum target, GLenum query, GLfloat *v )
 void qemu_glGetMapfv(struct qemu_syscall *call)
 {
     struct qemu_glGetMapfv *c = (struct qemu_glGetMapfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetMapfv( c->target, c->query, QEMU_G2H(c->v) ));
+    (funcs->gl.p_glGetMapfv( c->target, c->query, QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -3363,8 +3471,9 @@ void WINAPI glGetMapiv( GLenum target, GLenum query, GLint *v )
 void qemu_glGetMapiv(struct qemu_syscall *call)
 {
     struct qemu_glGetMapiv *c = (struct qemu_glGetMapiv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetMapiv( c->target, c->query, QEMU_G2H(c->v) ));
+    (funcs->gl.p_glGetMapiv( c->target, c->query, QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -3395,8 +3504,9 @@ void WINAPI glGetMaterialfv( GLenum face, GLenum pname, GLfloat *params )
 void qemu_glGetMaterialfv(struct qemu_syscall *call)
 {
     struct qemu_glGetMaterialfv *c = (struct qemu_glGetMaterialfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetMaterialfv( c->face, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetMaterialfv( c->face, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3427,8 +3537,9 @@ void WINAPI glGetMaterialiv( GLenum face, GLenum pname, GLint *params )
 void qemu_glGetMaterialiv(struct qemu_syscall *call)
 {
     struct qemu_glGetMaterialiv *c = (struct qemu_glGetMaterialiv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetMaterialiv( c->face, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetMaterialiv( c->face, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3457,8 +3568,9 @@ void WINAPI glGetPixelMapfv( GLenum map, GLfloat *values )
 void qemu_glGetPixelMapfv(struct qemu_syscall *call)
 {
     struct qemu_glGetPixelMapfv *c = (struct qemu_glGetPixelMapfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetPixelMapfv( c->map, QEMU_G2H(c->values) ));
+    (funcs->gl.p_glGetPixelMapfv( c->map, QEMU_G2H(c->values) ));
 }
 
 #endif
@@ -3487,8 +3599,9 @@ void WINAPI glGetPixelMapuiv( GLenum map, GLuint *values )
 void qemu_glGetPixelMapuiv(struct qemu_syscall *call)
 {
     struct qemu_glGetPixelMapuiv *c = (struct qemu_glGetPixelMapuiv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetPixelMapuiv( c->map, QEMU_G2H(c->values) ));
+    (funcs->gl.p_glGetPixelMapuiv( c->map, QEMU_G2H(c->values) ));
 }
 
 #endif
@@ -3517,8 +3630,9 @@ void WINAPI glGetPixelMapusv( GLenum map, GLushort *values )
 void qemu_glGetPixelMapusv(struct qemu_syscall *call)
 {
     struct qemu_glGetPixelMapusv *c = (struct qemu_glGetPixelMapusv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetPixelMapusv( c->map, QEMU_G2H(c->values) ));
+    (funcs->gl.p_glGetPixelMapusv( c->map, QEMU_G2H(c->values) ));
 }
 
 #endif
@@ -3547,8 +3661,9 @@ void WINAPI glGetPointerv( GLenum pname, void **params )
 void qemu_glGetPointerv(struct qemu_syscall *call)
 {
     struct qemu_glGetPointerv *c = (struct qemu_glGetPointerv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetPointerv( c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetPointerv( c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3575,8 +3690,9 @@ void WINAPI glGetPolygonStipple( GLubyte *mask )
 void qemu_glGetPolygonStipple(struct qemu_syscall *call)
 {
     struct qemu_glGetPolygonStipple *c = (struct qemu_glGetPolygonStipple *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetPolygonStipple( QEMU_G2H(c->mask) ));
+    (funcs->gl.p_glGetPolygonStipple( QEMU_G2H(c->mask) ));
 }
 
 #endif
@@ -3607,8 +3723,9 @@ void WINAPI glGetTexEnvfv( GLenum target, GLenum pname, GLfloat *params )
 void qemu_glGetTexEnvfv(struct qemu_syscall *call)
 {
     struct qemu_glGetTexEnvfv *c = (struct qemu_glGetTexEnvfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetTexEnvfv( c->target, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetTexEnvfv( c->target, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3639,8 +3756,9 @@ void WINAPI glGetTexEnviv( GLenum target, GLenum pname, GLint *params )
 void qemu_glGetTexEnviv(struct qemu_syscall *call)
 {
     struct qemu_glGetTexEnviv *c = (struct qemu_glGetTexEnviv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetTexEnviv( c->target, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetTexEnviv( c->target, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3671,8 +3789,9 @@ void WINAPI glGetTexGendv( GLenum coord, GLenum pname, GLdouble *params )
 void qemu_glGetTexGendv(struct qemu_syscall *call)
 {
     struct qemu_glGetTexGendv *c = (struct qemu_glGetTexGendv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetTexGendv( c->coord, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetTexGendv( c->coord, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3703,8 +3822,9 @@ void WINAPI glGetTexGenfv( GLenum coord, GLenum pname, GLfloat *params )
 void qemu_glGetTexGenfv(struct qemu_syscall *call)
 {
     struct qemu_glGetTexGenfv *c = (struct qemu_glGetTexGenfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetTexGenfv( c->coord, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetTexGenfv( c->coord, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3735,8 +3855,9 @@ void WINAPI glGetTexGeniv( GLenum coord, GLenum pname, GLint *params )
 void qemu_glGetTexGeniv(struct qemu_syscall *call)
 {
     struct qemu_glGetTexGeniv *c = (struct qemu_glGetTexGeniv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetTexGeniv( c->coord, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetTexGeniv( c->coord, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3771,8 +3892,9 @@ void WINAPI glGetTexImage( GLenum target, GLint level, GLenum format, GLenum typ
 void qemu_glGetTexImage(struct qemu_syscall *call)
 {
     struct qemu_glGetTexImage *c = (struct qemu_glGetTexImage *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetTexImage( c->target, c->level, c->format, c->type, QEMU_G2H(c->pixels) ));
+    (funcs->gl.p_glGetTexImage( c->target, c->level, c->format, c->type, QEMU_G2H(c->pixels) ));
 }
 
 #endif
@@ -3805,8 +3927,9 @@ void WINAPI glGetTexLevelParameterfv( GLenum target, GLint level, GLenum pname, 
 void qemu_glGetTexLevelParameterfv(struct qemu_syscall *call)
 {
     struct qemu_glGetTexLevelParameterfv *c = (struct qemu_glGetTexLevelParameterfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetTexLevelParameterfv( c->target, c->level, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetTexLevelParameterfv( c->target, c->level, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3839,8 +3962,9 @@ void WINAPI glGetTexLevelParameteriv( GLenum target, GLint level, GLenum pname, 
 void qemu_glGetTexLevelParameteriv(struct qemu_syscall *call)
 {
     struct qemu_glGetTexLevelParameteriv *c = (struct qemu_glGetTexLevelParameteriv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetTexLevelParameteriv( c->target, c->level, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetTexLevelParameteriv( c->target, c->level, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3871,8 +3995,9 @@ void WINAPI glGetTexParameterfv( GLenum target, GLenum pname, GLfloat *params )
 void qemu_glGetTexParameterfv(struct qemu_syscall *call)
 {
     struct qemu_glGetTexParameterfv *c = (struct qemu_glGetTexParameterfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetTexParameterfv( c->target, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetTexParameterfv( c->target, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3903,8 +4028,9 @@ void WINAPI glGetTexParameteriv( GLenum target, GLenum pname, GLint *params )
 void qemu_glGetTexParameteriv(struct qemu_syscall *call)
 {
     struct qemu_glGetTexParameteriv *c = (struct qemu_glGetTexParameteriv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glGetTexParameteriv( c->target, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glGetTexParameteriv( c->target, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -3933,8 +4059,9 @@ void WINAPI glHint( GLenum target, GLenum mode )
 void qemu_glHint(struct qemu_syscall *call)
 {
     struct qemu_glHint *c = (struct qemu_glHint *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glHint( c->target, c->mode ));
+    (funcs->gl.p_glHint( c->target, c->mode ));
 }
 
 #endif
@@ -3961,8 +4088,9 @@ void WINAPI glIndexMask( GLuint mask )
 void qemu_glIndexMask(struct qemu_syscall *call)
 {
     struct qemu_glIndexMask *c = (struct qemu_glIndexMask *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glIndexMask( c->mask ));
+    (funcs->gl.p_glIndexMask( c->mask ));
 }
 
 #endif
@@ -3993,8 +4121,9 @@ void WINAPI glIndexPointer( GLenum type, GLsizei stride, const void *pointer )
 void qemu_glIndexPointer(struct qemu_syscall *call)
 {
     struct qemu_glIndexPointer *c = (struct qemu_glIndexPointer *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glIndexPointer( c->type, c->stride, QEMU_G2H(c->pointer) ));
+    (funcs->gl.p_glIndexPointer( c->type, c->stride, QEMU_G2H(c->pointer) ));
 }
 
 #endif
@@ -4021,8 +4150,9 @@ void WINAPI glIndexd( GLdouble c )
 void qemu_glIndexd(struct qemu_syscall *call)
 {
     struct qemu_glIndexd *c = (struct qemu_glIndexd *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glIndexd( c->c ));
+    (funcs->gl.p_glIndexd( c->c ));
 }
 
 #endif
@@ -4049,8 +4179,9 @@ void WINAPI glIndexdv( const GLdouble *c )
 void qemu_glIndexdv(struct qemu_syscall *call)
 {
     struct qemu_glIndexdv *c = (struct qemu_glIndexdv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glIndexdv( QEMU_G2H(c->c) ));
+    (funcs->gl.p_glIndexdv( QEMU_G2H(c->c) ));
 }
 
 #endif
@@ -4077,8 +4208,9 @@ void WINAPI glIndexf( GLfloat c )
 void qemu_glIndexf(struct qemu_syscall *call)
 {
     struct qemu_glIndexf *c = (struct qemu_glIndexf *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glIndexf( c->c ));
+    (funcs->gl.p_glIndexf( c->c ));
 }
 
 #endif
@@ -4105,8 +4237,9 @@ void WINAPI glIndexfv( const GLfloat *c )
 void qemu_glIndexfv(struct qemu_syscall *call)
 {
     struct qemu_glIndexfv *c = (struct qemu_glIndexfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glIndexfv( QEMU_G2H(c->c) ));
+    (funcs->gl.p_glIndexfv( QEMU_G2H(c->c) ));
 }
 
 #endif
@@ -4133,8 +4266,9 @@ void WINAPI glIndexi( GLint c )
 void qemu_glIndexi(struct qemu_syscall *call)
 {
     struct qemu_glIndexi *c = (struct qemu_glIndexi *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glIndexi( c->c ));
+    (funcs->gl.p_glIndexi( c->c ));
 }
 
 #endif
@@ -4161,8 +4295,9 @@ void WINAPI glIndexiv( const GLint *c )
 void qemu_glIndexiv(struct qemu_syscall *call)
 {
     struct qemu_glIndexiv *c = (struct qemu_glIndexiv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glIndexiv( QEMU_G2H(c->c) ));
+    (funcs->gl.p_glIndexiv( QEMU_G2H(c->c) ));
 }
 
 #endif
@@ -4189,8 +4324,9 @@ void WINAPI glIndexs( GLshort c )
 void qemu_glIndexs(struct qemu_syscall *call)
 {
     struct qemu_glIndexs *c = (struct qemu_glIndexs *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glIndexs( c->c ));
+    (funcs->gl.p_glIndexs( c->c ));
 }
 
 #endif
@@ -4217,8 +4353,9 @@ void WINAPI glIndexsv( const GLshort *c )
 void qemu_glIndexsv(struct qemu_syscall *call)
 {
     struct qemu_glIndexsv *c = (struct qemu_glIndexsv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glIndexsv( QEMU_G2H(c->c) ));
+    (funcs->gl.p_glIndexsv( QEMU_G2H(c->c) ));
 }
 
 #endif
@@ -4245,8 +4382,9 @@ void WINAPI glIndexub( GLubyte c )
 void qemu_glIndexub(struct qemu_syscall *call)
 {
     struct qemu_glIndexub *c = (struct qemu_glIndexub *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glIndexub( c->c ));
+    (funcs->gl.p_glIndexub( c->c ));
 }
 
 #endif
@@ -4273,8 +4411,9 @@ void WINAPI glIndexubv( const GLubyte *c )
 void qemu_glIndexubv(struct qemu_syscall *call)
 {
     struct qemu_glIndexubv *c = (struct qemu_glIndexubv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glIndexubv( QEMU_G2H(c->c) ));
+    (funcs->gl.p_glIndexubv( QEMU_G2H(c->c) ));
 }
 
 #endif
@@ -4299,8 +4438,9 @@ void WINAPI glInitNames(void)
 void qemu_glInitNames(struct qemu_syscall *call)
 {
     struct qemu_glInitNames *c = (struct qemu_glInitNames *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glInitNames());
+    (funcs->gl.p_glInitNames());
 }
 
 #endif
@@ -4331,8 +4471,9 @@ void WINAPI glInterleavedArrays( GLenum format, GLsizei stride, const void *poin
 void qemu_glInterleavedArrays(struct qemu_syscall *call)
 {
     struct qemu_glInterleavedArrays *c = (struct qemu_glInterleavedArrays *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glInterleavedArrays( c->format, c->stride, QEMU_G2H(c->pointer) ));
+    (funcs->gl.p_glInterleavedArrays( c->format, c->stride, QEMU_G2H(c->pointer) ));
 }
 
 #endif
@@ -4361,8 +4502,9 @@ GLboolean WINAPI glIsEnabled( GLenum cap )
 void qemu_glIsEnabled(struct qemu_syscall *call)
 {
     struct qemu_glIsEnabled *c = (struct qemu_glIsEnabled *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    c->super.iret = (p_glIsEnabled( c->cap ));
+    c->super.iret = (funcs->gl.p_glIsEnabled( c->cap ));
 }
 
 #endif
@@ -4391,8 +4533,9 @@ GLboolean WINAPI glIsList( GLuint list )
 void qemu_glIsList(struct qemu_syscall *call)
 {
     struct qemu_glIsList *c = (struct qemu_glIsList *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    c->super.iret = (p_glIsList( c->list ));
+    c->super.iret = (funcs->gl.p_glIsList( c->list ));
 }
 
 #endif
@@ -4421,8 +4564,9 @@ GLboolean WINAPI glIsTexture( GLuint texture )
 void qemu_glIsTexture(struct qemu_syscall *call)
 {
     struct qemu_glIsTexture *c = (struct qemu_glIsTexture *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    c->super.iret = (p_glIsTexture( c->texture ));
+    c->super.iret = (funcs->gl.p_glIsTexture( c->texture ));
 }
 
 #endif
@@ -4451,8 +4595,9 @@ void WINAPI glLightModelf( GLenum pname, GLfloat param )
 void qemu_glLightModelf(struct qemu_syscall *call)
 {
     struct qemu_glLightModelf *c = (struct qemu_glLightModelf *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLightModelf( c->pname, c->param ));
+    (funcs->gl.p_glLightModelf( c->pname, c->param ));
 }
 
 #endif
@@ -4481,8 +4626,9 @@ void WINAPI glLightModelfv( GLenum pname, const GLfloat *params )
 void qemu_glLightModelfv(struct qemu_syscall *call)
 {
     struct qemu_glLightModelfv *c = (struct qemu_glLightModelfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLightModelfv( c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glLightModelfv( c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -4511,8 +4657,9 @@ void WINAPI glLightModeli( GLenum pname, GLint param )
 void qemu_glLightModeli(struct qemu_syscall *call)
 {
     struct qemu_glLightModeli *c = (struct qemu_glLightModeli *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLightModeli( c->pname, c->param ));
+    (funcs->gl.p_glLightModeli( c->pname, c->param ));
 }
 
 #endif
@@ -4541,8 +4688,9 @@ void WINAPI glLightModeliv( GLenum pname, const GLint *params )
 void qemu_glLightModeliv(struct qemu_syscall *call)
 {
     struct qemu_glLightModeliv *c = (struct qemu_glLightModeliv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLightModeliv( c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glLightModeliv( c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -4573,8 +4721,9 @@ void WINAPI glLightf( GLenum light, GLenum pname, GLfloat param )
 void qemu_glLightf(struct qemu_syscall *call)
 {
     struct qemu_glLightf *c = (struct qemu_glLightf *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLightf( c->light, c->pname, c->param ));
+    (funcs->gl.p_glLightf( c->light, c->pname, c->param ));
 }
 
 #endif
@@ -4605,8 +4754,9 @@ void WINAPI glLightfv( GLenum light, GLenum pname, const GLfloat *params )
 void qemu_glLightfv(struct qemu_syscall *call)
 {
     struct qemu_glLightfv *c = (struct qemu_glLightfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLightfv( c->light, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glLightfv( c->light, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -4637,8 +4787,9 @@ void WINAPI glLighti( GLenum light, GLenum pname, GLint param )
 void qemu_glLighti(struct qemu_syscall *call)
 {
     struct qemu_glLighti *c = (struct qemu_glLighti *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLighti( c->light, c->pname, c->param ));
+    (funcs->gl.p_glLighti( c->light, c->pname, c->param ));
 }
 
 #endif
@@ -4669,8 +4820,9 @@ void WINAPI glLightiv( GLenum light, GLenum pname, const GLint *params )
 void qemu_glLightiv(struct qemu_syscall *call)
 {
     struct qemu_glLightiv *c = (struct qemu_glLightiv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLightiv( c->light, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glLightiv( c->light, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -4699,8 +4851,9 @@ void WINAPI glLineStipple( GLint factor, GLushort pattern )
 void qemu_glLineStipple(struct qemu_syscall *call)
 {
     struct qemu_glLineStipple *c = (struct qemu_glLineStipple *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLineStipple( c->factor, c->pattern ));
+    (funcs->gl.p_glLineStipple( c->factor, c->pattern ));
 }
 
 #endif
@@ -4727,8 +4880,9 @@ void WINAPI glLineWidth( GLfloat width )
 void qemu_glLineWidth(struct qemu_syscall *call)
 {
     struct qemu_glLineWidth *c = (struct qemu_glLineWidth *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLineWidth( c->width ));
+    (funcs->gl.p_glLineWidth( c->width ));
 }
 
 #endif
@@ -4755,8 +4909,9 @@ void WINAPI glListBase( GLuint base )
 void qemu_glListBase(struct qemu_syscall *call)
 {
     struct qemu_glListBase *c = (struct qemu_glListBase *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glListBase( c->base ));
+    (funcs->gl.p_glListBase( c->base ));
 }
 
 #endif
@@ -4781,8 +4936,9 @@ void WINAPI glLoadIdentity(void)
 void qemu_glLoadIdentity(struct qemu_syscall *call)
 {
     struct qemu_glLoadIdentity *c = (struct qemu_glLoadIdentity *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLoadIdentity());
+    (funcs->gl.p_glLoadIdentity());
 }
 
 #endif
@@ -4809,8 +4965,9 @@ void WINAPI glLoadMatrixd( const GLdouble *m )
 void qemu_glLoadMatrixd(struct qemu_syscall *call)
 {
     struct qemu_glLoadMatrixd *c = (struct qemu_glLoadMatrixd *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLoadMatrixd( QEMU_G2H(c->m) ));
+    (funcs->gl.p_glLoadMatrixd( QEMU_G2H(c->m) ));
 }
 
 #endif
@@ -4837,8 +4994,9 @@ void WINAPI glLoadMatrixf( const GLfloat *m )
 void qemu_glLoadMatrixf(struct qemu_syscall *call)
 {
     struct qemu_glLoadMatrixf *c = (struct qemu_glLoadMatrixf *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLoadMatrixf( QEMU_G2H(c->m) ));
+    (funcs->gl.p_glLoadMatrixf( QEMU_G2H(c->m) ));
 }
 
 #endif
@@ -4865,8 +5023,9 @@ void WINAPI glLoadName( GLuint name )
 void qemu_glLoadName(struct qemu_syscall *call)
 {
     struct qemu_glLoadName *c = (struct qemu_glLoadName *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLoadName( c->name ));
+    (funcs->gl.p_glLoadName( c->name ));
 }
 
 #endif
@@ -4893,8 +5052,9 @@ void WINAPI glLogicOp( GLenum opcode )
 void qemu_glLogicOp(struct qemu_syscall *call)
 {
     struct qemu_glLogicOp *c = (struct qemu_glLogicOp *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glLogicOp( c->opcode ));
+    (funcs->gl.p_glLogicOp( c->opcode ));
 }
 
 #endif
@@ -4931,8 +5091,9 @@ void WINAPI glMap1d( GLenum target, GLdouble u1, GLdouble u2, GLint stride, GLin
 void qemu_glMap1d(struct qemu_syscall *call)
 {
     struct qemu_glMap1d *c = (struct qemu_glMap1d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMap1d( c->target, c->u1, c->u2, c->stride, c->order, QEMU_G2H(c->points) ));
+    (funcs->gl.p_glMap1d( c->target, c->u1, c->u2, c->stride, c->order, QEMU_G2H(c->points) ));
 }
 
 #endif
@@ -4969,8 +5130,9 @@ void WINAPI glMap1f( GLenum target, GLfloat u1, GLfloat u2, GLint stride, GLint 
 void qemu_glMap1f(struct qemu_syscall *call)
 {
     struct qemu_glMap1f *c = (struct qemu_glMap1f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMap1f( c->target, c->u1, c->u2, c->stride, c->order, QEMU_G2H(c->points) ));
+    (funcs->gl.p_glMap1f( c->target, c->u1, c->u2, c->stride, c->order, QEMU_G2H(c->points) ));
 }
 
 #endif
@@ -5015,8 +5177,9 @@ void WINAPI glMap2d( GLenum target, GLdouble u1, GLdouble u2, GLint ustride, GLi
 void qemu_glMap2d(struct qemu_syscall *call)
 {
     struct qemu_glMap2d *c = (struct qemu_glMap2d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMap2d( c->target, c->u1, c->u2, c->ustride, c->uorder, c->v1, c->v2, c->vstride, c->vorder, QEMU_G2H(c->points) ));
+    (funcs->gl.p_glMap2d( c->target, c->u1, c->u2, c->ustride, c->uorder, c->v1, c->v2, c->vstride, c->vorder, QEMU_G2H(c->points) ));
 }
 
 #endif
@@ -5061,8 +5224,9 @@ void WINAPI glMap2f( GLenum target, GLfloat u1, GLfloat u2, GLint ustride, GLint
 void qemu_glMap2f(struct qemu_syscall *call)
 {
     struct qemu_glMap2f *c = (struct qemu_glMap2f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMap2f( c->target, c->u1, c->u2, c->ustride, c->uorder, c->v1, c->v2, c->vstride, c->vorder, QEMU_G2H(c->points) ));
+    (funcs->gl.p_glMap2f( c->target, c->u1, c->u2, c->ustride, c->uorder, c->v1, c->v2, c->vstride, c->vorder, QEMU_G2H(c->points) ));
 }
 
 #endif
@@ -5093,8 +5257,9 @@ void WINAPI glMapGrid1d( GLint un, GLdouble u1, GLdouble u2 )
 void qemu_glMapGrid1d(struct qemu_syscall *call)
 {
     struct qemu_glMapGrid1d *c = (struct qemu_glMapGrid1d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMapGrid1d( c->un, c->u1, c->u2 ));
+    (funcs->gl.p_glMapGrid1d( c->un, c->u1, c->u2 ));
 }
 
 #endif
@@ -5125,8 +5290,9 @@ void WINAPI glMapGrid1f( GLint un, GLfloat u1, GLfloat u2 )
 void qemu_glMapGrid1f(struct qemu_syscall *call)
 {
     struct qemu_glMapGrid1f *c = (struct qemu_glMapGrid1f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMapGrid1f( c->un, c->u1, c->u2 ));
+    (funcs->gl.p_glMapGrid1f( c->un, c->u1, c->u2 ));
 }
 
 #endif
@@ -5163,8 +5329,9 @@ void WINAPI glMapGrid2d( GLint un, GLdouble u1, GLdouble u2, GLint vn, GLdouble 
 void qemu_glMapGrid2d(struct qemu_syscall *call)
 {
     struct qemu_glMapGrid2d *c = (struct qemu_glMapGrid2d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMapGrid2d( c->un, c->u1, c->u2, c->vn, c->v1, c->v2 ));
+    (funcs->gl.p_glMapGrid2d( c->un, c->u1, c->u2, c->vn, c->v1, c->v2 ));
 }
 
 #endif
@@ -5201,8 +5368,9 @@ void WINAPI glMapGrid2f( GLint un, GLfloat u1, GLfloat u2, GLint vn, GLfloat v1,
 void qemu_glMapGrid2f(struct qemu_syscall *call)
 {
     struct qemu_glMapGrid2f *c = (struct qemu_glMapGrid2f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMapGrid2f( c->un, c->u1, c->u2, c->vn, c->v1, c->v2 ));
+    (funcs->gl.p_glMapGrid2f( c->un, c->u1, c->u2, c->vn, c->v1, c->v2 ));
 }
 
 #endif
@@ -5233,8 +5401,9 @@ void WINAPI glMaterialf( GLenum face, GLenum pname, GLfloat param )
 void qemu_glMaterialf(struct qemu_syscall *call)
 {
     struct qemu_glMaterialf *c = (struct qemu_glMaterialf *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMaterialf( c->face, c->pname, c->param ));
+    (funcs->gl.p_glMaterialf( c->face, c->pname, c->param ));
 }
 
 #endif
@@ -5265,8 +5434,9 @@ void WINAPI glMaterialfv( GLenum face, GLenum pname, const GLfloat *params )
 void qemu_glMaterialfv(struct qemu_syscall *call)
 {
     struct qemu_glMaterialfv *c = (struct qemu_glMaterialfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMaterialfv( c->face, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glMaterialfv( c->face, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -5297,8 +5467,9 @@ void WINAPI glMateriali( GLenum face, GLenum pname, GLint param )
 void qemu_glMateriali(struct qemu_syscall *call)
 {
     struct qemu_glMateriali *c = (struct qemu_glMateriali *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMateriali( c->face, c->pname, c->param ));
+    (funcs->gl.p_glMateriali( c->face, c->pname, c->param ));
 }
 
 #endif
@@ -5329,8 +5500,9 @@ void WINAPI glMaterialiv( GLenum face, GLenum pname, const GLint *params )
 void qemu_glMaterialiv(struct qemu_syscall *call)
 {
     struct qemu_glMaterialiv *c = (struct qemu_glMaterialiv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMaterialiv( c->face, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glMaterialiv( c->face, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -5357,8 +5529,9 @@ void WINAPI glMatrixMode( GLenum mode )
 void qemu_glMatrixMode(struct qemu_syscall *call)
 {
     struct qemu_glMatrixMode *c = (struct qemu_glMatrixMode *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMatrixMode( c->mode ));
+    (funcs->gl.p_glMatrixMode( c->mode ));
 }
 
 #endif
@@ -5385,8 +5558,9 @@ void WINAPI glMultMatrixd( const GLdouble *m )
 void qemu_glMultMatrixd(struct qemu_syscall *call)
 {
     struct qemu_glMultMatrixd *c = (struct qemu_glMultMatrixd *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMultMatrixd( QEMU_G2H(c->m) ));
+    (funcs->gl.p_glMultMatrixd( QEMU_G2H(c->m) ));
 }
 
 #endif
@@ -5413,8 +5587,9 @@ void WINAPI glMultMatrixf( const GLfloat *m )
 void qemu_glMultMatrixf(struct qemu_syscall *call)
 {
     struct qemu_glMultMatrixf *c = (struct qemu_glMultMatrixf *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glMultMatrixf( QEMU_G2H(c->m) ));
+    (funcs->gl.p_glMultMatrixf( QEMU_G2H(c->m) ));
 }
 
 #endif
@@ -5443,8 +5618,9 @@ void WINAPI glNewList( GLuint list, GLenum mode )
 void qemu_glNewList(struct qemu_syscall *call)
 {
     struct qemu_glNewList *c = (struct qemu_glNewList *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glNewList( c->list, c->mode ));
+    (funcs->gl.p_glNewList( c->list, c->mode ));
 }
 
 #endif
@@ -5475,8 +5651,9 @@ void WINAPI glNormal3b( GLbyte nx, GLbyte ny, GLbyte nz )
 void qemu_glNormal3b(struct qemu_syscall *call)
 {
     struct qemu_glNormal3b *c = (struct qemu_glNormal3b *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glNormal3b( c->nx, c->ny, c->nz ));
+    (funcs->gl.p_glNormal3b( c->nx, c->ny, c->nz ));
 }
 
 #endif
@@ -5503,8 +5680,9 @@ void WINAPI glNormal3bv( const GLbyte *v )
 void qemu_glNormal3bv(struct qemu_syscall *call)
 {
     struct qemu_glNormal3bv *c = (struct qemu_glNormal3bv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glNormal3bv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glNormal3bv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -5535,8 +5713,9 @@ void WINAPI glNormal3d( GLdouble nx, GLdouble ny, GLdouble nz )
 void qemu_glNormal3d(struct qemu_syscall *call)
 {
     struct qemu_glNormal3d *c = (struct qemu_glNormal3d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glNormal3d( c->nx, c->ny, c->nz ));
+    (funcs->gl.p_glNormal3d( c->nx, c->ny, c->nz ));
 }
 
 #endif
@@ -5563,8 +5742,9 @@ void WINAPI glNormal3dv( const GLdouble *v )
 void qemu_glNormal3dv(struct qemu_syscall *call)
 {
     struct qemu_glNormal3dv *c = (struct qemu_glNormal3dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glNormal3dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glNormal3dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -5595,8 +5775,9 @@ void WINAPI glNormal3f( GLfloat nx, GLfloat ny, GLfloat nz )
 void qemu_glNormal3f(struct qemu_syscall *call)
 {
     struct qemu_glNormal3f *c = (struct qemu_glNormal3f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glNormal3f( c->nx, c->ny, c->nz ));
+    (funcs->gl.p_glNormal3f( c->nx, c->ny, c->nz ));
 }
 
 #endif
@@ -5623,8 +5804,9 @@ void WINAPI glNormal3fv( const GLfloat *v )
 void qemu_glNormal3fv(struct qemu_syscall *call)
 {
     struct qemu_glNormal3fv *c = (struct qemu_glNormal3fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glNormal3fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glNormal3fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -5655,8 +5837,9 @@ void WINAPI glNormal3i( GLint nx, GLint ny, GLint nz )
 void qemu_glNormal3i(struct qemu_syscall *call)
 {
     struct qemu_glNormal3i *c = (struct qemu_glNormal3i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glNormal3i( c->nx, c->ny, c->nz ));
+    (funcs->gl.p_glNormal3i( c->nx, c->ny, c->nz ));
 }
 
 #endif
@@ -5683,8 +5866,9 @@ void WINAPI glNormal3iv( const GLint *v )
 void qemu_glNormal3iv(struct qemu_syscall *call)
 {
     struct qemu_glNormal3iv *c = (struct qemu_glNormal3iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glNormal3iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glNormal3iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -5715,8 +5899,9 @@ void WINAPI glNormal3s( GLshort nx, GLshort ny, GLshort nz )
 void qemu_glNormal3s(struct qemu_syscall *call)
 {
     struct qemu_glNormal3s *c = (struct qemu_glNormal3s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glNormal3s( c->nx, c->ny, c->nz ));
+    (funcs->gl.p_glNormal3s( c->nx, c->ny, c->nz ));
 }
 
 #endif
@@ -5743,8 +5928,9 @@ void WINAPI glNormal3sv( const GLshort *v )
 void qemu_glNormal3sv(struct qemu_syscall *call)
 {
     struct qemu_glNormal3sv *c = (struct qemu_glNormal3sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glNormal3sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glNormal3sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -5775,8 +5961,9 @@ void WINAPI glNormalPointer( GLenum type, GLsizei stride, const void *pointer )
 void qemu_glNormalPointer(struct qemu_syscall *call)
 {
     struct qemu_glNormalPointer *c = (struct qemu_glNormalPointer *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glNormalPointer( c->type, c->stride, QEMU_G2H(c->pointer) ));
+    (funcs->gl.p_glNormalPointer( c->type, c->stride, QEMU_G2H(c->pointer) ));
 }
 
 #endif
@@ -5813,8 +6000,9 @@ void WINAPI glOrtho( GLdouble left, GLdouble right, GLdouble bottom, GLdouble to
 void qemu_glOrtho(struct qemu_syscall *call)
 {
     struct qemu_glOrtho *c = (struct qemu_glOrtho *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glOrtho( c->left, c->right, c->bottom, c->top, c->zNear, c->zFar ));
+    (funcs->gl.p_glOrtho( c->left, c->right, c->bottom, c->top, c->zNear, c->zFar ));
 }
 
 #endif
@@ -5841,8 +6029,9 @@ void WINAPI glPassThrough( GLfloat token )
 void qemu_glPassThrough(struct qemu_syscall *call)
 {
     struct qemu_glPassThrough *c = (struct qemu_glPassThrough *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPassThrough( c->token ));
+    (funcs->gl.p_glPassThrough( c->token ));
 }
 
 #endif
@@ -5873,8 +6062,9 @@ void WINAPI glPixelMapfv( GLenum map, GLsizei mapsize, const GLfloat *values )
 void qemu_glPixelMapfv(struct qemu_syscall *call)
 {
     struct qemu_glPixelMapfv *c = (struct qemu_glPixelMapfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPixelMapfv( c->map, c->mapsize, QEMU_G2H(c->values) ));
+    (funcs->gl.p_glPixelMapfv( c->map, c->mapsize, QEMU_G2H(c->values) ));
 }
 
 #endif
@@ -5905,8 +6095,9 @@ void WINAPI glPixelMapuiv( GLenum map, GLsizei mapsize, const GLuint *values )
 void qemu_glPixelMapuiv(struct qemu_syscall *call)
 {
     struct qemu_glPixelMapuiv *c = (struct qemu_glPixelMapuiv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPixelMapuiv( c->map, c->mapsize, QEMU_G2H(c->values) ));
+    (funcs->gl.p_glPixelMapuiv( c->map, c->mapsize, QEMU_G2H(c->values) ));
 }
 
 #endif
@@ -5937,8 +6128,9 @@ void WINAPI glPixelMapusv( GLenum map, GLsizei mapsize, const GLushort *values )
 void qemu_glPixelMapusv(struct qemu_syscall *call)
 {
     struct qemu_glPixelMapusv *c = (struct qemu_glPixelMapusv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPixelMapusv( c->map, c->mapsize, QEMU_G2H(c->values) ));
+    (funcs->gl.p_glPixelMapusv( c->map, c->mapsize, QEMU_G2H(c->values) ));
 }
 
 #endif
@@ -5967,8 +6159,9 @@ void WINAPI glPixelStoref( GLenum pname, GLfloat param )
 void qemu_glPixelStoref(struct qemu_syscall *call)
 {
     struct qemu_glPixelStoref *c = (struct qemu_glPixelStoref *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPixelStoref( c->pname, c->param ));
+    (funcs->gl.p_glPixelStoref( c->pname, c->param ));
 }
 
 #endif
@@ -5997,8 +6190,9 @@ void WINAPI glPixelStorei( GLenum pname, GLint param )
 void qemu_glPixelStorei(struct qemu_syscall *call)
 {
     struct qemu_glPixelStorei *c = (struct qemu_glPixelStorei *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPixelStorei( c->pname, c->param ));
+    (funcs->gl.p_glPixelStorei( c->pname, c->param ));
 }
 
 #endif
@@ -6027,8 +6221,9 @@ void WINAPI glPixelTransferf( GLenum pname, GLfloat param )
 void qemu_glPixelTransferf(struct qemu_syscall *call)
 {
     struct qemu_glPixelTransferf *c = (struct qemu_glPixelTransferf *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPixelTransferf( c->pname, c->param ));
+    (funcs->gl.p_glPixelTransferf( c->pname, c->param ));
 }
 
 #endif
@@ -6057,8 +6252,9 @@ void WINAPI glPixelTransferi( GLenum pname, GLint param )
 void qemu_glPixelTransferi(struct qemu_syscall *call)
 {
     struct qemu_glPixelTransferi *c = (struct qemu_glPixelTransferi *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPixelTransferi( c->pname, c->param ));
+    (funcs->gl.p_glPixelTransferi( c->pname, c->param ));
 }
 
 #endif
@@ -6087,8 +6283,9 @@ void WINAPI glPixelZoom( GLfloat xfactor, GLfloat yfactor )
 void qemu_glPixelZoom(struct qemu_syscall *call)
 {
     struct qemu_glPixelZoom *c = (struct qemu_glPixelZoom *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPixelZoom( c->xfactor, c->yfactor ));
+    (funcs->gl.p_glPixelZoom( c->xfactor, c->yfactor ));
 }
 
 #endif
@@ -6115,8 +6312,9 @@ void WINAPI glPointSize( GLfloat size )
 void qemu_glPointSize(struct qemu_syscall *call)
 {
     struct qemu_glPointSize *c = (struct qemu_glPointSize *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPointSize( c->size ));
+    (funcs->gl.p_glPointSize( c->size ));
 }
 
 #endif
@@ -6145,8 +6343,9 @@ void WINAPI glPolygonMode( GLenum face, GLenum mode )
 void qemu_glPolygonMode(struct qemu_syscall *call)
 {
     struct qemu_glPolygonMode *c = (struct qemu_glPolygonMode *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPolygonMode( c->face, c->mode ));
+    (funcs->gl.p_glPolygonMode( c->face, c->mode ));
 }
 
 #endif
@@ -6175,8 +6374,9 @@ void WINAPI glPolygonOffset( GLfloat factor, GLfloat units )
 void qemu_glPolygonOffset(struct qemu_syscall *call)
 {
     struct qemu_glPolygonOffset *c = (struct qemu_glPolygonOffset *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPolygonOffset( c->factor, c->units ));
+    (funcs->gl.p_glPolygonOffset( c->factor, c->units ));
 }
 
 #endif
@@ -6203,8 +6403,9 @@ void WINAPI glPolygonStipple( const GLubyte *mask )
 void qemu_glPolygonStipple(struct qemu_syscall *call)
 {
     struct qemu_glPolygonStipple *c = (struct qemu_glPolygonStipple *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPolygonStipple( QEMU_G2H(c->mask) ));
+    (funcs->gl.p_glPolygonStipple( QEMU_G2H(c->mask) ));
 }
 
 #endif
@@ -6229,8 +6430,9 @@ void WINAPI glPopAttrib(void)
 void qemu_glPopAttrib(struct qemu_syscall *call)
 {
     struct qemu_glPopAttrib *c = (struct qemu_glPopAttrib *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPopAttrib());
+    (funcs->gl.p_glPopAttrib());
 }
 
 #endif
@@ -6255,8 +6457,9 @@ void WINAPI glPopClientAttrib(void)
 void qemu_glPopClientAttrib(struct qemu_syscall *call)
 {
     struct qemu_glPopClientAttrib *c = (struct qemu_glPopClientAttrib *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPopClientAttrib());
+    (funcs->gl.p_glPopClientAttrib());
 }
 
 #endif
@@ -6281,8 +6484,9 @@ void WINAPI glPopMatrix(void)
 void qemu_glPopMatrix(struct qemu_syscall *call)
 {
     struct qemu_glPopMatrix *c = (struct qemu_glPopMatrix *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPopMatrix());
+    (funcs->gl.p_glPopMatrix());
 }
 
 #endif
@@ -6307,8 +6511,9 @@ void WINAPI glPopName(void)
 void qemu_glPopName(struct qemu_syscall *call)
 {
     struct qemu_glPopName *c = (struct qemu_glPopName *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPopName());
+    (funcs->gl.p_glPopName());
 }
 
 #endif
@@ -6339,8 +6544,9 @@ void WINAPI glPrioritizeTextures( GLsizei n, const GLuint *textures, const GLflo
 void qemu_glPrioritizeTextures(struct qemu_syscall *call)
 {
     struct qemu_glPrioritizeTextures *c = (struct qemu_glPrioritizeTextures *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPrioritizeTextures( c->n, QEMU_G2H(c->textures), QEMU_G2H(c->priorities) ));
+    (funcs->gl.p_glPrioritizeTextures( c->n, QEMU_G2H(c->textures), QEMU_G2H(c->priorities) ));
 }
 
 #endif
@@ -6367,8 +6573,9 @@ void WINAPI glPushAttrib( GLbitfield mask )
 void qemu_glPushAttrib(struct qemu_syscall *call)
 {
     struct qemu_glPushAttrib *c = (struct qemu_glPushAttrib *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPushAttrib( c->mask ));
+    (funcs->gl.p_glPushAttrib( c->mask ));
 }
 
 #endif
@@ -6395,8 +6602,9 @@ void WINAPI glPushClientAttrib( GLbitfield mask )
 void qemu_glPushClientAttrib(struct qemu_syscall *call)
 {
     struct qemu_glPushClientAttrib *c = (struct qemu_glPushClientAttrib *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPushClientAttrib( c->mask ));
+    (funcs->gl.p_glPushClientAttrib( c->mask ));
 }
 
 #endif
@@ -6421,8 +6629,9 @@ void WINAPI glPushMatrix(void)
 void qemu_glPushMatrix(struct qemu_syscall *call)
 {
     struct qemu_glPushMatrix *c = (struct qemu_glPushMatrix *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPushMatrix());
+    (funcs->gl.p_glPushMatrix());
 }
 
 #endif
@@ -6449,8 +6658,9 @@ void WINAPI glPushName( GLuint name )
 void qemu_glPushName(struct qemu_syscall *call)
 {
     struct qemu_glPushName *c = (struct qemu_glPushName *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glPushName( c->name ));
+    (funcs->gl.p_glPushName( c->name ));
 }
 
 #endif
@@ -6479,8 +6689,9 @@ void WINAPI glRasterPos2d( GLdouble x, GLdouble y )
 void qemu_glRasterPos2d(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos2d *c = (struct qemu_glRasterPos2d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos2d( c->x, c->y ));
+    (funcs->gl.p_glRasterPos2d( c->x, c->y ));
 }
 
 #endif
@@ -6507,8 +6718,9 @@ void WINAPI glRasterPos2dv( const GLdouble *v )
 void qemu_glRasterPos2dv(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos2dv *c = (struct qemu_glRasterPos2dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos2dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glRasterPos2dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -6537,8 +6749,9 @@ void WINAPI glRasterPos2f( GLfloat x, GLfloat y )
 void qemu_glRasterPos2f(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos2f *c = (struct qemu_glRasterPos2f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos2f( c->x, c->y ));
+    (funcs->gl.p_glRasterPos2f( c->x, c->y ));
 }
 
 #endif
@@ -6565,8 +6778,9 @@ void WINAPI glRasterPos2fv( const GLfloat *v )
 void qemu_glRasterPos2fv(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos2fv *c = (struct qemu_glRasterPos2fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos2fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glRasterPos2fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -6595,8 +6809,9 @@ void WINAPI glRasterPos2i( GLint x, GLint y )
 void qemu_glRasterPos2i(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos2i *c = (struct qemu_glRasterPos2i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos2i( c->x, c->y ));
+    (funcs->gl.p_glRasterPos2i( c->x, c->y ));
 }
 
 #endif
@@ -6623,8 +6838,9 @@ void WINAPI glRasterPos2iv( const GLint *v )
 void qemu_glRasterPos2iv(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos2iv *c = (struct qemu_glRasterPos2iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos2iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glRasterPos2iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -6653,8 +6869,9 @@ void WINAPI glRasterPos2s( GLshort x, GLshort y )
 void qemu_glRasterPos2s(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos2s *c = (struct qemu_glRasterPos2s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos2s( c->x, c->y ));
+    (funcs->gl.p_glRasterPos2s( c->x, c->y ));
 }
 
 #endif
@@ -6681,8 +6898,9 @@ void WINAPI glRasterPos2sv( const GLshort *v )
 void qemu_glRasterPos2sv(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos2sv *c = (struct qemu_glRasterPos2sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos2sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glRasterPos2sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -6713,8 +6931,9 @@ void WINAPI glRasterPos3d( GLdouble x, GLdouble y, GLdouble z )
 void qemu_glRasterPos3d(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos3d *c = (struct qemu_glRasterPos3d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos3d( c->x, c->y, c->z ));
+    (funcs->gl.p_glRasterPos3d( c->x, c->y, c->z ));
 }
 
 #endif
@@ -6741,8 +6960,9 @@ void WINAPI glRasterPos3dv( const GLdouble *v )
 void qemu_glRasterPos3dv(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos3dv *c = (struct qemu_glRasterPos3dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos3dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glRasterPos3dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -6773,8 +6993,9 @@ void WINAPI glRasterPos3f( GLfloat x, GLfloat y, GLfloat z )
 void qemu_glRasterPos3f(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos3f *c = (struct qemu_glRasterPos3f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos3f( c->x, c->y, c->z ));
+    (funcs->gl.p_glRasterPos3f( c->x, c->y, c->z ));
 }
 
 #endif
@@ -6801,8 +7022,9 @@ void WINAPI glRasterPos3fv( const GLfloat *v )
 void qemu_glRasterPos3fv(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos3fv *c = (struct qemu_glRasterPos3fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos3fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glRasterPos3fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -6833,8 +7055,9 @@ void WINAPI glRasterPos3i( GLint x, GLint y, GLint z )
 void qemu_glRasterPos3i(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos3i *c = (struct qemu_glRasterPos3i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos3i( c->x, c->y, c->z ));
+    (funcs->gl.p_glRasterPos3i( c->x, c->y, c->z ));
 }
 
 #endif
@@ -6861,8 +7084,9 @@ void WINAPI glRasterPos3iv( const GLint *v )
 void qemu_glRasterPos3iv(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos3iv *c = (struct qemu_glRasterPos3iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos3iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glRasterPos3iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -6893,8 +7117,9 @@ void WINAPI glRasterPos3s( GLshort x, GLshort y, GLshort z )
 void qemu_glRasterPos3s(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos3s *c = (struct qemu_glRasterPos3s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos3s( c->x, c->y, c->z ));
+    (funcs->gl.p_glRasterPos3s( c->x, c->y, c->z ));
 }
 
 #endif
@@ -6921,8 +7146,9 @@ void WINAPI glRasterPos3sv( const GLshort *v )
 void qemu_glRasterPos3sv(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos3sv *c = (struct qemu_glRasterPos3sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos3sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glRasterPos3sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -6955,8 +7181,9 @@ void WINAPI glRasterPos4d( GLdouble x, GLdouble y, GLdouble z, GLdouble w )
 void qemu_glRasterPos4d(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos4d *c = (struct qemu_glRasterPos4d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos4d( c->x, c->y, c->z, c->w ));
+    (funcs->gl.p_glRasterPos4d( c->x, c->y, c->z, c->w ));
 }
 
 #endif
@@ -6983,8 +7210,9 @@ void WINAPI glRasterPos4dv( const GLdouble *v )
 void qemu_glRasterPos4dv(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos4dv *c = (struct qemu_glRasterPos4dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos4dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glRasterPos4dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -7017,8 +7245,9 @@ void WINAPI glRasterPos4f( GLfloat x, GLfloat y, GLfloat z, GLfloat w )
 void qemu_glRasterPos4f(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos4f *c = (struct qemu_glRasterPos4f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos4f( c->x, c->y, c->z, c->w ));
+    (funcs->gl.p_glRasterPos4f( c->x, c->y, c->z, c->w ));
 }
 
 #endif
@@ -7045,8 +7274,9 @@ void WINAPI glRasterPos4fv( const GLfloat *v )
 void qemu_glRasterPos4fv(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos4fv *c = (struct qemu_glRasterPos4fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos4fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glRasterPos4fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -7079,8 +7309,9 @@ void WINAPI glRasterPos4i( GLint x, GLint y, GLint z, GLint w )
 void qemu_glRasterPos4i(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos4i *c = (struct qemu_glRasterPos4i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos4i( c->x, c->y, c->z, c->w ));
+    (funcs->gl.p_glRasterPos4i( c->x, c->y, c->z, c->w ));
 }
 
 #endif
@@ -7107,8 +7338,9 @@ void WINAPI glRasterPos4iv( const GLint *v )
 void qemu_glRasterPos4iv(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos4iv *c = (struct qemu_glRasterPos4iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos4iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glRasterPos4iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -7141,8 +7373,9 @@ void WINAPI glRasterPos4s( GLshort x, GLshort y, GLshort z, GLshort w )
 void qemu_glRasterPos4s(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos4s *c = (struct qemu_glRasterPos4s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos4s( c->x, c->y, c->z, c->w ));
+    (funcs->gl.p_glRasterPos4s( c->x, c->y, c->z, c->w ));
 }
 
 #endif
@@ -7169,8 +7402,9 @@ void WINAPI glRasterPos4sv( const GLshort *v )
 void qemu_glRasterPos4sv(struct qemu_syscall *call)
 {
     struct qemu_glRasterPos4sv *c = (struct qemu_glRasterPos4sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRasterPos4sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glRasterPos4sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -7197,8 +7431,9 @@ void WINAPI glReadBuffer( GLenum src )
 void qemu_glReadBuffer(struct qemu_syscall *call)
 {
     struct qemu_glReadBuffer *c = (struct qemu_glReadBuffer *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glReadBuffer( c->src ));
+    (funcs->gl.p_glReadBuffer( c->src ));
 }
 
 #endif
@@ -7237,8 +7472,9 @@ void WINAPI glReadPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenu
 void qemu_glReadPixels(struct qemu_syscall *call)
 {
     struct qemu_glReadPixels *c = (struct qemu_glReadPixels *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glReadPixels( c->x, c->y, c->width, c->height, c->format, c->type, QEMU_G2H(c->pixels) ));
+    (funcs->gl.p_glReadPixels( c->x, c->y, c->width, c->height, c->format, c->type, QEMU_G2H(c->pixels) ));
 }
 
 #endif
@@ -7271,8 +7507,9 @@ void WINAPI glRectd( GLdouble x1, GLdouble y1, GLdouble x2, GLdouble y2 )
 void qemu_glRectd(struct qemu_syscall *call)
 {
     struct qemu_glRectd *c = (struct qemu_glRectd *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRectd( c->x1, c->y1, c->x2, c->y2 ));
+    (funcs->gl.p_glRectd( c->x1, c->y1, c->x2, c->y2 ));
 }
 
 #endif
@@ -7301,8 +7538,9 @@ void WINAPI glRectdv( const GLdouble *v1, const GLdouble *v2 )
 void qemu_glRectdv(struct qemu_syscall *call)
 {
     struct qemu_glRectdv *c = (struct qemu_glRectdv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRectdv( QEMU_G2H(c->v1), QEMU_G2H(c->v2) ));
+    (funcs->gl.p_glRectdv( QEMU_G2H(c->v1), QEMU_G2H(c->v2) ));
 }
 
 #endif
@@ -7335,8 +7573,9 @@ void WINAPI glRectf( GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2 )
 void qemu_glRectf(struct qemu_syscall *call)
 {
     struct qemu_glRectf *c = (struct qemu_glRectf *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRectf( c->x1, c->y1, c->x2, c->y2 ));
+    (funcs->gl.p_glRectf( c->x1, c->y1, c->x2, c->y2 ));
 }
 
 #endif
@@ -7365,8 +7604,9 @@ void WINAPI glRectfv( const GLfloat *v1, const GLfloat *v2 )
 void qemu_glRectfv(struct qemu_syscall *call)
 {
     struct qemu_glRectfv *c = (struct qemu_glRectfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRectfv( QEMU_G2H(c->v1), QEMU_G2H(c->v2) ));
+    (funcs->gl.p_glRectfv( QEMU_G2H(c->v1), QEMU_G2H(c->v2) ));
 }
 
 #endif
@@ -7399,8 +7639,9 @@ void WINAPI glRecti( GLint x1, GLint y1, GLint x2, GLint y2 )
 void qemu_glRecti(struct qemu_syscall *call)
 {
     struct qemu_glRecti *c = (struct qemu_glRecti *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRecti( c->x1, c->y1, c->x2, c->y2 ));
+    (funcs->gl.p_glRecti( c->x1, c->y1, c->x2, c->y2 ));
 }
 
 #endif
@@ -7429,8 +7670,9 @@ void WINAPI glRectiv( const GLint *v1, const GLint *v2 )
 void qemu_glRectiv(struct qemu_syscall *call)
 {
     struct qemu_glRectiv *c = (struct qemu_glRectiv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRectiv( QEMU_G2H(c->v1), QEMU_G2H(c->v2) ));
+    (funcs->gl.p_glRectiv( QEMU_G2H(c->v1), QEMU_G2H(c->v2) ));
 }
 
 #endif
@@ -7463,8 +7705,9 @@ void WINAPI glRects( GLshort x1, GLshort y1, GLshort x2, GLshort y2 )
 void qemu_glRects(struct qemu_syscall *call)
 {
     struct qemu_glRects *c = (struct qemu_glRects *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRects( c->x1, c->y1, c->x2, c->y2 ));
+    (funcs->gl.p_glRects( c->x1, c->y1, c->x2, c->y2 ));
 }
 
 #endif
@@ -7493,8 +7736,9 @@ void WINAPI glRectsv( const GLshort *v1, const GLshort *v2 )
 void qemu_glRectsv(struct qemu_syscall *call)
 {
     struct qemu_glRectsv *c = (struct qemu_glRectsv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRectsv( QEMU_G2H(c->v1), QEMU_G2H(c->v2) ));
+    (funcs->gl.p_glRectsv( QEMU_G2H(c->v1), QEMU_G2H(c->v2) ));
 }
 
 #endif
@@ -7523,8 +7767,9 @@ GLint WINAPI glRenderMode( GLenum mode )
 void qemu_glRenderMode(struct qemu_syscall *call)
 {
     struct qemu_glRenderMode *c = (struct qemu_glRenderMode *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    c->super.iret = (p_glRenderMode( c->mode ));
+    c->super.iret = (funcs->gl.p_glRenderMode( c->mode ));
 }
 
 #endif
@@ -7557,8 +7802,9 @@ void WINAPI glRotated( GLdouble angle, GLdouble x, GLdouble y, GLdouble z )
 void qemu_glRotated(struct qemu_syscall *call)
 {
     struct qemu_glRotated *c = (struct qemu_glRotated *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRotated( c->angle, c->x, c->y, c->z ));
+    (funcs->gl.p_glRotated( c->angle, c->x, c->y, c->z ));
 }
 
 #endif
@@ -7591,8 +7837,9 @@ void WINAPI glRotatef( GLfloat angle, GLfloat x, GLfloat y, GLfloat z )
 void qemu_glRotatef(struct qemu_syscall *call)
 {
     struct qemu_glRotatef *c = (struct qemu_glRotatef *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glRotatef( c->angle, c->x, c->y, c->z ));
+    (funcs->gl.p_glRotatef( c->angle, c->x, c->y, c->z ));
 }
 
 #endif
@@ -7623,8 +7870,9 @@ void WINAPI glScaled( GLdouble x, GLdouble y, GLdouble z )
 void qemu_glScaled(struct qemu_syscall *call)
 {
     struct qemu_glScaled *c = (struct qemu_glScaled *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glScaled( c->x, c->y, c->z ));
+    (funcs->gl.p_glScaled( c->x, c->y, c->z ));
 }
 
 #endif
@@ -7655,8 +7903,9 @@ void WINAPI glScalef( GLfloat x, GLfloat y, GLfloat z )
 void qemu_glScalef(struct qemu_syscall *call)
 {
     struct qemu_glScalef *c = (struct qemu_glScalef *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glScalef( c->x, c->y, c->z ));
+    (funcs->gl.p_glScalef( c->x, c->y, c->z ));
 }
 
 #endif
@@ -7689,8 +7938,9 @@ void WINAPI glScissor( GLint x, GLint y, GLsizei width, GLsizei height )
 void qemu_glScissor(struct qemu_syscall *call)
 {
     struct qemu_glScissor *c = (struct qemu_glScissor *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glScissor( c->x, c->y, c->width, c->height ));
+    (funcs->gl.p_glScissor( c->x, c->y, c->width, c->height ));
 }
 
 #endif
@@ -7719,8 +7969,9 @@ void WINAPI glSelectBuffer( GLsizei size, GLuint *buffer )
 void qemu_glSelectBuffer(struct qemu_syscall *call)
 {
     struct qemu_glSelectBuffer *c = (struct qemu_glSelectBuffer *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glSelectBuffer( c->size, QEMU_G2H(c->buffer) ));
+    (funcs->gl.p_glSelectBuffer( c->size, QEMU_G2H(c->buffer) ));
 }
 
 #endif
@@ -7747,8 +7998,9 @@ void WINAPI glShadeModel( GLenum mode )
 void qemu_glShadeModel(struct qemu_syscall *call)
 {
     struct qemu_glShadeModel *c = (struct qemu_glShadeModel *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glShadeModel( c->mode ));
+    (funcs->gl.p_glShadeModel( c->mode ));
 }
 
 #endif
@@ -7779,8 +8031,9 @@ void WINAPI glStencilFunc( GLenum func, GLint ref, GLuint mask )
 void qemu_glStencilFunc(struct qemu_syscall *call)
 {
     struct qemu_glStencilFunc *c = (struct qemu_glStencilFunc *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glStencilFunc( c->func, c->ref, c->mask ));
+    (funcs->gl.p_glStencilFunc( c->func, c->ref, c->mask ));
 }
 
 #endif
@@ -7807,8 +8060,9 @@ void WINAPI glStencilMask( GLuint mask )
 void qemu_glStencilMask(struct qemu_syscall *call)
 {
     struct qemu_glStencilMask *c = (struct qemu_glStencilMask *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glStencilMask( c->mask ));
+    (funcs->gl.p_glStencilMask( c->mask ));
 }
 
 #endif
@@ -7839,8 +8093,9 @@ void WINAPI glStencilOp( GLenum fail, GLenum zfail, GLenum zpass )
 void qemu_glStencilOp(struct qemu_syscall *call)
 {
     struct qemu_glStencilOp *c = (struct qemu_glStencilOp *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glStencilOp( c->fail, c->zfail, c->zpass ));
+    (funcs->gl.p_glStencilOp( c->fail, c->zfail, c->zpass ));
 }
 
 #endif
@@ -7867,8 +8122,9 @@ void WINAPI glTexCoord1d( GLdouble s )
 void qemu_glTexCoord1d(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord1d *c = (struct qemu_glTexCoord1d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord1d( c->s ));
+    (funcs->gl.p_glTexCoord1d( c->s ));
 }
 
 #endif
@@ -7895,8 +8151,9 @@ void WINAPI glTexCoord1dv( const GLdouble *v )
 void qemu_glTexCoord1dv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord1dv *c = (struct qemu_glTexCoord1dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord1dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord1dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -7923,8 +8180,9 @@ void WINAPI glTexCoord1f( GLfloat s )
 void qemu_glTexCoord1f(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord1f *c = (struct qemu_glTexCoord1f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord1f( c->s ));
+    (funcs->gl.p_glTexCoord1f( c->s ));
 }
 
 #endif
@@ -7951,8 +8209,9 @@ void WINAPI glTexCoord1fv( const GLfloat *v )
 void qemu_glTexCoord1fv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord1fv *c = (struct qemu_glTexCoord1fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord1fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord1fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -7979,8 +8238,9 @@ void WINAPI glTexCoord1i( GLint s )
 void qemu_glTexCoord1i(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord1i *c = (struct qemu_glTexCoord1i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord1i( c->s ));
+    (funcs->gl.p_glTexCoord1i( c->s ));
 }
 
 #endif
@@ -8007,8 +8267,9 @@ void WINAPI glTexCoord1iv( const GLint *v )
 void qemu_glTexCoord1iv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord1iv *c = (struct qemu_glTexCoord1iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord1iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord1iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8035,8 +8296,9 @@ void WINAPI glTexCoord1s( GLshort s )
 void qemu_glTexCoord1s(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord1s *c = (struct qemu_glTexCoord1s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord1s( c->s ));
+    (funcs->gl.p_glTexCoord1s( c->s ));
 }
 
 #endif
@@ -8063,8 +8325,9 @@ void WINAPI glTexCoord1sv( const GLshort *v )
 void qemu_glTexCoord1sv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord1sv *c = (struct qemu_glTexCoord1sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord1sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord1sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8093,8 +8356,9 @@ void WINAPI glTexCoord2d( GLdouble s, GLdouble t )
 void qemu_glTexCoord2d(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord2d *c = (struct qemu_glTexCoord2d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord2d( c->s, c->t ));
+    (funcs->gl.p_glTexCoord2d( c->s, c->t ));
 }
 
 #endif
@@ -8121,8 +8385,9 @@ void WINAPI glTexCoord2dv( const GLdouble *v )
 void qemu_glTexCoord2dv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord2dv *c = (struct qemu_glTexCoord2dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord2dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord2dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8151,8 +8416,9 @@ void WINAPI glTexCoord2f( GLfloat s, GLfloat t )
 void qemu_glTexCoord2f(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord2f *c = (struct qemu_glTexCoord2f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord2f( c->s, c->t ));
+    (funcs->gl.p_glTexCoord2f( c->s, c->t ));
 }
 
 #endif
@@ -8179,8 +8445,9 @@ void WINAPI glTexCoord2fv( const GLfloat *v )
 void qemu_glTexCoord2fv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord2fv *c = (struct qemu_glTexCoord2fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord2fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord2fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8209,8 +8476,9 @@ void WINAPI glTexCoord2i( GLint s, GLint t )
 void qemu_glTexCoord2i(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord2i *c = (struct qemu_glTexCoord2i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord2i( c->s, c->t ));
+    (funcs->gl.p_glTexCoord2i( c->s, c->t ));
 }
 
 #endif
@@ -8237,8 +8505,9 @@ void WINAPI glTexCoord2iv( const GLint *v )
 void qemu_glTexCoord2iv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord2iv *c = (struct qemu_glTexCoord2iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord2iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord2iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8267,8 +8536,9 @@ void WINAPI glTexCoord2s( GLshort s, GLshort t )
 void qemu_glTexCoord2s(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord2s *c = (struct qemu_glTexCoord2s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord2s( c->s, c->t ));
+    (funcs->gl.p_glTexCoord2s( c->s, c->t ));
 }
 
 #endif
@@ -8295,8 +8565,9 @@ void WINAPI glTexCoord2sv( const GLshort *v )
 void qemu_glTexCoord2sv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord2sv *c = (struct qemu_glTexCoord2sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord2sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord2sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8327,8 +8598,9 @@ void WINAPI glTexCoord3d( GLdouble s, GLdouble t, GLdouble r )
 void qemu_glTexCoord3d(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord3d *c = (struct qemu_glTexCoord3d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord3d( c->s, c->t, c->r ));
+    (funcs->gl.p_glTexCoord3d( c->s, c->t, c->r ));
 }
 
 #endif
@@ -8355,8 +8627,9 @@ void WINAPI glTexCoord3dv( const GLdouble *v )
 void qemu_glTexCoord3dv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord3dv *c = (struct qemu_glTexCoord3dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord3dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord3dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8387,8 +8660,9 @@ void WINAPI glTexCoord3f( GLfloat s, GLfloat t, GLfloat r )
 void qemu_glTexCoord3f(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord3f *c = (struct qemu_glTexCoord3f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord3f( c->s, c->t, c->r ));
+    (funcs->gl.p_glTexCoord3f( c->s, c->t, c->r ));
 }
 
 #endif
@@ -8415,8 +8689,9 @@ void WINAPI glTexCoord3fv( const GLfloat *v )
 void qemu_glTexCoord3fv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord3fv *c = (struct qemu_glTexCoord3fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord3fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord3fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8447,8 +8722,9 @@ void WINAPI glTexCoord3i( GLint s, GLint t, GLint r )
 void qemu_glTexCoord3i(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord3i *c = (struct qemu_glTexCoord3i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord3i( c->s, c->t, c->r ));
+    (funcs->gl.p_glTexCoord3i( c->s, c->t, c->r ));
 }
 
 #endif
@@ -8475,8 +8751,9 @@ void WINAPI glTexCoord3iv( const GLint *v )
 void qemu_glTexCoord3iv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord3iv *c = (struct qemu_glTexCoord3iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord3iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord3iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8507,8 +8784,9 @@ void WINAPI glTexCoord3s( GLshort s, GLshort t, GLshort r )
 void qemu_glTexCoord3s(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord3s *c = (struct qemu_glTexCoord3s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord3s( c->s, c->t, c->r ));
+    (funcs->gl.p_glTexCoord3s( c->s, c->t, c->r ));
 }
 
 #endif
@@ -8535,8 +8813,9 @@ void WINAPI glTexCoord3sv( const GLshort *v )
 void qemu_glTexCoord3sv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord3sv *c = (struct qemu_glTexCoord3sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord3sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord3sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8569,8 +8848,9 @@ void WINAPI glTexCoord4d( GLdouble s, GLdouble t, GLdouble r, GLdouble q )
 void qemu_glTexCoord4d(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord4d *c = (struct qemu_glTexCoord4d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord4d( c->s, c->t, c->r, c->q ));
+    (funcs->gl.p_glTexCoord4d( c->s, c->t, c->r, c->q ));
 }
 
 #endif
@@ -8597,8 +8877,9 @@ void WINAPI glTexCoord4dv( const GLdouble *v )
 void qemu_glTexCoord4dv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord4dv *c = (struct qemu_glTexCoord4dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord4dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord4dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8631,8 +8912,9 @@ void WINAPI glTexCoord4f( GLfloat s, GLfloat t, GLfloat r, GLfloat q )
 void qemu_glTexCoord4f(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord4f *c = (struct qemu_glTexCoord4f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord4f( c->s, c->t, c->r, c->q ));
+    (funcs->gl.p_glTexCoord4f( c->s, c->t, c->r, c->q ));
 }
 
 #endif
@@ -8659,8 +8941,9 @@ void WINAPI glTexCoord4fv( const GLfloat *v )
 void qemu_glTexCoord4fv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord4fv *c = (struct qemu_glTexCoord4fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord4fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord4fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8693,8 +8976,9 @@ void WINAPI glTexCoord4i( GLint s, GLint t, GLint r, GLint q )
 void qemu_glTexCoord4i(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord4i *c = (struct qemu_glTexCoord4i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord4i( c->s, c->t, c->r, c->q ));
+    (funcs->gl.p_glTexCoord4i( c->s, c->t, c->r, c->q ));
 }
 
 #endif
@@ -8721,8 +9005,9 @@ void WINAPI glTexCoord4iv( const GLint *v )
 void qemu_glTexCoord4iv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord4iv *c = (struct qemu_glTexCoord4iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord4iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord4iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8755,8 +9040,9 @@ void WINAPI glTexCoord4s( GLshort s, GLshort t, GLshort r, GLshort q )
 void qemu_glTexCoord4s(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord4s *c = (struct qemu_glTexCoord4s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord4s( c->s, c->t, c->r, c->q ));
+    (funcs->gl.p_glTexCoord4s( c->s, c->t, c->r, c->q ));
 }
 
 #endif
@@ -8783,8 +9069,9 @@ void WINAPI glTexCoord4sv( const GLshort *v )
 void qemu_glTexCoord4sv(struct qemu_syscall *call)
 {
     struct qemu_glTexCoord4sv *c = (struct qemu_glTexCoord4sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoord4sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glTexCoord4sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -8817,8 +9104,9 @@ void WINAPI glTexCoordPointer( GLint size, GLenum type, GLsizei stride, const vo
 void qemu_glTexCoordPointer(struct qemu_syscall *call)
 {
     struct qemu_glTexCoordPointer *c = (struct qemu_glTexCoordPointer *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexCoordPointer( c->size, c->type, c->stride, QEMU_G2H(c->pointer) ));
+    (funcs->gl.p_glTexCoordPointer( c->size, c->type, c->stride, QEMU_G2H(c->pointer) ));
 }
 
 #endif
@@ -8849,8 +9137,9 @@ void WINAPI glTexEnvf( GLenum target, GLenum pname, GLfloat param )
 void qemu_glTexEnvf(struct qemu_syscall *call)
 {
     struct qemu_glTexEnvf *c = (struct qemu_glTexEnvf *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexEnvf( c->target, c->pname, c->param ));
+    (funcs->gl.p_glTexEnvf( c->target, c->pname, c->param ));
 }
 
 #endif
@@ -8881,8 +9170,9 @@ void WINAPI glTexEnvfv( GLenum target, GLenum pname, const GLfloat *params )
 void qemu_glTexEnvfv(struct qemu_syscall *call)
 {
     struct qemu_glTexEnvfv *c = (struct qemu_glTexEnvfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexEnvfv( c->target, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glTexEnvfv( c->target, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -8913,8 +9203,9 @@ void WINAPI glTexEnvi( GLenum target, GLenum pname, GLint param )
 void qemu_glTexEnvi(struct qemu_syscall *call)
 {
     struct qemu_glTexEnvi *c = (struct qemu_glTexEnvi *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexEnvi( c->target, c->pname, c->param ));
+    (funcs->gl.p_glTexEnvi( c->target, c->pname, c->param ));
 }
 
 #endif
@@ -8945,8 +9236,9 @@ void WINAPI glTexEnviv( GLenum target, GLenum pname, const GLint *params )
 void qemu_glTexEnviv(struct qemu_syscall *call)
 {
     struct qemu_glTexEnviv *c = (struct qemu_glTexEnviv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexEnviv( c->target, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glTexEnviv( c->target, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -8977,8 +9269,9 @@ void WINAPI glTexGend( GLenum coord, GLenum pname, GLdouble param )
 void qemu_glTexGend(struct qemu_syscall *call)
 {
     struct qemu_glTexGend *c = (struct qemu_glTexGend *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexGend( c->coord, c->pname, c->param ));
+    (funcs->gl.p_glTexGend( c->coord, c->pname, c->param ));
 }
 
 #endif
@@ -9009,8 +9302,9 @@ void WINAPI glTexGendv( GLenum coord, GLenum pname, const GLdouble *params )
 void qemu_glTexGendv(struct qemu_syscall *call)
 {
     struct qemu_glTexGendv *c = (struct qemu_glTexGendv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexGendv( c->coord, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glTexGendv( c->coord, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -9041,8 +9335,9 @@ void WINAPI glTexGenf( GLenum coord, GLenum pname, GLfloat param )
 void qemu_glTexGenf(struct qemu_syscall *call)
 {
     struct qemu_glTexGenf *c = (struct qemu_glTexGenf *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexGenf( c->coord, c->pname, c->param ));
+    (funcs->gl.p_glTexGenf( c->coord, c->pname, c->param ));
 }
 
 #endif
@@ -9073,8 +9368,9 @@ void WINAPI glTexGenfv( GLenum coord, GLenum pname, const GLfloat *params )
 void qemu_glTexGenfv(struct qemu_syscall *call)
 {
     struct qemu_glTexGenfv *c = (struct qemu_glTexGenfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexGenfv( c->coord, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glTexGenfv( c->coord, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -9105,8 +9401,9 @@ void WINAPI glTexGeni( GLenum coord, GLenum pname, GLint param )
 void qemu_glTexGeni(struct qemu_syscall *call)
 {
     struct qemu_glTexGeni *c = (struct qemu_glTexGeni *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexGeni( c->coord, c->pname, c->param ));
+    (funcs->gl.p_glTexGeni( c->coord, c->pname, c->param ));
 }
 
 #endif
@@ -9137,8 +9434,9 @@ void WINAPI glTexGeniv( GLenum coord, GLenum pname, const GLint *params )
 void qemu_glTexGeniv(struct qemu_syscall *call)
 {
     struct qemu_glTexGeniv *c = (struct qemu_glTexGeniv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexGeniv( c->coord, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glTexGeniv( c->coord, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -9179,8 +9477,9 @@ void WINAPI glTexImage1D( GLenum target, GLint level, GLint internalformat, GLsi
 void qemu_glTexImage1D(struct qemu_syscall *call)
 {
     struct qemu_glTexImage1D *c = (struct qemu_glTexImage1D *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexImage1D( c->target, c->level, c->internalformat, c->width, c->border, c->format, c->type, QEMU_G2H(c->pixels) ));
+    (funcs->gl.p_glTexImage1D( c->target, c->level, c->internalformat, c->width, c->border, c->format, c->type, QEMU_G2H(c->pixels) ));
 }
 
 #endif
@@ -9223,8 +9522,9 @@ void WINAPI glTexImage2D( GLenum target, GLint level, GLint internalformat, GLsi
 void qemu_glTexImage2D(struct qemu_syscall *call)
 {
     struct qemu_glTexImage2D *c = (struct qemu_glTexImage2D *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexImage2D( c->target, c->level, c->internalformat, c->width, c->height, c->border, c->format, c->type, QEMU_G2H(c->pixels) ));
+    (funcs->gl.p_glTexImage2D( c->target, c->level, c->internalformat, c->width, c->height, c->border, c->format, c->type, QEMU_G2H(c->pixels) ));
 }
 
 #endif
@@ -9255,8 +9555,9 @@ void WINAPI glTexParameterf( GLenum target, GLenum pname, GLfloat param )
 void qemu_glTexParameterf(struct qemu_syscall *call)
 {
     struct qemu_glTexParameterf *c = (struct qemu_glTexParameterf *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexParameterf( c->target, c->pname, c->param ));
+    (funcs->gl.p_glTexParameterf( c->target, c->pname, c->param ));
 }
 
 #endif
@@ -9287,8 +9588,9 @@ void WINAPI glTexParameterfv( GLenum target, GLenum pname, const GLfloat *params
 void qemu_glTexParameterfv(struct qemu_syscall *call)
 {
     struct qemu_glTexParameterfv *c = (struct qemu_glTexParameterfv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexParameterfv( c->target, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glTexParameterfv( c->target, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -9319,8 +9621,9 @@ void WINAPI glTexParameteri( GLenum target, GLenum pname, GLint param )
 void qemu_glTexParameteri(struct qemu_syscall *call)
 {
     struct qemu_glTexParameteri *c = (struct qemu_glTexParameteri *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexParameteri( c->target, c->pname, c->param ));
+    (funcs->gl.p_glTexParameteri( c->target, c->pname, c->param ));
 }
 
 #endif
@@ -9351,8 +9654,9 @@ void WINAPI glTexParameteriv( GLenum target, GLenum pname, const GLint *params )
 void qemu_glTexParameteriv(struct qemu_syscall *call)
 {
     struct qemu_glTexParameteriv *c = (struct qemu_glTexParameteriv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexParameteriv( c->target, c->pname, QEMU_G2H(c->params) ));
+    (funcs->gl.p_glTexParameteriv( c->target, c->pname, QEMU_G2H(c->params) ));
 }
 
 #endif
@@ -9391,8 +9695,9 @@ void WINAPI glTexSubImage1D( GLenum target, GLint level, GLint xoffset, GLsizei 
 void qemu_glTexSubImage1D(struct qemu_syscall *call)
 {
     struct qemu_glTexSubImage1D *c = (struct qemu_glTexSubImage1D *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexSubImage1D( c->target, c->level, c->xoffset, c->width, c->format, c->type, QEMU_G2H(c->pixels) ));
+    (funcs->gl.p_glTexSubImage1D( c->target, c->level, c->xoffset, c->width, c->format, c->type, QEMU_G2H(c->pixels) ));
 }
 
 #endif
@@ -9435,8 +9740,9 @@ void WINAPI glTexSubImage2D( GLenum target, GLint level, GLint xoffset, GLint yo
 void qemu_glTexSubImage2D(struct qemu_syscall *call)
 {
     struct qemu_glTexSubImage2D *c = (struct qemu_glTexSubImage2D *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTexSubImage2D( c->target, c->level, c->xoffset, c->yoffset, c->width, c->height, c->format, c->type, QEMU_G2H(c->pixels) ));
+    (funcs->gl.p_glTexSubImage2D( c->target, c->level, c->xoffset, c->yoffset, c->width, c->height, c->format, c->type, QEMU_G2H(c->pixels) ));
 }
 
 #endif
@@ -9467,8 +9773,9 @@ void WINAPI glTranslated( GLdouble x, GLdouble y, GLdouble z )
 void qemu_glTranslated(struct qemu_syscall *call)
 {
     struct qemu_glTranslated *c = (struct qemu_glTranslated *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTranslated( c->x, c->y, c->z ));
+    (funcs->gl.p_glTranslated( c->x, c->y, c->z ));
 }
 
 #endif
@@ -9499,8 +9806,9 @@ void WINAPI glTranslatef( GLfloat x, GLfloat y, GLfloat z )
 void qemu_glTranslatef(struct qemu_syscall *call)
 {
     struct qemu_glTranslatef *c = (struct qemu_glTranslatef *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glTranslatef( c->x, c->y, c->z ));
+    (funcs->gl.p_glTranslatef( c->x, c->y, c->z ));
 }
 
 #endif
@@ -9529,8 +9837,9 @@ void WINAPI glVertex2d( GLdouble x, GLdouble y )
 void qemu_glVertex2d(struct qemu_syscall *call)
 {
     struct qemu_glVertex2d *c = (struct qemu_glVertex2d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex2d( c->x, c->y ));
+    (funcs->gl.p_glVertex2d( c->x, c->y ));
 }
 
 #endif
@@ -9557,8 +9866,9 @@ void WINAPI glVertex2dv( const GLdouble *v )
 void qemu_glVertex2dv(struct qemu_syscall *call)
 {
     struct qemu_glVertex2dv *c = (struct qemu_glVertex2dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex2dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glVertex2dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -9587,8 +9897,9 @@ void WINAPI glVertex2f( GLfloat x, GLfloat y )
 void qemu_glVertex2f(struct qemu_syscall *call)
 {
     struct qemu_glVertex2f *c = (struct qemu_glVertex2f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex2f( c->x, c->y ));
+    (funcs->gl.p_glVertex2f( c->x, c->y ));
 }
 
 #endif
@@ -9615,8 +9926,9 @@ void WINAPI glVertex2fv( const GLfloat *v )
 void qemu_glVertex2fv(struct qemu_syscall *call)
 {
     struct qemu_glVertex2fv *c = (struct qemu_glVertex2fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex2fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glVertex2fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -9645,8 +9957,9 @@ void WINAPI glVertex2i( GLint x, GLint y )
 void qemu_glVertex2i(struct qemu_syscall *call)
 {
     struct qemu_glVertex2i *c = (struct qemu_glVertex2i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex2i( c->x, c->y ));
+    (funcs->gl.p_glVertex2i( c->x, c->y ));
 }
 
 #endif
@@ -9673,8 +9986,9 @@ void WINAPI glVertex2iv( const GLint *v )
 void qemu_glVertex2iv(struct qemu_syscall *call)
 {
     struct qemu_glVertex2iv *c = (struct qemu_glVertex2iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex2iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glVertex2iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -9703,8 +10017,9 @@ void WINAPI glVertex2s( GLshort x, GLshort y )
 void qemu_glVertex2s(struct qemu_syscall *call)
 {
     struct qemu_glVertex2s *c = (struct qemu_glVertex2s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex2s( c->x, c->y ));
+    (funcs->gl.p_glVertex2s( c->x, c->y ));
 }
 
 #endif
@@ -9731,8 +10046,9 @@ void WINAPI glVertex2sv( const GLshort *v )
 void qemu_glVertex2sv(struct qemu_syscall *call)
 {
     struct qemu_glVertex2sv *c = (struct qemu_glVertex2sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex2sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glVertex2sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -9763,8 +10079,9 @@ void WINAPI glVertex3d( GLdouble x, GLdouble y, GLdouble z )
 void qemu_glVertex3d(struct qemu_syscall *call)
 {
     struct qemu_glVertex3d *c = (struct qemu_glVertex3d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex3d( c->x, c->y, c->z ));
+    (funcs->gl.p_glVertex3d( c->x, c->y, c->z ));
 }
 
 #endif
@@ -9791,8 +10108,9 @@ void WINAPI glVertex3dv( const GLdouble *v )
 void qemu_glVertex3dv(struct qemu_syscall *call)
 {
     struct qemu_glVertex3dv *c = (struct qemu_glVertex3dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex3dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glVertex3dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -9823,8 +10141,9 @@ void WINAPI glVertex3f( GLfloat x, GLfloat y, GLfloat z )
 void qemu_glVertex3f(struct qemu_syscall *call)
 {
     struct qemu_glVertex3f *c = (struct qemu_glVertex3f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex3f( c->x, c->y, c->z ));
+    (funcs->gl.p_glVertex3f( c->x, c->y, c->z ));
 }
 
 #endif
@@ -9851,8 +10170,9 @@ void WINAPI glVertex3fv( const GLfloat *v )
 void qemu_glVertex3fv(struct qemu_syscall *call)
 {
     struct qemu_glVertex3fv *c = (struct qemu_glVertex3fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex3fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glVertex3fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -9883,8 +10203,9 @@ void WINAPI glVertex3i( GLint x, GLint y, GLint z )
 void qemu_glVertex3i(struct qemu_syscall *call)
 {
     struct qemu_glVertex3i *c = (struct qemu_glVertex3i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex3i( c->x, c->y, c->z ));
+    (funcs->gl.p_glVertex3i( c->x, c->y, c->z ));
 }
 
 #endif
@@ -9911,8 +10232,9 @@ void WINAPI glVertex3iv( const GLint *v )
 void qemu_glVertex3iv(struct qemu_syscall *call)
 {
     struct qemu_glVertex3iv *c = (struct qemu_glVertex3iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex3iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glVertex3iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -9943,8 +10265,9 @@ void WINAPI glVertex3s( GLshort x, GLshort y, GLshort z )
 void qemu_glVertex3s(struct qemu_syscall *call)
 {
     struct qemu_glVertex3s *c = (struct qemu_glVertex3s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex3s( c->x, c->y, c->z ));
+    (funcs->gl.p_glVertex3s( c->x, c->y, c->z ));
 }
 
 #endif
@@ -9971,8 +10294,9 @@ void WINAPI glVertex3sv( const GLshort *v )
 void qemu_glVertex3sv(struct qemu_syscall *call)
 {
     struct qemu_glVertex3sv *c = (struct qemu_glVertex3sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex3sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glVertex3sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -10005,8 +10329,9 @@ void WINAPI glVertex4d( GLdouble x, GLdouble y, GLdouble z, GLdouble w )
 void qemu_glVertex4d(struct qemu_syscall *call)
 {
     struct qemu_glVertex4d *c = (struct qemu_glVertex4d *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex4d( c->x, c->y, c->z, c->w ));
+    (funcs->gl.p_glVertex4d( c->x, c->y, c->z, c->w ));
 }
 
 #endif
@@ -10033,8 +10358,9 @@ void WINAPI glVertex4dv( const GLdouble *v )
 void qemu_glVertex4dv(struct qemu_syscall *call)
 {
     struct qemu_glVertex4dv *c = (struct qemu_glVertex4dv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex4dv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glVertex4dv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -10067,8 +10393,9 @@ void WINAPI glVertex4f( GLfloat x, GLfloat y, GLfloat z, GLfloat w )
 void qemu_glVertex4f(struct qemu_syscall *call)
 {
     struct qemu_glVertex4f *c = (struct qemu_glVertex4f *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex4f( c->x, c->y, c->z, c->w ));
+    (funcs->gl.p_glVertex4f( c->x, c->y, c->z, c->w ));
 }
 
 #endif
@@ -10095,8 +10422,9 @@ void WINAPI glVertex4fv( const GLfloat *v )
 void qemu_glVertex4fv(struct qemu_syscall *call)
 {
     struct qemu_glVertex4fv *c = (struct qemu_glVertex4fv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex4fv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glVertex4fv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -10129,8 +10457,9 @@ void WINAPI glVertex4i( GLint x, GLint y, GLint z, GLint w )
 void qemu_glVertex4i(struct qemu_syscall *call)
 {
     struct qemu_glVertex4i *c = (struct qemu_glVertex4i *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex4i( c->x, c->y, c->z, c->w ));
+    (funcs->gl.p_glVertex4i( c->x, c->y, c->z, c->w ));
 }
 
 #endif
@@ -10157,8 +10486,9 @@ void WINAPI glVertex4iv( const GLint *v )
 void qemu_glVertex4iv(struct qemu_syscall *call)
 {
     struct qemu_glVertex4iv *c = (struct qemu_glVertex4iv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex4iv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glVertex4iv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -10191,8 +10521,9 @@ void WINAPI glVertex4s( GLshort x, GLshort y, GLshort z, GLshort w )
 void qemu_glVertex4s(struct qemu_syscall *call)
 {
     struct qemu_glVertex4s *c = (struct qemu_glVertex4s *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex4s( c->x, c->y, c->z, c->w ));
+    (funcs->gl.p_glVertex4s( c->x, c->y, c->z, c->w ));
 }
 
 #endif
@@ -10219,8 +10550,9 @@ void WINAPI glVertex4sv( const GLshort *v )
 void qemu_glVertex4sv(struct qemu_syscall *call)
 {
     struct qemu_glVertex4sv *c = (struct qemu_glVertex4sv *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertex4sv( QEMU_G2H(c->v) ));
+    (funcs->gl.p_glVertex4sv( QEMU_G2H(c->v) ));
 }
 
 #endif
@@ -10253,8 +10585,9 @@ void WINAPI glVertexPointer( GLint size, GLenum type, GLsizei stride, const void
 void qemu_glVertexPointer(struct qemu_syscall *call)
 {
     struct qemu_glVertexPointer *c = (struct qemu_glVertexPointer *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glVertexPointer( c->size, c->type, c->stride, QEMU_G2H(c->pointer) ));
+    (funcs->gl.p_glVertexPointer( c->size, c->type, c->stride, QEMU_G2H(c->pointer) ));
 }
 
 #endif
@@ -10287,8 +10620,9 @@ void WINAPI glViewport( GLint x, GLint y, GLsizei width, GLsizei height )
 void qemu_glViewport(struct qemu_syscall *call)
 {
     struct qemu_glViewport *c = (struct qemu_glViewport *)call;
+    const struct opengl_funcs *funcs = &host_funcs;
     WINE_FIXME("Unverified\n");
-    (p_glViewport( c->x, c->y, c->width, c->height ));
+    (funcs->gl.p_glViewport( c->x, c->y, c->width, c->height ));
 }
 
 #endif
@@ -13333,7 +13667,7 @@ static BOOL null_wglReleaseTexImageARB( struct wgl_pbuffer * hPbuffer, int iBuff
 static BOOL null_wglSetPbufferAttribARB( struct wgl_pbuffer * hPbuffer, const int *piAttribList ) { return 0; }
 static BOOL null_wglSetPixelFormatWINE( HDC hdc, int format ) { return 0; }
 static BOOL null_wglSwapIntervalEXT( int interval ) { return 0; }
-#ifdef QEMU_DLL_GUEST
+#ifndef QEMU_DLL_GUEST
 
 struct opengl_funcs null_opengl_funcs =
 {

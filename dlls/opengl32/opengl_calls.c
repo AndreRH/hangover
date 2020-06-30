@@ -7,6 +7,8 @@
 #include "windows-user-services.h"
 #include "dll_list.h"
 #include "qemu_opengl32.h"
+#include <wine/debug.h>
+WINE_DEFAULT_DEBUG_CHANNEL(qemu_opengl32);
 const syscall_handler dll_functions[] =
 {
     qemu_glAccum,
@@ -3065,4 +3067,1394 @@ const syscall_handler dll_functions[] =
     qemu_wglUseFontOutlinesA,
     qemu_wglUseFontOutlinesW,
 };
+
+struct opengl_funcs host_funcs;
+void init_norm_funcs(void) {
+    HMODULE host = GetModuleHandleA("opengl32.dll");
+    host_funcs.gl.p_glAccum = (void *)GetProcAddress(host, "glAccum");
+    if (!host_funcs.gl.p_glAccum)
+        WINE_ERR("Could not load glAccum\n");
+
+    host_funcs.gl.p_glAlphaFunc = (void *)GetProcAddress(host, "glAlphaFunc");
+    if (!host_funcs.gl.p_glAlphaFunc)
+        WINE_ERR("Could not load glAlphaFunc\n");
+
+    host_funcs.gl.p_glAreTexturesResident = (void *)GetProcAddress(host, "glAreTexturesResident");
+    if (!host_funcs.gl.p_glAreTexturesResident)
+        WINE_ERR("Could not load glAreTexturesResident\n");
+
+    host_funcs.gl.p_glArrayElement = (void *)GetProcAddress(host, "glArrayElement");
+    if (!host_funcs.gl.p_glArrayElement)
+        WINE_ERR("Could not load glArrayElement\n");
+
+    host_funcs.gl.p_glBegin = (void *)GetProcAddress(host, "glBegin");
+    if (!host_funcs.gl.p_glBegin)
+        WINE_ERR("Could not load glBegin\n");
+
+    host_funcs.gl.p_glBindTexture = (void *)GetProcAddress(host, "glBindTexture");
+    if (!host_funcs.gl.p_glBindTexture)
+        WINE_ERR("Could not load glBindTexture\n");
+
+    host_funcs.gl.p_glBitmap = (void *)GetProcAddress(host, "glBitmap");
+    if (!host_funcs.gl.p_glBitmap)
+        WINE_ERR("Could not load glBitmap\n");
+
+    host_funcs.gl.p_glBlendFunc = (void *)GetProcAddress(host, "glBlendFunc");
+    if (!host_funcs.gl.p_glBlendFunc)
+        WINE_ERR("Could not load glBlendFunc\n");
+
+    host_funcs.gl.p_glCallList = (void *)GetProcAddress(host, "glCallList");
+    if (!host_funcs.gl.p_glCallList)
+        WINE_ERR("Could not load glCallList\n");
+
+    host_funcs.gl.p_glCallLists = (void *)GetProcAddress(host, "glCallLists");
+    if (!host_funcs.gl.p_glCallLists)
+        WINE_ERR("Could not load glCallLists\n");
+
+    host_funcs.gl.p_glClear = (void *)GetProcAddress(host, "glClear");
+    if (!host_funcs.gl.p_glClear)
+        WINE_ERR("Could not load glClear\n");
+
+    host_funcs.gl.p_glClearAccum = (void *)GetProcAddress(host, "glClearAccum");
+    if (!host_funcs.gl.p_glClearAccum)
+        WINE_ERR("Could not load glClearAccum\n");
+
+    host_funcs.gl.p_glClearColor = (void *)GetProcAddress(host, "glClearColor");
+    if (!host_funcs.gl.p_glClearColor)
+        WINE_ERR("Could not load glClearColor\n");
+
+    host_funcs.gl.p_glClearDepth = (void *)GetProcAddress(host, "glClearDepth");
+    if (!host_funcs.gl.p_glClearDepth)
+        WINE_ERR("Could not load glClearDepth\n");
+
+    host_funcs.gl.p_glClearIndex = (void *)GetProcAddress(host, "glClearIndex");
+    if (!host_funcs.gl.p_glClearIndex)
+        WINE_ERR("Could not load glClearIndex\n");
+
+    host_funcs.gl.p_glClearStencil = (void *)GetProcAddress(host, "glClearStencil");
+    if (!host_funcs.gl.p_glClearStencil)
+        WINE_ERR("Could not load glClearStencil\n");
+
+    host_funcs.gl.p_glClipPlane = (void *)GetProcAddress(host, "glClipPlane");
+    if (!host_funcs.gl.p_glClipPlane)
+        WINE_ERR("Could not load glClipPlane\n");
+
+    host_funcs.gl.p_glColor3b = (void *)GetProcAddress(host, "glColor3b");
+    if (!host_funcs.gl.p_glColor3b)
+        WINE_ERR("Could not load glColor3b\n");
+
+    host_funcs.gl.p_glColor3bv = (void *)GetProcAddress(host, "glColor3bv");
+    if (!host_funcs.gl.p_glColor3bv)
+        WINE_ERR("Could not load glColor3bv\n");
+
+    host_funcs.gl.p_glColor3d = (void *)GetProcAddress(host, "glColor3d");
+    if (!host_funcs.gl.p_glColor3d)
+        WINE_ERR("Could not load glColor3d\n");
+
+    host_funcs.gl.p_glColor3dv = (void *)GetProcAddress(host, "glColor3dv");
+    if (!host_funcs.gl.p_glColor3dv)
+        WINE_ERR("Could not load glColor3dv\n");
+
+    host_funcs.gl.p_glColor3f = (void *)GetProcAddress(host, "glColor3f");
+    if (!host_funcs.gl.p_glColor3f)
+        WINE_ERR("Could not load glColor3f\n");
+
+    host_funcs.gl.p_glColor3fv = (void *)GetProcAddress(host, "glColor3fv");
+    if (!host_funcs.gl.p_glColor3fv)
+        WINE_ERR("Could not load glColor3fv\n");
+
+    host_funcs.gl.p_glColor3i = (void *)GetProcAddress(host, "glColor3i");
+    if (!host_funcs.gl.p_glColor3i)
+        WINE_ERR("Could not load glColor3i\n");
+
+    host_funcs.gl.p_glColor3iv = (void *)GetProcAddress(host, "glColor3iv");
+    if (!host_funcs.gl.p_glColor3iv)
+        WINE_ERR("Could not load glColor3iv\n");
+
+    host_funcs.gl.p_glColor3s = (void *)GetProcAddress(host, "glColor3s");
+    if (!host_funcs.gl.p_glColor3s)
+        WINE_ERR("Could not load glColor3s\n");
+
+    host_funcs.gl.p_glColor3sv = (void *)GetProcAddress(host, "glColor3sv");
+    if (!host_funcs.gl.p_glColor3sv)
+        WINE_ERR("Could not load glColor3sv\n");
+
+    host_funcs.gl.p_glColor3ub = (void *)GetProcAddress(host, "glColor3ub");
+    if (!host_funcs.gl.p_glColor3ub)
+        WINE_ERR("Could not load glColor3ub\n");
+
+    host_funcs.gl.p_glColor3ubv = (void *)GetProcAddress(host, "glColor3ubv");
+    if (!host_funcs.gl.p_glColor3ubv)
+        WINE_ERR("Could not load glColor3ubv\n");
+
+    host_funcs.gl.p_glColor3ui = (void *)GetProcAddress(host, "glColor3ui");
+    if (!host_funcs.gl.p_glColor3ui)
+        WINE_ERR("Could not load glColor3ui\n");
+
+    host_funcs.gl.p_glColor3uiv = (void *)GetProcAddress(host, "glColor3uiv");
+    if (!host_funcs.gl.p_glColor3uiv)
+        WINE_ERR("Could not load glColor3uiv\n");
+
+    host_funcs.gl.p_glColor3us = (void *)GetProcAddress(host, "glColor3us");
+    if (!host_funcs.gl.p_glColor3us)
+        WINE_ERR("Could not load glColor3us\n");
+
+    host_funcs.gl.p_glColor3usv = (void *)GetProcAddress(host, "glColor3usv");
+    if (!host_funcs.gl.p_glColor3usv)
+        WINE_ERR("Could not load glColor3usv\n");
+
+    host_funcs.gl.p_glColor4b = (void *)GetProcAddress(host, "glColor4b");
+    if (!host_funcs.gl.p_glColor4b)
+        WINE_ERR("Could not load glColor4b\n");
+
+    host_funcs.gl.p_glColor4bv = (void *)GetProcAddress(host, "glColor4bv");
+    if (!host_funcs.gl.p_glColor4bv)
+        WINE_ERR("Could not load glColor4bv\n");
+
+    host_funcs.gl.p_glColor4d = (void *)GetProcAddress(host, "glColor4d");
+    if (!host_funcs.gl.p_glColor4d)
+        WINE_ERR("Could not load glColor4d\n");
+
+    host_funcs.gl.p_glColor4dv = (void *)GetProcAddress(host, "glColor4dv");
+    if (!host_funcs.gl.p_glColor4dv)
+        WINE_ERR("Could not load glColor4dv\n");
+
+    host_funcs.gl.p_glColor4f = (void *)GetProcAddress(host, "glColor4f");
+    if (!host_funcs.gl.p_glColor4f)
+        WINE_ERR("Could not load glColor4f\n");
+
+    host_funcs.gl.p_glColor4fv = (void *)GetProcAddress(host, "glColor4fv");
+    if (!host_funcs.gl.p_glColor4fv)
+        WINE_ERR("Could not load glColor4fv\n");
+
+    host_funcs.gl.p_glColor4i = (void *)GetProcAddress(host, "glColor4i");
+    if (!host_funcs.gl.p_glColor4i)
+        WINE_ERR("Could not load glColor4i\n");
+
+    host_funcs.gl.p_glColor4iv = (void *)GetProcAddress(host, "glColor4iv");
+    if (!host_funcs.gl.p_glColor4iv)
+        WINE_ERR("Could not load glColor4iv\n");
+
+    host_funcs.gl.p_glColor4s = (void *)GetProcAddress(host, "glColor4s");
+    if (!host_funcs.gl.p_glColor4s)
+        WINE_ERR("Could not load glColor4s\n");
+
+    host_funcs.gl.p_glColor4sv = (void *)GetProcAddress(host, "glColor4sv");
+    if (!host_funcs.gl.p_glColor4sv)
+        WINE_ERR("Could not load glColor4sv\n");
+
+    host_funcs.gl.p_glColor4ub = (void *)GetProcAddress(host, "glColor4ub");
+    if (!host_funcs.gl.p_glColor4ub)
+        WINE_ERR("Could not load glColor4ub\n");
+
+    host_funcs.gl.p_glColor4ubv = (void *)GetProcAddress(host, "glColor4ubv");
+    if (!host_funcs.gl.p_glColor4ubv)
+        WINE_ERR("Could not load glColor4ubv\n");
+
+    host_funcs.gl.p_glColor4ui = (void *)GetProcAddress(host, "glColor4ui");
+    if (!host_funcs.gl.p_glColor4ui)
+        WINE_ERR("Could not load glColor4ui\n");
+
+    host_funcs.gl.p_glColor4uiv = (void *)GetProcAddress(host, "glColor4uiv");
+    if (!host_funcs.gl.p_glColor4uiv)
+        WINE_ERR("Could not load glColor4uiv\n");
+
+    host_funcs.gl.p_glColor4us = (void *)GetProcAddress(host, "glColor4us");
+    if (!host_funcs.gl.p_glColor4us)
+        WINE_ERR("Could not load glColor4us\n");
+
+    host_funcs.gl.p_glColor4usv = (void *)GetProcAddress(host, "glColor4usv");
+    if (!host_funcs.gl.p_glColor4usv)
+        WINE_ERR("Could not load glColor4usv\n");
+
+    host_funcs.gl.p_glColorMask = (void *)GetProcAddress(host, "glColorMask");
+    if (!host_funcs.gl.p_glColorMask)
+        WINE_ERR("Could not load glColorMask\n");
+
+    host_funcs.gl.p_glColorMaterial = (void *)GetProcAddress(host, "glColorMaterial");
+    if (!host_funcs.gl.p_glColorMaterial)
+        WINE_ERR("Could not load glColorMaterial\n");
+
+    host_funcs.gl.p_glColorPointer = (void *)GetProcAddress(host, "glColorPointer");
+    if (!host_funcs.gl.p_glColorPointer)
+        WINE_ERR("Could not load glColorPointer\n");
+
+    host_funcs.gl.p_glCopyPixels = (void *)GetProcAddress(host, "glCopyPixels");
+    if (!host_funcs.gl.p_glCopyPixels)
+        WINE_ERR("Could not load glCopyPixels\n");
+
+    host_funcs.gl.p_glCopyTexImage1D = (void *)GetProcAddress(host, "glCopyTexImage1D");
+    if (!host_funcs.gl.p_glCopyTexImage1D)
+        WINE_ERR("Could not load glCopyTexImage1D\n");
+
+    host_funcs.gl.p_glCopyTexImage2D = (void *)GetProcAddress(host, "glCopyTexImage2D");
+    if (!host_funcs.gl.p_glCopyTexImage2D)
+        WINE_ERR("Could not load glCopyTexImage2D\n");
+
+    host_funcs.gl.p_glCopyTexSubImage1D = (void *)GetProcAddress(host, "glCopyTexSubImage1D");
+    if (!host_funcs.gl.p_glCopyTexSubImage1D)
+        WINE_ERR("Could not load glCopyTexSubImage1D\n");
+
+    host_funcs.gl.p_glCopyTexSubImage2D = (void *)GetProcAddress(host, "glCopyTexSubImage2D");
+    if (!host_funcs.gl.p_glCopyTexSubImage2D)
+        WINE_ERR("Could not load glCopyTexSubImage2D\n");
+
+    host_funcs.gl.p_glCullFace = (void *)GetProcAddress(host, "glCullFace");
+    if (!host_funcs.gl.p_glCullFace)
+        WINE_ERR("Could not load glCullFace\n");
+
+    host_funcs.gl.p_glDeleteLists = (void *)GetProcAddress(host, "glDeleteLists");
+    if (!host_funcs.gl.p_glDeleteLists)
+        WINE_ERR("Could not load glDeleteLists\n");
+
+    host_funcs.gl.p_glDeleteTextures = (void *)GetProcAddress(host, "glDeleteTextures");
+    if (!host_funcs.gl.p_glDeleteTextures)
+        WINE_ERR("Could not load glDeleteTextures\n");
+
+    host_funcs.gl.p_glDepthFunc = (void *)GetProcAddress(host, "glDepthFunc");
+    if (!host_funcs.gl.p_glDepthFunc)
+        WINE_ERR("Could not load glDepthFunc\n");
+
+    host_funcs.gl.p_glDepthMask = (void *)GetProcAddress(host, "glDepthMask");
+    if (!host_funcs.gl.p_glDepthMask)
+        WINE_ERR("Could not load glDepthMask\n");
+
+    host_funcs.gl.p_glDepthRange = (void *)GetProcAddress(host, "glDepthRange");
+    if (!host_funcs.gl.p_glDepthRange)
+        WINE_ERR("Could not load glDepthRange\n");
+
+    host_funcs.gl.p_glDisable = (void *)GetProcAddress(host, "glDisable");
+    if (!host_funcs.gl.p_glDisable)
+        WINE_ERR("Could not load glDisable\n");
+
+    host_funcs.gl.p_glDisableClientState = (void *)GetProcAddress(host, "glDisableClientState");
+    if (!host_funcs.gl.p_glDisableClientState)
+        WINE_ERR("Could not load glDisableClientState\n");
+
+    host_funcs.gl.p_glDrawArrays = (void *)GetProcAddress(host, "glDrawArrays");
+    if (!host_funcs.gl.p_glDrawArrays)
+        WINE_ERR("Could not load glDrawArrays\n");
+
+    host_funcs.gl.p_glDrawBuffer = (void *)GetProcAddress(host, "glDrawBuffer");
+    if (!host_funcs.gl.p_glDrawBuffer)
+        WINE_ERR("Could not load glDrawBuffer\n");
+
+    host_funcs.gl.p_glDrawElements = (void *)GetProcAddress(host, "glDrawElements");
+    if (!host_funcs.gl.p_glDrawElements)
+        WINE_ERR("Could not load glDrawElements\n");
+
+    host_funcs.gl.p_glDrawPixels = (void *)GetProcAddress(host, "glDrawPixels");
+    if (!host_funcs.gl.p_glDrawPixels)
+        WINE_ERR("Could not load glDrawPixels\n");
+
+    host_funcs.gl.p_glEdgeFlag = (void *)GetProcAddress(host, "glEdgeFlag");
+    if (!host_funcs.gl.p_glEdgeFlag)
+        WINE_ERR("Could not load glEdgeFlag\n");
+
+    host_funcs.gl.p_glEdgeFlagPointer = (void *)GetProcAddress(host, "glEdgeFlagPointer");
+    if (!host_funcs.gl.p_glEdgeFlagPointer)
+        WINE_ERR("Could not load glEdgeFlagPointer\n");
+
+    host_funcs.gl.p_glEdgeFlagv = (void *)GetProcAddress(host, "glEdgeFlagv");
+    if (!host_funcs.gl.p_glEdgeFlagv)
+        WINE_ERR("Could not load glEdgeFlagv\n");
+
+    host_funcs.gl.p_glEnable = (void *)GetProcAddress(host, "glEnable");
+    if (!host_funcs.gl.p_glEnable)
+        WINE_ERR("Could not load glEnable\n");
+
+    host_funcs.gl.p_glEnableClientState = (void *)GetProcAddress(host, "glEnableClientState");
+    if (!host_funcs.gl.p_glEnableClientState)
+        WINE_ERR("Could not load glEnableClientState\n");
+
+    host_funcs.gl.p_glEnd = (void *)GetProcAddress(host, "glEnd");
+    if (!host_funcs.gl.p_glEnd)
+        WINE_ERR("Could not load glEnd\n");
+
+    host_funcs.gl.p_glEndList = (void *)GetProcAddress(host, "glEndList");
+    if (!host_funcs.gl.p_glEndList)
+        WINE_ERR("Could not load glEndList\n");
+
+    host_funcs.gl.p_glEvalCoord1d = (void *)GetProcAddress(host, "glEvalCoord1d");
+    if (!host_funcs.gl.p_glEvalCoord1d)
+        WINE_ERR("Could not load glEvalCoord1d\n");
+
+    host_funcs.gl.p_glEvalCoord1dv = (void *)GetProcAddress(host, "glEvalCoord1dv");
+    if (!host_funcs.gl.p_glEvalCoord1dv)
+        WINE_ERR("Could not load glEvalCoord1dv\n");
+
+    host_funcs.gl.p_glEvalCoord1f = (void *)GetProcAddress(host, "glEvalCoord1f");
+    if (!host_funcs.gl.p_glEvalCoord1f)
+        WINE_ERR("Could not load glEvalCoord1f\n");
+
+    host_funcs.gl.p_glEvalCoord1fv = (void *)GetProcAddress(host, "glEvalCoord1fv");
+    if (!host_funcs.gl.p_glEvalCoord1fv)
+        WINE_ERR("Could not load glEvalCoord1fv\n");
+
+    host_funcs.gl.p_glEvalCoord2d = (void *)GetProcAddress(host, "glEvalCoord2d");
+    if (!host_funcs.gl.p_glEvalCoord2d)
+        WINE_ERR("Could not load glEvalCoord2d\n");
+
+    host_funcs.gl.p_glEvalCoord2dv = (void *)GetProcAddress(host, "glEvalCoord2dv");
+    if (!host_funcs.gl.p_glEvalCoord2dv)
+        WINE_ERR("Could not load glEvalCoord2dv\n");
+
+    host_funcs.gl.p_glEvalCoord2f = (void *)GetProcAddress(host, "glEvalCoord2f");
+    if (!host_funcs.gl.p_glEvalCoord2f)
+        WINE_ERR("Could not load glEvalCoord2f\n");
+
+    host_funcs.gl.p_glEvalCoord2fv = (void *)GetProcAddress(host, "glEvalCoord2fv");
+    if (!host_funcs.gl.p_glEvalCoord2fv)
+        WINE_ERR("Could not load glEvalCoord2fv\n");
+
+    host_funcs.gl.p_glEvalMesh1 = (void *)GetProcAddress(host, "glEvalMesh1");
+    if (!host_funcs.gl.p_glEvalMesh1)
+        WINE_ERR("Could not load glEvalMesh1\n");
+
+    host_funcs.gl.p_glEvalMesh2 = (void *)GetProcAddress(host, "glEvalMesh2");
+    if (!host_funcs.gl.p_glEvalMesh2)
+        WINE_ERR("Could not load glEvalMesh2\n");
+
+    host_funcs.gl.p_glEvalPoint1 = (void *)GetProcAddress(host, "glEvalPoint1");
+    if (!host_funcs.gl.p_glEvalPoint1)
+        WINE_ERR("Could not load glEvalPoint1\n");
+
+    host_funcs.gl.p_glEvalPoint2 = (void *)GetProcAddress(host, "glEvalPoint2");
+    if (!host_funcs.gl.p_glEvalPoint2)
+        WINE_ERR("Could not load glEvalPoint2\n");
+
+    host_funcs.gl.p_glFeedbackBuffer = (void *)GetProcAddress(host, "glFeedbackBuffer");
+    if (!host_funcs.gl.p_glFeedbackBuffer)
+        WINE_ERR("Could not load glFeedbackBuffer\n");
+
+    host_funcs.gl.p_glFinish = (void *)GetProcAddress(host, "glFinish");
+    if (!host_funcs.gl.p_glFinish)
+        WINE_ERR("Could not load glFinish\n");
+
+    host_funcs.gl.p_glFlush = (void *)GetProcAddress(host, "glFlush");
+    if (!host_funcs.gl.p_glFlush)
+        WINE_ERR("Could not load glFlush\n");
+
+    host_funcs.gl.p_glFogf = (void *)GetProcAddress(host, "glFogf");
+    if (!host_funcs.gl.p_glFogf)
+        WINE_ERR("Could not load glFogf\n");
+
+    host_funcs.gl.p_glFogfv = (void *)GetProcAddress(host, "glFogfv");
+    if (!host_funcs.gl.p_glFogfv)
+        WINE_ERR("Could not load glFogfv\n");
+
+    host_funcs.gl.p_glFogi = (void *)GetProcAddress(host, "glFogi");
+    if (!host_funcs.gl.p_glFogi)
+        WINE_ERR("Could not load glFogi\n");
+
+    host_funcs.gl.p_glFogiv = (void *)GetProcAddress(host, "glFogiv");
+    if (!host_funcs.gl.p_glFogiv)
+        WINE_ERR("Could not load glFogiv\n");
+
+    host_funcs.gl.p_glFrontFace = (void *)GetProcAddress(host, "glFrontFace");
+    if (!host_funcs.gl.p_glFrontFace)
+        WINE_ERR("Could not load glFrontFace\n");
+
+    host_funcs.gl.p_glFrustum = (void *)GetProcAddress(host, "glFrustum");
+    if (!host_funcs.gl.p_glFrustum)
+        WINE_ERR("Could not load glFrustum\n");
+
+    host_funcs.gl.p_glGenLists = (void *)GetProcAddress(host, "glGenLists");
+    if (!host_funcs.gl.p_glGenLists)
+        WINE_ERR("Could not load glGenLists\n");
+
+    host_funcs.gl.p_glGenTextures = (void *)GetProcAddress(host, "glGenTextures");
+    if (!host_funcs.gl.p_glGenTextures)
+        WINE_ERR("Could not load glGenTextures\n");
+
+    host_funcs.gl.p_glGetBooleanv = (void *)GetProcAddress(host, "glGetBooleanv");
+    if (!host_funcs.gl.p_glGetBooleanv)
+        WINE_ERR("Could not load glGetBooleanv\n");
+
+    host_funcs.gl.p_glGetClipPlane = (void *)GetProcAddress(host, "glGetClipPlane");
+    if (!host_funcs.gl.p_glGetClipPlane)
+        WINE_ERR("Could not load glGetClipPlane\n");
+
+    host_funcs.gl.p_glGetDoublev = (void *)GetProcAddress(host, "glGetDoublev");
+    if (!host_funcs.gl.p_glGetDoublev)
+        WINE_ERR("Could not load glGetDoublev\n");
+
+    host_funcs.gl.p_glGetError = (void *)GetProcAddress(host, "glGetError");
+    if (!host_funcs.gl.p_glGetError)
+        WINE_ERR("Could not load glGetError\n");
+
+    host_funcs.gl.p_glGetFloatv = (void *)GetProcAddress(host, "glGetFloatv");
+    if (!host_funcs.gl.p_glGetFloatv)
+        WINE_ERR("Could not load glGetFloatv\n");
+
+    host_funcs.gl.p_glGetIntegerv = (void *)GetProcAddress(host, "glGetIntegerv");
+    if (!host_funcs.gl.p_glGetIntegerv)
+        WINE_ERR("Could not load glGetIntegerv\n");
+
+    host_funcs.gl.p_glGetLightfv = (void *)GetProcAddress(host, "glGetLightfv");
+    if (!host_funcs.gl.p_glGetLightfv)
+        WINE_ERR("Could not load glGetLightfv\n");
+
+    host_funcs.gl.p_glGetLightiv = (void *)GetProcAddress(host, "glGetLightiv");
+    if (!host_funcs.gl.p_glGetLightiv)
+        WINE_ERR("Could not load glGetLightiv\n");
+
+    host_funcs.gl.p_glGetMapdv = (void *)GetProcAddress(host, "glGetMapdv");
+    if (!host_funcs.gl.p_glGetMapdv)
+        WINE_ERR("Could not load glGetMapdv\n");
+
+    host_funcs.gl.p_glGetMapfv = (void *)GetProcAddress(host, "glGetMapfv");
+    if (!host_funcs.gl.p_glGetMapfv)
+        WINE_ERR("Could not load glGetMapfv\n");
+
+    host_funcs.gl.p_glGetMapiv = (void *)GetProcAddress(host, "glGetMapiv");
+    if (!host_funcs.gl.p_glGetMapiv)
+        WINE_ERR("Could not load glGetMapiv\n");
+
+    host_funcs.gl.p_glGetMaterialfv = (void *)GetProcAddress(host, "glGetMaterialfv");
+    if (!host_funcs.gl.p_glGetMaterialfv)
+        WINE_ERR("Could not load glGetMaterialfv\n");
+
+    host_funcs.gl.p_glGetMaterialiv = (void *)GetProcAddress(host, "glGetMaterialiv");
+    if (!host_funcs.gl.p_glGetMaterialiv)
+        WINE_ERR("Could not load glGetMaterialiv\n");
+
+    host_funcs.gl.p_glGetPixelMapfv = (void *)GetProcAddress(host, "glGetPixelMapfv");
+    if (!host_funcs.gl.p_glGetPixelMapfv)
+        WINE_ERR("Could not load glGetPixelMapfv\n");
+
+    host_funcs.gl.p_glGetPixelMapuiv = (void *)GetProcAddress(host, "glGetPixelMapuiv");
+    if (!host_funcs.gl.p_glGetPixelMapuiv)
+        WINE_ERR("Could not load glGetPixelMapuiv\n");
+
+    host_funcs.gl.p_glGetPixelMapusv = (void *)GetProcAddress(host, "glGetPixelMapusv");
+    if (!host_funcs.gl.p_glGetPixelMapusv)
+        WINE_ERR("Could not load glGetPixelMapusv\n");
+
+    host_funcs.gl.p_glGetPointerv = (void *)GetProcAddress(host, "glGetPointerv");
+    if (!host_funcs.gl.p_glGetPointerv)
+        WINE_ERR("Could not load glGetPointerv\n");
+
+    host_funcs.gl.p_glGetPolygonStipple = (void *)GetProcAddress(host, "glGetPolygonStipple");
+    if (!host_funcs.gl.p_glGetPolygonStipple)
+        WINE_ERR("Could not load glGetPolygonStipple\n");
+
+    host_funcs.gl.p_glGetString = (void *)GetProcAddress(host, "glGetString");
+    if (!host_funcs.gl.p_glGetString)
+        WINE_ERR("Could not load glGetString\n");
+
+    host_funcs.gl.p_glGetTexEnvfv = (void *)GetProcAddress(host, "glGetTexEnvfv");
+    if (!host_funcs.gl.p_glGetTexEnvfv)
+        WINE_ERR("Could not load glGetTexEnvfv\n");
+
+    host_funcs.gl.p_glGetTexEnviv = (void *)GetProcAddress(host, "glGetTexEnviv");
+    if (!host_funcs.gl.p_glGetTexEnviv)
+        WINE_ERR("Could not load glGetTexEnviv\n");
+
+    host_funcs.gl.p_glGetTexGendv = (void *)GetProcAddress(host, "glGetTexGendv");
+    if (!host_funcs.gl.p_glGetTexGendv)
+        WINE_ERR("Could not load glGetTexGendv\n");
+
+    host_funcs.gl.p_glGetTexGenfv = (void *)GetProcAddress(host, "glGetTexGenfv");
+    if (!host_funcs.gl.p_glGetTexGenfv)
+        WINE_ERR("Could not load glGetTexGenfv\n");
+
+    host_funcs.gl.p_glGetTexGeniv = (void *)GetProcAddress(host, "glGetTexGeniv");
+    if (!host_funcs.gl.p_glGetTexGeniv)
+        WINE_ERR("Could not load glGetTexGeniv\n");
+
+    host_funcs.gl.p_glGetTexImage = (void *)GetProcAddress(host, "glGetTexImage");
+    if (!host_funcs.gl.p_glGetTexImage)
+        WINE_ERR("Could not load glGetTexImage\n");
+
+    host_funcs.gl.p_glGetTexLevelParameterfv = (void *)GetProcAddress(host, "glGetTexLevelParameterfv");
+    if (!host_funcs.gl.p_glGetTexLevelParameterfv)
+        WINE_ERR("Could not load glGetTexLevelParameterfv\n");
+
+    host_funcs.gl.p_glGetTexLevelParameteriv = (void *)GetProcAddress(host, "glGetTexLevelParameteriv");
+    if (!host_funcs.gl.p_glGetTexLevelParameteriv)
+        WINE_ERR("Could not load glGetTexLevelParameteriv\n");
+
+    host_funcs.gl.p_glGetTexParameterfv = (void *)GetProcAddress(host, "glGetTexParameterfv");
+    if (!host_funcs.gl.p_glGetTexParameterfv)
+        WINE_ERR("Could not load glGetTexParameterfv\n");
+
+    host_funcs.gl.p_glGetTexParameteriv = (void *)GetProcAddress(host, "glGetTexParameteriv");
+    if (!host_funcs.gl.p_glGetTexParameteriv)
+        WINE_ERR("Could not load glGetTexParameteriv\n");
+
+    host_funcs.gl.p_glHint = (void *)GetProcAddress(host, "glHint");
+    if (!host_funcs.gl.p_glHint)
+        WINE_ERR("Could not load glHint\n");
+
+    host_funcs.gl.p_glIndexMask = (void *)GetProcAddress(host, "glIndexMask");
+    if (!host_funcs.gl.p_glIndexMask)
+        WINE_ERR("Could not load glIndexMask\n");
+
+    host_funcs.gl.p_glIndexPointer = (void *)GetProcAddress(host, "glIndexPointer");
+    if (!host_funcs.gl.p_glIndexPointer)
+        WINE_ERR("Could not load glIndexPointer\n");
+
+    host_funcs.gl.p_glIndexd = (void *)GetProcAddress(host, "glIndexd");
+    if (!host_funcs.gl.p_glIndexd)
+        WINE_ERR("Could not load glIndexd\n");
+
+    host_funcs.gl.p_glIndexdv = (void *)GetProcAddress(host, "glIndexdv");
+    if (!host_funcs.gl.p_glIndexdv)
+        WINE_ERR("Could not load glIndexdv\n");
+
+    host_funcs.gl.p_glIndexf = (void *)GetProcAddress(host, "glIndexf");
+    if (!host_funcs.gl.p_glIndexf)
+        WINE_ERR("Could not load glIndexf\n");
+
+    host_funcs.gl.p_glIndexfv = (void *)GetProcAddress(host, "glIndexfv");
+    if (!host_funcs.gl.p_glIndexfv)
+        WINE_ERR("Could not load glIndexfv\n");
+
+    host_funcs.gl.p_glIndexi = (void *)GetProcAddress(host, "glIndexi");
+    if (!host_funcs.gl.p_glIndexi)
+        WINE_ERR("Could not load glIndexi\n");
+
+    host_funcs.gl.p_glIndexiv = (void *)GetProcAddress(host, "glIndexiv");
+    if (!host_funcs.gl.p_glIndexiv)
+        WINE_ERR("Could not load glIndexiv\n");
+
+    host_funcs.gl.p_glIndexs = (void *)GetProcAddress(host, "glIndexs");
+    if (!host_funcs.gl.p_glIndexs)
+        WINE_ERR("Could not load glIndexs\n");
+
+    host_funcs.gl.p_glIndexsv = (void *)GetProcAddress(host, "glIndexsv");
+    if (!host_funcs.gl.p_glIndexsv)
+        WINE_ERR("Could not load glIndexsv\n");
+
+    host_funcs.gl.p_glIndexub = (void *)GetProcAddress(host, "glIndexub");
+    if (!host_funcs.gl.p_glIndexub)
+        WINE_ERR("Could not load glIndexub\n");
+
+    host_funcs.gl.p_glIndexubv = (void *)GetProcAddress(host, "glIndexubv");
+    if (!host_funcs.gl.p_glIndexubv)
+        WINE_ERR("Could not load glIndexubv\n");
+
+    host_funcs.gl.p_glInitNames = (void *)GetProcAddress(host, "glInitNames");
+    if (!host_funcs.gl.p_glInitNames)
+        WINE_ERR("Could not load glInitNames\n");
+
+    host_funcs.gl.p_glInterleavedArrays = (void *)GetProcAddress(host, "glInterleavedArrays");
+    if (!host_funcs.gl.p_glInterleavedArrays)
+        WINE_ERR("Could not load glInterleavedArrays\n");
+
+    host_funcs.gl.p_glIsEnabled = (void *)GetProcAddress(host, "glIsEnabled");
+    if (!host_funcs.gl.p_glIsEnabled)
+        WINE_ERR("Could not load glIsEnabled\n");
+
+    host_funcs.gl.p_glIsList = (void *)GetProcAddress(host, "glIsList");
+    if (!host_funcs.gl.p_glIsList)
+        WINE_ERR("Could not load glIsList\n");
+
+    host_funcs.gl.p_glIsTexture = (void *)GetProcAddress(host, "glIsTexture");
+    if (!host_funcs.gl.p_glIsTexture)
+        WINE_ERR("Could not load glIsTexture\n");
+
+    host_funcs.gl.p_glLightModelf = (void *)GetProcAddress(host, "glLightModelf");
+    if (!host_funcs.gl.p_glLightModelf)
+        WINE_ERR("Could not load glLightModelf\n");
+
+    host_funcs.gl.p_glLightModelfv = (void *)GetProcAddress(host, "glLightModelfv");
+    if (!host_funcs.gl.p_glLightModelfv)
+        WINE_ERR("Could not load glLightModelfv\n");
+
+    host_funcs.gl.p_glLightModeli = (void *)GetProcAddress(host, "glLightModeli");
+    if (!host_funcs.gl.p_glLightModeli)
+        WINE_ERR("Could not load glLightModeli\n");
+
+    host_funcs.gl.p_glLightModeliv = (void *)GetProcAddress(host, "glLightModeliv");
+    if (!host_funcs.gl.p_glLightModeliv)
+        WINE_ERR("Could not load glLightModeliv\n");
+
+    host_funcs.gl.p_glLightf = (void *)GetProcAddress(host, "glLightf");
+    if (!host_funcs.gl.p_glLightf)
+        WINE_ERR("Could not load glLightf\n");
+
+    host_funcs.gl.p_glLightfv = (void *)GetProcAddress(host, "glLightfv");
+    if (!host_funcs.gl.p_glLightfv)
+        WINE_ERR("Could not load glLightfv\n");
+
+    host_funcs.gl.p_glLighti = (void *)GetProcAddress(host, "glLighti");
+    if (!host_funcs.gl.p_glLighti)
+        WINE_ERR("Could not load glLighti\n");
+
+    host_funcs.gl.p_glLightiv = (void *)GetProcAddress(host, "glLightiv");
+    if (!host_funcs.gl.p_glLightiv)
+        WINE_ERR("Could not load glLightiv\n");
+
+    host_funcs.gl.p_glLineStipple = (void *)GetProcAddress(host, "glLineStipple");
+    if (!host_funcs.gl.p_glLineStipple)
+        WINE_ERR("Could not load glLineStipple\n");
+
+    host_funcs.gl.p_glLineWidth = (void *)GetProcAddress(host, "glLineWidth");
+    if (!host_funcs.gl.p_glLineWidth)
+        WINE_ERR("Could not load glLineWidth\n");
+
+    host_funcs.gl.p_glListBase = (void *)GetProcAddress(host, "glListBase");
+    if (!host_funcs.gl.p_glListBase)
+        WINE_ERR("Could not load glListBase\n");
+
+    host_funcs.gl.p_glLoadIdentity = (void *)GetProcAddress(host, "glLoadIdentity");
+    if (!host_funcs.gl.p_glLoadIdentity)
+        WINE_ERR("Could not load glLoadIdentity\n");
+
+    host_funcs.gl.p_glLoadMatrixd = (void *)GetProcAddress(host, "glLoadMatrixd");
+    if (!host_funcs.gl.p_glLoadMatrixd)
+        WINE_ERR("Could not load glLoadMatrixd\n");
+
+    host_funcs.gl.p_glLoadMatrixf = (void *)GetProcAddress(host, "glLoadMatrixf");
+    if (!host_funcs.gl.p_glLoadMatrixf)
+        WINE_ERR("Could not load glLoadMatrixf\n");
+
+    host_funcs.gl.p_glLoadName = (void *)GetProcAddress(host, "glLoadName");
+    if (!host_funcs.gl.p_glLoadName)
+        WINE_ERR("Could not load glLoadName\n");
+
+    host_funcs.gl.p_glLogicOp = (void *)GetProcAddress(host, "glLogicOp");
+    if (!host_funcs.gl.p_glLogicOp)
+        WINE_ERR("Could not load glLogicOp\n");
+
+    host_funcs.gl.p_glMap1d = (void *)GetProcAddress(host, "glMap1d");
+    if (!host_funcs.gl.p_glMap1d)
+        WINE_ERR("Could not load glMap1d\n");
+
+    host_funcs.gl.p_glMap1f = (void *)GetProcAddress(host, "glMap1f");
+    if (!host_funcs.gl.p_glMap1f)
+        WINE_ERR("Could not load glMap1f\n");
+
+    host_funcs.gl.p_glMap2d = (void *)GetProcAddress(host, "glMap2d");
+    if (!host_funcs.gl.p_glMap2d)
+        WINE_ERR("Could not load glMap2d\n");
+
+    host_funcs.gl.p_glMap2f = (void *)GetProcAddress(host, "glMap2f");
+    if (!host_funcs.gl.p_glMap2f)
+        WINE_ERR("Could not load glMap2f\n");
+
+    host_funcs.gl.p_glMapGrid1d = (void *)GetProcAddress(host, "glMapGrid1d");
+    if (!host_funcs.gl.p_glMapGrid1d)
+        WINE_ERR("Could not load glMapGrid1d\n");
+
+    host_funcs.gl.p_glMapGrid1f = (void *)GetProcAddress(host, "glMapGrid1f");
+    if (!host_funcs.gl.p_glMapGrid1f)
+        WINE_ERR("Could not load glMapGrid1f\n");
+
+    host_funcs.gl.p_glMapGrid2d = (void *)GetProcAddress(host, "glMapGrid2d");
+    if (!host_funcs.gl.p_glMapGrid2d)
+        WINE_ERR("Could not load glMapGrid2d\n");
+
+    host_funcs.gl.p_glMapGrid2f = (void *)GetProcAddress(host, "glMapGrid2f");
+    if (!host_funcs.gl.p_glMapGrid2f)
+        WINE_ERR("Could not load glMapGrid2f\n");
+
+    host_funcs.gl.p_glMaterialf = (void *)GetProcAddress(host, "glMaterialf");
+    if (!host_funcs.gl.p_glMaterialf)
+        WINE_ERR("Could not load glMaterialf\n");
+
+    host_funcs.gl.p_glMaterialfv = (void *)GetProcAddress(host, "glMaterialfv");
+    if (!host_funcs.gl.p_glMaterialfv)
+        WINE_ERR("Could not load glMaterialfv\n");
+
+    host_funcs.gl.p_glMateriali = (void *)GetProcAddress(host, "glMateriali");
+    if (!host_funcs.gl.p_glMateriali)
+        WINE_ERR("Could not load glMateriali\n");
+
+    host_funcs.gl.p_glMaterialiv = (void *)GetProcAddress(host, "glMaterialiv");
+    if (!host_funcs.gl.p_glMaterialiv)
+        WINE_ERR("Could not load glMaterialiv\n");
+
+    host_funcs.gl.p_glMatrixMode = (void *)GetProcAddress(host, "glMatrixMode");
+    if (!host_funcs.gl.p_glMatrixMode)
+        WINE_ERR("Could not load glMatrixMode\n");
+
+    host_funcs.gl.p_glMultMatrixd = (void *)GetProcAddress(host, "glMultMatrixd");
+    if (!host_funcs.gl.p_glMultMatrixd)
+        WINE_ERR("Could not load glMultMatrixd\n");
+
+    host_funcs.gl.p_glMultMatrixf = (void *)GetProcAddress(host, "glMultMatrixf");
+    if (!host_funcs.gl.p_glMultMatrixf)
+        WINE_ERR("Could not load glMultMatrixf\n");
+
+    host_funcs.gl.p_glNewList = (void *)GetProcAddress(host, "glNewList");
+    if (!host_funcs.gl.p_glNewList)
+        WINE_ERR("Could not load glNewList\n");
+
+    host_funcs.gl.p_glNormal3b = (void *)GetProcAddress(host, "glNormal3b");
+    if (!host_funcs.gl.p_glNormal3b)
+        WINE_ERR("Could not load glNormal3b\n");
+
+    host_funcs.gl.p_glNormal3bv = (void *)GetProcAddress(host, "glNormal3bv");
+    if (!host_funcs.gl.p_glNormal3bv)
+        WINE_ERR("Could not load glNormal3bv\n");
+
+    host_funcs.gl.p_glNormal3d = (void *)GetProcAddress(host, "glNormal3d");
+    if (!host_funcs.gl.p_glNormal3d)
+        WINE_ERR("Could not load glNormal3d\n");
+
+    host_funcs.gl.p_glNormal3dv = (void *)GetProcAddress(host, "glNormal3dv");
+    if (!host_funcs.gl.p_glNormal3dv)
+        WINE_ERR("Could not load glNormal3dv\n");
+
+    host_funcs.gl.p_glNormal3f = (void *)GetProcAddress(host, "glNormal3f");
+    if (!host_funcs.gl.p_glNormal3f)
+        WINE_ERR("Could not load glNormal3f\n");
+
+    host_funcs.gl.p_glNormal3fv = (void *)GetProcAddress(host, "glNormal3fv");
+    if (!host_funcs.gl.p_glNormal3fv)
+        WINE_ERR("Could not load glNormal3fv\n");
+
+    host_funcs.gl.p_glNormal3i = (void *)GetProcAddress(host, "glNormal3i");
+    if (!host_funcs.gl.p_glNormal3i)
+        WINE_ERR("Could not load glNormal3i\n");
+
+    host_funcs.gl.p_glNormal3iv = (void *)GetProcAddress(host, "glNormal3iv");
+    if (!host_funcs.gl.p_glNormal3iv)
+        WINE_ERR("Could not load glNormal3iv\n");
+
+    host_funcs.gl.p_glNormal3s = (void *)GetProcAddress(host, "glNormal3s");
+    if (!host_funcs.gl.p_glNormal3s)
+        WINE_ERR("Could not load glNormal3s\n");
+
+    host_funcs.gl.p_glNormal3sv = (void *)GetProcAddress(host, "glNormal3sv");
+    if (!host_funcs.gl.p_glNormal3sv)
+        WINE_ERR("Could not load glNormal3sv\n");
+
+    host_funcs.gl.p_glNormalPointer = (void *)GetProcAddress(host, "glNormalPointer");
+    if (!host_funcs.gl.p_glNormalPointer)
+        WINE_ERR("Could not load glNormalPointer\n");
+
+    host_funcs.gl.p_glOrtho = (void *)GetProcAddress(host, "glOrtho");
+    if (!host_funcs.gl.p_glOrtho)
+        WINE_ERR("Could not load glOrtho\n");
+
+    host_funcs.gl.p_glPassThrough = (void *)GetProcAddress(host, "glPassThrough");
+    if (!host_funcs.gl.p_glPassThrough)
+        WINE_ERR("Could not load glPassThrough\n");
+
+    host_funcs.gl.p_glPixelMapfv = (void *)GetProcAddress(host, "glPixelMapfv");
+    if (!host_funcs.gl.p_glPixelMapfv)
+        WINE_ERR("Could not load glPixelMapfv\n");
+
+    host_funcs.gl.p_glPixelMapuiv = (void *)GetProcAddress(host, "glPixelMapuiv");
+    if (!host_funcs.gl.p_glPixelMapuiv)
+        WINE_ERR("Could not load glPixelMapuiv\n");
+
+    host_funcs.gl.p_glPixelMapusv = (void *)GetProcAddress(host, "glPixelMapusv");
+    if (!host_funcs.gl.p_glPixelMapusv)
+        WINE_ERR("Could not load glPixelMapusv\n");
+
+    host_funcs.gl.p_glPixelStoref = (void *)GetProcAddress(host, "glPixelStoref");
+    if (!host_funcs.gl.p_glPixelStoref)
+        WINE_ERR("Could not load glPixelStoref\n");
+
+    host_funcs.gl.p_glPixelStorei = (void *)GetProcAddress(host, "glPixelStorei");
+    if (!host_funcs.gl.p_glPixelStorei)
+        WINE_ERR("Could not load glPixelStorei\n");
+
+    host_funcs.gl.p_glPixelTransferf = (void *)GetProcAddress(host, "glPixelTransferf");
+    if (!host_funcs.gl.p_glPixelTransferf)
+        WINE_ERR("Could not load glPixelTransferf\n");
+
+    host_funcs.gl.p_glPixelTransferi = (void *)GetProcAddress(host, "glPixelTransferi");
+    if (!host_funcs.gl.p_glPixelTransferi)
+        WINE_ERR("Could not load glPixelTransferi\n");
+
+    host_funcs.gl.p_glPixelZoom = (void *)GetProcAddress(host, "glPixelZoom");
+    if (!host_funcs.gl.p_glPixelZoom)
+        WINE_ERR("Could not load glPixelZoom\n");
+
+    host_funcs.gl.p_glPointSize = (void *)GetProcAddress(host, "glPointSize");
+    if (!host_funcs.gl.p_glPointSize)
+        WINE_ERR("Could not load glPointSize\n");
+
+    host_funcs.gl.p_glPolygonMode = (void *)GetProcAddress(host, "glPolygonMode");
+    if (!host_funcs.gl.p_glPolygonMode)
+        WINE_ERR("Could not load glPolygonMode\n");
+
+    host_funcs.gl.p_glPolygonOffset = (void *)GetProcAddress(host, "glPolygonOffset");
+    if (!host_funcs.gl.p_glPolygonOffset)
+        WINE_ERR("Could not load glPolygonOffset\n");
+
+    host_funcs.gl.p_glPolygonStipple = (void *)GetProcAddress(host, "glPolygonStipple");
+    if (!host_funcs.gl.p_glPolygonStipple)
+        WINE_ERR("Could not load glPolygonStipple\n");
+
+    host_funcs.gl.p_glPopAttrib = (void *)GetProcAddress(host, "glPopAttrib");
+    if (!host_funcs.gl.p_glPopAttrib)
+        WINE_ERR("Could not load glPopAttrib\n");
+
+    host_funcs.gl.p_glPopClientAttrib = (void *)GetProcAddress(host, "glPopClientAttrib");
+    if (!host_funcs.gl.p_glPopClientAttrib)
+        WINE_ERR("Could not load glPopClientAttrib\n");
+
+    host_funcs.gl.p_glPopMatrix = (void *)GetProcAddress(host, "glPopMatrix");
+    if (!host_funcs.gl.p_glPopMatrix)
+        WINE_ERR("Could not load glPopMatrix\n");
+
+    host_funcs.gl.p_glPopName = (void *)GetProcAddress(host, "glPopName");
+    if (!host_funcs.gl.p_glPopName)
+        WINE_ERR("Could not load glPopName\n");
+
+    host_funcs.gl.p_glPrioritizeTextures = (void *)GetProcAddress(host, "glPrioritizeTextures");
+    if (!host_funcs.gl.p_glPrioritizeTextures)
+        WINE_ERR("Could not load glPrioritizeTextures\n");
+
+    host_funcs.gl.p_glPushAttrib = (void *)GetProcAddress(host, "glPushAttrib");
+    if (!host_funcs.gl.p_glPushAttrib)
+        WINE_ERR("Could not load glPushAttrib\n");
+
+    host_funcs.gl.p_glPushClientAttrib = (void *)GetProcAddress(host, "glPushClientAttrib");
+    if (!host_funcs.gl.p_glPushClientAttrib)
+        WINE_ERR("Could not load glPushClientAttrib\n");
+
+    host_funcs.gl.p_glPushMatrix = (void *)GetProcAddress(host, "glPushMatrix");
+    if (!host_funcs.gl.p_glPushMatrix)
+        WINE_ERR("Could not load glPushMatrix\n");
+
+    host_funcs.gl.p_glPushName = (void *)GetProcAddress(host, "glPushName");
+    if (!host_funcs.gl.p_glPushName)
+        WINE_ERR("Could not load glPushName\n");
+
+    host_funcs.gl.p_glRasterPos2d = (void *)GetProcAddress(host, "glRasterPos2d");
+    if (!host_funcs.gl.p_glRasterPos2d)
+        WINE_ERR("Could not load glRasterPos2d\n");
+
+    host_funcs.gl.p_glRasterPos2dv = (void *)GetProcAddress(host, "glRasterPos2dv");
+    if (!host_funcs.gl.p_glRasterPos2dv)
+        WINE_ERR("Could not load glRasterPos2dv\n");
+
+    host_funcs.gl.p_glRasterPos2f = (void *)GetProcAddress(host, "glRasterPos2f");
+    if (!host_funcs.gl.p_glRasterPos2f)
+        WINE_ERR("Could not load glRasterPos2f\n");
+
+    host_funcs.gl.p_glRasterPos2fv = (void *)GetProcAddress(host, "glRasterPos2fv");
+    if (!host_funcs.gl.p_glRasterPos2fv)
+        WINE_ERR("Could not load glRasterPos2fv\n");
+
+    host_funcs.gl.p_glRasterPos2i = (void *)GetProcAddress(host, "glRasterPos2i");
+    if (!host_funcs.gl.p_glRasterPos2i)
+        WINE_ERR("Could not load glRasterPos2i\n");
+
+    host_funcs.gl.p_glRasterPos2iv = (void *)GetProcAddress(host, "glRasterPos2iv");
+    if (!host_funcs.gl.p_glRasterPos2iv)
+        WINE_ERR("Could not load glRasterPos2iv\n");
+
+    host_funcs.gl.p_glRasterPos2s = (void *)GetProcAddress(host, "glRasterPos2s");
+    if (!host_funcs.gl.p_glRasterPos2s)
+        WINE_ERR("Could not load glRasterPos2s\n");
+
+    host_funcs.gl.p_glRasterPos2sv = (void *)GetProcAddress(host, "glRasterPos2sv");
+    if (!host_funcs.gl.p_glRasterPos2sv)
+        WINE_ERR("Could not load glRasterPos2sv\n");
+
+    host_funcs.gl.p_glRasterPos3d = (void *)GetProcAddress(host, "glRasterPos3d");
+    if (!host_funcs.gl.p_glRasterPos3d)
+        WINE_ERR("Could not load glRasterPos3d\n");
+
+    host_funcs.gl.p_glRasterPos3dv = (void *)GetProcAddress(host, "glRasterPos3dv");
+    if (!host_funcs.gl.p_glRasterPos3dv)
+        WINE_ERR("Could not load glRasterPos3dv\n");
+
+    host_funcs.gl.p_glRasterPos3f = (void *)GetProcAddress(host, "glRasterPos3f");
+    if (!host_funcs.gl.p_glRasterPos3f)
+        WINE_ERR("Could not load glRasterPos3f\n");
+
+    host_funcs.gl.p_glRasterPos3fv = (void *)GetProcAddress(host, "glRasterPos3fv");
+    if (!host_funcs.gl.p_glRasterPos3fv)
+        WINE_ERR("Could not load glRasterPos3fv\n");
+
+    host_funcs.gl.p_glRasterPos3i = (void *)GetProcAddress(host, "glRasterPos3i");
+    if (!host_funcs.gl.p_glRasterPos3i)
+        WINE_ERR("Could not load glRasterPos3i\n");
+
+    host_funcs.gl.p_glRasterPos3iv = (void *)GetProcAddress(host, "glRasterPos3iv");
+    if (!host_funcs.gl.p_glRasterPos3iv)
+        WINE_ERR("Could not load glRasterPos3iv\n");
+
+    host_funcs.gl.p_glRasterPos3s = (void *)GetProcAddress(host, "glRasterPos3s");
+    if (!host_funcs.gl.p_glRasterPos3s)
+        WINE_ERR("Could not load glRasterPos3s\n");
+
+    host_funcs.gl.p_glRasterPos3sv = (void *)GetProcAddress(host, "glRasterPos3sv");
+    if (!host_funcs.gl.p_glRasterPos3sv)
+        WINE_ERR("Could not load glRasterPos3sv\n");
+
+    host_funcs.gl.p_glRasterPos4d = (void *)GetProcAddress(host, "glRasterPos4d");
+    if (!host_funcs.gl.p_glRasterPos4d)
+        WINE_ERR("Could not load glRasterPos4d\n");
+
+    host_funcs.gl.p_glRasterPos4dv = (void *)GetProcAddress(host, "glRasterPos4dv");
+    if (!host_funcs.gl.p_glRasterPos4dv)
+        WINE_ERR("Could not load glRasterPos4dv\n");
+
+    host_funcs.gl.p_glRasterPos4f = (void *)GetProcAddress(host, "glRasterPos4f");
+    if (!host_funcs.gl.p_glRasterPos4f)
+        WINE_ERR("Could not load glRasterPos4f\n");
+
+    host_funcs.gl.p_glRasterPos4fv = (void *)GetProcAddress(host, "glRasterPos4fv");
+    if (!host_funcs.gl.p_glRasterPos4fv)
+        WINE_ERR("Could not load glRasterPos4fv\n");
+
+    host_funcs.gl.p_glRasterPos4i = (void *)GetProcAddress(host, "glRasterPos4i");
+    if (!host_funcs.gl.p_glRasterPos4i)
+        WINE_ERR("Could not load glRasterPos4i\n");
+
+    host_funcs.gl.p_glRasterPos4iv = (void *)GetProcAddress(host, "glRasterPos4iv");
+    if (!host_funcs.gl.p_glRasterPos4iv)
+        WINE_ERR("Could not load glRasterPos4iv\n");
+
+    host_funcs.gl.p_glRasterPos4s = (void *)GetProcAddress(host, "glRasterPos4s");
+    if (!host_funcs.gl.p_glRasterPos4s)
+        WINE_ERR("Could not load glRasterPos4s\n");
+
+    host_funcs.gl.p_glRasterPos4sv = (void *)GetProcAddress(host, "glRasterPos4sv");
+    if (!host_funcs.gl.p_glRasterPos4sv)
+        WINE_ERR("Could not load glRasterPos4sv\n");
+
+    host_funcs.gl.p_glReadBuffer = (void *)GetProcAddress(host, "glReadBuffer");
+    if (!host_funcs.gl.p_glReadBuffer)
+        WINE_ERR("Could not load glReadBuffer\n");
+
+    host_funcs.gl.p_glReadPixels = (void *)GetProcAddress(host, "glReadPixels");
+    if (!host_funcs.gl.p_glReadPixels)
+        WINE_ERR("Could not load glReadPixels\n");
+
+    host_funcs.gl.p_glRectd = (void *)GetProcAddress(host, "glRectd");
+    if (!host_funcs.gl.p_glRectd)
+        WINE_ERR("Could not load glRectd\n");
+
+    host_funcs.gl.p_glRectdv = (void *)GetProcAddress(host, "glRectdv");
+    if (!host_funcs.gl.p_glRectdv)
+        WINE_ERR("Could not load glRectdv\n");
+
+    host_funcs.gl.p_glRectf = (void *)GetProcAddress(host, "glRectf");
+    if (!host_funcs.gl.p_glRectf)
+        WINE_ERR("Could not load glRectf\n");
+
+    host_funcs.gl.p_glRectfv = (void *)GetProcAddress(host, "glRectfv");
+    if (!host_funcs.gl.p_glRectfv)
+        WINE_ERR("Could not load glRectfv\n");
+
+    host_funcs.gl.p_glRecti = (void *)GetProcAddress(host, "glRecti");
+    if (!host_funcs.gl.p_glRecti)
+        WINE_ERR("Could not load glRecti\n");
+
+    host_funcs.gl.p_glRectiv = (void *)GetProcAddress(host, "glRectiv");
+    if (!host_funcs.gl.p_glRectiv)
+        WINE_ERR("Could not load glRectiv\n");
+
+    host_funcs.gl.p_glRects = (void *)GetProcAddress(host, "glRects");
+    if (!host_funcs.gl.p_glRects)
+        WINE_ERR("Could not load glRects\n");
+
+    host_funcs.gl.p_glRectsv = (void *)GetProcAddress(host, "glRectsv");
+    if (!host_funcs.gl.p_glRectsv)
+        WINE_ERR("Could not load glRectsv\n");
+
+    host_funcs.gl.p_glRenderMode = (void *)GetProcAddress(host, "glRenderMode");
+    if (!host_funcs.gl.p_glRenderMode)
+        WINE_ERR("Could not load glRenderMode\n");
+
+    host_funcs.gl.p_glRotated = (void *)GetProcAddress(host, "glRotated");
+    if (!host_funcs.gl.p_glRotated)
+        WINE_ERR("Could not load glRotated\n");
+
+    host_funcs.gl.p_glRotatef = (void *)GetProcAddress(host, "glRotatef");
+    if (!host_funcs.gl.p_glRotatef)
+        WINE_ERR("Could not load glRotatef\n");
+
+    host_funcs.gl.p_glScaled = (void *)GetProcAddress(host, "glScaled");
+    if (!host_funcs.gl.p_glScaled)
+        WINE_ERR("Could not load glScaled\n");
+
+    host_funcs.gl.p_glScalef = (void *)GetProcAddress(host, "glScalef");
+    if (!host_funcs.gl.p_glScalef)
+        WINE_ERR("Could not load glScalef\n");
+
+    host_funcs.gl.p_glScissor = (void *)GetProcAddress(host, "glScissor");
+    if (!host_funcs.gl.p_glScissor)
+        WINE_ERR("Could not load glScissor\n");
+
+    host_funcs.gl.p_glSelectBuffer = (void *)GetProcAddress(host, "glSelectBuffer");
+    if (!host_funcs.gl.p_glSelectBuffer)
+        WINE_ERR("Could not load glSelectBuffer\n");
+
+    host_funcs.gl.p_glShadeModel = (void *)GetProcAddress(host, "glShadeModel");
+    if (!host_funcs.gl.p_glShadeModel)
+        WINE_ERR("Could not load glShadeModel\n");
+
+    host_funcs.gl.p_glStencilFunc = (void *)GetProcAddress(host, "glStencilFunc");
+    if (!host_funcs.gl.p_glStencilFunc)
+        WINE_ERR("Could not load glStencilFunc\n");
+
+    host_funcs.gl.p_glStencilMask = (void *)GetProcAddress(host, "glStencilMask");
+    if (!host_funcs.gl.p_glStencilMask)
+        WINE_ERR("Could not load glStencilMask\n");
+
+    host_funcs.gl.p_glStencilOp = (void *)GetProcAddress(host, "glStencilOp");
+    if (!host_funcs.gl.p_glStencilOp)
+        WINE_ERR("Could not load glStencilOp\n");
+
+    host_funcs.gl.p_glTexCoord1d = (void *)GetProcAddress(host, "glTexCoord1d");
+    if (!host_funcs.gl.p_glTexCoord1d)
+        WINE_ERR("Could not load glTexCoord1d\n");
+
+    host_funcs.gl.p_glTexCoord1dv = (void *)GetProcAddress(host, "glTexCoord1dv");
+    if (!host_funcs.gl.p_glTexCoord1dv)
+        WINE_ERR("Could not load glTexCoord1dv\n");
+
+    host_funcs.gl.p_glTexCoord1f = (void *)GetProcAddress(host, "glTexCoord1f");
+    if (!host_funcs.gl.p_glTexCoord1f)
+        WINE_ERR("Could not load glTexCoord1f\n");
+
+    host_funcs.gl.p_glTexCoord1fv = (void *)GetProcAddress(host, "glTexCoord1fv");
+    if (!host_funcs.gl.p_glTexCoord1fv)
+        WINE_ERR("Could not load glTexCoord1fv\n");
+
+    host_funcs.gl.p_glTexCoord1i = (void *)GetProcAddress(host, "glTexCoord1i");
+    if (!host_funcs.gl.p_glTexCoord1i)
+        WINE_ERR("Could not load glTexCoord1i\n");
+
+    host_funcs.gl.p_glTexCoord1iv = (void *)GetProcAddress(host, "glTexCoord1iv");
+    if (!host_funcs.gl.p_glTexCoord1iv)
+        WINE_ERR("Could not load glTexCoord1iv\n");
+
+    host_funcs.gl.p_glTexCoord1s = (void *)GetProcAddress(host, "glTexCoord1s");
+    if (!host_funcs.gl.p_glTexCoord1s)
+        WINE_ERR("Could not load glTexCoord1s\n");
+
+    host_funcs.gl.p_glTexCoord1sv = (void *)GetProcAddress(host, "glTexCoord1sv");
+    if (!host_funcs.gl.p_glTexCoord1sv)
+        WINE_ERR("Could not load glTexCoord1sv\n");
+
+    host_funcs.gl.p_glTexCoord2d = (void *)GetProcAddress(host, "glTexCoord2d");
+    if (!host_funcs.gl.p_glTexCoord2d)
+        WINE_ERR("Could not load glTexCoord2d\n");
+
+    host_funcs.gl.p_glTexCoord2dv = (void *)GetProcAddress(host, "glTexCoord2dv");
+    if (!host_funcs.gl.p_glTexCoord2dv)
+        WINE_ERR("Could not load glTexCoord2dv\n");
+
+    host_funcs.gl.p_glTexCoord2f = (void *)GetProcAddress(host, "glTexCoord2f");
+    if (!host_funcs.gl.p_glTexCoord2f)
+        WINE_ERR("Could not load glTexCoord2f\n");
+
+    host_funcs.gl.p_glTexCoord2fv = (void *)GetProcAddress(host, "glTexCoord2fv");
+    if (!host_funcs.gl.p_glTexCoord2fv)
+        WINE_ERR("Could not load glTexCoord2fv\n");
+
+    host_funcs.gl.p_glTexCoord2i = (void *)GetProcAddress(host, "glTexCoord2i");
+    if (!host_funcs.gl.p_glTexCoord2i)
+        WINE_ERR("Could not load glTexCoord2i\n");
+
+    host_funcs.gl.p_glTexCoord2iv = (void *)GetProcAddress(host, "glTexCoord2iv");
+    if (!host_funcs.gl.p_glTexCoord2iv)
+        WINE_ERR("Could not load glTexCoord2iv\n");
+
+    host_funcs.gl.p_glTexCoord2s = (void *)GetProcAddress(host, "glTexCoord2s");
+    if (!host_funcs.gl.p_glTexCoord2s)
+        WINE_ERR("Could not load glTexCoord2s\n");
+
+    host_funcs.gl.p_glTexCoord2sv = (void *)GetProcAddress(host, "glTexCoord2sv");
+    if (!host_funcs.gl.p_glTexCoord2sv)
+        WINE_ERR("Could not load glTexCoord2sv\n");
+
+    host_funcs.gl.p_glTexCoord3d = (void *)GetProcAddress(host, "glTexCoord3d");
+    if (!host_funcs.gl.p_glTexCoord3d)
+        WINE_ERR("Could not load glTexCoord3d\n");
+
+    host_funcs.gl.p_glTexCoord3dv = (void *)GetProcAddress(host, "glTexCoord3dv");
+    if (!host_funcs.gl.p_glTexCoord3dv)
+        WINE_ERR("Could not load glTexCoord3dv\n");
+
+    host_funcs.gl.p_glTexCoord3f = (void *)GetProcAddress(host, "glTexCoord3f");
+    if (!host_funcs.gl.p_glTexCoord3f)
+        WINE_ERR("Could not load glTexCoord3f\n");
+
+    host_funcs.gl.p_glTexCoord3fv = (void *)GetProcAddress(host, "glTexCoord3fv");
+    if (!host_funcs.gl.p_glTexCoord3fv)
+        WINE_ERR("Could not load glTexCoord3fv\n");
+
+    host_funcs.gl.p_glTexCoord3i = (void *)GetProcAddress(host, "glTexCoord3i");
+    if (!host_funcs.gl.p_glTexCoord3i)
+        WINE_ERR("Could not load glTexCoord3i\n");
+
+    host_funcs.gl.p_glTexCoord3iv = (void *)GetProcAddress(host, "glTexCoord3iv");
+    if (!host_funcs.gl.p_glTexCoord3iv)
+        WINE_ERR("Could not load glTexCoord3iv\n");
+
+    host_funcs.gl.p_glTexCoord3s = (void *)GetProcAddress(host, "glTexCoord3s");
+    if (!host_funcs.gl.p_glTexCoord3s)
+        WINE_ERR("Could not load glTexCoord3s\n");
+
+    host_funcs.gl.p_glTexCoord3sv = (void *)GetProcAddress(host, "glTexCoord3sv");
+    if (!host_funcs.gl.p_glTexCoord3sv)
+        WINE_ERR("Could not load glTexCoord3sv\n");
+
+    host_funcs.gl.p_glTexCoord4d = (void *)GetProcAddress(host, "glTexCoord4d");
+    if (!host_funcs.gl.p_glTexCoord4d)
+        WINE_ERR("Could not load glTexCoord4d\n");
+
+    host_funcs.gl.p_glTexCoord4dv = (void *)GetProcAddress(host, "glTexCoord4dv");
+    if (!host_funcs.gl.p_glTexCoord4dv)
+        WINE_ERR("Could not load glTexCoord4dv\n");
+
+    host_funcs.gl.p_glTexCoord4f = (void *)GetProcAddress(host, "glTexCoord4f");
+    if (!host_funcs.gl.p_glTexCoord4f)
+        WINE_ERR("Could not load glTexCoord4f\n");
+
+    host_funcs.gl.p_glTexCoord4fv = (void *)GetProcAddress(host, "glTexCoord4fv");
+    if (!host_funcs.gl.p_glTexCoord4fv)
+        WINE_ERR("Could not load glTexCoord4fv\n");
+
+    host_funcs.gl.p_glTexCoord4i = (void *)GetProcAddress(host, "glTexCoord4i");
+    if (!host_funcs.gl.p_glTexCoord4i)
+        WINE_ERR("Could not load glTexCoord4i\n");
+
+    host_funcs.gl.p_glTexCoord4iv = (void *)GetProcAddress(host, "glTexCoord4iv");
+    if (!host_funcs.gl.p_glTexCoord4iv)
+        WINE_ERR("Could not load glTexCoord4iv\n");
+
+    host_funcs.gl.p_glTexCoord4s = (void *)GetProcAddress(host, "glTexCoord4s");
+    if (!host_funcs.gl.p_glTexCoord4s)
+        WINE_ERR("Could not load glTexCoord4s\n");
+
+    host_funcs.gl.p_glTexCoord4sv = (void *)GetProcAddress(host, "glTexCoord4sv");
+    if (!host_funcs.gl.p_glTexCoord4sv)
+        WINE_ERR("Could not load glTexCoord4sv\n");
+
+    host_funcs.gl.p_glTexCoordPointer = (void *)GetProcAddress(host, "glTexCoordPointer");
+    if (!host_funcs.gl.p_glTexCoordPointer)
+        WINE_ERR("Could not load glTexCoordPointer\n");
+
+    host_funcs.gl.p_glTexEnvf = (void *)GetProcAddress(host, "glTexEnvf");
+    if (!host_funcs.gl.p_glTexEnvf)
+        WINE_ERR("Could not load glTexEnvf\n");
+
+    host_funcs.gl.p_glTexEnvfv = (void *)GetProcAddress(host, "glTexEnvfv");
+    if (!host_funcs.gl.p_glTexEnvfv)
+        WINE_ERR("Could not load glTexEnvfv\n");
+
+    host_funcs.gl.p_glTexEnvi = (void *)GetProcAddress(host, "glTexEnvi");
+    if (!host_funcs.gl.p_glTexEnvi)
+        WINE_ERR("Could not load glTexEnvi\n");
+
+    host_funcs.gl.p_glTexEnviv = (void *)GetProcAddress(host, "glTexEnviv");
+    if (!host_funcs.gl.p_glTexEnviv)
+        WINE_ERR("Could not load glTexEnviv\n");
+
+    host_funcs.gl.p_glTexGend = (void *)GetProcAddress(host, "glTexGend");
+    if (!host_funcs.gl.p_glTexGend)
+        WINE_ERR("Could not load glTexGend\n");
+
+    host_funcs.gl.p_glTexGendv = (void *)GetProcAddress(host, "glTexGendv");
+    if (!host_funcs.gl.p_glTexGendv)
+        WINE_ERR("Could not load glTexGendv\n");
+
+    host_funcs.gl.p_glTexGenf = (void *)GetProcAddress(host, "glTexGenf");
+    if (!host_funcs.gl.p_glTexGenf)
+        WINE_ERR("Could not load glTexGenf\n");
+
+    host_funcs.gl.p_glTexGenfv = (void *)GetProcAddress(host, "glTexGenfv");
+    if (!host_funcs.gl.p_glTexGenfv)
+        WINE_ERR("Could not load glTexGenfv\n");
+
+    host_funcs.gl.p_glTexGeni = (void *)GetProcAddress(host, "glTexGeni");
+    if (!host_funcs.gl.p_glTexGeni)
+        WINE_ERR("Could not load glTexGeni\n");
+
+    host_funcs.gl.p_glTexGeniv = (void *)GetProcAddress(host, "glTexGeniv");
+    if (!host_funcs.gl.p_glTexGeniv)
+        WINE_ERR("Could not load glTexGeniv\n");
+
+    host_funcs.gl.p_glTexImage1D = (void *)GetProcAddress(host, "glTexImage1D");
+    if (!host_funcs.gl.p_glTexImage1D)
+        WINE_ERR("Could not load glTexImage1D\n");
+
+    host_funcs.gl.p_glTexImage2D = (void *)GetProcAddress(host, "glTexImage2D");
+    if (!host_funcs.gl.p_glTexImage2D)
+        WINE_ERR("Could not load glTexImage2D\n");
+
+    host_funcs.gl.p_glTexParameterf = (void *)GetProcAddress(host, "glTexParameterf");
+    if (!host_funcs.gl.p_glTexParameterf)
+        WINE_ERR("Could not load glTexParameterf\n");
+
+    host_funcs.gl.p_glTexParameterfv = (void *)GetProcAddress(host, "glTexParameterfv");
+    if (!host_funcs.gl.p_glTexParameterfv)
+        WINE_ERR("Could not load glTexParameterfv\n");
+
+    host_funcs.gl.p_glTexParameteri = (void *)GetProcAddress(host, "glTexParameteri");
+    if (!host_funcs.gl.p_glTexParameteri)
+        WINE_ERR("Could not load glTexParameteri\n");
+
+    host_funcs.gl.p_glTexParameteriv = (void *)GetProcAddress(host, "glTexParameteriv");
+    if (!host_funcs.gl.p_glTexParameteriv)
+        WINE_ERR("Could not load glTexParameteriv\n");
+
+    host_funcs.gl.p_glTexSubImage1D = (void *)GetProcAddress(host, "glTexSubImage1D");
+    if (!host_funcs.gl.p_glTexSubImage1D)
+        WINE_ERR("Could not load glTexSubImage1D\n");
+
+    host_funcs.gl.p_glTexSubImage2D = (void *)GetProcAddress(host, "glTexSubImage2D");
+    if (!host_funcs.gl.p_glTexSubImage2D)
+        WINE_ERR("Could not load glTexSubImage2D\n");
+
+    host_funcs.gl.p_glTranslated = (void *)GetProcAddress(host, "glTranslated");
+    if (!host_funcs.gl.p_glTranslated)
+        WINE_ERR("Could not load glTranslated\n");
+
+    host_funcs.gl.p_glTranslatef = (void *)GetProcAddress(host, "glTranslatef");
+    if (!host_funcs.gl.p_glTranslatef)
+        WINE_ERR("Could not load glTranslatef\n");
+
+    host_funcs.gl.p_glVertex2d = (void *)GetProcAddress(host, "glVertex2d");
+    if (!host_funcs.gl.p_glVertex2d)
+        WINE_ERR("Could not load glVertex2d\n");
+
+    host_funcs.gl.p_glVertex2dv = (void *)GetProcAddress(host, "glVertex2dv");
+    if (!host_funcs.gl.p_glVertex2dv)
+        WINE_ERR("Could not load glVertex2dv\n");
+
+    host_funcs.gl.p_glVertex2f = (void *)GetProcAddress(host, "glVertex2f");
+    if (!host_funcs.gl.p_glVertex2f)
+        WINE_ERR("Could not load glVertex2f\n");
+
+    host_funcs.gl.p_glVertex2fv = (void *)GetProcAddress(host, "glVertex2fv");
+    if (!host_funcs.gl.p_glVertex2fv)
+        WINE_ERR("Could not load glVertex2fv\n");
+
+    host_funcs.gl.p_glVertex2i = (void *)GetProcAddress(host, "glVertex2i");
+    if (!host_funcs.gl.p_glVertex2i)
+        WINE_ERR("Could not load glVertex2i\n");
+
+    host_funcs.gl.p_glVertex2iv = (void *)GetProcAddress(host, "glVertex2iv");
+    if (!host_funcs.gl.p_glVertex2iv)
+        WINE_ERR("Could not load glVertex2iv\n");
+
+    host_funcs.gl.p_glVertex2s = (void *)GetProcAddress(host, "glVertex2s");
+    if (!host_funcs.gl.p_glVertex2s)
+        WINE_ERR("Could not load glVertex2s\n");
+
+    host_funcs.gl.p_glVertex2sv = (void *)GetProcAddress(host, "glVertex2sv");
+    if (!host_funcs.gl.p_glVertex2sv)
+        WINE_ERR("Could not load glVertex2sv\n");
+
+    host_funcs.gl.p_glVertex3d = (void *)GetProcAddress(host, "glVertex3d");
+    if (!host_funcs.gl.p_glVertex3d)
+        WINE_ERR("Could not load glVertex3d\n");
+
+    host_funcs.gl.p_glVertex3dv = (void *)GetProcAddress(host, "glVertex3dv");
+    if (!host_funcs.gl.p_glVertex3dv)
+        WINE_ERR("Could not load glVertex3dv\n");
+
+    host_funcs.gl.p_glVertex3f = (void *)GetProcAddress(host, "glVertex3f");
+    if (!host_funcs.gl.p_glVertex3f)
+        WINE_ERR("Could not load glVertex3f\n");
+
+    host_funcs.gl.p_glVertex3fv = (void *)GetProcAddress(host, "glVertex3fv");
+    if (!host_funcs.gl.p_glVertex3fv)
+        WINE_ERR("Could not load glVertex3fv\n");
+
+    host_funcs.gl.p_glVertex3i = (void *)GetProcAddress(host, "glVertex3i");
+    if (!host_funcs.gl.p_glVertex3i)
+        WINE_ERR("Could not load glVertex3i\n");
+
+    host_funcs.gl.p_glVertex3iv = (void *)GetProcAddress(host, "glVertex3iv");
+    if (!host_funcs.gl.p_glVertex3iv)
+        WINE_ERR("Could not load glVertex3iv\n");
+
+    host_funcs.gl.p_glVertex3s = (void *)GetProcAddress(host, "glVertex3s");
+    if (!host_funcs.gl.p_glVertex3s)
+        WINE_ERR("Could not load glVertex3s\n");
+
+    host_funcs.gl.p_glVertex3sv = (void *)GetProcAddress(host, "glVertex3sv");
+    if (!host_funcs.gl.p_glVertex3sv)
+        WINE_ERR("Could not load glVertex3sv\n");
+
+    host_funcs.gl.p_glVertex4d = (void *)GetProcAddress(host, "glVertex4d");
+    if (!host_funcs.gl.p_glVertex4d)
+        WINE_ERR("Could not load glVertex4d\n");
+
+    host_funcs.gl.p_glVertex4dv = (void *)GetProcAddress(host, "glVertex4dv");
+    if (!host_funcs.gl.p_glVertex4dv)
+        WINE_ERR("Could not load glVertex4dv\n");
+
+    host_funcs.gl.p_glVertex4f = (void *)GetProcAddress(host, "glVertex4f");
+    if (!host_funcs.gl.p_glVertex4f)
+        WINE_ERR("Could not load glVertex4f\n");
+
+    host_funcs.gl.p_glVertex4fv = (void *)GetProcAddress(host, "glVertex4fv");
+    if (!host_funcs.gl.p_glVertex4fv)
+        WINE_ERR("Could not load glVertex4fv\n");
+
+    host_funcs.gl.p_glVertex4i = (void *)GetProcAddress(host, "glVertex4i");
+    if (!host_funcs.gl.p_glVertex4i)
+        WINE_ERR("Could not load glVertex4i\n");
+
+    host_funcs.gl.p_glVertex4iv = (void *)GetProcAddress(host, "glVertex4iv");
+    if (!host_funcs.gl.p_glVertex4iv)
+        WINE_ERR("Could not load glVertex4iv\n");
+
+    host_funcs.gl.p_glVertex4s = (void *)GetProcAddress(host, "glVertex4s");
+    if (!host_funcs.gl.p_glVertex4s)
+        WINE_ERR("Could not load glVertex4s\n");
+
+    host_funcs.gl.p_glVertex4sv = (void *)GetProcAddress(host, "glVertex4sv");
+    if (!host_funcs.gl.p_glVertex4sv)
+        WINE_ERR("Could not load glVertex4sv\n");
+
+    host_funcs.gl.p_glVertexPointer = (void *)GetProcAddress(host, "glVertexPointer");
+    if (!host_funcs.gl.p_glVertexPointer)
+        WINE_ERR("Could not load glVertexPointer\n");
+
+    host_funcs.gl.p_glViewport = (void *)GetProcAddress(host, "glViewport");
+    if (!host_funcs.gl.p_glViewport)
+        WINE_ERR("Could not load glViewport\n");
+
+    host_funcs.wgl.p_wglCopyContext = (void *)GetProcAddress(host, "wglCopyContext");
+    if (!host_funcs.wgl.p_wglCopyContext)
+        WINE_ERR("Could not load wglCopyContext\n");
+
+    host_funcs.wgl.p_wglCreateContext = (void *)GetProcAddress(host, "wglCreateContext");
+    if (!host_funcs.wgl.p_wglCreateContext)
+        WINE_ERR("Could not load wglCreateContext\n");
+
+    host_funcs.wgl.p_wglDeleteContext = (void *)GetProcAddress(host, "wglDeleteContext");
+    if (!host_funcs.wgl.p_wglDeleteContext)
+        WINE_ERR("Could not load wglDeleteContext\n");
+
+    host_funcs.wgl.p_wglDescribePixelFormat = (void *)GetProcAddress(host, "wglDescribePixelFormat");
+    if (!host_funcs.wgl.p_wglDescribePixelFormat)
+        WINE_ERR("Could not load wglDescribePixelFormat\n");
+
+    host_funcs.wgl.p_wglGetPixelFormat = (void *)GetProcAddress(host, "wglGetPixelFormat");
+    if (!host_funcs.wgl.p_wglGetPixelFormat)
+        WINE_ERR("Could not load wglGetPixelFormat\n");
+
+    host_funcs.wgl.p_wglGetProcAddress = (void *)GetProcAddress(host, "wglGetProcAddress");
+    if (!host_funcs.wgl.p_wglGetProcAddress)
+        WINE_ERR("Could not load wglGetProcAddress\n");
+
+    host_funcs.wgl.p_wglMakeCurrent = (void *)GetProcAddress(host, "wglMakeCurrent");
+    if (!host_funcs.wgl.p_wglMakeCurrent)
+        WINE_ERR("Could not load wglMakeCurrent\n");
+
+    host_funcs.wgl.p_wglSetPixelFormat = (void *)GetProcAddress(host, "wglSetPixelFormat");
+    if (!host_funcs.wgl.p_wglSetPixelFormat)
+        WINE_ERR("Could not load wglSetPixelFormat\n");
+
+    host_funcs.wgl.p_wglShareLists = (void *)GetProcAddress(host, "wglShareLists");
+    if (!host_funcs.wgl.p_wglShareLists)
+        WINE_ERR("Could not load wglShareLists\n");
+
+    host_funcs.wgl.p_wglSwapBuffers = (void *)GetProcAddress(host, "wglSwapBuffers");
+    if (!host_funcs.wgl.p_wglSwapBuffers)
+        WINE_ERR("Could not load wglSwapBuffers\n");
+
+}
+
 #endif
