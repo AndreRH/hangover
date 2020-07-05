@@ -31,6 +31,8 @@ RUN	apt-get update && apt-get install -y --no-install-recommends \
 &&	ln -s /usr/bin/autoconf /usr/bin/autoconf-2.69 \
 &&	ln -s /usr/bin/autoheader /usr/bin/autoheader-2.69
 
+ENV NOTESTS 1
+
 RUN mkdir -p /root/hangover
 COPY . /root/hangover/
 RUN make -C /root/hangover -f Makefile
