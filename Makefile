@@ -1,5 +1,3 @@
-TESTS := $(if $(NOTESTS),--disable-tests,)
-
 WINEDLLS = activeds adsldp adsldpc shcore dbghelp ole32 oleaut32 propsys rpcrt4 urlmon netapi32 dnsapi msimg32 dwmapi uxtheme setupapi wintrust wtsapi32 pdh avrt cryptnet imagehlp cryptui sensapi msvcp80 msvcp100 lz32 msi dplay dplayx dpwsockx dpnet dpnaddr dpnhpast dpnlobby dpvoice mpr oledlg shdocvw msacm32 mlang gdiplus shell32 shlwapi wininet comctl32 comdlg32 comsvcs d3d10core d3d10 d3d10_1 d3dcompiler_43 d3dcompiler_47 msxml msxml2 msxml3 msxml4 msxml6 shfolder d2d1 dwrite sspicli quartz msvfw32 amstream apphelp atl ieframe atl100 atl80 atlthunk scrrun mshtml inetcomm avifil32 browseui combase explorerframe credui d3dx10_43 d3dx9_43 d3dxof d3drm d3dx11_43 ddrawex devenum msdmo avicap32 dinput8 dispex dmband dmcompos dmime dmloader dmusic dmsynth hnetcfg dxdiagn evr faultrep fusion mscoree gameux hid hlink httpapi actxprxy inetmib1 snmpapi itss infosoft jscript jsproxy kernelbase mapi32 mf mfplat msctf mspatcha mswsock odbccp32 msrle32 vbscript mstask taskschd xmllite msvcirt msvcp110 msvcp120 msvcp140 msvcp60 msvcp90 netcfgx netprofm ninput ntdsapi ntprint oleacc packager psapi pstorec qcap qedit qmgr rasapi32 schannel serialui slc spoolss sti sxs twain_32 userenv vcomp version vulkan-1 winevulkan webservices winhttp wer windowscodecsext wlanapi wldap32 wmp wmphoto wmvcore wpc wsdapi wsnmp32 wuapi mssip32 msisip wbemprox powrprof
 EXTDLLS  = libcharset-1 libiconv-2 libxml2-2 libxslt-1 libexslt-0
 QEMU_DISABLES = --disable-bzip2 --disable-libusb --disable-sdl --disable-snappy --disable-virtfs --disable-opengl --disable-xen --disable-lzo --disable-qom-cast-debug --disable-vnc --disable-seccomp --disable-strip --disable-hax --disable-gnutls --disable-nettle --disable-replication --disable-tpm --disable-gtk --disable-gcrypt --disable-linux-aio --disable-system --disable-tools --disable-linux-user --disable-guest-agent --disable-fdt --disable-capstone --disable-werror --disable-virglrenderer --disable-vte --disable-auth-pam --disable-curses --disable-docs --disable-vde --disable-cap-ng --disable-spice --disable-rbd --disable-xfsctl --disable-smartcard --disable-usb-redir --disable-libiscsi --disable-libnfs --disable-glusterfs --disable-libssh
@@ -90,29 +88,32 @@ build/x86_64-w64-mingw32/bin/libxslt-1.dll: build/libxslt64/Makefile
 # happy. Is there a nicer way?
 build/wine-host/Makefile: wine/configure
 	@mkdir -p $(@D)
-	cd build/wine-host ; CC=$(HANGOVER_WINE_CC) ../../wine/configure --enable-win64 $(TESTS)
+	cd build/wine-host ; CC=$(HANGOVER_WINE_CC) ../../wine/configure --enable-win64
 
 wine-host build/wine-host/.built: build/wine-host/Makefile
+	+$(MAKE) -C build/wine-host __builddeps__
+	+$(MAKE) -C build/wine-host -t buildtests
+	+$(MAKE) -C build/wine-host -t programs/winetest
 	+$(MAKE) -C build/wine-host
 	@touch build/wine-host/.built
 
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
 build/wine-guest/Makefile: build/wine-host/.built wine/configure build/x86_64-w64-mingw32/bin/libxml2-2.dll build/x86_64-w64-mingw32/bin/libxslt-1.dll
 	@mkdir -p $(@D)
-	cd build/wine-guest ; ../../wine/configure --host=x86_64-w64-mingw32 --without-mingw --with-wine-tools=../wine-host --without-freetype $(TESTS) --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
+	cd build/wine-guest ; ../../wine/configure --host=x86_64-w64-mingw32 --without-mingw --with-wine-tools=../wine-host --without-freetype --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
 
 wine-guest: build/wine-guest/Makefile
 	+$(MAKE) -C build/wine-guest/libs/port
-	+$(MAKE) -C build/wine-guest $(if $(NOTESTS),$(patsubst %,dlls/%,$(WINEDLLS)),)
+	+$(MAKE) -C build/wine-guest $(patsubst %,dlls/%,$(WINEDLLS))
 
 # Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
 build/wine-guest32/Makefile: build/wine-host/.built wine/configure build/i686-w64-mingw32/bin/libxml2-2.dll build/i686-w64-mingw32/bin/libxslt-1.dll
 	@mkdir -p $(@D)
-	cd build/wine-guest32 ; ../../wine/configure --host=i686-w64-mingw32 --without-mingw --with-wine-tools=../wine-host --without-freetype $(TESTS) --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/i686-w64-mingw32/include/libxml2) -I$(abspath build/i686-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/i686-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/i686-w64-mingw32/include/libxml2) -I$(abspath build/i686-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/i686-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
+	cd build/wine-guest32 ; ../../wine/configure --host=i686-w64-mingw32 --without-mingw --with-wine-tools=../wine-host --without-freetype --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/i686-w64-mingw32/include/libxml2) -I$(abspath build/i686-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/i686-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/i686-w64-mingw32/include/libxml2) -I$(abspath build/i686-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/i686-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
 
 wine-guest32: build/wine-guest32/Makefile
 	+$(MAKE) -C build/wine-guest32/libs/port
-	+$(MAKE) -C build/wine-guest32 $(if $(NOTESTS),$(patsubst %,dlls/%,$(WINEDLLS)),)
+	+$(MAKE) -C build/wine-guest32 $(patsubst %,dlls/%,$(WINEDLLS))
 
 # Build qemu
 build/qemu/Makefile: build/wine-host/.built qemu/configure
