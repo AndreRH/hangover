@@ -38,10 +38,8 @@
 #include "dll_list.h"
 #include "qemu_opengl32.h"
 
-#ifndef QEMU_DLL_GUEST
 #include <wine/debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_opengl32);
-#endif
 
 struct qemu_wglCopyContext
 {
@@ -702,19 +700,43 @@ struct qemu_wglGetProcAddress
 {
     struct qemu_syscall super;
     uint64_t name;
+    uint64_t index;
 };
 
 #ifdef QEMU_DLL_GUEST
 
+static int compar(const void *elt_a, const void *elt_b)
+{
+    return strcmp(((const OpenGL_extension *) elt_a)->name,
+            ((const OpenGL_extension *) elt_b)->name);
+}
+
 WINBASEAPI PROC WINAPI wglGetProcAddress(LPCSTR name)
 {
     struct qemu_wglGetProcAddress call;
+    OpenGL_extension  ext;
+    const OpenGL_extension *ext_ret;
+
+    WINE_TRACE("Asking for %s\n", wine_dbgstr_a(name));
     call.super.id = QEMU_SYSCALL_ID(CALL_WGLGETPROCADDRESS);
     call.name = (ULONG_PTR)name;
 
-    qemu_syscall(&call.super);
+    ext.name = name;
+    ext_ret = bsearch(&ext, extension_registry, extension_registry_size, sizeof(ext), compar);
+    if (!ext_ret)
+    {
+        WINE_ERR("Function %s unknown to this thunk!\n", name);
+        return NULL;
+    }
 
-    return (PROC)(ULONG_PTR)call.super.iret;
+    call.index = ext_ret - extension_registry;
+
+    qemu_syscall(&call.super);
+    if (!call.super.iret)
+        return NULL;
+
+    WINE_FIXME("returning %s -> %p\n", name, ext_ret->func);
+    return ext_ret->func;
 }
 
 #else
@@ -723,8 +745,23 @@ void qemu_wglGetProcAddress(struct qemu_syscall *call)
 {
     struct qemu_wglGetProcAddress *c = (struct qemu_wglGetProcAddress *)call;
     const struct opengl_funcs *funcs = &host_funcs;
-    WINE_FIXME("Stub!\n");
-    c->super.iret = 0;
+    const char *name = QEMU_G2H(c->name);
+    PROC host_proc;
+    DWORD index = c->index;
+    void **func_ptr;
+
+    WINE_FIXME("Asking for %s, index %u.\n", name, index);
+
+    host_proc = wglGetProcAddress(name);
+    c->super.iret = QEMU_H2G(host_proc);
+    if (!host_proc)
+    {
+        WINE_FIXME("Host proc %s not found.\n", name);
+        return;
+    }
+
+    func_ptr = (void **)&funcs->ext + index;
+    *func_ptr = host_proc;
 }
 
 #endif

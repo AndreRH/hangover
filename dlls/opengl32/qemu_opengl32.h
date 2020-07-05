@@ -12,6 +12,9 @@ typedef struct
     void  *func;     /* pointer to the Wine function for this extension */
 } OpenGL_extension;
 
+extern const int extension_registry_size;
+extern const OpenGL_extension extension_registry[];
+
 #else
 
 extern const struct qemu_ops *qemu_ops;
