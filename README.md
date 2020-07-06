@@ -13,9 +13,6 @@ You can generally expect 64 bit applications to be in better shape than 32 bit a
 Hangover is tested on aarch64 Linux, x86_64 Linux and x86_64 MacOS. No Intel x86 libraries are needed on the host system. No 32 bit multilib is required.
 
 To build this project you need:
-- Docker (Android build only)
-
-or
 - The dependencies to build a 64 bit Wine (./configure --enable-win64)
 - The dependencies to build qemu (in particular glib)
 - x86_64-w64-mingw32-gcc (exactly this name)
@@ -31,31 +28,15 @@ $ git submodule init
 $ git submodule update
 ```
 
-#### 3.a) Android build:
-For Docker (Android build only) you can simply run:
-
-```bash
-$ docker build -f Dockerfile.android -t hob ./
-```
-
-Alternatively, to build without Docker, run:
-
-```bash
-$ make -f Makefile.android
-```
-
-The Android Makefile script is poorly tested though.
-
-To then extract the .apk file, run:
-
-```bash
-$ docker run --rm hob tar -C /root/hangover/build/wine-host/dlls/wineandroid.drv/ -cf - hangover-debug.apk | tar -xvf -
-```
-
-#### 3.b) Linux / MacOS build:
+#### 3.a) Linux / MacOS build:
 In theory everything should be built by running `make`. In practise you'll probably run into some bugs in our build system. Parallel builds should work, but if they fail try a non-parallel one first.
 
 Some 32 bit programs and DLLs built with mingw depend on `libgcc_s_sjlj-1.dll`. You can symlink the DLL from your mingw installation to `build/qemu/x86_64-windows-user/qemu_guest_dll32`.
+
+#### 3.b) Android build:
+The Android build is no longer maintained in this branch as it isn't functional anymore.
+We keep the build support around as long as it is helps us and we'll come up with a seperate Android branch at some point based on Hangover 0.4.0.
+Until then, please use [Hangover 0.4.0](https://github.com/AndreRH/hangover/releases/tag/hangover-0.4.0) on Android.
 
 ### 4) How to run
 
