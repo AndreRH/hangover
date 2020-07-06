@@ -151,7 +151,7 @@ WINBASEAPI HRESULT WINAPI DirectSoundCaptureEnumerateW(LPDSENUMCALLBACKW lpDSEnu
 
 struct DirectSoundEnumerate_host_data
 {
-    uint64_t func, guest_ctx, wrapper;
+    uint64_t func, guest_ctx, wrapper, wide;
 };
 
 static BOOL WINAPI DirectSoundEnumerate_host_cb(GUID *guid, const char *description, const char *module, void *context)
@@ -160,25 +160,61 @@ static BOOL WINAPI DirectSoundEnumerate_host_cb(GUID *guid, const char *descript
     struct qemu_DirectSoundEnumerate_cb call;
     BOOL ret;
     GUID copy;
+    void *copy_module = NULL, *copy_description = NULL;
+    size_t len;
 
     call.func = ctx->func;
     call.context = ctx->guest_ctx;
     call.guid = QEMU_H2G(guid);
+    call.description = QEMU_H2G(description);
+    call.module = QEMU_H2G(module);
 #if HOST_BIT != GUEST_BIT
     if (call.guid > ~0U)
     {
         copy = *guid;
         call.guid = QEMU_H2G(&copy);
     }
+    if (call.module > ~0U)
+    {
+        if (ctx->wide)
+        {
+            len = lstrlenW((WCHAR *)module) + 1;
+            copy_module = HeapAlloc(GetProcessHeap(), 0, len * sizeof(WCHAR));
+            memcpy(copy_module, module, len * sizeof(WCHAR));
+        }
+        else
+        {
+            len = strlen(module) + 1;
+            copy_module = HeapAlloc(GetProcessHeap(), 0, len * sizeof(char));
+            memcpy(copy_module, module, len * sizeof(char));
+        }
+        call.module = QEMU_H2G(copy_module);
+    }
+    if (call.description > ~0U)
+    {
+        if (ctx->wide)
+        {
+            len = lstrlenW((WCHAR *)description) + 1;
+            copy_description = HeapAlloc(GetProcessHeap(), 0, len * sizeof(WCHAR));
+            memcpy(copy_description, description, len * sizeof(WCHAR));
+        }
+        else
+        {
+            len = strlen(description) + 1;
+            copy_description = HeapAlloc(GetProcessHeap(), 0, len * sizeof(char));
+            memcpy(copy_description, description, len * sizeof(char));
+        }
+        call.description = QEMU_H2G(copy_description);
+    }
 #endif
-    call.description = QEMU_H2G(description);
-    call.module = QEMU_H2G(module);
 
     WINE_TRACE("Calling guest callback %p(%p, %p, %p, %p)\n", (void *)call.func, (void *)call.guid,
-            description, module, (void *)call.context);
+            (void *)call.description, (void *)call.module, (void *)call.context);
     ret = qemu_ops->qemu_execute(QEMU_G2H(ctx->wrapper), QEMU_H2G(&call));
     WINE_TRACE("Guest callback returned %u.\n", ret);
 
+    HeapFree(GetProcessHeap(), 0, copy_module);
+    HeapFree(GetProcessHeap(), 0, copy_description);
     return ret;
 }
 
@@ -195,20 +231,24 @@ void qemu_DirectSoundEnumerate(struct qemu_syscall *call)
     switch (c->super.id)
     {
         case QEMU_SYSCALL_ID(CALL_DIRECTSOUNDENUMERATEW):
+            ctx.wide = 1;
             c->super.iret = DirectSoundEnumerateW(c->lpDSEnumCallback ?
                     (LPDSENUMCALLBACKW)DirectSoundEnumerate_host_cb : NULL, &ctx);
             break;
 
         case QEMU_SYSCALL_ID(CALL_DIRECTSOUNDENUMERATEA):
+            ctx.wide = 0;
             c->super.iret = DirectSoundEnumerateA(c->lpDSEnumCallback ? DirectSoundEnumerate_host_cb : NULL, &ctx);
             break;
 
         case QEMU_SYSCALL_ID(CALL_DIRECTSOUNDCAPTUREENUMERATEW):
+            ctx.wide = 1;
             c->super.iret = DirectSoundCaptureEnumerateW(c->lpDSEnumCallback ?
                     (LPDSENUMCALLBACKW)DirectSoundEnumerate_host_cb : NULL, &ctx);
             break;
 
         case QEMU_SYSCALL_ID(CALL_DIRECTSOUNDCAPTUREENUMERATEA):
+            ctx.wide = 0;
             c->super.iret = DirectSoundCaptureEnumerateA(c->lpDSEnumCallback ?
                     DirectSoundEnumerate_host_cb : NULL, &ctx);
             break;
