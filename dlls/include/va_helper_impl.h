@@ -111,7 +111,7 @@ __ASM_GLOBAL_FUNC( call_va_asm,
                    "ldp x29, x30, [SP], #16\n\t"            /* pop FP & LR */
                    "ret\n\t" )
 
-#else
+#elif defined(__x86_64__)
 
 extern int CDECL call_va_asm( void *ctx, void *func, int nb_args, int nb_onstack, const void *args );
 __ASM_GLOBAL_FUNC(call_va_asm,
@@ -236,6 +236,8 @@ __ASM_GLOBAL_FUNC(call_va_asm,
                   "pop %rbp\n\t"
                   "ret\n\t" )
 
+#else
+#error varargs helper not supported on your platform
 #endif
 
 uint64_t CDECL call_va(uint64_t (* CDECL func)(void *ctx, ...), void *ctx, unsigned int icount,
@@ -347,7 +349,7 @@ uint64_t CDECL call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...)
     return call_va_asm2(fixed1, fixed2, func, icount, onstack, array);
 }
 
-#else
+#elif defined(__x86_64__)
 
 extern int CDECL call_va_asm2( void *fixed1, void *fixed2, void *func, int nb_args, int nb_onstack, const void *args );
 __ASM_GLOBAL_FUNC(call_va_asm2,
@@ -475,4 +477,6 @@ uint64_t CDECL call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...)
     return call_va_asm2(fixed1, fixed2, func, icount, onstack, array);
 }
 
+#else
+#error varargs helper not supported on your platform
 #endif
