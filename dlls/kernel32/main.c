@@ -1320,8 +1320,8 @@ static void hook(void *to_hook, const void *replace)
         WINE_ERR("Failed to make hooked function writeable.\n");
 
     offset = offsetof(struct hooked_function, dst) - offsetof(struct hooked_function, ldr);
-    hooked_function->ldr = 0x58000005 | (offset << 3);   /* ldr x5, offset */;
-    hooked_function->br = 0xd61f00a0; /* br x5 */;
+    hooked_function->ldr = 0x58000005 | (offset << 3); /* ldr x5, offset */
+    hooked_function->br  = 0xd61f00a0; /* br x5 */
     hooked_function->dst = replace;
 
     __clear_cache(hooked_function, (char *)hooked_function + sizeof(*hooked_function));
