@@ -1350,6 +1350,24 @@ static void hook(void *to_hook, const void *replace)
     hooked_function->jmp[7] = 0xcc;
     /* Dest address absolute */
     hooked_function->dst = replace;
+#elif defined(__powerpc64__)
+    struct hooked_function
+    {
+        DWORD addi, ld, mtctr, bctr;
+        const void *dst;
+    } *hooked_function = to_hook;
+
+    if(!VirtualProtect(hooked_function, sizeof(*hooked_function), PAGE_EXECUTE_READWRITE, &old_protect))
+        fprintf(stderr, "Failed to make hooked function writeable.\n");
+
+    offset = offsetof(struct hooked_function, dst) - offsetof(struct hooked_function, addi);
+    hooked_function->addi   = 0x398c0000 | offset;  /* addi r12, r12, offset */
+    hooked_function->ld     = 0xe98c0000;           /* ld r12, 0(r12) */
+    hooked_function->mtctr  = 0x7d8903a6;           /* mtctr r12 */
+    hooked_function->bctr   = 0x4e800420;           /* bctr */
+    hooked_function->dst    = replace;
+
+    __clear_cache(hooked_function, (char *)hooked_function + sizeof(*hooked_function));
 #else
 #error Implement hooks for your platform
 #endif
