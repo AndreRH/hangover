@@ -31,6 +31,16 @@ WINE_HOST = $(abspath build/wine-host)
 all: build/wine-host/.built wine-guest wine-guest32 qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32) $(EXTDLL_TARGET64)
 .PHONY: all
 
+libffi/configure: libffi/autogen.sh
+	cd $(@D) ; NOCONFIGURE=1 ./autogen.sh
+
+build/libffi/Makefile: libffi/configure
+	@mkdir -p $(@D)
+	cd $(@D) ; ../../libffi/configure --prefix=$(abspath build/libffi/installed) --disable-docs
+
+build/libffi/installed/lib/libffi.a: build/libffi/Makefile
+	+$(MAKE) -C build/libffi/ install
+
 build/libiconv32/Makefile: libiconv/configure
 	@mkdir -p $(@D)
 	cd $(@D) ; ../../libiconv/configure --host=i686-w64-mingw32 --prefix=$(abspath build/i686-w64-mingw32)
@@ -166,7 +176,7 @@ build/dlls64/ucrtbase/ucrtbase.dll: build/dlls64/kernel32/kernel32.dll build/dll
 build/dlls64/user32/user32.dll: build/dlls64/ntdll/ntdll.dll
 build/dlls64/winmm/winmm.dll: build/dlls64/user32/user32.dll
 
-build/dlls64/%/Makefile:
+build/dlls64/%/Makefile: build/libffi/installed/lib/libffi.a
 	mkdir -p $(@D)
 	$(eval DLL := $(lastword $(subst /, ,$(@D))))
 	echo "GUEST_CC=x86_64-w64-mingw32" > $@
@@ -180,7 +190,7 @@ build/dlls64/%/Makefile:
 	echo >> $@
 	echo "include ../../../dlls/$(DLL)/Makefile" >> $@
 
-build/dlls32/%/Makefile:
+build/dlls32/%/Makefile: build/libffi/installed/lib/libffi.a
 	mkdir -p $(@D)
 	$(eval DLL := $(lastword $(subst /, ,$(@D))))
 	echo "GUEST_CC=i686-w64-mingw32" > $@

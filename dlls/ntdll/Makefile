@@ -12,13 +12,13 @@ ntdll.dll: actctx_g.o critsection_g.o debugtools_g.o directory_g.o env_g.o error
 	$(WINEGCC) --wine-objdir $(DESTDIR)/build/$(WINE_DIR) -shared -b $(GUEST_CC) $(SRCDIR)/ntdll.spec *_g.o -o ntdll.dll -nodefaultlibs -nostdlib -Wl,--image-base,0x9000000
 
 qemu_ntdll.dll.so: actctx_h.o critsection_h.o debugtools_h.o directory_h.o env_h.o error_h.o exception_h.o file_h.o heap_h.o loader_h.o locale_h.o main_h.o misc_h.o nt_h.o om_h.o path_h.o printf_h.o process_h.o qemu_ntdll.spec reg_h.o resource_h.o rtl_h.o rtlbitmap_h.o rtlstr_h.o sec_h.o signal_h.o string_h.o sync_h.o thread_h.o threadpool_h.o time_h.o version_h.o virtual_h.o wcstring_h.o
-	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_ntdll.spec *_h.o -o qemu_ntdll.dll.so
+	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_ntdll.spec *_h.o ../../libffi/installed/lib/libffi.a -o qemu_ntdll.dll.so
 
 %_g.o: %.c qemu_ntdll.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
 %_h.o: %.c qemu_ntdll.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) $(HOST_CC) $< -c -o $@ $(CFLAGS)
+	$(WINEGCC) $(HOST_CC) -I../../libffi/installed/include $< -c -o $@ $(CFLAGS)
 
 clean:
 	rm -rf *o *.dll *.so

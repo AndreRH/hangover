@@ -82,6 +82,18 @@ build/glib/Makefile: glib/configure
 build/aarch64-linux-android/lib/libglib-2.0.so: build/glib/Makefile
 	+$(MAKE) -C build/glib/ install
 
+
+libffi/configure: libffi/autogen.sh
+	cd $(@D) ; NOCONFIGURE=1 ./autogen.sh
+
+build/libffi/Makefile: libffi/configure
+	@mkdir -p $(@D)
+	cd $(@D) ; ../../libffi/configure --host=aarch64-linux-android CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang --prefix=$(abspath build/libffi/installed) --disable-docs
+
+build/libffi/installed/lib/libffi.a: build/libffi/Makefile
+	+$(MAKE) -C build/libffi/ install
+
+
 build/libiconv/Makefile: libiconv/configure
 	@mkdir -p $(@D)
 	cd $(@D) ; ../../libiconv/configure --host=i686-w64-mingw32 --prefix=$(abspath build/i686-w64-mingw32)
@@ -206,7 +218,7 @@ build/dlls64/shcore/shcore.dll: build/dlls64/user32/user32.dll build/dlls64/gdi3
 build/dlls64/user32/user32.dll: build/dlls64/ntdll/ntdll.dll
 build/dlls64/winmm/winmm.dll: build/dlls64/user32/user32.dll
 
-build/dlls64/%/Makefile:
+build/dlls64/%/Makefile: build/libffi/installed/lib/libffi.a
 	mkdir -p $(@D)
 	$(eval DLL := $(lastword $(subst /, ,$(@D))))
 	echo "GUEST_CC=x86_64-w64-mingw32" > $@
@@ -220,7 +232,7 @@ build/dlls64/%/Makefile:
 	echo >> $@
 	echo "include ../../../dlls/$(DLL)/Makefile" >> $@
 
-build/dlls32/%/Makefile:
+build/dlls32/%/Makefile: build/libffi/installed/lib/libffi.a
 	mkdir -p $(@D)
 	$(eval DLL := $(lastword $(subst /, ,$(@D))))
 	echo "GUEST_CC=i686-w64-mingw32" > $@
