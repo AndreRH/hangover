@@ -81,6 +81,23 @@ void callback_init(struct callback_entry *entry, unsigned int params, void *proc
         memcpy(entry->code, wrapper_code3, sizeof(wrapper_code3));
     }
     entry->selfptr = entry; /* Note that this is not read by the asm code, but put it in place anyway. */
+#elif defined(__powerpc64__)
+    size_t offset;
+
+    /* Note: A maximum of 6 parameters are supported. */
+
+    params += 3; /* first arg is in r3 */
+    offset = offsetof(struct callback_entry, selfptr) - offsetof(struct callback_entry, addi);
+    entry->addi     = 0x398c0000 | offset;  /* addi r12, r12, offset */
+    entry->ldr_self = 0xe8000000 | (params << 21) | (12 << 16); /* ld r[params], 0(r12) */
+    entry->ldr_proc = 0xe8000000 | ((params + 1) << 21) | (12 << 16) | 8;   /* ld r[params + 1], 8(r12) */
+    entry->mr       = 0x7c0c0378 | ((params + 1) << 21) | ((params + 1) << 11); /* or r12, r[params + 1], r[params + 1] */
+    entry->mtctr    = 0x7d8903a6; /* mtctr r12 */
+    entry->bctr     = 0x4e800420; /* bctr */
+
+    entry->selfptr = entry;
+
+    __clear_cache(&entry->addi, &entry->bctr + 1);
 #else
 #error callback helper not supported on your platform
 #endif

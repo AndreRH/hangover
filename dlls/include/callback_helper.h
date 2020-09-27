@@ -30,6 +30,13 @@ struct callback_entry
     int32_t br;
 #elif defined(__x86_64__)
     char code[0x20];
+#elif defined(__powerpc64__)
+    int32_t addi;
+    int32_t ldr_self;
+    int32_t ldr_proc;
+    int32_t mr;
+    int32_t mtctr;
+    int32_t bctr;
 #endif
     void *selfptr;
     void *host_proc;
