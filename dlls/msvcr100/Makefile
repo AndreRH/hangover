@@ -12,13 +12,13 @@ msvcr100.dll: msvcr100.spec cpp_g.o ctype_g.o data_g.o dir_g.o environ_g.o errno
 	$(WINEGCC) --wine-objdir $(DESTDIR)/build/$(WINE_DIR) -shared -b $(GUEST_CC) $(SRCDIR)/msvcr100.spec *_g.o ../../$(WINE_DIR)/dlls/winecrt0/libwinecrt0.a -o msvcr100.dll -lkernel32 -lntdll -nodefaultlibs -nostdlib -Wl,--image-base,0xa0000000
 
 qemu_msvcr100.dll.so: qemu_msvcr100.spec cpp_h.o ctype_h.o data_h.o dir_h.o environ_h.o errno_h.o except_h.o exit_h.o file_h.o heap_h.o locale_h.o lock_h.o main_h.o math_h.o mbcs_h.o misc_h.o process_h.o scanf_h.o string_h.o time_h.o wcs_h.o thread_h.o console_h.o scheduler_h.o undname_h.o
-	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_msvcr100.spec *_h.o -o qemu_msvcr100.dll.so
+	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_msvcr100.spec *_h.o ../../libffi/installed/lib/libffi.a -o qemu_msvcr100.dll.so
 
 %_g.o: %.c qemu_msvcrt.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
 
 %_h.o: %.c qemu_msvcrt.h Makefile $(SRCDIR)/Makefile
-	$(WINEGCC) $(HOST_CC) $< -c -o $@ $(CFLAGS) -fcommon
+	$(WINEGCC) $(HOST_CC) -I../../libffi/installed/include $< -c -o $@ $(CFLAGS) -fcommon
 
 clean:
 	rm -rf *o *.dll *.so
