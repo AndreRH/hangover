@@ -2,8 +2,8 @@ TESTS := $(if $(NOTESTS),--disable-tests,)
 
 # only enable win64 build on amd64
 ARCHFLAG=
-UNAME_P := $(shell uname -p)
-ifeq ($(UNAME_P),x86_64)
+UNAME_M := $(shell uname -m)
+ifeq ($(UNAME_M),x86_64)
     ARCHFLAG = --enable-win64
 endif
 
