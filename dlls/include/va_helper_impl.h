@@ -39,8 +39,7 @@ const ffi_abi ffiabi = FFI_DEFAULT_ABI;
 #define CNTWARN fprintf(stderr, "call_va: Too many arguments, increase the arrays!\n")
 #endif
 
-uint64_t CDECL call_va(uint64_t (* CDECL func)(void *ctx, ...), void *ctx, unsigned int icount,
-                       unsigned int fcount, struct va_array *array)
+uint64_t CDECL call_va(uint64_t (* CDECL func)(void *ctx, ...), void *ctx, unsigned int icount, struct va_array *array)
 {
     ffi_type *arg_types[64];
     void *values[64];
@@ -67,7 +66,7 @@ uint64_t CDECL call_va(uint64_t (* CDECL func)(void *ctx, ...), void *ctx, unsig
 }
 
 uint64_t CDECL call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...), void *fixed1, void *fixed2,
-                        unsigned int icount, unsigned int fcount, struct va_array *array)
+                                  unsigned int icount, struct va_array *array)
 {
     ffi_type *arg_types[64];
     void *values[64];

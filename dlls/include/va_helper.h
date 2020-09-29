@@ -8,8 +8,8 @@ struct va_array
 };
 
 extern uint64_t CDECL call_va(uint64_t (* CDECL func)(void *ctx, ...), void *ctx, unsigned int icount,
-        unsigned int fcount, struct va_array *array);
+        struct va_array *array);
 extern uint64_t CDECL call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...), void *fixed1, void *fixed2,
-        unsigned int icount, unsigned int fcount, struct va_array *array);
+        unsigned int icount, struct va_array *array);
 
 #endif

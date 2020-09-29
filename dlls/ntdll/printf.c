@@ -149,7 +149,7 @@ void qemu_NTDLL__vsnwprintf(struct qemu_syscall *call)
 struct qemu_sprintf
 {
     struct qemu_syscall super;
-    uint64_t argcount, argcount_float;
+    uint64_t argcount;
     uint64_t str;
     uint64_t len;
     uint64_t charcount;
@@ -234,7 +234,6 @@ static int CDECL vsprintf_helper(uint64_t op, char *str, size_t len, size_t char
     call->charcount = charcount;
     call->str = (ULONG_PTR)str;
     call->format = (ULONG_PTR)format;
-    call->argcount_float = 0;
 
     for (i = 0; i < count; ++i)
     {
@@ -251,7 +250,6 @@ static int CDECL vsprintf_helper(uint64_t op, char *str, size_t len, size_t char
                 conv.d = va_arg(args, double);
                 call->args[i].is_float = TRUE;
                 call->args[i].arg = conv.i;
-                call->argcount_float++;
                 break;
 
             default:
@@ -365,15 +363,14 @@ void qemu_sprintf(struct qemu_syscall *call)
     int ret;
     static int once;
 
-    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
-            (char *)QEMU_G2H(c->format));
+    WINE_TRACE("%lu args, format \"%s\"\n", (unsigned long)c->argcount, (char *)QEMU_G2H(c->format));
 
     data.op = c->super.id;
     data.len = c->len;
     data.charcount = c->charcount;
     data.dst = QEMU_G2H(c->str);
     data.fmt = QEMU_G2H(c->format);
-    ret = call_va(sprintf_wrapper, &data, c->argcount, c->argcount_float, c->args);
+    ret = call_va(sprintf_wrapper, &data, c->argcount, c->args);
 
     c->super.iret = ret;
 }

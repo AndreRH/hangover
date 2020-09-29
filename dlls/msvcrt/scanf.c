@@ -34,7 +34,7 @@ WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 struct qemu_scanf
 {
     struct qemu_syscall super;
-    uint64_t argcount, argcount_float;
+    uint64_t argcount;
     uint64_t input;
     uint64_t length;
     uint64_t fmt;
@@ -60,7 +60,6 @@ static int scanf_helper(unsigned __int64 options, const void *input, size_t leng
     call->input = (ULONG_PTR)input;
     call->fmt = (ULONG_PTR)fmt;
     call->locale = (ULONG_PTR)locale;
-    call->argcount_float = 0;
     call->argcount = count;
 
     for (i = 0; i < count; ++i)
@@ -163,7 +162,6 @@ static int swscanf_helper(const WCHAR *input, size_t length, const WCHAR *fmt, M
     call->length = length;
     call->fmt = (ULONG_PTR)fmt;
     call->locale = (ULONG_PTR)locale;
-    call->argcount_float = 0;
     call->argcount = count;
 
     for (i = 0; i < count; ++i)
@@ -234,24 +232,20 @@ void qemu_scanf(struct qemu_syscall *call)
     struct qemu_scanf *c = (struct qemu_scanf *)(ULONG_PTR)call;
     struct scanf_data data;
 
-    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
-            (char *)QEMU_G2H(c->fmt));
+    WINE_TRACE("%lu args, format \"%s\"\n", (unsigned long)c->argcount, (char *)QEMU_G2H(c->fmt));
 
     switch (c->super.id)
     {
         case QEMU_SYSCALL_ID(CALL_VSSCANF):
-            c->super.iret = call_va2((void *)p_sscanf, QEMU_G2H(c->input), QEMU_G2H(c->fmt),
-                    c->argcount, c->argcount_float, c->args);
+            c->super.iret = call_va2((void *)p_sscanf, QEMU_G2H(c->input), QEMU_G2H(c->fmt), c->argcount, c->args);
             break;
 
         case QEMU_SYSCALL_ID(CALL_VSSCANF_S):
-            c->super.iret = call_va2((void *)p_sscanf_s, QEMU_G2H(c->input), QEMU_G2H(c->fmt),
-                    c->argcount, c->argcount_float, c->args);
+            c->super.iret = call_va2((void *)p_sscanf_s, QEMU_G2H(c->input), QEMU_G2H(c->fmt), c->argcount, c->args);
             break;
 
         case QEMU_SYSCALL_ID(CALL_VFSCANF):
-            c->super.iret = call_va2((void *)p_fscanf, FILE_g2h(c->input), QEMU_G2H(c->fmt),
-                    c->argcount, c->argcount_float, c->args);
+            c->super.iret = call_va2((void *)p_fscanf, FILE_g2h(c->input), QEMU_G2H(c->fmt), c->argcount, c->args);
             break;
 
         case QEMU_SYSCALL_ID(CALL_VSNSCANF):
@@ -261,8 +255,7 @@ void qemu_scanf(struct qemu_syscall *call)
                 WINE_FIXME("Calling sscanf instead of snscanf.\n");
                 warn = FALSE;
             }
-            c->super.iret = call_va2((void *)p_sscanf, QEMU_G2H(c->input), QEMU_G2H(c->fmt),
-                    c->argcount, c->argcount_float, c->args);
+            c->super.iret = call_va2((void *)p_sscanf, QEMU_G2H(c->input), QEMU_G2H(c->fmt), c->argcount, c->args);
             break;
 
         case QEMU_SYSCALL_ID(CALL_VSSCANF_UCRTBASE):
@@ -272,7 +265,7 @@ void qemu_scanf(struct qemu_syscall *call)
             data.length = c->length;
             data.fmt = QEMU_G2H(c->fmt);
             data.locale = QEMU_G2H(c->locale);
-            c->super.iret = call_va(scanf_wrapper, &data, c->argcount, c->argcount_float, c->args);
+            c->super.iret = call_va(scanf_wrapper, &data, c->argcount, c->args);
             break;
     }
 }
@@ -282,14 +275,12 @@ void qemu_wscanf(struct qemu_syscall *call)
     struct qemu_scanf *c = (struct qemu_scanf *)(ULONG_PTR)call;
     static BOOL warn = TRUE;
 
-    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
-            wine_dbgstr_w(QEMU_G2H(c->fmt)));
+    WINE_TRACE("%lu args, format \"%s\"\n", (unsigned long)c->argcount, wine_dbgstr_w(QEMU_G2H(c->fmt)));
 
     switch (c->super.id)
     {
         case QEMU_SYSCALL_ID(CALL_SWSCANF_S):
-            c->super.iret = call_va2((void *)p_swscanf_s, QEMU_G2H(c->input), QEMU_G2H(c->fmt), c->argcount,
-                    c->argcount_float, c->args);
+            c->super.iret = call_va2((void *)p_swscanf_s, QEMU_G2H(c->input), QEMU_G2H(c->fmt), c->argcount, c->args);
             break;
 
         case QEMU_SYSCALL_ID(CALL_SNWSCANF):
@@ -299,8 +290,7 @@ void qemu_wscanf(struct qemu_syscall *call)
                 WINE_FIXME("Calling swscanf instead of snwscanf.\n");
                 warn = FALSE;
             }
-            c->super.iret = call_va2((void *)p_swscanf, QEMU_G2H(c->input), QEMU_G2H(c->fmt), c->argcount,
-                    c->argcount_float, c->args);
+            c->super.iret = call_va2((void *)p_swscanf, QEMU_G2H(c->input), QEMU_G2H(c->fmt), c->argcount, c->args);
             break;
     }
 }

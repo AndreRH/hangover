@@ -356,7 +356,7 @@ void qemu_FormatMessage(struct qemu_syscall *call)
          * I opted for the va_args version because of the hypothetical issue of 64 bit
          * ints in Win32 and because the extra offset that is added for arrays may
          * push a message with 99 inserts beyond the 99 limit. */
-        c->super.iret = call_va(call_FormatMessage_va_list, &data, c->array_size, 0, array);
+        c->super.iret = call_va(call_FormatMessage_va_list, &data, c->array_size, array);
     }
 
     if (c->flags & FORMAT_MESSAGE_ALLOCATE_BUFFER)

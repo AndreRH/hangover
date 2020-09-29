@@ -302,7 +302,7 @@ void qemu__write(struct qemu_syscall *call)
 struct qemu_fprintf
 {
     struct qemu_syscall super;
-    uint64_t argcount, argcount_float;
+    uint64_t argcount;
     uint64_t file;
     uint64_t format;
     uint64_t options;
@@ -390,7 +390,6 @@ static int CDECL vfprintf_helper(uint64_t op, FILE *file, const char *format, un
     call->format = (ULONG_PTR)format;
     call->options = options;
     call->locale = (ULONG_PTR)locale;
-    call->argcount_float = 0;
 
     for (i = 0; i < count; ++i)
     {
@@ -407,7 +406,6 @@ static int CDECL vfprintf_helper(uint64_t op, FILE *file, const char *format, un
                 conv.d = va_arg(args, double);
                 call->args[i].is_float = TRUE;
                 call->args[i].arg = conv.i;
-                call->argcount_float++;
                 break;
 
             default:
@@ -539,7 +537,6 @@ static int CDECL vfwprintf_helper(uint64_t op, FILE *file, const WCHAR *format, 
     call->argcount = count;
     call->file = (ULONG_PTR)file;
     call->format = (ULONG_PTR)format;
-    call->argcount_float = 0;
 
     for (i = 0; i < count; ++i)
     {
@@ -556,7 +553,6 @@ static int CDECL vfwprintf_helper(uint64_t op, FILE *file, const WCHAR *format, 
                 conv.d = va_arg(args, double);
                 call->args[i].is_float = TRUE;
                 call->args[i].arg = conv.i;
-                call->argcount_float++;
                 break;
 
             default:
@@ -646,8 +642,7 @@ void qemu_fprintf(struct qemu_syscall *call)
     int ret;
     struct printf_data data;
 
-    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
-            (char *)QEMU_G2H(c->format));
+    WINE_TRACE("%lu args, format \"%s\"\n", (unsigned long)c->argcount, (char *)QEMU_G2H(c->format));
 
     data.op = c->super.id;
     data.fmt = QEMU_G2H(c->format);
@@ -674,7 +669,7 @@ void qemu_fprintf(struct qemu_syscall *call)
             WINE_ERR("Unexpected op %lx\n", (unsigned long)c->super.id);
     }
 
-    ret = call_va(printf_wrapper, &data, c->argcount, c->argcount_float, c->args);
+    ret = call_va(printf_wrapper, &data, c->argcount, c->args);
 
     c->super.iret = ret;
 }
@@ -684,7 +679,7 @@ void qemu_fprintf(struct qemu_syscall *call)
 struct qemu_sprintf
 {
     struct qemu_syscall super;
-    uint64_t argcount, argcount_float;
+    uint64_t argcount;
     uint64_t str;
     uint64_t len;
     uint64_t charcount;
@@ -718,7 +713,6 @@ static int CDECL vsprintf_helper(uint64_t op, char *str, size_t len, size_t char
     call->format = (ULONG_PTR)format;
     call->options = options;
     call->locale = (ULONG_PTR)locale;
-    call->argcount_float = 0;
 
     for (i = 0; i < count; ++i)
     {
@@ -735,7 +729,6 @@ static int CDECL vsprintf_helper(uint64_t op, char *str, size_t len, size_t char
                 conv.d = va_arg(args, double);
                 call->args[i].is_float = TRUE;
                 call->args[i].arg = conv.i;
-                call->argcount_float++;
                 break;
 
             default:
@@ -775,7 +768,6 @@ static int CDECL vswprintf_helper(uint64_t op, WCHAR *str, size_t len, size_t ch
     call->format = (ULONG_PTR)format;
     call->options = options;
     call->locale = (ULONG_PTR)locale;
-    call->argcount_float = 0;
 
     for (i = 0; i < count; ++i)
     {
@@ -792,7 +784,6 @@ static int CDECL vswprintf_helper(uint64_t op, WCHAR *str, size_t len, size_t ch
                 conv.d = va_arg(args, double);
                 call->args[i].is_float = TRUE;
                 call->args[i].arg = conv.i;
-                call->argcount_float++;
                 break;
 
             default:
@@ -1004,8 +995,7 @@ void qemu_sprintf(struct qemu_syscall *call)
     struct sprintf_data data;
     int ret;
 
-    WINE_TRACE("(%lu floats/%lu args, format \"%s\"\n", (unsigned long)c->argcount_float, (unsigned long)c->argcount,
-            (char *)QEMU_G2H(c->format));
+    WINE_TRACE("%lu args, format \"%s\"\n", (unsigned long)c->argcount, (char *)QEMU_G2H(c->format));
 
     data.op = c->super.id;
     data.len = c->len;
@@ -1014,7 +1004,7 @@ void qemu_sprintf(struct qemu_syscall *call)
     data.locale = QEMU_G2H(c->locale);
     data.dst = QEMU_G2H(c->str);
     data.fmt = QEMU_G2H(c->format);
-    ret = call_va(sprintf_wrapper, &data, c->argcount, c->argcount_float, c->args);
+    ret = call_va(sprintf_wrapper, &data, c->argcount, c->args);
 
     c->super.iret = ret;
 }
