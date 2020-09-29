@@ -15,6 +15,7 @@ RUN	apt-get update && apt-get install -y --no-install-recommends \
 	flex bison \
 	libfreetype6-dev \
 	libglib2.0-dev \
+	libltdl-dev \
 	libxcb1-dev \
 	libx11-dev  \
 	gradle \

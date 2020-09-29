@@ -37,6 +37,7 @@ RUN	apt-get update && apt-get install -y --no-install-recommends \
 	python \
 	flex bison \
 	libfreetype6-dev \
+	libltdl-dev \
 	libxcb1-dev \
 	libx11-dev  \
 	gradle \
