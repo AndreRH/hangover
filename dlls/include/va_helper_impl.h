@@ -33,6 +33,12 @@ const ffi_abi ffiabi = FFI_WIN64;
 const ffi_abi ffiabi = FFI_DEFAULT_ABI;
 #endif
 
+#ifndef stderr
+#define CNTWARN printf("call_va: Too many arguments, increase the arrays!\n")
+#else
+#define CNTWARN fprintf(stderr, "call_va: Too many arguments, increase the arrays!\n")
+#endif
+
 uint64_t CDECL call_va(uint64_t (* CDECL func)(void *ctx, ...), void *ctx, unsigned int icount,
                        unsigned int fcount, struct va_array *array)
 {
@@ -43,7 +49,7 @@ uint64_t CDECL call_va(uint64_t (* CDECL func)(void *ctx, ...), void *ctx, unsig
     int i;
 
     if (icount >= 64)
-        fprintf(stderr, "call_va: Too many arguments, increase the arrays!\n");
+        CNTWARN;
 
     arg_types[0] = &ffi_type_pointer;
     values[0] = &ctx;
@@ -70,7 +76,7 @@ uint64_t CDECL call_va2(uint64_t (* CDECL func)(void *fixed1, void *fixed2, ...)
     int i;
 
     if (icount >= 64)
-        fprintf(stderr, "call_va: Too many arguments, increase the arrays!\n");
+        CNTWARN;
 
     arg_types[0] = &ffi_type_pointer;
     values[0] = &fixed1;
