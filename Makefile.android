@@ -88,7 +88,7 @@ libffi/configure: libffi/autogen.sh
 
 build/libffi/Makefile: libffi/configure
 	@mkdir -p $(@D)
-	cd $(@D) ; ../../libffi/configure --host=aarch64-linux-android CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang --prefix=$(abspath build/libffi/installed) --disable-docs
+	cd $(@D) ; ../../libffi/configure --host=aarch64-linux-android CXX=aarch64-linux-android-clang++ CC=aarch64-linux-android-clang --prefix=$(abspath build/libffi/installed) --disable-multi-os-directory --disable-docs
 
 build/libffi/installed/lib/libffi.a: build/libffi/Makefile
 	+$(MAKE) -C build/libffi/ install
