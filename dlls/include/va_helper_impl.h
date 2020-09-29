@@ -33,7 +33,7 @@ const ffi_abi ffiabi = FFI_WIN64;
 const ffi_abi ffiabi = FFI_DEFAULT_ABI;
 #endif
 
-#ifndef stderr
+#ifdef __ANDROID__
 #define CNTWARN printf("call_va: Too many arguments, increase the arrays!\n")
 #else
 #define CNTWARN fprintf(stderr, "call_va: Too many arguments, increase the arrays!\n")
