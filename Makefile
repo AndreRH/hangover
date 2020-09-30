@@ -107,7 +107,7 @@ build/x86_64-w64-mingw32/bin/libxslt-1.dll: build/libxslt64/Makefile
 # happy. Is there a nicer way?
 build/wine-host/Makefile: wine/configure
 	@mkdir -p $(@D)
-	cd build/wine-host ; CC=$(HANGOVER_WINE_CC) ../../wine/configure $(ARCHFLAG) $(TESTS)
+	cd build/wine-host ; CC=$(HANGOVER_WINE_CC) CXX=$(HANGOVER_WINE_CXX) ../../wine/configure $(ARCHFLAG) $(TESTS)
 
 wine-host build/wine-host/.built: build/wine-host/Makefile
 	+$(MAKE) -C build/wine-host
