@@ -15,6 +15,17 @@ typedef struct
 extern const int extension_registry_size;
 extern const OpenGL_extension extension_registry[];
 
+#if __MINGW64_VERSION_MAJOR < 7
+typedef void *GLeglClientBufferEXT;
+typedef void *GLeglImageOES;
+typedef void (APIENTRY  *GLVULKANPROCNV)(void);
+GLAPI GLVULKANPROCNV APIENTRY glGetVkProcAddrNV (const GLchar *name);
+GLAPI void APIENTRY glBufferStorageExternalEXT (GLenum target, GLintptr offset, GLsizeiptr size, GLeglClientBufferEXT clientBuffer, GLbitfield flags);
+GLAPI void APIENTRY glEGLImageTargetTexStorageEXT (GLenum target, GLeglImageOES image, const GLint* attrib_list);
+GLAPI void APIENTRY glEGLImageTargetTextureStorageEXT (GLuint texture, GLeglImageOES image, const GLint* attrib_list);
+GLAPI void APIENTRY glNamedBufferStorageExternalEXT (GLuint buffer, GLintptr offset, GLsizeiptr size, GLeglClientBufferEXT clientBuffer, GLbitfield flags);
+#endif
+
 #else
 
 extern const struct qemu_ops *qemu_ops;
