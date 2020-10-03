@@ -31,7 +31,10 @@ RUN	cd /opt/ && wget -q --output-document=android-ndk.zip https://dl.google.com/
 	echo STEP1 && \
 	mv android-ndk-r17b android-ndk-linux && \
 	echo STEP2 && \
-	cd /opt/android-ndk-linux && build/tools/make_standalone_toolchain.py --arch arm64 --api 21 --install-dir /opt/ndk && cd .. && rm -rf /opt/android-ndk-linux
+	cd /opt/android-ndk-linux && build/tools/make_standalone_toolchain.py --arch arm64 --api 21 --install-dir /opt/ndk && cd .. && rm -rf /opt/android-ndk-linux && \
+	rm -f /opt/ndk/bin/aarch64-linux-android-gcc && rm -f /opt/ndk/bin/aarch64-linux-android-g++ && \
+	ln -s /opt/ndk/bin/aarch64-linux-android-clang /opt/ndk/bin/aarch64-linux-android-gcc && \
+	ln -s /opt/ndk/bin/aarch64-linux-android-clang++ /opt/ndk/bin/aarch64-linux-android-g++
 
 RUN	apt-get update && apt-get install -y --no-install-recommends \
 	python \
