@@ -27,7 +27,7 @@
 
 #ifndef QEMU_DLL_GUEST
 
-#if defined(__x86_64__)
+#if defined(__x86_64__) || defined(__aarch64__)
 const ffi_abi ffiabi = FFI_WIN64;
 #else
 const ffi_abi ffiabi = FFI_DEFAULT_ABI;
