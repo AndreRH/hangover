@@ -1535,7 +1535,7 @@ ULONG WINAPI advapi32_TraceMessageVa(TRACEHANDLE handle, ULONG flags, LPCGUID gu
     return call.super.iret;
 }
 
-ULONG CDECL TraceMessage(TRACEHANDLE handle, ULONG flags, LPCGUID guid, USHORT number, ...)
+ULONG WINAPIV TraceMessage(TRACEHANDLE handle, ULONG flags, LPCGUID guid, USHORT number, ...)
 {
     va_list valist;
     ULONG ret;

@@ -1193,7 +1193,7 @@ char * CDECL MSVCRT_strcmp(const char *str1, const char *str2);
 size_t CDECL MSVCRT_strlen(const char *str);
 void CDECL MSVCRT_terminate(void);
 void CDECL MSVCRT_operator_delete(void *mem);
-int CDECL MSVCRT_sprintf(char *str, const char *format, ...);
+int WINAPIV MSVCRT_sprintf(char *str, const char *format, ...);
 
 unsigned int count_printf_argsA(const char *format, char *fmts);
 unsigned int count_printf_argsW(const WCHAR *format, WCHAR *fmts);
@@ -2735,11 +2735,11 @@ int (* CDECL p__wgetenv_s)(size_t *pReturnValue, WCHAR *buffer, size_t numberOfE
 int (* CDECL p_setvbuf)(MSVCRT_FILE *file, char *buf, int mode, size_t size);
 /* FIXME: Should use __time64_t, but somehow it isn't defined. */
 __int64 (* CDECL p__time64)(__int64 *buf);
-int (* CDECL p_swscanf_s)(const WCHAR *str, const WCHAR *format, ...);
+int (* WINAPIV p_swscanf_s)(const WCHAR *str, const WCHAR *format, ...);
 int (* WINAPIV p_swscanf)(wchar_t *str, const wchar_t *fmt, ...);
-int (* CDECL p_fscanf)(MSVCRT_FILE *file, const char *format, ...);
-int (* CDECL p_sscanf)(const char *str, const char *format, ...);
-int (* CDECL p_sscanf_s)(const char *str, const char *format, ...);
+int (* WINAPIV p_fscanf)(MSVCRT_FILE *file, const char *format, ...);
+int (* WINAPIV p_sscanf)(const char *str, const char *format, ...);
+int (* WINAPIV p_sscanf_s)(const char *str, const char *format, ...);
 MSVCRT_FILE * (* CDECL p___acrt_iob_func)(unsigned idx);
 int (* CDECL p__access)(const char *filename, int mode);
 int (* CDECL p__access_s)(const char *filename, int mode);
@@ -2991,7 +2991,7 @@ int (* CDECL p__unloaddll)(intptr_t dll);
 void * (* CDECL p__getdllprocaddr)(intptr_t dll, const char *name, int ordinal);
 int (* CDECL p__getpid)(void);
 int (* CDECL p__crtTerminateProcess)(UINT exit_code);
-int (* CDECL p__open)(const char *path, int flags, ...);
+int (* WINAPIV p__open)(const char *path, int flags, ...);
 
 thread_data_t* (* CDECL p__getptd)(void);
 void (* CDECL p__endthread)(void);

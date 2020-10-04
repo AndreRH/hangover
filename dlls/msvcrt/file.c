@@ -434,7 +434,7 @@ int CDECL MSVCRT_vfprintf(FILE *file, const char *format, va_list args)
     return vfprintf_helper(QEMU_SYSCALL_ID(CALL_FPRINTF), file, format, 0, 0, args);
 }
 
-int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
+int WINAPIV MSVCRT_fprintf(FILE *file, const char *format, ...)
 {
     int ret;
     va_list list;
@@ -446,7 +446,7 @@ int CDECL MSVCRT_fprintf(FILE *file, const char *format, ...)
     return ret;
 }
 
-int CDECL MSVCRT_printf(const char *format, ...)
+int WINAPIV MSVCRT_printf(const char *format, ...)
 {
     int ret;
     va_list list;
@@ -575,7 +575,7 @@ int CDECL MSVCRT_vfwprintf(FILE *file, const WCHAR *format, va_list args)
     return vfwprintf_helper(QEMU_SYSCALL_ID(CALL_FWPRINTF), file, format, args);
 }
 
-int CDECL MSVCRT_fwprintf(FILE *file, const WCHAR *format, ...)
+int WINAPIV MSVCRT_fwprintf(FILE *file, const WCHAR *format, ...)
 {
     int ret;
     va_list list;
@@ -587,7 +587,7 @@ int CDECL MSVCRT_fwprintf(FILE *file, const WCHAR *format, ...)
     return ret;
 }
 
-int CDECL MSVCRT_wprintf(const WCHAR *format, ...)
+int WINAPIV MSVCRT_wprintf(const WCHAR *format, ...)
 {
     int ret;
     va_list list;
@@ -610,7 +610,7 @@ struct printf_data
     uint64_t op;
 };
 
-static uint64_t CDECL printf_wrapper(void *ctx, ...)
+static uint64_t WINAPIV printf_wrapper(void *ctx, ...)
 {
     __ms_va_list list;
     const struct printf_data *data = ctx;
@@ -813,7 +813,7 @@ int CDECL __stdio_common_vswprintf(unsigned __int64 options, wchar_t *str, size_
     return vswprintf_helper(QEMU_SYSCALL_ID(CALL_SWPRINTF_UCRTBASE), str, len, 0, format, options, locale, list);
 }
 
-int CDECL MSVCRT_sprintf(char *str, const char *format, ...)
+int WINAPIV MSVCRT_sprintf(char *str, const char *format, ...)
 {
     int ret;
     va_list list;
@@ -830,7 +830,7 @@ int CDECL MSVCRT_vsprintf(char *str, const char *format, va_list list)
     return vsprintf_helper(QEMU_SYSCALL_ID(CALL_SPRINTF), str, 0, 0, format, 0, 0, list);
 }
 
-int CDECL MSVCRT_sprintf_s(char *str, size_t num, const char *format, ...)
+int WINAPIV MSVCRT_sprintf_s(char *str, size_t num, const char *format, ...)
 {
     int ret;
     va_list list;
@@ -851,7 +851,7 @@ int CDECL MSVCRT_vsprintf_s(char *str, size_t num, const char *format, va_list l
     return ret;
 }
 
-int CDECL MSVCRT__snprintf(char *str, size_t len, const char *format, ...)
+int WINAPIV MSVCRT__snprintf(char *str, size_t len, const char *format, ...)
 {
     int ret;
     va_list list;
@@ -863,7 +863,7 @@ int CDECL MSVCRT__snprintf(char *str, size_t len, const char *format, ...)
     return ret;
 }
 
-int CDECL MSVCRT__snprintf_s(char *str, unsigned int len, unsigned int count, const char *format, ...)
+int WINAPIV MSVCRT__snprintf_s(char *str, unsigned int len, unsigned int count, const char *format, ...)
 {
     int ret;
     va_list list;
@@ -890,8 +890,7 @@ int CDECL MSVCRT_vswprintf_s(WCHAR *str, size_t count, const WCHAR *format, va_l
     return vswprintf_helper(QEMU_SYSCALL_ID(CALL_SWPRINTF_S), str, 0, count, format, 0, 0, list);
 }
 
-int CDECL MSVCRT_swprintf_s(WCHAR *str, size_t count,
-        const WCHAR *format, ...)
+int WINAPIV MSVCRT_swprintf_s(WCHAR *str, size_t count, const WCHAR *format, ...)
 {
     int ret;
     va_list list;
@@ -918,7 +917,7 @@ int CDECL MSVCRT_vswprintf( wchar_t *str, const wchar_t *format, va_list args )
     return MSVCRT__vsnwprintf( str, INT_MAX, format, args );
 }
 
-int CDECL MSVCRT__snwprintf(WCHAR *str, unsigned int len, const WCHAR *format, ...)
+int WINAPIV MSVCRT__snwprintf(WCHAR *str, unsigned int len, const WCHAR *format, ...)
 {
     int ret;
     va_list list;
@@ -943,7 +942,7 @@ struct sprintf_data
     void *fmt;
 };
 
-static uint64_t CDECL sprintf_wrapper(void *ctx, ...)
+static uint64_t WINAPIV sprintf_wrapper(void *ctx, ...)
 {
     __ms_va_list list;
     const struct sprintf_data *data = ctx;
@@ -5913,7 +5912,7 @@ struct qemu__open
 
 #ifdef QEMU_DLL_GUEST
 
-int CDECL MSVCRT__open(const char *path, int flags, ...)
+int WINAPIV MSVCRT__open(const char *path, int flags, ...)
 {
     struct qemu__open call;
     va_list list;

@@ -328,7 +328,7 @@ struct sprintf_data
     void *fmt;
 };
 
-static uint64_t CDECL sprintf_wrapper(void *ctx, ...)
+static uint64_t WINAPIV sprintf_wrapper(void *ctx, ...)
 {
     __ms_va_list list;
     const struct sprintf_data *data = ctx;

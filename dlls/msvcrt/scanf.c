@@ -95,7 +95,7 @@ int WINAPIV MSVCRT_sscanf_s(const char *str, const char *fmt, ...)
     return res;
 }
 
-int CDECL MSVCRT_sscanf(const char *str, const char *fmt, ...)
+int WINAPIV MSVCRT_sscanf(const char *str, const char *fmt, ...)
 {
     va_list valist;
     int res;
@@ -113,7 +113,7 @@ int CDECL MSVCRT_vfscanf_l(FILE *f, const char *fmt, MSVCRT__locale_t locale, va
     return scanf_helper(0, f, 0, fmt, locale, QEMU_SYSCALL_ID(CALL_VFSCANF), list);
 }
 
-int CDECL MSVCRT_fscanf(FILE *f, const char *fmt, ...)
+int WINAPIV MSVCRT_fscanf(FILE *f, const char *fmt, ...)
 {
     va_list valist;
     int res;
@@ -178,7 +178,7 @@ static int swscanf_helper(const WCHAR *input, size_t length, const WCHAR *fmt, M
     return ret;
 }
 
-int CDECL MSVCRT_swscanf_s(const WCHAR *str, const WCHAR *fmt, ...)
+int WINAPIV MSVCRT_swscanf_s(const WCHAR *str, const WCHAR *fmt, ...)
 {
     va_list valist;
     int res;
@@ -213,7 +213,7 @@ struct scanf_data
     uint64_t op;
 };
 
-static uint64_t CDECL scanf_wrapper(void *ctx, ...)
+static uint64_t WINAPIV scanf_wrapper(void *ctx, ...)
 {
     __ms_va_list list;
     const struct scanf_data *data = ctx;
