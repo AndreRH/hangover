@@ -2,9 +2,14 @@ TESTS := $(if $(NOTESTS),--disable-tests,)
 
 # only enable win64 build on amd64
 ARCHFLAG=
+HOSTBIT = 64
 UNAME_M := $(shell uname -m)
+UNAME_M3 := $(shell uname -m | head -c 3)
 ifeq ($(UNAME_M),x86_64)
     ARCHFLAG = --enable-win64
+endif
+ifeq ($(UNAME_M3),arm)
+    HOSTBIT = 32
 endif
 
 WINEDLLS = activeds adsldp adsldpc shcore dbghelp ole32 oleaut32 propsys rpcrt4 urlmon netapi32 dnsapi msimg32 dwmapi uxtheme setupapi wintrust wtsapi32 pdh avrt cryptnet imagehlp cryptui sensapi msvcp80 msvcp100 lz32 msi dplay dplayx dpwsockx dpnet dpnaddr dpnhpast dpnlobby dpvoice mpr oledlg shdocvw msacm32 mlang gdiplus shell32 shlwapi wininet comctl32 comdlg32 comsvcs d3d10core d3d10 d3d10_1 d3dcompiler_43 d3dcompiler_47 msxml msxml2 msxml3 msxml4 msxml6 shfolder d2d1 dwrite sspicli quartz msvfw32 amstream apphelp atl ieframe atl100 atl80 atlthunk scrrun mshtml inetcomm avifil32 browseui combase explorerframe credui d3dx10_43 d3dx9_43 d3dxof d3drm d3dx11_43 ddrawex devenum msdmo avicap32 dinput8 dispex dmband dmcompos dmime dmloader dmusic dmsynth hnetcfg dxdiagn evr faultrep fusion mscoree gameux hid hlink httpapi actxprxy inetmib1 snmpapi itss infosoft jscript jsproxy kernelbase mapi32 mf mfplat msctf mspatcha mswsock odbccp32 msrle32 vbscript mstask taskschd xmllite msvcirt msvcp110 msvcp120 msvcp140 msvcp60 msvcp90 netcfgx netprofm ninput ntdsapi ntprint oleacc packager psapi pstorec qcap qedit qmgr rasapi32 schannel serialui slc spoolss sti sxs twain_32 userenv vcomp version vulkan-1 winevulkan webservices winhttp wer windowscodecsext wlanapi wldap32 wmp wmphoto wmvcore wpc wsdapi wsnmp32 wuapi mssip32 msisip wbemprox powrprof
@@ -191,7 +196,7 @@ build/dlls64/%/Makefile: build/libffi/installed/lib/libffi.a
 	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
 	echo "DESTDIR?=../../.." >> $@
 	echo "GUEST_BIT=64" >> $@
-	echo "HOST_BIT=64" >> $@
+	echo "HOST_BIT=$(HOSTBIT)" >> $@
 	echo "WINE_DIR=wine-guest" >> $@
 	echo "EXTRALIBS=-lpthread" >> $@
 	echo >> $@
@@ -205,7 +210,7 @@ build/dlls32/%/Makefile: build/libffi/installed/lib/libffi.a
 	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
 	echo "DESTDIR?=../../.." >> $@
 	echo "GUEST_BIT=32" >> $@
-	echo "HOST_BIT=64" >> $@
+	echo "HOST_BIT=$(HOSTBIT)" >> $@
 	echo "WINE_DIR=wine-guest32" >> $@
 	echo "EXTRALIBS=-lpthread" >> $@
 	echo >> $@
