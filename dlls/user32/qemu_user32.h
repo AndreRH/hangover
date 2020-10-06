@@ -753,7 +753,7 @@ void __fastcall guest_win_event_wrapper(struct qemu_SetWinEventHook_cb *data);
 extern INT __fastcall LVM_SORTITEMS_guest_cb(void *data);
 BOOL __fastcall DrawStateW_guest_cb(void *data);
 
-DECLARE_HANDLE(DPI_AWARENESS_CONTEXT);
+DECLARE_HANDLE(qemu_DPI_AWARENESS_CONTEXT);
 
 #else
 

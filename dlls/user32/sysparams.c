@@ -27,13 +27,13 @@
 
 #ifdef QEMU_DLL_GUEST
 
-typedef enum DPI_AWARENESS
+typedef enum qemu_DPI_AWARENESS
 {
-    DPI_AWARENESS_INVALID = -1,
-    DPI_AWARENESS_UNAWARE = 0,
-    DPI_AWARENESS_SYSTEM_AWARE,
-    DPI_AWARENESS_PER_MONITOR_AWARE
-} DPI_AWARENESS;
+    qemu_DPI_AWARENESS_INVALID = -1,
+    qemu_DPI_AWARENESS_UNAWARE = 0,
+    qemu_DPI_AWARENESS_SYSTEM_AWARE,
+    qemu_DPI_AWARENESS_PER_MONITOR_AWARE
+} qemu_DPI_AWARENESS;
 
 #else
 
@@ -809,7 +809,7 @@ struct qemu_AreDpiAwarenessContextsEqual
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI AreDpiAwarenessContextsEqual(DPI_AWARENESS_CONTEXT ctx1, DPI_AWARENESS_CONTEXT ctx2)
+WINBASEAPI BOOL WINAPI AreDpiAwarenessContextsEqual(qemu_DPI_AWARENESS_CONTEXT ctx1, qemu_DPI_AWARENESS_CONTEXT ctx2)
 {
     struct qemu_AreDpiAwarenessContextsEqual call;
     call.super.id = QEMU_SYSCALL_ID(CALL_AREDPIAWARENESSCONTEXTSEQUAL);
@@ -840,7 +840,7 @@ struct qemu_GetAwarenessFromDpiAwarenessContext
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DPI_AWARENESS WINAPI GetAwarenessFromDpiAwarenessContext(DPI_AWARENESS_CONTEXT context)
+WINBASEAPI qemu_DPI_AWARENESS WINAPI GetAwarenessFromDpiAwarenessContext(qemu_DPI_AWARENESS_CONTEXT context)
 {
     struct qemu_GetAwarenessFromDpiAwarenessContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETAWARENESSFROMDPIAWARENESSCONTEXT);
@@ -935,7 +935,7 @@ struct qemu_GetProcessDpiAwarenessInternal
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI GetProcessDpiAwarenessInternal(HANDLE process, DPI_AWARENESS *awareness)
+WINBASEAPI BOOL WINAPI GetProcessDpiAwarenessInternal(HANDLE process, qemu_DPI_AWARENESS *awareness)
 {
     struct qemu_GetProcessDpiAwarenessInternal call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETPROCESSDPIAWARENESSINTERNAL);
@@ -997,14 +997,14 @@ struct qemu_GetThreadDpiAwarenessContext
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DPI_AWARENESS_CONTEXT WINAPI GetThreadDpiAwarenessContext(void)
+WINBASEAPI qemu_DPI_AWARENESS_CONTEXT WINAPI GetThreadDpiAwarenessContext(void)
 {
     struct qemu_GetThreadDpiAwarenessContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETTHREADDPIAWARENESSCONTEXT);
     
     qemu_syscall(&call.super);
     
-    return (DPI_AWARENESS_CONTEXT)(ULONG_PTR)call.super.iret;
+    return (qemu_DPI_AWARENESS_CONTEXT)(ULONG_PTR)call.super.iret;
 }
 
 #else
@@ -1026,7 +1026,7 @@ struct qemu_IsValidDpiAwarenessContext
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI IsValidDpiAwarenessContext(DPI_AWARENESS_CONTEXT context)
+WINBASEAPI BOOL WINAPI IsValidDpiAwarenessContext(qemu_DPI_AWARENESS_CONTEXT context)
 {
     struct qemu_IsValidDpiAwarenessContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_ISVALIDDPIAWARENESSCONTEXT);
@@ -1056,7 +1056,7 @@ struct qemu_SetThreadDpiAwarenessContext
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DPI_AWARENESS_CONTEXT WINAPI SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT context)
+WINBASEAPI qemu_DPI_AWARENESS_CONTEXT WINAPI SetThreadDpiAwarenessContext(qemu_DPI_AWARENESS_CONTEXT context)
 {
     struct qemu_SetThreadDpiAwarenessContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETTHREADDPIAWARENESSCONTEXT);
@@ -1186,7 +1186,7 @@ struct qemu_SetProcessDpiAwarenessInternal
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI BOOL WINAPI SetProcessDpiAwarenessInternal(DPI_AWARENESS awareness)
+WINBASEAPI BOOL WINAPI SetProcessDpiAwarenessInternal(qemu_DPI_AWARENESS awareness)
 {
     struct qemu_SetProcessDpiAwarenessInternal call;
     call.super.id = QEMU_SYSCALL_ID(CALL_SETPROCESSDPIAWARENESSINTERNAL);

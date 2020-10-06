@@ -2726,7 +2726,7 @@ struct qemu_GetWindowDpiAwarenessContext
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DPI_AWARENESS_CONTEXT WINAPI GetWindowDpiAwarenessContext(HWND hwnd)
+WINBASEAPI qemu_DPI_AWARENESS_CONTEXT WINAPI GetWindowDpiAwarenessContext(HWND hwnd)
 {
     struct qemu_GetWindowDpiAwarenessContext call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETWINDOWDPIAWARENESSCONTEXT);
@@ -2734,7 +2734,7 @@ WINBASEAPI DPI_AWARENESS_CONTEXT WINAPI GetWindowDpiAwarenessContext(HWND hwnd)
     
     qemu_syscall(&call.super);
     
-    return (DPI_AWARENESS_CONTEXT)(ULONG_PTR)call.super.iret;
+    return (qemu_DPI_AWARENESS_CONTEXT)(ULONG_PTR)call.super.iret;
 }
 
 #else
