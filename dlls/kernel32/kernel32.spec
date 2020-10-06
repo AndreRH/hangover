@@ -443,8 +443,8 @@
 @ stub ExitVDM
 @ stdcall ExpandEnvironmentStringsA(str ptr long)
 @ stdcall ExpandEnvironmentStringsW(wstr ptr long)
-@ stdcall ExpungeConsoleCommandHistoryA(str)
-@ stdcall ExpungeConsoleCommandHistoryW(wstr)
+@ stdcall ExpungeConsoleCommandHistoryA(str) kernel32_ExpungeConsoleCommandHistoryA
+@ stdcall ExpungeConsoleCommandHistoryW(wstr) kernel32_ExpungeConsoleCommandHistoryW
 @ stub ExtendVirtualBuffer
 @ stdcall -i386 -private -norelay FT_Exit0() krnl386.exe16.FT_Exit0
 @ stdcall -i386 -private -norelay FT_Exit12() krnl386.exe16.FT_Exit12
@@ -592,10 +592,10 @@
 @ stub GetConsoleAliasesW
 @ stdcall GetConsoleCP()
 @ stub GetConsoleCharType
-@ stdcall GetConsoleCommandHistoryA(long long long)
-@ stdcall GetConsoleCommandHistoryLengthA(str)
-@ stdcall GetConsoleCommandHistoryLengthW(wstr)
-@ stdcall GetConsoleCommandHistoryW(long long long)
+@ stdcall GetConsoleCommandHistoryA(long long long) kernel32_GetConsoleCommandHistoryA
+@ stdcall GetConsoleCommandHistoryLengthA(str) kernel32_GetConsoleCommandHistoryLengthA
+@ stdcall GetConsoleCommandHistoryLengthW(wstr) kernel32_GetConsoleCommandHistoryLengthW
+@ stdcall GetConsoleCommandHistoryW(long long long) kernel32_GetConsoleCommandHistoryW
 @ stdcall GetConsoleCursorInfo(long ptr)
 @ stub GetConsoleCursorMode
 @ stdcall GetConsoleDisplayMode(ptr)

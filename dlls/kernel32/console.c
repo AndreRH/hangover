@@ -2571,7 +2571,7 @@ struct qemu_GetConsoleCommandHistoryA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI GetConsoleCommandHistoryA(DWORD unknown1, DWORD unknown2, DWORD unknown3)
+WINBASEAPI DWORD WINAPI kernel32_GetConsoleCommandHistoryA(DWORD unknown1, DWORD unknown2, DWORD unknown3)
 {
     struct qemu_GetConsoleCommandHistoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCONSOLECOMMANDHISTORYA);
@@ -2607,7 +2607,7 @@ struct qemu_GetConsoleCommandHistoryW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI GetConsoleCommandHistoryW(DWORD unknown1, DWORD unknown2, DWORD unknown3)
+WINBASEAPI DWORD WINAPI kernel32_GetConsoleCommandHistoryW(DWORD unknown1, DWORD unknown2, DWORD unknown3)
 {
     struct qemu_GetConsoleCommandHistoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCONSOLECOMMANDHISTORYW);
@@ -2641,7 +2641,7 @@ struct qemu_GetConsoleCommandHistoryLengthA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI GetConsoleCommandHistoryLengthA(LPCSTR unknown)
+WINBASEAPI DWORD WINAPI kernel32_GetConsoleCommandHistoryLengthA(LPCSTR unknown)
 {
     struct qemu_GetConsoleCommandHistoryLengthA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCONSOLECOMMANDHISTORYLENGTHA);
@@ -2673,7 +2673,7 @@ struct qemu_GetConsoleCommandHistoryLengthW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI DWORD WINAPI GetConsoleCommandHistoryLengthW(LPCWSTR unknown)
+WINBASEAPI DWORD WINAPI kernel32_GetConsoleCommandHistoryLengthW(LPCWSTR unknown)
 {
     struct qemu_GetConsoleCommandHistoryLengthW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_GETCONSOLECOMMANDHISTORYLENGTHW);
@@ -2821,7 +2821,7 @@ struct qemu_ExpungeConsoleCommandHistoryA
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI VOID WINAPI ExpungeConsoleCommandHistoryA(LPCSTR unknown)
+WINBASEAPI VOID WINAPI kernel32_ExpungeConsoleCommandHistoryA(LPCSTR unknown)
 {
     struct qemu_ExpungeConsoleCommandHistoryA call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXPUNGECONSOLECOMMANDHISTORYA);
@@ -2851,7 +2851,7 @@ struct qemu_ExpungeConsoleCommandHistoryW
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI VOID WINAPI ExpungeConsoleCommandHistoryW(LPCWSTR unknown)
+WINBASEAPI VOID WINAPI kernel32_ExpungeConsoleCommandHistoryW(LPCWSTR unknown)
 {
     struct qemu_ExpungeConsoleCommandHistoryW call;
     call.super.id = QEMU_SYSCALL_ID(CALL_EXPUNGECONSOLECOMMANDHISTORYW);
