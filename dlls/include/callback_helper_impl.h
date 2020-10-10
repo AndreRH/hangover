@@ -51,6 +51,19 @@ void callback_init(struct callback_entry *entry, unsigned int params, void *proc
     entry->selfptr = entry;
 
     __clear_cache(&entry->ldr_self, &entry->br + 1);
+#elif __arm__
+    /* Note: A maximum of 4 parameters are supported. */
+    entry->push1    = 0xe92d4010;   /* push {r4, lr} */
+    entry->ldr1     = 0xe59f4010;   /* ldr r4, [pc, #16] (selfptr) */
+    entry->push2    = 0xe92d4010;   /* push {r4, lr} (2 for stack alignemnt) */
+    entry->ldr2     = 0xe59f400c;   /* ldr r4, [pc, #12] (host_proc) */
+    entry->blx      = 0xe12fff34;   /* blx r4 */
+    entry->pop02    = 0xe8bd4010;   /* pop {r4, lr} */
+    entry->pop01    = 0xe8bd8010;   /* pop {r4, pc} */
+
+    entry->selfptr = entry;
+
+    __clear_cache(&entry->push1, &entry->pop01 + 1);
 #elif defined(__x86_64__)
     /* See init_reverse_wndproc in dlls/user32/main.c for details. The only difference
      * is the offset of the function to call with the extra parameter. */
