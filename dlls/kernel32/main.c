@@ -1325,6 +1325,24 @@ static void hook(void *to_hook, const void *replace)
     hooked_function->dst = replace;
 
     __clear_cache(hooked_function, (char *)hooked_function + sizeof(*hooked_function));
+#elif __arm__
+    struct hooked_function
+    {
+        DWORD push, ldr, blx, pop;
+        const void *dst;
+    } *hooked_function = to_hook;
+
+    if(!VirtualProtect(hooked_function, sizeof(*hooked_function), PAGE_EXECUTE_READWRITE, &old_protect))
+        WINE_ERR("Failed to make hooked function writeable.\n");
+
+    offset = offsetof(struct hooked_function, dst) - offsetof(struct hooked_function, ldr);
+    hooked_function->push   = 0xe92d4010;                   /* push {r4, lr} */
+    hooked_function->ldr    = 0xe59f4000 | (offset - 8);    /* ldr r4, offset */;
+    hooked_function->blx    = 0xe12fff34;                   /* blx r4 */;
+    hooked_function->pop    = 0xe8bd8010;                   /* pop {r4, pc} */
+    hooked_function->dst    = replace;
+
+    __clear_cache(hooked_function, (char *)hooked_function + sizeof(*hooked_function));
 #elif defined(__x86_64__)
     struct hooked_function
     {
