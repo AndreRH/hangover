@@ -29,13 +29,7 @@ struct callback_entry
     int32_t ldr_proc;
     int32_t br;
 #elif defined(__arm__)
-    int32_t push1;
-    int32_t ldr1;
-    int32_t push2;
-    int32_t ldr2;
-    int32_t blx;
-    int32_t pop02;
-    int32_t pop01;
+    int32_t cmd[7];
 #elif defined(__x86_64__)
     char code[0x20];
 #elif defined(__powerpc64__)
