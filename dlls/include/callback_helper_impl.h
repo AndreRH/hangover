@@ -91,6 +91,21 @@ void callback_init(struct callback_entry *entry, unsigned int params, void *proc
         0x4c, 0x8d, 0x0d, 0xf9, 0xff, 0xff, 0xff,   /* lea    -0x7(%rip),%r9    - selfptr in 4th param  */
         0x48, 0xff, 0x25, 0x1a, 0x00, 0x00, 0x00,   /* rex.W jmpq *0x1a(%rip)   - call host_proc        */
     };
+    static const char wrapper_code2[] =
+    {
+        0x4c, 0x8d, 0x05, 0xf9, 0xff, 0xff, 0xff,   /* lea    -0x7(%rip),%r8    - selfptr in 3rd param  */
+        0x48, 0xff, 0x25, 0x1a, 0x00, 0x00, 0x00,   /* rex.W jmpq *0x1a(%rip)   - call host_proc        */
+    };
+    static const char wrapper_code1[] =
+    {
+        0x48, 0x8d, 0x15, 0xf9, 0xff, 0xff, 0xff,   /* lea    -0x7(%rip),%rdx   - selfptr in 2nd param  */
+        0x48, 0xff, 0x25, 0x1a, 0x00, 0x00, 0x00,   /* rex.W jmpq *0x1a(%rip)   - call host_proc        */
+    };
+    static const char wrapper_code0[] =
+    {
+        0x48, 0x8d, 0x0d, 0xf9, 0xff, 0xff, 0xff,   /* lea    -0x7(%rip),%rcx   - selfptr in 1st param  */
+        0x48, 0xff, 0x25, 0x1a, 0x00, 0x00, 0x00,   /* rex.W jmpq *0x1a(%rip)   - call host_proc        */
+    };
 
     if (params == 4)
     {
@@ -101,6 +116,21 @@ void callback_init(struct callback_entry *entry, unsigned int params, void *proc
     {
         memset(entry->code, 0xcc, sizeof(entry->code));
         memcpy(entry->code, wrapper_code3, sizeof(wrapper_code3));
+    }
+    else if (params == 2)
+    {
+        memset(entry->code, 0xcc, sizeof(entry->code));
+        memcpy(entry->code, wrapper_code2, sizeof(wrapper_code2));
+    }
+    else if (params == 1)
+    {
+        memset(entry->code, 0xcc, sizeof(entry->code));
+        memcpy(entry->code, wrapper_code1, sizeof(wrapper_code1));
+    }
+    else
+    {
+        memset(entry->code, 0xcc, sizeof(entry->code));
+        memcpy(entry->code, wrapper_code0, sizeof(wrapper_code0));
     }
     entry->selfptr = entry; /* Note that this is not read by the asm code, but put it in place anyway. */
 #elif defined(__powerpc64__)
