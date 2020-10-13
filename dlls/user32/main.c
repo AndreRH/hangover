@@ -994,7 +994,7 @@ struct callback_entry_table *wndproc_wrappers;
 unsigned int wndproc_wrapper_count;
 uint64_t guest_wndproc_wrapper;
 
-LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct callback_entry *wrapper)
+static LRESULT WINAPI wndproc_wrapper(HWND win, UINT msg, WPARAM wparam, LPARAM lparam, struct callback_entry *wrapper)
 {
     struct wndproc_call stack_call, *call = &stack_call;
     MSG msg_struct = {win, msg, wparam, lparam}, msg_conv;
