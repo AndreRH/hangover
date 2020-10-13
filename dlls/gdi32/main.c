@@ -452,11 +452,12 @@ static const syscall_handler dll_functions[] =
     qemu_WidenPath,
 };
 
-static BOOL abort_proc_host_wrapper(HDC hdc, int error, struct callback_entry *wrapper)
+static BOOL WINAPI abort_proc_host_wrapper(HDC hdc, int error, struct callback_entry *wrapper)
 {
     struct qemu_abort_proc call;
     BOOL ret;
 
+    WINE_TRACE("hdc %p error %x wrapper %p\n", hdc, error, wrapper);
     call.guest_proc = wrapper->guest_proc;
     call.hdc = QEMU_H2G(hdc);
     call.error = error;
