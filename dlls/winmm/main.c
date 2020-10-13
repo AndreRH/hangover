@@ -264,7 +264,7 @@ static const syscall_handler dll_functions[] =
 struct callback_entry_table *ioproc_wrappers;
 unsigned int ioproc_wrapper_count;
 
-LRESULT WINAPI ioproc_wrapper(LPSTR info, UINT msg, LPARAM param1, LPARAM param2, struct callback_entry *wrapper)
+static LRESULT WINAPI ioproc_wrapper(LPSTR info, UINT msg, LPARAM param1, LPARAM param2, struct callback_entry *wrapper)
 {
     struct ioproc_callback call;
     LRESULT ret;
