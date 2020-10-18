@@ -106,8 +106,11 @@ static const syscall_handler dll_functions[] =
     qemu__wtoi,
     qemu__wtoi64,
     qemu__wtol,
+    qemu_atan,
     qemu_atoi,
     qemu_atol,
+    qemu_ceil,
+    qemu_cos,
     qemu_DbgUiIssueRemoteBreakin,
     qemu_DbgUiRemoteBreakin,
     qemu_EtwEventActivityIdControl,
@@ -128,6 +131,8 @@ static const syscall_handler dll_functions[] =
     qemu_EtwTraceMessage,
     qemu_EtwTraceMessageVa,
     qemu_EtwUnregisterTraceGuids,
+    qemu_fabs,
+    qemu_floor,
     qemu_isalnum,
     qemu_isalpha,
     qemu_iscntrl,
@@ -173,6 +178,7 @@ static const syscall_handler dll_functions[] =
     qemu_LdrUnloadDll,
     qemu_LdrUnlockLoaderLock,
     qemu_LdrUnregisterDllNotification,
+    qemu_log,
     qemu_mbstowcs,
     qemu_memchr,
     qemu_memcmp,
@@ -387,6 +393,7 @@ static const syscall_handler dll_functions[] =
     qemu_NtWriteFileGather,
     qemu_NtWriteVirtualMemory,
     qemu_NtYieldExecution,
+    qemu_pow,
     qemu_qsort,
     qemu_RtlAbsoluteToSelfRelativeSD,
     qemu_RtlAcquirePebLock,
@@ -763,6 +770,8 @@ static const syscall_handler dll_functions[] =
     qemu_RtlZeroMemory,
     qemu_RtlZombifyActivationContext,
     qemu_set_callbacks,
+    qemu_sin,
+    qemu_sqrt,
     qemu_strcat,
     qemu_strchr,
     qemu_strcmp,
@@ -778,6 +787,7 @@ static const syscall_handler dll_functions[] =
     qemu_strstr,
     qemu_strtol,
     qemu_strtoul,
+    qemu_tan,
     qemu_tolower,
     qemu_toupper,
     qemu_towlower,
@@ -943,6 +953,14 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!p__ultow)
         WINE_ERR("Could not find \"_ultow\" in ntdll\n");
 
+    p__vsnprintf = (void *)GetProcAddress(ntdll, "_vsnprintf");
+    if (!p__vsnprintf)
+        WINE_ERR("Could not find \"_vsnprintf\" in ntdll\n");
+
+    p__vsnprintf_s = (void *)GetProcAddress(ntdll, "_vsnprintf_s");
+    if (!p__vsnprintf_s)
+        WINE_ERR("Could not find \"_vsnprintf_s\" in ntdll\n");
+
     p__wcsicmp = (void *)GetProcAddress(ntdll, "_wcsicmp");
     if (!p__wcsicmp)
         WINE_ERR("Could not find \"_wcsicmp\" in ntdll\n");
@@ -971,6 +989,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!p__wtol)
         WINE_ERR("Could not find \"_wtol\" in ntdll\n");
 
+    p_atan = (void *)GetProcAddress(ntdll, "atan");
+    if (!p_atan)
+        WINE_ERR("Could not find \"atan\" in ntdll\n");
+
     p_atoi = (void *)GetProcAddress(ntdll, "atoi");
     if (!p_atoi)
         WINE_ERR("Could not find \"atoi\" in ntdll\n");
@@ -978,6 +1000,22 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_atol = (void *)GetProcAddress(ntdll, "atol");
     if (!p_atol)
         WINE_ERR("Could not find \"atol\" in ntdll\n");
+
+    p_ceil = (void *)GetProcAddress(ntdll, "ceil");
+    if (!p_ceil)
+        WINE_ERR("Could not find \"ceil\" in ntdll\n");
+
+    p_cos = (void *)GetProcAddress(ntdll, "cos");
+    if (!p_cos)
+        WINE_ERR("Could not find \"cos\" in ntdll\n");
+
+    p_fabs = (void *)GetProcAddress(ntdll, "fabs");
+    if (!p_fabs)
+        WINE_ERR("Could not find \"fabs\" in ntdll\n");
+
+    p_floor = (void *)GetProcAddress(ntdll, "floor");
+    if (!p_floor)
+        WINE_ERR("Could not find \"floor\" in ntdll\n");
 
     p_isalnum = (void *)GetProcAddress(ntdll, "isalnum");
     if (!p_isalnum)
@@ -1047,6 +1085,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!p_isxdigit)
         WINE_ERR("Could not find \"isxdigit\" in ntdll\n");
 
+    p_log = (void *)GetProcAddress(ntdll, "log");
+    if (!p_log)
+        WINE_ERR("Could not find \"log\" in ntdll\n");
+
     p_mbstowcs = (void *)GetProcAddress(ntdll, "mbstowcs");
     if (!p_mbstowcs)
         WINE_ERR("Could not find \"mbstowcs\" in ntdll\n");
@@ -1070,6 +1112,18 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_memset = (void *)GetProcAddress(ntdll, "memset");
     if (!p_memset)
         WINE_ERR("Could not find \"memset\" in ntdll\n");
+
+    p_pow = (void *)GetProcAddress(ntdll, "pow");
+    if (!p_pow)
+        WINE_ERR("Could not find \"pow\" in ntdll\n");
+
+    p_sin = (void *)GetProcAddress(ntdll, "sin");
+    if (!p_sin)
+        WINE_ERR("Could not find \"sin\" in ntdll\n");
+
+    p_sqrt = (void *)GetProcAddress(ntdll, "sqrt");
+    if (!p_sqrt)
+        WINE_ERR("Could not find \"sqrt\" in ntdll\n");
 
     p_strcat = (void *)GetProcAddress(ntdll, "strcat");
     if (!p_strcat)
@@ -1131,6 +1185,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!p_strtoul)
         WINE_ERR("Could not find \"strtoul\" in ntdll\n");
 
+    p_tanf = (void *)GetProcAddress(ntdll, "tan");
+    if (!p_tanf)
+        WINE_ERR("Could not find \"tan\" in ntdll\n");
+
     p_tolower = (void *)GetProcAddress(ntdll, "tolower");
     if (!p_tolower)
         WINE_ERR("Could not find \"tolower\" in ntdll\n");
@@ -1146,6 +1204,10 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_towupper = (void *)GetProcAddress(ntdll, "towupper");
     if (!p_towupper)
         WINE_ERR("Could not find \"towupper\" in ntdll\n");
+
+    p_vsprintf = (void *)GetProcAddress(ntdll, "vsprintf");
+    if (!p_vsprintf)
+        WINE_ERR("Could not find \"vsprintf\" in ntdll\n");
 
     p_wcscat = (void *)GetProcAddress(ntdll, "wcscat");
     if (!p_wcscat)
@@ -1214,18 +1276,6 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     p_wcstoul = (void *)GetProcAddress(ntdll, "wcstoul");
     if (!p_wcstoul)
         WINE_ERR("Could not find \"wcstoul\" in ntdll\n");
-
-    p_vsprintf = (void *)GetProcAddress(ntdll, "vsprintf");
-    if (!p_vsprintf)
-        WINE_ERR("Could not find \"vsprintf\" in ntdll\n");
-
-    p__vsnprintf = (void *)GetProcAddress(ntdll, "_vsnprintf");
-    if (!p__vsnprintf)
-        WINE_ERR("Could not find \"_vsnprintf\" in ntdll\n");
-
-    p__vsnprintf_s = (void *)GetProcAddress(ntdll, "_vsnprintf_s");
-    if (!p__vsnprintf_s)
-        WINE_ERR("Could not find \"_vsnprintf_s\" in ntdll\n");
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;

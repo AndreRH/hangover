@@ -43,8 +43,11 @@ enum ntdll_calls
     CALL__WTOI,
     CALL__WTOI64,
     CALL__WTOL,
+    CALL_ATAN,
     CALL_ATOI,
     CALL_ATOL,
+    CALL_CEIL,
+    CALL_COS,
     CALL_DBGUIISSUEREMOTEBREAKIN,
     CALL_DBGUIREMOTEBREAKIN,
     CALL_ETWEVENTACTIVITYIDCONTROL,
@@ -65,6 +68,8 @@ enum ntdll_calls
     CALL_ETWTRACEMESSAGE,
     CALL_ETWTRACEMESSAGEVA,
     CALL_ETWUNREGISTERTRACEGUIDS,
+    CALL_FABS,
+    CALL_FLOOR,
     CALL_ISALNUM,
     CALL_ISALPHA,
     CALL_ISCNTRL,
@@ -110,6 +115,7 @@ enum ntdll_calls
     CALL_LDRUNLOADDLL,
     CALL_LDRUNLOCKLOADERLOCK,
     CALL_LDRUNREGISTERDLLNOTIFICATION,
+    CALL_LOG,
     CALL_MBSTOWCS,
     CALL_MEMCHR,
     CALL_MEMCMP,
@@ -324,6 +330,7 @@ enum ntdll_calls
     CALL_NTWRITEFILEGATHER,
     CALL_NTWRITEVIRTUALMEMORY,
     CALL_NTYIELDEXECUTION,
+    CALL_POW,
     CALL_QSORT,
     CALL_RTLABSOLUTETOSELFRELATIVESD,
     CALL_RTLACQUIREPEBLOCK,
@@ -700,6 +707,8 @@ enum ntdll_calls
     CALL_RTLZEROMEMORY,
     CALL_RTLZOMBIFYACTIVATIONCONTEXT,
     CALL_SET_CALLBACKS,
+    CALL_SIN,
+    CALL_SQRT,
     CALL_STRCAT,
     CALL_STRCHR,
     CALL_STRCMP,
@@ -715,6 +724,7 @@ enum ntdll_calls
     CALL_STRSTR,
     CALL_STRTOL,
     CALL_STRTOUL,
+    CALL_TAN,
     CALL_TOLOWER,
     CALL_TOUPPER,
     CALL_TOWLOWER,
@@ -1499,8 +1509,13 @@ void qemu__wcsupr(struct qemu_syscall *call);
 void qemu__wtoi(struct qemu_syscall *call);
 void qemu__wtoi64(struct qemu_syscall *call);
 void qemu__wtol(struct qemu_syscall *call);
+void qemu_atan(struct qemu_syscall *call);
 void qemu_atoi(struct qemu_syscall *call);
 void qemu_atol(struct qemu_syscall *call);
+void qemu_ceil(struct qemu_syscall *call);
+void qemu_cos(struct qemu_syscall *call);
+void qemu_fabs(struct qemu_syscall *call);
+void qemu_floor(struct qemu_syscall *call);
 void qemu_isalnum(struct qemu_syscall *call);
 void qemu_isalpha(struct qemu_syscall *call);
 void qemu_iscntrl(struct qemu_syscall *call);
@@ -1518,14 +1533,18 @@ void qemu_iswlower(struct qemu_syscall *call);
 void qemu_iswspace(struct qemu_syscall *call);
 void qemu_iswxdigit(struct qemu_syscall *call);
 void qemu_isxdigit(struct qemu_syscall *call);
+void qemu_log(struct qemu_syscall *call);
 void qemu_mbstowcs(struct qemu_syscall *call);
 void qemu_memchr(struct qemu_syscall *call);
 void qemu_memcmp(struct qemu_syscall *call);
 void qemu_memcpy(struct qemu_syscall *call);
 void qemu_memmove(struct qemu_syscall *call);
 void qemu_memset(struct qemu_syscall *call);
+void qemu_pow(struct qemu_syscall *call);
 void qemu_qsort(struct qemu_syscall *call);
+void qemu_sin(struct qemu_syscall *call);
 void qemu_sprintf(struct qemu_syscall *call);
+void qemu_sqrt(struct qemu_syscall *call);
 void qemu_strcat(struct qemu_syscall *call);
 void qemu_strchr(struct qemu_syscall *call);
 void qemu_strcmp(struct qemu_syscall *call);
@@ -1541,6 +1560,7 @@ void qemu_strspn(struct qemu_syscall *call);
 void qemu_strstr(struct qemu_syscall *call);
 void qemu_strtol(struct qemu_syscall *call);
 void qemu_strtoul(struct qemu_syscall *call);
+void qemu_tan(struct qemu_syscall *call);
 void qemu_tolower(struct qemu_syscall *call);
 void qemu_toupper(struct qemu_syscall *call);
 void qemu_towlower(struct qemu_syscall *call);
@@ -1661,6 +1681,17 @@ LONGLONG (* CDECL p__wtoi64)(LPCWSTR str);
 int (* CDECL p_vsprintf)(char *str, const char *format, __ms_va_list args);
 int (* CDECL p__vsnprintf)(char *str, SIZE_T len, const char *format, __ms_va_list args);
 int (* CDECL p__vsnprintf_s)(char *str, unsigned int len, unsigned int count, const char *format, __ms_va_list valist);
+
+double (* CDECL p_atan)(double d);
+double (* CDECL p_ceil)(double d);
+double (* CDECL p_cos)(double d);
+double (* CDECL p_fabs)(double d);
+double (* CDECL p_floor)(double d);
+double (* CDECL p_log)(double d);
+double (* CDECL p_pow)(double x, double y);
+double (* CDECL p_sin)(double d);
+double (* CDECL p_sqrt)(double d);
+double (* CDECL p_tanf)(double d);
 
 struct IOSB_data
 {

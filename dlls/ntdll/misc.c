@@ -851,3 +851,369 @@ void qemu_EtwTraceMessage(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_atan
+{
+    struct qemu_syscall super;
+    double d;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+double CDECL NTDLL_atan(double d)
+{
+    struct qemu_atan call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_ATAN);
+    call.d = d;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_atan(struct qemu_syscall *call)
+{
+    struct qemu_atan *c = (struct qemu_atan *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.dret = p_atan(c->d);
+}
+
+#endif
+
+struct qemu_ceil
+{
+    struct qemu_syscall super;
+    double d;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+double CDECL NTDLL_ceil(double d)
+{
+    struct qemu_ceil call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_CEIL);
+    call.d = d;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_ceil(struct qemu_syscall *call)
+{
+    struct qemu_ceil *c = (struct qemu_ceil *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.dret = p_ceil(c->d);
+}
+
+#endif
+
+struct qemu_cos
+{
+    struct qemu_syscall super;
+    double d;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+double CDECL NTDLL_cos(double d)
+{
+    struct qemu_cos call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_COS);
+    call.d = d;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_cos(struct qemu_syscall *call)
+{
+    struct qemu_cos *c = (struct qemu_cos *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.dret = p_cos(c->d);
+}
+
+#endif
+
+struct qemu_fabs
+{
+    struct qemu_syscall super;
+    double d;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+double CDECL NTDLL_fabs(double d)
+{
+    struct qemu_fabs call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_FABS);
+    call.d = d;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_fabs(struct qemu_syscall *call)
+{
+    struct qemu_fabs *c = (struct qemu_fabs *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.dret = p_fabs(c->d);
+}
+
+#endif
+
+struct qemu_floor
+{
+    struct qemu_syscall super;
+    double d;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+double CDECL NTDLL_floor(double d)
+{
+    struct qemu_floor call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_FLOOR);
+    call.d = d;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_floor(struct qemu_syscall *call)
+{
+    struct qemu_floor *c = (struct qemu_floor *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.dret = p_floor(c->d);
+}
+
+#endif
+
+struct qemu_log
+{
+    struct qemu_syscall super;
+    double d;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+double CDECL NTDLL_log(double d)
+{
+    struct qemu_log call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_LOG);
+    call.d = d;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_log(struct qemu_syscall *call)
+{
+    struct qemu_log *c = (struct qemu_log *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.dret = p_log(c->d);
+}
+
+#endif
+
+struct qemu_pow
+{
+    struct qemu_syscall super;
+    double x;
+    double y;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+double CDECL NTDLL_pow(double x, double y)
+{
+    struct qemu_pow call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_POW);
+    call.x = x;
+    call.y = y;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_pow(struct qemu_syscall *call)
+{
+    struct qemu_pow *c = (struct qemu_pow *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.dret = p_pow(c->x, c->y);
+}
+
+#endif
+
+struct qemu_sin
+{
+    struct qemu_syscall super;
+    double d;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+double CDECL NTDLL_sin(double d)
+{
+    struct qemu_sin call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SIN);
+    call.d = d;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_sin(struct qemu_syscall *call)
+{
+    struct qemu_sin *c = (struct qemu_sin *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.dret = p_sin(c->d);
+}
+
+#endif
+
+struct qemu_sqrt
+{
+    struct qemu_syscall super;
+    double d;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+double CDECL NTDLL_sqrt(double d)
+{
+    struct qemu_sqrt call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_SQRT);
+    call.d = d;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_sqrt(struct qemu_syscall *call)
+{
+    struct qemu_sqrt *c = (struct qemu_sqrt *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.dret = p_sqrt(c->d);
+}
+
+#endif
+
+struct qemu_tan
+{
+    struct qemu_syscall super;
+    double d;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+double CDECL NTDLL_tanf(double d)
+{
+    struct qemu_tan call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_TAN);
+    call.d = d;
+
+    qemu_syscall(&call.super);
+
+    return call.super.dret;
+}
+
+#else
+
+void qemu_tan(struct qemu_syscall *call)
+{
+    struct qemu_tan *c = (struct qemu_tan *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.dret = p_tanf(c->d);
+}
+
+#endif
+
+#if (defined(__GNUC__) || defined(__clang__)) && defined(__i386__)
+
+#define FPU_DOUBLE(var) double var; \
+    __asm__ __volatile__( "fstpl %0;fwait" : "=m" (var) : )
+#define FPU_DOUBLES(var1,var2) double var1,var2; \
+    __asm__ __volatile__( "fstpl %0;fwait" : "=m" (var2) : ); \
+    __asm__ __volatile__( "fstpl %0;fwait" : "=m" (var1) : )
+
+/*********************************************************************
+ *		_CIcos (NTDLL.@)
+ */
+double CDECL _CIcos(void)
+{
+    FPU_DOUBLE(x);
+    return NTDLL_cos(x);
+}
+
+/*********************************************************************
+ *		_CIlog (NTDLL.@)
+ */
+double CDECL _CIlog(void)
+{
+    FPU_DOUBLE(x);
+    return NTDLL_log(x);
+}
+
+/*********************************************************************
+ *		_CIpow (NTDLL.@)
+ */
+double CDECL _CIpow(void)
+{
+    FPU_DOUBLES(x,y);
+    return NTDLL_pow(x,y);
+}
+
+/*********************************************************************
+ *		_CIsin (NTDLL.@)
+ */
+double CDECL _CIsin(void)
+{
+    FPU_DOUBLE(x);
+    return NTDLL_sin(x);
+}
+
+/*********************************************************************
+ *		_CIsqrt (NTDLL.@)
+ */
+double CDECL _CIsqrt(void)
+{
+    FPU_DOUBLE(x);
+    return NTDLL_sqrt(x);
+}
+
+/*********************************************************************
+ *                  _ftol   (NTDLL.@)
+ */
+LONGLONG CDECL _ftol(void)
+{
+    FPU_DOUBLE(x);
+    return (LONGLONG)x;
+}
+
+#endif /* (defined(__GNUC__) || defined(__clang__)) && defined(__i386__) */
