@@ -1,8 +1,5 @@
 FROM ubuntu:20.04
 
-ENV ANDROID_HOME /opt/android-sdk-linux
-ENV PATH ${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools:${PATH}:${ANDROID_HOME}/tools:${PATH}
-
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
