@@ -2,7 +2,7 @@
 DESTDIR?=../..
 CURRENT_DLL=DLL_WINDOWSCODECS
 CFLAGS+=-I$(SRCDIR)/../include -I$(SRCDIR)/../../qemu/include -DQEMU_CURRENT_DLL=$(CURRENT_DLL) -O2 -DGUEST_BIT=$(GUEST_BIT) -DHOST_BIT=$(HOST_BIT) -DCONST_VTABLE -D_WIN32_WINNT=0x0603
-WINEGCC=$(DESTDIR)/build/wine-host/tools/winegcc/winegcc --winebuild $(DESTDIR)/build/wine-host/tools/winebuild/winebuild -I$(DESTDIR)/build/wine-host/include -I$(DESTDIR)/wine/include
+WINEGCC=$(DESTDIR)/build/wine-tools/tools/winegcc/winegcc --winebuild $(DESTDIR)/build/wine-tools/tools/winebuild/winebuild -I$(DESTDIR)/build/wine-host/include -I$(DESTDIR)/wine/include
 
 VPATH=$(SRCDIR)
 
@@ -24,16 +24,16 @@ dlldata.o: dlldata.c Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -DENTRY_PREFIX=WIC_ -DPROXY_DELEGATION -I../../wine-guest32/include -I../../../wine/include -Wno-format
 
 dlldata.c: windowscodecs_wincodec.idl Makefile $(SRCDIR)/Makefile
-	$(DESTDIR)/build/wine-host/tools/widl/widl --dlldata-only -o dlldata.c windowscodecs_wincodec.idl
+	$(DESTDIR)/build/wine-tools/tools/widl/widl --dlldata-only -o dlldata.c windowscodecs_wincodec.idl
 
 windowscodecs_wincodec_p.o: windowscodecs_wincodec_p.c windowscodecs_wincodec.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../wine-guest32/include -I../../../wine/include -Wno-format
 
 windowscodecs_wincodec.h: windowscodecs_wincodec.idl Makefile $(SRCDIR)/Makefile
-	$(DESTDIR)/build/wine-host/tools/widl/widl -o windowscodecs_wincodec.h -b $(GUEST_CC) -I../../wine-guest32/include -I../../../wine/include ../../../dlls/windowscodecs/windowscodecs_wincodec.idl
+	$(DESTDIR)/build/wine-tools/tools/widl/widl -o windowscodecs_wincodec.h -b $(GUEST_CC) -I../../wine-guest32/include -I../../../wine/include ../../../dlls/windowscodecs/windowscodecs_wincodec.idl
 
 windowscodecs_wincodec_p.c: windowscodecs_wincodec.idl Makefile $(SRCDIR)/Makefile
-	$(DESTDIR)/build/wine-host/tools/widl/widl -o windowscodecs_wincodec_p.c -b $(GUEST_CC) -I../../wine-guest32/include -I../../../wine/include ../../../dlls/windowscodecs/windowscodecs_wincodec.idl
+	$(DESTDIR)/build/wine-tools/tools/widl/widl -o windowscodecs_wincodec_p.c -b $(GUEST_CC) -I../../wine-guest32/include -I../../../wine/include ../../../dlls/windowscodecs/windowscodecs_wincodec.idl
 
 clean:
 	rm -rf *o *.dll *.so dlldata.c windowscodecs_wincodec.h windowscodecs_wincodec_p.c
