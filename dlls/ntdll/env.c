@@ -206,8 +206,19 @@ WINBASEAPI NTSTATUS WINAPI RtlQueryEnvironmentVariable_U(PWSTR env, PUNICODE_STR
 void qemu_RtlQueryEnvironmentVariable_U(struct qemu_syscall *call)
 {
     struct qemu_RtlQueryEnvironmentVariable_U *c = (struct qemu_RtlQueryEnvironmentVariable_U *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlQueryEnvironmentVariable_U(QEMU_G2H(c->env), QEMU_G2H(c->name), QEMU_G2H(c->value));
+    UNICODE_STRING name_stack, *name = &name_stack;
+    UNICODE_STRING value_stack, *value = &value_stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    name = QEMU_G2H(c->name);
+    value = QEMU_G2H(c->value);
+#else
+    UNICODE_STRING_g2h(name, QEMU_G2H(c->name));
+    UNICODE_STRING_g2h(value, QEMU_G2H(c->value));
+#endif
+
+    c->super.iret = RtlQueryEnvironmentVariable_U(QEMU_G2H(c->env), name, value);
 }
 
 #endif
