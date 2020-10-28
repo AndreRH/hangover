@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 &&	rm -rf /var/lib/apt/lists/*
 
 RUN	apt-get update && apt-get install -y --no-install-recommends \
+	ca-certificates \
 	python \
 	flex bison \
 	libfreetype6-dev \
@@ -15,7 +16,6 @@ RUN	apt-get update && apt-get install -y --no-install-recommends \
 	libltdl-dev \
 	libxcb1-dev \
 	libx11-dev  \
-	gradle \
 	librsvg2-bin \
 	gcc-mingw-w64-x86-64 gcc-mingw-w64-i686 \
 	automake autoconf pkg-config libtool \
