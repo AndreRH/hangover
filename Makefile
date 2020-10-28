@@ -1,12 +1,14 @@
 TESTS := $(if $(NOTESTS),--disable-tests,)
 
 # only enable win64 build on amd64
-ARCHFLAG=
+ARCHFLAG_TOOLS=
+ARCHFLAG_HOST=
 HOSTBIT = 64
 UNAME_M := $(shell uname -m)
 UNAME_M3 := $(shell uname -m | head -c 3)
 ifeq ($(UNAME_M),x86_64)
-    ARCHFLAG = --enable-win64
+    ARCHFLAG_TOOLS = --enable-win64
+    ARCHFLAG_HOST = --enable-win64
 endif
 ifeq ($(UNAME_M3),arm)
     HOSTBIT = 32
@@ -41,6 +43,13 @@ WINE_SRC = $(abspath wine)
 WINE_HOST = $(abspath build/wine-host)
 WINE_TOOLS = $(abspath build/wine-tools)
 
+ifdef CROSS_TRIPLE
+CROSS_TRIPLE_B = -b $(CROSS_TRIPLE)
+CROSS_TRIPLE_H = --host=$(CROSS_TRIPLE)
+#assuming non-x86_64
+ARCHFLAG_HOST=
+endif
+
 all: build/wine-host/.built build/wine-guest/.built build/wine-guest32/.built qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32) $(EXTDLL_TARGET64)
 .PHONY: all
 
@@ -49,7 +58,7 @@ libffi/configure: libffi/autogen.sh
 
 build/libffi/Makefile: libffi/configure
 	@mkdir -p $(@D)
-	cd $(@D) ; ../../libffi/configure --prefix=$(abspath build/libffi/installed) --disable-multi-os-directory --disable-docs
+	cd $(@D) ; ../../libffi/configure --prefix=$(abspath build/libffi/installed) --disable-multi-os-directory --disable-docs $(CROSS_TRIPLE_H)
 
 build/libffi/installed/lib/libffi.a: build/libffi/Makefile
 	+$(MAKE) -C build/libffi/ install
@@ -111,7 +120,7 @@ build/x86_64-w64-mingw32/bin/libxslt-1.dll: build/libxslt64/Makefile
 # Build the wine tools for crosscompilation
 build/wine-tools/Makefile: wine/configure
 	@mkdir -p $(@D)
-	cd $(@D) ; ../../wine/configure $(ARCHFLAG) --with-freetype --with-gettext --disable-tests --without-alsa --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-dbus --without-fontconfig --without-gphoto --without-glu --without-gnutls --without-gsm --without-gstreamer --without-hal --without-jpeg --without-krb5 --without-ldap --without-mpg123 --without-netapi --without-openal --without-opencl --without-opengl --without-osmesa --without-oss --without-pcap --without-pulse --without-png --without-sane --without-tiff --without-v4l2 --without-x --without-xcomposite --without-xcursor --without-xinerama --without-xinput --without-xinput2 --without-xml --without-xrandr --without-xrender --without-xshape --without-xshm --without-xslt --without-xxf86vm --without-zlib
+	cd $(@D) ; ../../wine/configure $(ARCHFLAG_TOOLS) --with-freetype --with-gettext --disable-tests --without-alsa --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-dbus --without-fontconfig --without-gphoto --without-glu --without-gnutls --without-gsm --without-gstreamer --without-hal --without-jpeg --without-krb5 --without-ldap --without-mpg123 --without-netapi --without-openal --without-opencl --without-opengl --without-osmesa --without-oss --without-pcap --without-pulse --without-png --without-sane --without-tiff --without-v4l2 --without-x --without-xcomposite --without-xcursor --without-xinerama --without-xinput --without-xinput2 --without-xml --without-xrandr --without-xrender --without-xshape --without-xshm --without-xslt --without-xxf86vm --without-zlib
 
 build/wine-tools/.built: build/wine-tools/Makefile
 	+$(MAKE) -C build/wine-tools tools tools/sfnt2fon tools/widl tools/winebuild tools/winegcc tools/wmc tools/wrc
@@ -122,7 +131,7 @@ build/wine-tools/.built: build/wine-tools/Makefile
 # happy. Is there a nicer way?
 build/wine-host/Makefile: wine/configure build/wine-tools/.built
 	@mkdir -p $(@D)
-	cd build/wine-host ; CC=$(HANGOVER_WINE_CC) CXX=$(HANGOVER_WINE_CXX) ../../wine/configure --with-wine-tools=../wine-tools $(ARCHFLAG) $(TESTS)
+	cd build/wine-host ; CC=$(HANGOVER_WINE_CC) CXX=$(HANGOVER_WINE_CXX) ../../wine/configure --with-wine-tools=../wine-tools $(ARCHFLAG_HOST) $(TESTS) $(CROSS_TRIPLE_H)
 
 wine-host build/wine-host/.built: build/wine-host/Makefile
 	+$(MAKE) -C build/wine-host
@@ -151,7 +160,7 @@ build/wine-guest32/.built: build/wine-guest32/Makefile
 # Build qemu
 build/qemu/Makefile: build/wine-host/.built qemu/configure
 	@mkdir -p $(@D)
-	cd build/qemu ; CFLAGS="-fPIC $(CFLAGS)" LIBS="-lwine -lpthread $(LIBS)" CC="$(WINE_TOOLS)/tools/winegcc/winegcc --winebuild $(WINE_TOOLS)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI -Wno-pragma-pack" CXX="$(WINE_TOOLS)/tools/winegcc/wineg++ --winebuild $(WINE_TOOLS)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI -Wno-pragma-pack" ../../qemu/configure --python=/usr/bin/python3 --enable-windows-user --target-list=x86_64-windows-user $(QEMU_DISABLES); cd ../.. ; touch $@
+	cd build/qemu ; CFLAGS="-fPIC $(CFLAGS)" LIBS="-lwine -lpthread $(LIBS)" CC="$(WINE_TOOLS)/tools/winegcc/winegcc $(CROSS_TRIPLE_B) --winebuild $(WINE_TOOLS)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI -Wno-pragma-pack" CXX="$(WINE_TOOLS)/tools/winegcc/wineg++ $(CROSS_TRIPLE_B) --winebuild $(WINE_TOOLS)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI -Wno-pragma-pack" ../../qemu/configure --python=/usr/bin/python3 --enable-windows-user --target-list=x86_64-windows-user $(QEMU_DISABLES); cd ../.. ; touch $@
 
 build/qemu/x86_64-windows-user/qemu-x86_64.exe.so: build/qemu/Makefile
 	+$(MAKE) -C build/qemu
@@ -204,7 +213,7 @@ build/dlls64/%/Makefile: build/libffi/installed/lib/libffi.a
 	mkdir -p $(@D)
 	$(eval DLL := $(lastword $(subst /, ,$(@D))))
 	echo "GUEST_CC=x86_64-w64-mingw32" > $@
-	echo "HOST_CC=-Wno-pragma-pack $(TRIPLE)" >> $@
+	echo "HOST_CC=-Wno-pragma-pack $(CROSS_TRIPLE_B)" >> $@
 	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
 	echo "DESTDIR?=../../.." >> $@
 	echo "GUEST_BIT=64" >> $@
@@ -218,7 +227,7 @@ build/dlls32/%/Makefile: build/libffi/installed/lib/libffi.a
 	mkdir -p $(@D)
 	$(eval DLL := $(lastword $(subst /, ,$(@D))))
 	echo "GUEST_CC=i686-w64-mingw32" > $@
-	echo "HOST_CC=-Wno-pragma-pack $(TRIPLE)" >> $@
+	echo "HOST_CC=-Wno-pragma-pack $(CROSS_TRIPLE_B)" >> $@
 	echo "SRCDIR=../../../dlls/$(DLL)" >> $@
 	echo "DESTDIR?=../../.." >> $@
 	echo "GUEST_BIT=32" >> $@
