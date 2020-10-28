@@ -1,4 +1,4 @@
-name: linux-x86_64
+name: debian-arm64
 
 on:
   push:
@@ -19,4 +19,4 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
     - name: build image
-      run: docker build -f Dockerfile -t hangover-linux-build .
+      run: docker build -f Dockerfile.cross_arm64 -t hangover-debian-arm64-build .
