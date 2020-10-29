@@ -7,6 +7,4 @@ build
 *.rc
 *.res
 *.bin
-testprogs/kernel32/format_msg.h
 qemu_*.dll.so
-testprogs/*.exe
