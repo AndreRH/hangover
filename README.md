@@ -9,7 +9,7 @@ x86_64/x86_32 Windows applications on aarch64/ppc64le/x86_64 Wine.
 ### 1) How it works
 We have one Wine on the host in 64-bit only mode and two on the guest side for 64-bit and 32-bit.
 Inbetween sits a modified version of Qemu that runs the x86(_64) code.
-To glue it all together there are thunks, lot's of them handwritten to understand in which situation
+To glue it all together there are thunks, lots of them handwritten to understand in which situation
 a pointer is valid and in which situation it could point to a random address and should be ignored,
 and how to handle writes to resulting structures in case of errors etc.
 
