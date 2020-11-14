@@ -12,4 +12,4 @@
 	url = https://gitlab.gnome.org/GNOME/libxslt.git
 [submodule "libffi"]
 	path = libffi
-	url = https://github.com/AndreRH/libffi
+	url = https://github.com/libffi/libffi
