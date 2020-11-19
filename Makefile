@@ -123,7 +123,13 @@ build/wine-tools/Makefile: wine/configure
 	cd $(@D) ; ../../wine/configure $(ARCHFLAG_TOOLS) --with-freetype --with-gettext --disable-tests --without-alsa --without-capi --without-cms --without-coreaudio --without-cups --without-curses --without-dbus --without-fontconfig --without-gphoto --without-glu --without-gnutls --without-gsm --without-gstreamer --without-hal --without-jpeg --without-krb5 --without-ldap --without-mpg123 --without-netapi --without-openal --without-opencl --without-opengl --without-osmesa --without-oss --without-pcap --without-pulse --without-png --without-sane --without-tiff --without-v4l2 --without-x --without-xcomposite --without-xcursor --without-xinerama --without-xinput --without-xinput2 --without-xml --without-xrandr --without-xrender --without-xshape --without-xshm --without-xslt --without-xxf86vm --without-zlib
 
 build/wine-tools/.built: build/wine-tools/Makefile
-	+$(MAKE) -C build/wine-tools tools tools/sfnt2fon tools/widl tools/winebuild tools/winegcc tools/wmc tools/wrc
+	+$(MAKE) -C build/wine-tools/tools
+	+$(MAKE) -C build/wine-tools/tools/sfnt2fon
+	+$(MAKE) -C build/wine-tools/tools/widl
+	+$(MAKE) -C build/wine-tools/tools/winebuild
+	+$(MAKE) -C build/wine-tools/tools/winegcc
+	+$(MAKE) -C build/wine-tools/tools/wmc
+	+$(MAKE) -C build/wine-tools/tools/wrc
 	@touch build/wine-tools/.built
 
 # Build the Host (e.g. arm64) wine.
@@ -144,7 +150,7 @@ build/wine-guest/Makefile: build/wine-host/.built wine/configure build/x86_64-w6
 
 build/wine-guest/.built: build/wine-guest/Makefile
 	+$(MAKE) -C build/wine-guest/libs/port
-	+$(MAKE) -C build/wine-guest $(if $(NOTESTS),$(patsubst %,dlls/%,$(WINEDLLS)),)
+	+$(MAKE) -C build/wine-guest
 	@touch build/wine-guest/.built
 
 # Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
@@ -154,7 +160,7 @@ build/wine-guest32/Makefile: build/wine-host/.built wine/configure build/i686-w6
 
 build/wine-guest32/.built: build/wine-guest32/Makefile
 	+$(MAKE) -C build/wine-guest32/libs/port
-	+$(MAKE) -C build/wine-guest32 $(if $(NOTESTS),$(patsubst %,dlls/%,$(WINEDLLS)),)
+	+$(MAKE) -C build/wine-guest32
 	@touch build/wine-guest32/.built
 
 # Build qemu
