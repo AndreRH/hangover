@@ -2,6 +2,7 @@ name: debian-ppc64le
 
 on:
   push:
+  pull_request:
 
 jobs:
   build:

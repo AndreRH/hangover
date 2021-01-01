@@ -2,6 +2,7 @@ name: ubuntu-x86_64
 
 on:
   push:
+  pull_request:
 
 jobs:
   build:
