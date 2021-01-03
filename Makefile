@@ -10,6 +10,10 @@ ifeq ($(UNAME_M),x86_64)
     ARCHFLAG_TOOLS = --enable-win64
     ARCHFLAG_HOST = --enable-win64
 endif
+ifeq ($(UNAME_M),aarch64)
+    HANGOVER_WINE_CC = clang
+    HANGOVER_WINE_CXX = clang++
+endif
 ifeq ($(UNAME_M3),arm)
     HOSTBIT = 32
 endif
