@@ -328,6 +328,38 @@ void qemu__assert(struct qemu_syscall *call)
 
 #endif
 
+struct qemu__wassert
+{
+    struct qemu_syscall super;
+    uint64_t str;
+    uint64_t file;
+    uint64_t line;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void CDECL MSVCRT__wassert(const wchar_t* str, const wchar_t* file, unsigned int line)
+{
+    struct qemu__wassert call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__WASSERT);
+    call.str = (ULONG_PTR)str;
+    call.file = (ULONG_PTR)file;
+    call.line = line;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu__wassert(struct qemu_syscall *call)
+{
+    struct qemu__wassert *c = (struct qemu_w_assert *)call;
+    WINE_FIXME("Unverified!\n");
+    p__wassert(QEMU_G2H(c->str), QEMU_G2H(c->file), c->line);
+}
+
+#endif
+
 struct qemu__set_error_mode
 {
     struct qemu_syscall super;

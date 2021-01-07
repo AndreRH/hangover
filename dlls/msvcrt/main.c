@@ -339,6 +339,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p__aligned_realloc = (void *)GetProcAddress(msvcrt, "_aligned_realloc");
         p__amsg_exit = (void *)GetProcAddress(msvcrt, "_amsg_exit");
         p__assert = (void *)GetProcAddress(msvcrt, "_assert");
+        p__wassert = (void *)GetProcAddress(msvcrt, "_wassert");
         p__atodbl = (void *)GetProcAddress(msvcrt, "_atodbl");
         p__atodbl_l = (void *)GetProcAddress(msvcrt, "_atodbl_l");
         p__atof_l = (void *)GetProcAddress(msvcrt, "_atof_l");
@@ -1915,6 +1916,7 @@ static const syscall_handler dll_functions[] =
     qemu__waccess_s,
     qemu__wasctime,
     qemu__wasctime_s,
+    qemu__wassert,
     qemu__wchdir,
     qemu__wchmod,
     qemu__wcreat,
