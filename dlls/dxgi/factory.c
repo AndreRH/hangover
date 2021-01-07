@@ -650,6 +650,7 @@ struct qemu_dxgi_factory_CreateSwapChainForHwnd
     uint64_t fullscreen_desc;
     uint64_t output;
     uint64_t swapchain;
+    uint64_t host_buffers;
 };
 
 #ifdef QEMU_DLL_GUEST
@@ -658,17 +659,59 @@ static HRESULT STDMETHODCALLTYPE dxgi_factory_CreateSwapChainForHwnd(IDXGIFactor
 {
     struct qemu_dxgi_factory_CreateSwapChainForHwnd call;
     struct qemu_dxgi_factory *factory = impl_from_IDXGIFactory5(iface);
+    HRESULT hr;
+    struct qemu_dxgi_device *device_impl;
+    struct qemu_dxgi_swapchain *obj;
+    uint64_t *host_buffers;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_FACTORY_CREATESWAPCHAINFORHWND);
     call.iface = (ULONG_PTR)factory;
-    call.device = (ULONG_PTR)device;
     call.window = (ULONG_PTR)window;
+    call.swapchain = (ULONG_PTR)swapchain;
     call.swapchain_desc = (ULONG_PTR)swapchain_desc;
     call.fullscreen_desc = (ULONG_PTR)fullscreen_desc;
-    call.output = (ULONG_PTR)output;
-    call.swapchain = (ULONG_PTR)swapchain;
+
+    if (device)
+    {
+        device_impl = unsafe_impl_from_IDXGIDevice(device);
+        if (!device)
+        {
+            WINE_WARN("This is not the device we are looking for.\n");
+            return E_FAIL;
+        }
+        call.device = (ULONG_PTR)device_impl;
+    }
+    else
+    {
+        call.device = 0;
+        device_impl = NULL;
+    }
+
+    if (output)
+    {
+        call.output = (ULONG_PTR)unsafe_impl_from_IDXGIOutput((IUnknown *)output);
+        if (!call.output)
+        {
+            WINE_FIXME("This is not the output we're looking for.\n");
+            return E_FAIL;
+        }
+    }
+    else
+    {
+        call.output = (ULONG_PTR)0;
+    }
 
     qemu_syscall(&call.super);
+    if (FAILED(call.super.iret))
+        return call.super.iret;
+
+    obj = (struct qemu_dxgi_swapchain *)(ULONG_PTR)call.swapchain;
+    host_buffers = (uint64_t *)(ULONG_PTR)call.host_buffers;
+
+    qemu_dxgi_swapchain_guest_init(device_impl, host_buffers, obj);
+    *swapchain = &obj->IDXGISwapChain1_iface;
+
+    HeapFree(GetProcessHeap(), 0, host_buffers);
 
     return call.super.iret;
 }
@@ -679,12 +722,31 @@ void qemu_dxgi_factory_CreateSwapChainForHwnd(struct qemu_syscall *call)
 {
     struct qemu_dxgi_factory_CreateSwapChainForHwnd *c = (struct qemu_dxgi_factory_CreateSwapChainForHwnd *)call;
     struct qemu_dxgi_factory *factory;
+    struct qemu_dxgi_device *device;
+    struct qemu_dxgi_output *output;
+    IDXGISwapChain1 *host;
+    struct qemu_dxgi_swapchain *obj;
+    uint64_t *host_buffers;
 
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     factory = QEMU_G2H(c->iface);
+    device = QEMU_G2H(c->device);
+    output = QEMU_G2H(c->output);
 
-    c->super.iret = IDXGIFactory5_CreateSwapChainForHwnd(factory->host, QEMU_G2H(c->device), QEMU_G2H(c->window),
-            QEMU_G2H(c->swapchain_desc), QEMU_G2H(c->fullscreen_desc), QEMU_G2H(c->output), QEMU_G2H(c->swapchain));
+    c->super.iret = IDXGIFactory5_CreateSwapChainForHwnd(factory->host, device ? (IUnknown *)device->host : NULL,
+	    QEMU_G2H(c->window), QEMU_G2H(c->swapchain_desc), QEMU_G2H(c->fullscreen_desc), output ? (IDXGIOutput *)output->host : NULL,
+            c->swapchain ? &host : NULL);
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_dxgi_swapchain_create(host, device, factory, &host_buffers, &obj);
+    if (FAILED(c->super.iret))
+    {
+        IDXGISwapChain1_Release(host);
+        return;
+    }
+    c->swapchain = QEMU_H2G(obj);
+    c->host_buffers = QEMU_H2G(host_buffers);
 }
 
 #endif
