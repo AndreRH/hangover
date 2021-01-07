@@ -899,7 +899,7 @@
 @ cdecl _set_controlfp(long long)
 @ cdecl _set_doserrno(long) MSVCRT__set_doserrno
 @ cdecl _set_errno(long)
-# @ cdecl _set_error_mode(long)
+@ cdecl _set_error_mode(long) MSVCRT__set_error_mode
 # stub _set_fileinfo(long)
 @ cdecl _set_fmode(long) MSVCRT__set_fmode
 # @ cdecl _set_output_format(long) MSVCRT__set_output_format

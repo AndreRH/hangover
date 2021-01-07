@@ -327,3 +327,33 @@ void qemu__assert(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu__set_error_mode
+{
+    struct qemu_syscall super;
+    int32_t mode;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI int CDECL MSVCRT__set_error_mode(int mode)
+{
+    struct qemu__set_error_mode call;
+    call.super.id = QEMU_SYSCALL_ID(CALL__SET_ERROR_MODE);
+    call.mode = mode;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu__set_error_mode(struct qemu_syscall *call)
+{
+    struct qemu__set_error_mode *c = (struct qemu__set_error_mode *)call;
+    WINE_TRACE("\n");
+    c->super.iret = p__set_error_mode(c->mode);
+}
+
+#endif

@@ -476,6 +476,7 @@ enum msvcrt_calls
     CALL__SET_CONTROLFP,
     CALL__SET_DOSERRNO,
     CALL__SET_ERRNO,
+    CALL__SET_ERROR_MODE,
     CALL__SET_FMA3_ENABLE,
     CALL__SET_FMODE,
     CALL__SET_INVALID_PARAMETER_HANDLER,
@@ -1692,6 +1693,7 @@ void qemu__searchenv_s(struct qemu_syscall *call);
 void qemu__set_controlfp(struct qemu_syscall *call);
 void qemu__set_doserrno(struct qemu_syscall *call);
 void qemu__set_errno(struct qemu_syscall *call);
+void qemu__set_error_mode(struct qemu_syscall *call);
 void qemu__set_FMA3_enable(struct qemu_syscall *call);
 void qemu__set_fmode(struct qemu_syscall *call);
 void qemu__set_invalid_parameter_handler(struct qemu_syscall *call);
@@ -2897,6 +2899,7 @@ ULONG* (* CDECL p___doserrno)(void);
 int (* CDECL p__get_errno)(int *pValue);
 int (* CDECL p__get_doserrno)(int *pValue);
 int (* CDECL p__set_errno)(int value);
+int (* CDECL p__set_error_mode)(int mode);
 int (* CDECL p__set_doserrno)(int value);
 char* (* CDECL p_strerror)(int err);
 int (* CDECL p_strerror_s)(char *buffer, size_t numberOfElements, int errnum);
