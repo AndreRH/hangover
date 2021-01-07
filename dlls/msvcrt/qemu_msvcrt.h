@@ -3408,7 +3408,7 @@ static inline uint64_t FILE_h2g(MSVCRT_FILE *host)
         size_t offset;
         offset = (host - host_iob);
         if (offset <= guest_iob_size)
-            return QEMU_H2G(guest_iob + offset * guest_iob_size);
+            return QEMU_H2G(guest_iob + offset * guest_FILE_size);
     }
     return QEMU_H2G(host);
 #endif
