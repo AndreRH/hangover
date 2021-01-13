@@ -476,6 +476,7 @@ enum msvcrt_calls
     CALL__SET_CONTROLFP,
     CALL__SET_DOSERRNO,
     CALL__SET_ERRNO,
+    CALL__SET_ERROR_MODE,
     CALL__SET_FMA3_ENABLE,
     CALL__SET_FMODE,
     CALL__SET_INVALID_PARAMETER_HANDLER,
@@ -582,6 +583,7 @@ enum msvcrt_calls
     CALL__WACCESS_S,
     CALL__WASCTIME,
     CALL__WASCTIME_S,
+    CALL__WASSERT,
     CALL__WCHDIR,
     CALL__WCHMOD,
     CALL__WCREAT,
@@ -1692,6 +1694,7 @@ void qemu__searchenv_s(struct qemu_syscall *call);
 void qemu__set_controlfp(struct qemu_syscall *call);
 void qemu__set_doserrno(struct qemu_syscall *call);
 void qemu__set_errno(struct qemu_syscall *call);
+void qemu__set_error_mode(struct qemu_syscall *call);
 void qemu__set_FMA3_enable(struct qemu_syscall *call);
 void qemu__set_fmode(struct qemu_syscall *call);
 void qemu__set_invalid_parameter_handler(struct qemu_syscall *call);
@@ -1795,6 +1798,7 @@ void qemu__waccess(struct qemu_syscall *c);
 void qemu__waccess_s(struct qemu_syscall *c);
 void qemu__wasctime(struct qemu_syscall *call);
 void qemu__wasctime_s(struct qemu_syscall *call);
+void qemu__wassert(struct qemu_syscall *call);
 void qemu__wchdir(struct qemu_syscall *call);
 void qemu__wchmod(struct qemu_syscall *c);
 void qemu__wcreat(struct qemu_syscall *c);
@@ -2897,6 +2901,7 @@ ULONG* (* CDECL p___doserrno)(void);
 int (* CDECL p__get_errno)(int *pValue);
 int (* CDECL p__get_doserrno)(int *pValue);
 int (* CDECL p__set_errno)(int value);
+int (* CDECL p__set_error_mode)(int mode);
 int (* CDECL p__set_doserrno)(int value);
 char* (* CDECL p_strerror)(int err);
 int (* CDECL p_strerror_s)(char *buffer, size_t numberOfElements, int errnum);
@@ -3269,6 +3274,7 @@ double (* CDECL p_strtod_l)(const char *str, char **end, MSVCRT__locale_t locale
 float (* CDECL p__strtof_l)(const char *str, char **end, MSVCRT__locale_t locale);
 float (* CDECL p_strtof)(const char *str, char **end);
 void (* CDECL p__assert)(const char* str, const char* file, unsigned int line);
+void (* CDECL p__wassert)(const wchar_t* str, const wchar_t* file, unsigned int line);
 double (* CDECL p__atof_l)(const char *str, MSVCRT__locale_t locale);
 int (* CDECL p__atoflt_l)(FLOAT *value, char *str, MSVCRT__locale_t locale);
 int (* CDECL p__atoflt)(FLOAT *value, char *str);
@@ -3408,7 +3414,7 @@ static inline uint64_t FILE_h2g(MSVCRT_FILE *host)
         size_t offset;
         offset = (host - host_iob);
         if (offset <= guest_iob_size)
-            return QEMU_H2G(guest_iob + offset * guest_iob_size);
+            return QEMU_H2G(guest_iob + offset * guest_FILE_size);
     }
     return QEMU_H2G(host);
 #endif

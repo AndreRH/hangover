@@ -4566,7 +4566,6 @@ int CDECL MSVCRT_fputc(int c, FILE* file)
 void qemu_fputc(struct qemu_syscall *call)
 {
     struct qemu_fputc *c = (struct qemu_fputc *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
     c->super.iret = p_fputc(c->c, FILE_g2h(c->file));
 }
 

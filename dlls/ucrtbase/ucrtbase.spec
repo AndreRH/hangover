@@ -1289,7 +1289,7 @@
 @ cdecl _set_controlfp(long long)
 @ cdecl _set_doserrno(long) MSVCRT__set_doserrno
 @ cdecl _set_errno(long)
-#@ cdecl _set_error_mode(long)
+@ cdecl _set_error_mode(long) MSVCRT__set_error_mode
 @ cdecl _set_fmode(long) MSVCRT__set_fmode
 @ cdecl _set_invalid_parameter_handler(ptr) MSVCRT__set_invalid_parameter_handler
 @ stub _set_malloc_crt_max_wait
@@ -1495,7 +1495,7 @@
 @ cdecl _waccess_s(wstr long) MSVCRT__waccess_s
 @ cdecl _wasctime(ptr) MSVCRT__wasctime
 @ cdecl _wasctime_s(ptr long ptr) MSVCRT__wasctime_s
-#@ cdecl _wassert(wstr wstr long) MSVCRT__wassert
+@ cdecl _wassert(wstr wstr long) MSVCRT__wassert
 @ cdecl _wchdir(wstr) MSVCRT__wchdir
 @ cdecl _wchmod(wstr long) MSVCRT__wchmod
 @ extern _wcmdln MSVCRT__wcmdln

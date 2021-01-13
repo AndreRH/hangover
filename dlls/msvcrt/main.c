@@ -339,6 +339,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p__aligned_realloc = (void *)GetProcAddress(msvcrt, "_aligned_realloc");
         p__amsg_exit = (void *)GetProcAddress(msvcrt, "_amsg_exit");
         p__assert = (void *)GetProcAddress(msvcrt, "_assert");
+        p__wassert = (void *)GetProcAddress(msvcrt, "_wassert");
         p__atodbl = (void *)GetProcAddress(msvcrt, "_atodbl");
         p__atodbl_l = (void *)GetProcAddress(msvcrt, "_atodbl_l");
         p__atof_l = (void *)GetProcAddress(msvcrt, "_atof_l");
@@ -714,6 +715,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p__set_controlfp = (void *)GetProcAddress(msvcrt, "_set_controlfp");
         p__set_doserrno = (void *)GetProcAddress(msvcrt, "_set_doserrno");
         p__set_errno = (void *)GetProcAddress(msvcrt, "_set_errno");
+        p__set_error_mode = (void *)GetProcAddress(msvcrt, "_set_error_mode");
         p__set_FMA3_enable = (void *)GetProcAddress(msvcrt, "_set_FMA3_enable");
         p__set_fmode = (void *)GetProcAddress(msvcrt, "_set_fmode");
         p__set_invalid_parameter_handler = (void *)GetProcAddress(msvcrt, "_set_invalid_parameter_handler");
@@ -1807,6 +1809,7 @@ static const syscall_handler dll_functions[] =
     qemu__set_controlfp,
     qemu__set_doserrno,
     qemu__set_errno,
+    qemu__set_error_mode,
     qemu__set_FMA3_enable,
     qemu__set_fmode,
     qemu__set_invalid_parameter_handler,
@@ -1913,6 +1916,7 @@ static const syscall_handler dll_functions[] =
     qemu__waccess_s,
     qemu__wasctime,
     qemu__wasctime_s,
+    qemu__wassert,
     qemu__wchdir,
     qemu__wchmod,
     qemu__wcreat,

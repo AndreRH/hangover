@@ -248,8 +248,8 @@
 @ cdecl -arch=i386 -norelay __libm_sse2_tan() MSVCRT___libm_sse2_tan
 @ cdecl -arch=i386 -norelay __libm_sse2_tanf() MSVCRT___libm_sse2_tanf
 @ extern __mb_cur_max MSVCRT___mb_cur_max
-# @ cdecl __p___argc() MSVCRT___p___argc
-# @ cdecl __p___argv() MSVCRT___p___argv
+@ cdecl __p___argc() MSVCRT___p___argc
+@ cdecl __p___argv() MSVCRT___p___argv
 @ cdecl __p___initenv()
 @ cdecl __p___mb_cur_max()
 # @ cdecl __p___wargv() MSVCRT___p___wargv
@@ -899,7 +899,7 @@
 @ cdecl _set_controlfp(long long)
 @ cdecl _set_doserrno(long) MSVCRT__set_doserrno
 @ cdecl _set_errno(long)
-# @ cdecl _set_error_mode(long)
+@ cdecl _set_error_mode(long) MSVCRT__set_error_mode
 # stub _set_fileinfo(long)
 @ cdecl _set_fmode(long) MSVCRT__set_fmode
 # @ cdecl _set_output_format(long) MSVCRT__set_output_format
@@ -1095,7 +1095,7 @@
 @ cdecl _waccess_s(wstr long) MSVCRT__waccess_s
 @ cdecl _wasctime(ptr) MSVCRT__wasctime
 @ cdecl _wasctime_s(ptr long ptr) MSVCRT__wasctime_s
-# @ cdecl _wassert(wstr wstr long) MSVCRT__wassert
+@ cdecl _wassert(wstr wstr long) MSVCRT__wassert
 @ cdecl _wchdir(wstr) MSVCRT__wchdir
 @ cdecl _wchmod(wstr long) MSVCRT__wchmod
 @ extern _wcmdln MSVCRT__wcmdln

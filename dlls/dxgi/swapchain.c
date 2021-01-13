@@ -292,17 +292,21 @@ struct qemu_dxgi_swapchain_GetDevice
 
 #ifdef QEMU_DLL_GUEST
 
-static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetDevice(IDXGISwapChain1 *iface, REFIID riid, void **device)
+static struct qemu_dxgi_device *dxgi_swapchain_get_device_impl(struct qemu_dxgi_swapchain *swapchain)
 {
     struct qemu_dxgi_swapchain_GetDevice call;
-    struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
-    struct qemu_dxgi_device *device_impl;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_GETDEVICE);
     call.iface = (ULONG_PTR)swapchain;
 
     qemu_syscall(&call.super);
-    device_impl = (struct qemu_dxgi_device *)(ULONG_PTR)call.device;
+    return (struct qemu_dxgi_device *)(ULONG_PTR)call.device;
+}
+
+static HRESULT STDMETHODCALLTYPE dxgi_swapchain_GetDevice(IDXGISwapChain1 *iface, REFIID riid, void **device)
+{
+    struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
+    struct qemu_dxgi_device *device_impl = dxgi_swapchain_get_device_impl(swapchain);
 
     return IDXGIDevice2_QueryInterface(&device_impl->IDXGIDevice2_iface, riid, device);
 }
@@ -607,15 +611,45 @@ struct qemu_dxgi_swapchain_ResizeBuffers
     uint64_t height;
     uint64_t format;
     uint64_t flags;
+    uint64_t host_buffers;
 };
 
 #ifdef QEMU_DLL_GUEST
+
+static void qemu_dxgi_swapchain_wrap_buffers(struct qemu_dxgi_device *device, uint64_t *host_buffers,
+        struct qemu_dxgi_swapchain *swapchain)
+{
+    DXGI_SWAP_CHAIN_DESC desc;
+    UINT i;
+    IUnknown *surface;
+    IQemuD3D11Device *qemu_device;
+    HRESULT hr;
+
+    hr = IDXGISwapChain_GetDesc(&swapchain->IDXGISwapChain1_iface, &desc);
+    if (FAILED(hr))
+        WINE_ERR("Failed to get swapchain desc.\n");
+
+    hr = IDXGIDevice2_QueryInterface(&device->IDXGIDevice2_iface, &IID_IQemuD3D11Device, (void **)&qemu_device);
+    if (FAILED(hr))
+        WINE_ERR("Device should implement IQemuD3D11Device.\n");
+
+    for (i = 0; i < desc.BufferCount; ++i)
+    {
+        hr = qemu_device->lpVtbl->wrap_implicit_surface(qemu_device, host_buffers[i], &surface);
+        if (FAILED(hr))
+            WINE_ERR("Failed to create d3d11 wrapper for buffer %u.\n", i);
+        IUnknown_Release(surface);
+    }
+
+    qemu_device->lpVtbl->Release(qemu_device);
+}
 
 static HRESULT STDMETHODCALLTYPE dxgi_swapchain_ResizeBuffers(IDXGISwapChain1 *iface, UINT buffer_count, UINT width,
         UINT height, DXGI_FORMAT format, UINT flags)
 {
     struct qemu_dxgi_swapchain_ResizeBuffers call;
     struct qemu_dxgi_swapchain *swapchain = impl_from_IDXGISwapChain1(iface);
+    uint64_t *host_buffers;
 
     call.super.id = QEMU_SYSCALL_ID(CALL_DXGI_SWAPCHAIN_RESIZEBUFFERS);
     call.iface = (ULONG_PTR)swapchain;
@@ -627,21 +661,72 @@ static HRESULT STDMETHODCALLTYPE dxgi_swapchain_ResizeBuffers(IDXGISwapChain1 *i
 
     qemu_syscall(&call.super);
 
+    host_buffers = (uint64_t *)(ULONG_PTR)call.host_buffers;
+    qemu_dxgi_swapchain_wrap_buffers(dxgi_swapchain_get_device_impl(swapchain), host_buffers, swapchain);
+
     return call.super.iret;
 }
 
 #else
 
+static HRESULT qemu_dxgi_swapchain_get_host_buffers(IDXGISwapChain1 *host, uint64_t **host_buffers)
+{
+    HRESULT hr;
+    DXGI_SWAP_CHAIN_DESC desc;
+    IDXGISurface1 *buffer;
+    UINT i;
+
+    hr = IDXGISwapChain1_GetDesc(host, &desc);
+    if (FAILED(hr))
+    {
+        WINE_ERR("Failed to get swapchain desc.\n");
+        return hr;
+    }
+
+    *host_buffers = HeapAlloc(GetProcessHeap(), 0, desc.BufferCount * sizeof(**host_buffers));
+    if (!host_buffers)
+    {
+        WINE_ERR("Out of memory\n");
+        return E_OUTOFMEMORY;
+    }
+
+    for (i = 0; i < desc.BufferCount; ++i)
+    {
+        hr = IDXGISwapChain1_GetBuffer(host, i, &IID_IDXGISurface1, (void **)&buffer);
+        if (FAILED(hr))
+	{
+            WINE_ERR("Failed to get buffer %u.\n", i);
+            HeapFree(GetProcessHeap(), 0, *host_buffers);
+            return hr;
+        }
+
+        (*host_buffers)[i] = QEMU_H2G(buffer);
+        IDXGISurface1_Release(buffer);
+    }
+
+    return S_OK;
+}
+
 void qemu_dxgi_swapchain_ResizeBuffers(struct qemu_syscall *call)
 {
     struct qemu_dxgi_swapchain_ResizeBuffers *c = (struct qemu_dxgi_swapchain_ResizeBuffers *)call;
     struct qemu_dxgi_swapchain *swapchain;
+    uint64_t *host_buffers;
 
-    WINE_FIXME("Unverified!\n");
     swapchain = QEMU_G2H(c->iface);
 
     c->super.iret = IDXGISwapChain1_ResizeBuffers(swapchain->host, c->buffer_count, c->width, c->height,
             c->format, c->flags);
+
+    if (FAILED(c->super.iret))
+        return;
+
+    c->super.iret = qemu_dxgi_swapchain_get_host_buffers(swapchain->host, &host_buffers);
+
+    if (FAILED(c->super.iret))
+        return;
+
+    c->host_buffers = QEMU_H2G(host_buffers);
 }
 
 #endif
@@ -1308,23 +1393,7 @@ void qemu_dxgi_swapchain_guest_init(struct qemu_dxgi_device *device, uint64_t *h
     swapchain->IDXGISwapChain1_iface.lpVtbl = &dxgi_swapchain_vtbl;
     wined3d_private_store_init(&swapchain->private_store);
 
-    hr = IDXGISwapChain_GetDesc(&swapchain->IDXGISwapChain1_iface, &desc);
-    if (FAILED(hr))
-        WINE_ERR("Failed to get swapchain desc.\n");
-
-    hr = IDXGIDevice2_QueryInterface(&device->IDXGIDevice2_iface, &IID_IQemuD3D11Device, (void **)&qemu_device);
-    if (FAILED(hr))
-        WINE_ERR("Device should implement IQemuD3D11Device.\n");
-
-    for (i = 0; i < desc.BufferCount; ++i)
-    {
-        hr = qemu_device->lpVtbl->wrap_implicit_surface(qemu_device, host_buffers[i], &surface);
-        if (FAILED(hr))
-            WINE_ERR("Failed to create d3d11 wrapper for buffer %u.\n", i);
-        IUnknown_Release(surface);
-    }
-
-    qemu_device->lpVtbl->Release(qemu_device);
+    qemu_dxgi_swapchain_wrap_buffers(device, host_buffers, swapchain);
 }
 
 #else
@@ -1333,11 +1402,7 @@ HRESULT qemu_dxgi_swapchain_create(IDXGISwapChain1 *host, struct qemu_dxgi_devic
         struct qemu_dxgi_factory *factory, uint64_t **host_buffers, struct qemu_dxgi_swapchain **swapchain)
 {
     struct qemu_dxgi_swapchain *obj;
-    DXGI_SWAP_CHAIN_DESC desc;
     HRESULT hr;
-    IDXGISurface1 *buffer;
-    struct qemu_dxgi_surface *surface;
-    UINT i;
 
     obj = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(*obj));
     if (!obj)
@@ -1350,28 +1415,14 @@ HRESULT qemu_dxgi_swapchain_create(IDXGISwapChain1 *host, struct qemu_dxgi_devic
     obj->device = device;
     obj->factory = factory;
 
-    hr = IDXGISwapChain1_GetDesc(host, &desc);
+    hr = qemu_dxgi_swapchain_get_host_buffers(host, host_buffers);
     if (FAILED(hr))
-        WINE_ERR("Failed to get swapchain desc.\n");
-
-    *host_buffers = HeapAlloc(GetProcessHeap(), 0, desc.BufferCount * sizeof(*host_buffers));
-    if (!host_buffers)
     {
-        WINE_WARN("Out of memory\n");
         HeapFree(GetProcessHeap(), 0, obj);
+        return hr;
     }
 
-    for (i = 0; i < desc.BufferCount; ++i)
-    {
-        hr = IDXGISwapChain1_GetBuffer(host, i, &IID_IDXGISurface1, (void **)&buffer);
-        if (FAILED(hr))
-            WINE_ERR("Failed to get buffer %u.\n", i);
-
-        (*host_buffers)[i] = QEMU_H2G(buffer);
-        IDXGISurface1_Release(buffer);
-    }
     *swapchain = obj;
-
     return S_OK;
 }
 
