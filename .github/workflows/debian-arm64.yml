@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  build_arm64:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,3 +21,9 @@ jobs:
         df -h
     - name: build image
       run: docker build -f Dockerfile.cross_arm64 -t hangover-debian-arm64-build .
+    - name: get buildfolder
+      run: docker run --rm hangover-ubuntu-build tar -C /root/hangover/ -czf - build > build.tar.gz
+    - uses: actions/upload-artifact@v1
+      with:
+        name: buildfolder
+        path: build.tar.gz
