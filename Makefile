@@ -159,6 +159,7 @@ build/wine-guest/Makefile: build/wine-host/.built wine/configure build/x86_64-w6
 
 build/wine-guest/.built: build/wine-guest/Makefile
 	+$(MAKE) -C build/wine-guest/libs/port
+	+$(MAKE) -C build/wine-guest/dlls/kernel32 locale_rc.res
 	+$(MAKE) -C build/wine-guest
 	@touch build/wine-guest/.built
 
@@ -169,6 +170,7 @@ build/wine-guest32/Makefile: build/wine-host/.built wine/configure build/i686-w6
 
 build/wine-guest32/.built: build/wine-guest32/Makefile
 	+$(MAKE) -C build/wine-guest32/libs/port
+	+$(MAKE) -C build/wine-guest32/dlls/kernel32 locale_rc.res
 	+$(MAKE) -C build/wine-guest32
 	@touch build/wine-guest32/.built
 
