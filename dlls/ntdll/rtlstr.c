@@ -1493,8 +1493,16 @@ WINBASEAPI NTSTATUS WINAPI RtlGUIDFromString(PUNICODE_STRING str, GUID* guid)
 void qemu_RtlGUIDFromString(struct qemu_syscall *call)
 {
     struct qemu_RtlGUIDFromString *c = (struct qemu_RtlGUIDFromString *)call;
-    WINE_FIXME("Unverified!\n");
-    c->super.iret = RtlGUIDFromString(QEMU_G2H(c->str), QEMU_G2H(c->guid));
+    UNICODE_STRING str_stack, *str = &str_stack;
+
+    WINE_TRACE("\n");
+#if GUEST_BIT == HOST_BIT
+    str = QEMU_G2H(c->str);
+#else
+    UNICODE_STRING_g2h(str, QEMU_G2H(c->str));
+#endif
+
+    c->super.iret = RtlGUIDFromString(str, QEMU_G2H(c->guid));
 }
 
 #endif
