@@ -20,9 +20,9 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
     - name: build image
-      run: docker build -f Dockerfile -t hangover-ubuntu-build .
+      run: docker build -f Dockerfile -t hangover-ubuntu-x86_64-build .
     - name: get buildfolder
-      run: docker run --rm hangover-ubuntu-build tar -C /root/hangover/ -czf - build > build.tar.gz
+      run: docker run --rm hangover-ubuntu-x86_64-build tar -C /root/hangover/ -czf - build > build.tar.gz
     - uses: actions/upload-artifact@v1
       with:
         name: buildfolder

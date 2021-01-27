@@ -22,7 +22,7 @@ jobs:
     - name: build image
       run: docker build -f Dockerfile.cross_arm64 -t hangover-debian-arm64-build .
     - name: get buildfolder
-      run: docker run --rm hangover-ubuntu-build tar -C /root/hangover/ -czf - build > build.tar.gz
+      run: docker run --rm hangover-debian-arm64-build tar -C /root/hangover/ -czf - build > build.tar.gz
     - uses: actions/upload-artifact@v1
       with:
         name: buildfolder
