@@ -56,7 +56,7 @@ CROSS_TRIPLE_H = --host=$(CROSS_TRIPLE)
 ARCHFLAG_HOST=
 endif
 
-all: build/wine-host/.built build/wine-guest/.built build/wine-guest32/.built qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32) $(EXTDLL_TARGET64)
+all: build/wine-host/.built build/wine-guest64/.built build/wine-guest32/.built qemu $(DLL_TARGET32) $(DLL_TARGET64) $(DRV_TARGET32) $(DRV_TARGET64) $(WINEDLL_TARGET32) $(WINEDLL_TARGET64) $(EXTDLL_TARGET32) $(EXTDLL_TARGET64)
 .PHONY: all
 
 libffi/configure: libffi/autogen.sh
@@ -153,15 +153,15 @@ wine-host build/wine-host/.built: build/wine-host/Makefile
 	@touch build/wine-host/.built
 
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
-build/wine-guest/Makefile: build/wine-host/.built wine/configure build/x86_64-w64-mingw32/bin/libxml2-2.dll build/x86_64-w64-mingw32/bin/libxslt-1.dll
+build/wine-guest64/Makefile: build/wine-host/.built wine/configure build/x86_64-w64-mingw32/bin/libxml2-2.dll build/x86_64-w64-mingw32/bin/libxslt-1.dll
 	@mkdir -p $(@D)
-	cd build/wine-guest ; ../../wine/configure --host=x86_64-w64-mingw32 --without-mingw --with-wine-tools=../wine-tools --without-freetype $(TESTS) --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
+	cd build/wine-guest64 ; ../../wine/configure --host=x86_64-w64-mingw32 --without-mingw --with-wine-tools=../wine-tools --without-freetype $(TESTS) --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
 
-build/wine-guest/.built: build/wine-guest/Makefile
-	+$(MAKE) -C build/wine-guest/libs/port
-	+$(MAKE) -C build/wine-guest/dlls/kernel32 locale_rc.res
-	+$(MAKE) -C build/wine-guest
-	@touch build/wine-guest/.built
+build/wine-guest64/.built: build/wine-guest64/Makefile
+	+$(MAKE) -C build/wine-guest64/libs/port
+	+$(MAKE) -C build/wine-guest64/dlls/kernel32 locale_rc.res
+	+$(MAKE) -C build/wine-guest64
+	@touch build/wine-guest64/.built
 
 # Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
 build/wine-guest32/Makefile: build/wine-host/.built wine/configure build/i686-w64-mingw32/bin/libxml2-2.dll build/i686-w64-mingw32/bin/libxslt-1.dll
@@ -235,7 +235,7 @@ build/dlls64/%/Makefile: build/libffi/installed/lib/libffi.a
 	echo "DESTDIR?=../../.." >> $@
 	echo "GUEST_BIT=64" >> $@
 	echo "HOST_BIT=$(HOSTBIT)" >> $@
-	echo "WINE_DIR=wine-guest" >> $@
+	echo "WINE_DIR=wine-guest64" >> $@
 	echo "EXTRALIBS=-lpthread" >> $@
 	echo >> $@
 	echo "include ../../../dlls/$(DLL)/Makefile" >> $@
@@ -313,16 +313,16 @@ $(foreach mod,$(DRVS),$(eval $(call DRVS64_RULE_H,$(mod))))
 # Link Wine libraries.
 
 define WINEDLLS_RULE
-build/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/$(1).dll: build/wine-guest32/.built build/wine-guest/.built build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+build/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/$(1).dll: build/wine-guest32/.built build/wine-guest64/.built build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	ln -sf ../../../wine-guest32/dlls/$(1)/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll32/
-	ln -sf ../../../wine-guest/dlls/$(1)/$(1).dll   build/qemu/x86_64-windows-user/qemu_guest_dll64/
+	ln -sf ../../../wine-guest64/dlls/$(1)/$(1).dll   build/qemu/x86_64-windows-user/qemu_guest_dll64/
 endef
 $(foreach mod,$(WINEDLLS),$(eval $(call WINEDLLS_RULE,$(mod))))
 
 # Link external libs
 
 define EXTDLLS_RULE
-build/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/$(1).dll: build/wine-guest32/.built build/wine-guest/.built build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+build/qemu/x86_64-windows-user/qemu_guest_dll32/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/$(1).dll: build/wine-guest32/.built build/wine-guest64/.built build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	ln -sf ../../../i686-w64-mingw32/bin/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll32/
 	ln -sf ../../../x86_64-w64-mingw32/bin/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/
 endef
