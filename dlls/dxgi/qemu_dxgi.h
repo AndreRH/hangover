@@ -404,6 +404,13 @@ HRESULT qemu_dxgi_swapchain_create(IDXGISwapChain1 *host, struct qemu_dxgi_devic
 struct qemu_dxgi_surface *surface_from_host(IDXGISurface1 *host);
 struct qemu_dxgi_output *output_from_host(IDXGIOutput4 *host);
 
+
+extern HRESULT (WINAPI *pCreateDXGIFactory)(REFIID iid, void **factory);
+extern HRESULT (WINAPI *pCreateDXGIFactory1)(REFIID iid, void **factory);
+extern HRESULT (WINAPI *pCreateDXGIFactory2)(UINT flags, REFIID iid, void **factory);
+extern HRESULT (WINAPI *pDXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
+        unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
+
 #endif
 
 #endif

@@ -12,7 +12,7 @@ dxgi.dll: adapter_g.o device_g.o dxgi.spec factory_g.o main_g.o output_g.o surfa
 	$(WINEGCC) --wine-objdir $(DESTDIR)/build/$(WINE_DIR) -shared -b $(GUEST_CC) $(SRCDIR)/dxgi.spec *_g.o -o dxgi.dll -ldxguid -luuid
 
 qemu_dxgi.dll.so: adapter_h.o device_h.o factory_h.o main_h.o output_h.o qemu_dxgi.spec surface_h.o swapchain_h.o
-	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_dxgi.spec *_h.o -o qemu_dxgi.dll.so -ldxgi -ldxguid
+	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_dxgi.spec *_h.o -o qemu_dxgi.dll.so -ldxguid
 
 %_g.o: %.c qemu_dxgi.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST -I../../wine-guest32/include -I../../../wine/include -Wno-format

@@ -1399,13 +1399,13 @@ HRESULT qemu_dxgi_factory_create(DWORD flags, DWORD version, struct qemu_dxgi_fa
     switch (version)
     {
         case 0:
-            hr = CreateDXGIFactory(&IID_IDXGIFactory5, (void **)&out->host);
+            hr = pCreateDXGIFactory(&IID_IDXGIFactory5, (void **)&out->host);
             break;
         case 1:
-            hr = CreateDXGIFactory1(&IID_IDXGIFactory5, (void **)&out->host);
+            hr = pCreateDXGIFactory1(&IID_IDXGIFactory5, (void **)&out->host);
             break;
         case 2:
-            hr = CreateDXGIFactory2(flags, &IID_IDXGIFactory5, (void **)&out->host);
+            hr = pCreateDXGIFactory2(flags, &IID_IDXGIFactory5, (void **)&out->host);
             break;
     }
     if (FAILED(hr))

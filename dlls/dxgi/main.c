@@ -604,9 +604,37 @@ static const syscall_handler dll_functions[] =
     qemu_dxgi_device_create_surface,
 };
 
+HRESULT (WINAPI *pCreateDXGIFactory)(REFIID iid, void **factory);
+HRESULT (WINAPI *pCreateDXGIFactory1)(REFIID iid, void **factory);
+HRESULT (WINAPI *pCreateDXGIFactory2)(UINT flags, REFIID iid, void **factory);
+HRESULT (WINAPI *pDXGID3D10CreateDevice)(HMODULE d3d10core, IDXGIFactory *factory, IDXGIAdapter *adapter,
+        unsigned int flags, const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count, void **device);
+
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
+    HMODULE dxgi;
     WINE_TRACE("Loading host-side dxgi wrapper.\n");
+
+    dxgi = LoadLibraryA("dxgi.dll");
+    if (!dxgi)
+    {
+        WINE_FIXME("Failed to load host dxgi.dll\n");
+        return NULL;
+    }
+
+    pCreateDXGIFactory = (void *)GetProcAddress(dxgi, "CreateDXGIFactory");
+    if (!pCreateDXGIFactory)
+        WINE_ERR("Cannot find CreateDXGIFactory in dxgi.dll.\n");
+    pCreateDXGIFactory1 = (void *)GetProcAddress(dxgi, "CreateDXGIFactory1");
+    if (!pCreateDXGIFactory1)
+        WINE_ERR("Cannot find CreateDXGIFactory1 in dxgi.dll.\n");
+    pCreateDXGIFactory2 = (void *)GetProcAddress(dxgi, "CreateDXGIFactory2");
+    if (!pCreateDXGIFactory2)
+        WINE_ERR("Cannot find CreateDXGIFactory2 in dxgi.dll.\n");
+    pDXGID3D10CreateDevice = (void *)GetProcAddress(dxgi, "DXGID3D10CreateDevice");
+    if (!pDXGID3D10CreateDevice)
+        WINE_ERR("Cannot find DXGID3D10CreateDevice in dxgi.dll.\n");
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;

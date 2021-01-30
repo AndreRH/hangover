@@ -868,7 +868,7 @@ HRESULT qemu_dxgi_device_create(HMODULE mod, struct qemu_dxgi_adapter *adapter, 
 
     /* Note that calling DXGID3D10CreateDevice here assumes that D3D11CreateDevice doesn't do any
      * magic on its own, beyond passing the upper layer HMODULE to dxgi. */
-    hr = DXGID3D10CreateDevice(mod, factory ? (IDXGIFactory *)factory->host : NULL,
+    hr = pDXGID3D10CreateDevice(mod, factory ? (IDXGIFactory *)factory->host : NULL,
             adapter ? (IDXGIAdapter *)adapter->host : NULL,
             flags, feature_levels, level_count, (void **)&unk_device);
     if (FAILED(hr))
