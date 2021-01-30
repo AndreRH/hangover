@@ -336,11 +336,27 @@ static const syscall_handler dll_functions[] =
 
 pthread_key_t cabinet_tls;
 
+HFCI (CDECL *p_FCICreate)(PERF perf, PFNFCIFILEPLACED pfnfiledest, PFNFCIALLOC pfnalloc, PFNFCIFREE pfnfree,
+        PFNFCIOPEN pfnopen, PFNFCIREAD pfnread, PFNFCIWRITE pfnwrite, PFNFCICLOSE pfnclose, PFNFCISEEK pfnseek,
+        PFNFCIDELETE pfndelete, PFNFCIGETTEMPFILE pfnfcigtf, PCCAB pccab, void *pv);
+BOOL (CDECL *p_FCIAddFile)(HFCI hfci, char *pszSourceFile, char *pszFileName, BOOL fExecute,
+        PFNFCIGETNEXTCABINET pfnfcignc, PFNFCISTATUS pfnfcis, PFNFCIGETOPENINFO pfnfcigoi, TCOMP typeCompress);
+BOOL (CDECL *p_FCIFlushFolder)(HFCI hfci, PFNFCIGETNEXTCABINET pfnfcignc, PFNFCISTATUS pfnfcis);
+BOOL (CDECL *p_FCIFlushCabinet)(HFCI hfci, BOOL fGetNextCab, PFNFCIGETNEXTCABINET pfnfcignc, PFNFCISTATUS pfnfcis);
+BOOL (CDECL *p_FCIDestroy)(HFCI hfci);
+HFDI (CDECL *p_FDICreate)(PFNALLOC pfnalloc, PFNFREE pfnfree, PFNOPEN pfnopen, PFNREAD pfnread,
+        PFNWRITE pfnwrite, PFNCLOSE pfnclose, PFNSEEK pfnseek, int cpuType, PERF perf);
+BOOL (CDECL *p_FDIIsCabinet)(HFDI hfdi, INT_PTR hf, PFDICABINETINFO pfdici);
+BOOL (CDECL *p_FDICopy)(HFDI hfdi, char *pszCabinet, char *pszCabPath, int flags, PFNFDINOTIFY pfnfdin,
+        PFNFDIDECRYPT pfnfdid, void *pvUser);
+BOOL (CDECL *p_FDIDestroy)(HFDI hfdi);
+BOOL (CDECL *p_FDITruncateCabinet)(HFDI hfdi, char *pszCabinetName, USHORT iFolderToDelete);
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     int ret;
     WINE_TRACE("Loading host-side cabinet wrapper.\n");
-    HMODULE cabinet = GetModuleHandleA("cabinet");
+    HMODULE cabinet = LoadLibraryA("cabinet");
 
     ret = pthread_key_create(&cabinet_tls, NULL);
     if (ret)
@@ -356,8 +372,38 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (!p_Extract)
         WINE_ERR("Cannot get Extract entrypoint.\n");
     p_DllGetVersion = (void *)GetProcAddress(cabinet, "DllGetVersion");
-    if (!p_Extract)
+    if (!p_DllGetVersion)
         WINE_ERR("Cannot get DllGetVersion entrypoint.\n");
+    p_FCICreate = (void *)GetProcAddress(cabinet, "FCICreate");
+    if (!p_FCICreate)
+        WINE_ERR("Cannot get FCICreate entrypoint.\n");
+    p_FCIAddFile = (void *)GetProcAddress(cabinet, "FCIAddFile");
+    if (!p_FCIAddFile)
+        WINE_ERR("Cannot get FCIAddFile entrypoint.\n");
+    p_FCIFlushFolder = (void *)GetProcAddress(cabinet, "FCIFlushFolder");
+    if (!p_FCIFlushFolder)
+        WINE_ERR("Cannot get FCIFlushFolder entrypoint.\n");
+    p_FCIFlushCabinet = (void *)GetProcAddress(cabinet, "FCIFlushCabinet");
+    if (!p_FCIFlushCabinet)
+        WINE_ERR("Cannot get FCIFlushCabinet entrypoint.\n");
+    p_FCIDestroy = (void *)GetProcAddress(cabinet, "FCIDestroy");
+    if (!p_FCIDestroy)
+        WINE_ERR("Cannot get FCIDestroy entrypoint.\n");
+    p_FDICreate = (void *)GetProcAddress(cabinet, "FDICreate");
+    if (!p_FDICreate)
+        WINE_ERR("Cannot get FDICreate entrypoint.\n");
+    p_FDIIsCabinet = (void *)GetProcAddress(cabinet, "FDIIsCabinet");
+    if (!p_FDIIsCabinet)
+        WINE_ERR("Cannot get FDIIsCabinet entrypoint.\n");
+    p_FDICopy = (void *)GetProcAddress(cabinet, "FDICopy");
+    if (!p_FDICopy)
+        WINE_ERR("Cannot get FDICopy entrypoint.\n");
+    p_FDIDestroy = (void *)GetProcAddress(cabinet, "FDIDestroy");
+    if (!p_FDIDestroy)
+        WINE_ERR("Cannot get FDIDestroy entrypoint.\n");
+    p_FDITruncateCabinet = (void *)GetProcAddress(cabinet, "FDITruncateCabinet");
+    if (!p_FDITruncateCabinet)
+        WINE_ERR("Cannot get FDITruncateCabinet entrypoint.\n");
 
     return dll_functions;
 }

@@ -233,7 +233,7 @@ void qemu_FDICreate(struct qemu_syscall *call)
 
     pthread_setspecific(cabinet_tls, fdi);
 
-    fdi->host.fdi = FDICreate(c->pfnalloc ? host_alloc : NULL, c->pfnfree ? host_free : NULL,
+    fdi->host.fdi = p_FDICreate(c->pfnalloc ? host_alloc : NULL, c->pfnfree ? host_free : NULL,
             c->pfnopen ? host_open : NULL, c->pfnread ? host_read : NULL, c->pfnwrite ? host_write : NULL,
             c->pfnclose ? host_close : NULL, c->pfnseek ? host_seek : NULL, c->cpuType, QEMU_G2H(c->perf));
 
@@ -287,7 +287,7 @@ void qemu_FDIIsCabinet(struct qemu_syscall *call)
     fdi = QEMU_G2H(c->hfdi);
 
     pthread_setspecific(cabinet_tls, fdi);
-    c->super.iret = FDIIsCabinet(fdi->host.fdi, c->hf, QEMU_G2H(c->pfdici));
+    c->super.iret = p_FDIIsCabinet(fdi->host.fdi, c->hf, QEMU_G2H(c->pfdici));
     pthread_setspecific(cabinet_tls, old_tls);
 }
 
@@ -381,7 +381,7 @@ void qemu_FDICopy(struct qemu_syscall *call)
     fdi->progress = c->pfnfdin;
 
     pthread_setspecific(cabinet_tls, fdi);
-    c->super.iret = FDICopy(fdi->host.fdi, QEMU_G2H(c->pszCabinet), QEMU_G2H(c->pszCabPath), c->flags,
+    c->super.iret = p_FDICopy(fdi->host.fdi, QEMU_G2H(c->pszCabinet), QEMU_G2H(c->pszCabPath), c->flags,
             c->pfnfdin ? host_progress : NULL, c->pfnfdid ? host_decrypt : NULL, QEMU_G2H(c->pvUser));
     pthread_setspecific(cabinet_tls, old_tls);
 
@@ -421,7 +421,7 @@ void qemu_FDIDestroy(struct qemu_syscall *call)
     fdi = QEMU_G2H(c->hfdi);
 
     pthread_setspecific(cabinet_tls, fdi);
-    c->super.iret = FDIDestroy(fdi->host.fdi);
+    c->super.iret = p_FDIDestroy(fdi->host.fdi);
     pthread_setspecific(cabinet_tls, old_tls);
 
     if (c->super.iret)
@@ -465,7 +465,7 @@ void qemu_FDITruncateCabinet(struct qemu_syscall *call)
     fdi = QEMU_G2H(c->hfdi);
 
     pthread_setspecific(cabinet_tls, fdi);
-    c->super.iret = FDITruncateCabinet(fdi->host.fdi, QEMU_G2H(c->pszCabinetName), c->iFolderToDelete);
+    c->super.iret = p_FDITruncateCabinet(fdi->host.fdi, QEMU_G2H(c->pszCabinetName), c->iFolderToDelete);
     pthread_setspecific(cabinet_tls, old_tls);
 }
 

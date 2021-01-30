@@ -210,6 +210,23 @@ struct qemu_fxi
  * doesn't work for some reason and corrupts the call stack in our callbacks. */
 extern pthread_key_t cabinet_tls;
 
+extern HFCI (CDECL *p_FCICreate)(PERF perf, PFNFCIFILEPLACED pfnfiledest, PFNFCIALLOC pfnalloc, PFNFCIFREE pfnfree,
+        PFNFCIOPEN pfnopen, PFNFCIREAD pfnread, PFNFCIWRITE pfnwrite, PFNFCICLOSE pfnclose, PFNFCISEEK pfnseek,
+        PFNFCIDELETE pfndelete, PFNFCIGETTEMPFILE pfnfcigtf, PCCAB pccab, void *pv);
+extern BOOL (CDECL *p_FCIAddFile)(HFCI hfci, char *pszSourceFile, char *pszFileName, BOOL fExecute,
+        PFNFCIGETNEXTCABINET pfnfcignc, PFNFCISTATUS pfnfcis, PFNFCIGETOPENINFO pfnfcigoi, TCOMP typeCompress);
+extern BOOL (CDECL *p_FCIFlushFolder)(HFCI hfci, PFNFCIGETNEXTCABINET pfnfcignc, PFNFCISTATUS pfnfcis);
+extern BOOL (CDECL *p_FCIFlushCabinet)(HFCI hfci, BOOL fGetNextCab, PFNFCIGETNEXTCABINET pfnfcignc, PFNFCISTATUS pfnfcis);
+extern BOOL (CDECL *p_FCIDestroy)(HFCI hfci);
+extern HFDI (CDECL *p_FDICreate)(PFNALLOC pfnalloc, PFNFREE pfnfree, PFNOPEN pfnopen, PFNREAD pfnread,
+        PFNWRITE pfnwrite, PFNCLOSE pfnclose, PFNSEEK pfnseek, int cpuType, PERF perf);
+extern BOOL (CDECL *p_FDIIsCabinet)(HFDI hfdi, INT_PTR hf, PFDICABINETINFO pfdici);
+extern BOOL (CDECL *p_FDICopy)(HFDI hfdi, char *pszCabinet, char *pszCabPath, int flags, PFNFDINOTIFY pfnfdin,
+        PFNFDIDECRYPT pfnfdid, void *pvUser);
+extern BOOL (CDECL *p_FDIDestroy)(HFDI hfdi);
+extern BOOL (CDECL *p_FDITruncateCabinet)(HFDI hfdi, char *pszCabinetName, USHORT iFolderToDelete);
+
+
 #endif
 
 #endif

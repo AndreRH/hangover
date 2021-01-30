@@ -402,7 +402,7 @@ void qemu_FCICreate(struct qemu_syscall *call)
     pthread_setspecific(cabinet_tls, fci);
 
     /* ERF and CCAB are compatible between 32 and 64 bit. */
-    fci->host.fci = FCICreate(QEMU_G2H(c->perf), c->pfnfiledest ? host_dest : NULL, c->pfnalloc ? host_alloc : NULL,
+    fci->host.fci = p_FCICreate(QEMU_G2H(c->perf), c->pfnfiledest ? host_dest : NULL, c->pfnalloc ? host_alloc : NULL,
             c->pfnfree ? host_free : NULL, c->pfnopen ? host_open : NULL, c->pfnread ? host_read : NULL,
             c->pfnwrite ? host_write : NULL, c->pfnclose ? host_close : NULL, c->pfnseek ? host_seek : NULL,
             c->pfndelete ? host_delete : NULL, c->pfnfcigtf ? host_temp : NULL, QEMU_G2H(c->pccab), QEMU_G2H(c->pv));
@@ -545,7 +545,7 @@ void qemu_FCIAddFile(struct qemu_syscall *call)
 
     pthread_setspecific(cabinet_tls, fci);
 
-    c->super.iret = FCIAddFile(fci->host.fci, QEMU_G2H(c->pszSourceFile), QEMU_G2H(c->pszFileName), c->fExecute, 
+    c->super.iret = p_FCIAddFile(fci->host.fci, QEMU_G2H(c->pszSourceFile), QEMU_G2H(c->pszFileName), c->fExecute, 
             c->pfnfcignc ? host_next : NULL, c->pfnfcis ? host_progress : NULL,
             c->pfnfcigoi ? host_open_info : NULL, c->typeCompress);
 
@@ -595,7 +595,7 @@ void qemu_FCIFlushFolder(struct qemu_syscall *call)
     fci->progress = c->pfnfcis;
 
     pthread_setspecific(cabinet_tls, fci);
-    c->super.iret = FCIFlushFolder(fci->host.fci, c->pfnfcignc ? host_next : NULL,
+    c->super.iret = p_FCIFlushFolder(fci->host.fci, c->pfnfcignc ? host_next : NULL,
             c->pfnfcis ? host_progress : NULL);
     pthread_setspecific(cabinet_tls, old_tls);
 
@@ -645,7 +645,7 @@ void qemu_FCIFlushCabinet(struct qemu_syscall *call)
 
     pthread_setspecific(cabinet_tls, fci);
 
-    c->super.iret = FCIFlushCabinet(fci->host.fci, c->fGetNextCab, c->pfnfcignc ? host_next : NULL,
+    c->super.iret = p_FCIFlushCabinet(fci->host.fci, c->fGetNextCab, c->pfnfcignc ? host_next : NULL,
             c->pfnfcis ? host_progress : NULL);
 
     pthread_setspecific(cabinet_tls, old_tls);
@@ -687,7 +687,7 @@ void qemu_FCIDestroy(struct qemu_syscall *call)
 
     pthread_setspecific(cabinet_tls, fci);
 
-    c->super.iret = FCIDestroy(fci->host.fci);
+    c->super.iret = p_FCIDestroy(fci->host.fci);
     if (c->super.iret)
         HeapFree(GetProcessHeap(), 0, fci);
 
