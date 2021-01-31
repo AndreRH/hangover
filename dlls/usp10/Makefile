@@ -12,7 +12,7 @@ usp10.dll: main_g.o usp10.spec usp10_g.o
 	$(WINEGCC) --wine-objdir $(DESTDIR)/build/$(WINE_DIR) -shared -b $(GUEST_CC) $(SRCDIR)/usp10.spec *_g.o -lwinecrt0 -o usp10.dll -nodefaultlibs -nostdlib -Wl,--image-base,0xf0000000 -lkernel32
 
 qemu_usp10.dll.so: main_h.o usp10_h.o
-	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_usp10.spec *_h.o -o qemu_usp10.dll.so -lusp10
+	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_usp10.spec *_h.o -o qemu_usp10.dll.so
 
 %_g.o: %.c qemu_usp10.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
