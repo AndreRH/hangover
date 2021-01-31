@@ -872,19 +872,31 @@ static LRESULT WINAPI my_SendMessageW(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
 }
 
+LRESULT (WINAPI *pREExtendedRegisterClass)(void);
+
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     HWND win;
-    HMODULE riched20 = GetModuleHandleA("riched20");
+    HMODULE riched20 = LoadLibraryA("riched20");
     HMODULE user32 = GetModuleHandleA("user32");
     WNDPROC wndproc2;
     IMAGE_IMPORT_DESCRIPTOR *imports;
     ULONG size;
     BOOL found = FALSE;
-    void *p_SendMessageW = GetProcAddress(user32, "SendMessageW");
+    void *pSendMessageW = GetProcAddress(user32, "SendMessageW");
     IMAGE_THUNK_DATA *thunk;
 
     WINE_TRACE("Loading host-side riched20 wrapper.\n");
+
+    if (!riched20)
+    {
+        WINE_FIXME("Could not load riched20.dll\n");
+        return NULL;
+    }
+
+    pREExtendedRegisterClass = GetProcAddress(riched20, "REExtendedRegisterClass");
+    if (!pREExtendedRegisterClass)
+        WINE_ERR("Could not find REExtendedRegisterClass in riched20.dll\n");
 
     /* Apparently the only way to change the class wndproc is through a window of that class... */
 
@@ -986,7 +998,7 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     while (thunk->u1.Function)
     {
         void **func = (void **)&thunk->u1.Function;
-        if (*func == p_SendMessageW)
+        if (*func == pSendMessageW)
         {
             *func = my_SendMessageW;
             found = TRUE;

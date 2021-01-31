@@ -23,6 +23,8 @@ void qemu_CreateTextServices(struct qemu_syscall *call);
 void qemu_RichEdit10ANSIWndProc(struct qemu_syscall *call);
 void qemu_RichEditANSIWndProc(struct qemu_syscall *call);
 
+extern LRESULT (WINAPI *pREExtendedRegisterClass)(void);
+
 #endif
 
 #endif

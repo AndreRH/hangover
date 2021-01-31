@@ -52,12 +52,11 @@ WINBASEAPI LRESULT WINAPI REExtendedRegisterClass(void)
 #else
 
 /* TODO: Add REExtendedRegisterClass to Wine headers? */
-extern LRESULT WINAPI REExtendedRegisterClass(void);
 void qemu_REExtendedRegisterClass(struct qemu_syscall *call)
 {
     struct qemu_REExtendedRegisterClass *c = (struct qemu_REExtendedRegisterClass *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = REExtendedRegisterClass();
+    c->super.iret = pREExtendedRegisterClass();
 }
 
 #endif
