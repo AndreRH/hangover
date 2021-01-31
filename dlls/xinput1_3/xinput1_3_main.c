@@ -55,7 +55,7 @@ void qemu_XInputEnable(struct qemu_syscall *call)
 {
     struct qemu_XInputEnable *c = (struct qemu_XInputEnable *)call;
     WINE_TRACE("\n");
-    XInputEnable(c->enable);
+    pXInputEnable(c->enable);
 }
 
 #endif
@@ -87,7 +87,7 @@ void qemu_XInputSetState(struct qemu_syscall *call)
 {
     struct qemu_XInputSetState *c = (struct qemu_XInputSetState *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = XInputSetState(c->index, QEMU_G2H(c->vibration));
+    c->super.iret = pXInputSetState(c->index, QEMU_G2H(c->vibration));
 }
 
 #endif
@@ -119,7 +119,7 @@ void qemu_XInputGetState(struct qemu_syscall *call)
 {
     struct qemu_XInputGetState *c = (struct qemu_XInputGetState *)call;
     WINE_TRACE("\n");
-    c->super.iret = XInputGetState(c->index, QEMU_G2H(c->state));
+    c->super.iret = pXInputGetState(c->index, QEMU_G2H(c->state));
 }
 
 #endif
@@ -151,7 +151,7 @@ void qemu_XInputGetStateEx(struct qemu_syscall *call)
 {
     struct qemu_XInputGetStateEx *c = (struct qemu_XInputGetStateEx *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = XInputGetStateEx(c->index, QEMU_G2H(c->state_ex));
+    c->super.iret = pXInputGetStateEx(c->index, QEMU_G2H(c->state_ex));
 }
 
 #endif
@@ -185,7 +185,7 @@ void qemu_XInputGetKeystroke(struct qemu_syscall *call)
 {
     struct qemu_XInputGetKeystroke *c = (struct qemu_XInputGetKeystroke *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = XInputGetKeystroke(c->index, c->reserved, QEMU_G2H(c->keystroke));
+    c->super.iret = pXInputGetKeystroke(c->index, c->reserved, QEMU_G2H(c->keystroke));
 }
 
 #endif
@@ -219,7 +219,7 @@ void qemu_XInputGetCapabilities(struct qemu_syscall *call)
 {
     struct qemu_XInputGetCapabilities *c = (struct qemu_XInputGetCapabilities *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = XInputGetCapabilities(c->index, c->flags, QEMU_G2H(c->capabilities));
+    c->super.iret = pXInputGetCapabilities(c->index, c->flags, QEMU_G2H(c->capabilities));
 }
 
 #endif
@@ -253,7 +253,7 @@ void qemu_XInputGetDSoundAudioDeviceGuids(struct qemu_syscall *call)
 {
     struct qemu_XInputGetDSoundAudioDeviceGuids *c = (struct qemu_XInputGetDSoundAudioDeviceGuids *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = XInputGetDSoundAudioDeviceGuids(c->index, QEMU_G2H(c->render_guid), QEMU_G2H(c->capture_guid));
+    c->super.iret = pXInputGetDSoundAudioDeviceGuids(c->index, QEMU_G2H(c->render_guid), QEMU_G2H(c->capture_guid));
 }
 
 #endif
@@ -287,7 +287,7 @@ void qemu_XInputGetBatteryInformation(struct qemu_syscall *call)
 {
     struct qemu_XInputGetBatteryInformation *c = (struct qemu_XInputGetBatteryInformation *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = XInputGetBatteryInformation(c->index, c->type, QEMU_G2H(c->battery));
+    c->super.iret = pXInputGetBatteryInformation(c->index, c->type, QEMU_G2H(c->battery));
 }
 
 #endif
