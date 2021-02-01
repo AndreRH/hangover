@@ -146,7 +146,7 @@ build/wine-tools/.built: build/wine-tools/Makefile
 # happy. Is there a nicer way?
 build/wine-host/Makefile: wine/configure build/wine-tools/.built
 	@mkdir -p $(@D)
-	cd build/wine-host ; CC=$(HANGOVER_WINE_CC) CXX=$(HANGOVER_WINE_CXX) ../../wine/configure --with-wine-tools=../wine-tools $(ARCHFLAG_HOST) $(TESTS) $(CROSS_TRIPLE_H)
+	cd build/wine-host ; CC=$(HANGOVER_WINE_CC) CXX=$(HANGOVER_WINE_CXX) ../../wine/configure --with-wine-tools=../wine-tools --without-mingw $(ARCHFLAG_HOST) $(TESTS) $(CROSS_TRIPLE_H)
 
 wine-host build/wine-host/.built: build/wine-host/Makefile
 	+$(MAKE) -C build/wine-host
