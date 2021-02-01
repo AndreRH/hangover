@@ -97,8 +97,18 @@ WINBASEAPI PEB * WINAPI RtlGetCurrentPeb(void)
 void qemu_RtlGetCurrentPeb(struct qemu_syscall *call)
 {
     struct qemu_RtlGetCurrentPeb *c = (struct qemu_RtlGetCurrentPeb *)call;
-    WINE_FIXME("Probably not going to work!\n");
-    c->super.iret = QEMU_H2G(RtlGetCurrentPeb());
+#if GUEST_BIT == HOST_BIT
+    TEB *qemu_teb = qemu_ops->qemu_getTEB();
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(qemu_teb->Peb);
+#else
+    TEB32 *qemu_teb32 = qemu_ops->qemu_getTEB32();
+    PEB32 *peb32 = (PEB32 *)(ULONG_PTR)qemu_teb32->Peb;
+    WINE_TRACE("\n");
+    c->super.iret = QEMU_H2G(peb32);
+#endif
+
+
 }
 
 #endif
