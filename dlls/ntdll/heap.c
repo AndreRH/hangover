@@ -272,7 +272,7 @@ WINBASEAPI BOOLEAN WINAPI RtlLockHeap(HANDLE heap)
 void qemu_RtlLockHeap(struct qemu_syscall *call)
 {
     struct qemu_RtlLockHeap *c = (struct qemu_RtlLockHeap *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlLockHeap(QEMU_G2H(c->heap));
 }
 
@@ -302,7 +302,7 @@ WINBASEAPI BOOLEAN WINAPI RtlUnlockHeap(HANDLE heap)
 void qemu_RtlUnlockHeap(struct qemu_syscall *call)
 {
     struct qemu_RtlUnlockHeap *c = (struct qemu_RtlUnlockHeap *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlUnlockHeap(QEMU_G2H(c->heap));
 }
 

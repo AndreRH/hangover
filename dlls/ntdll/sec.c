@@ -1975,3 +1975,42 @@ void qemu_RtlConvertToAutoInheritSecurityObject(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_NtFilterToken
+{
+    struct qemu_syscall super;
+    uint64_t token;
+    uint64_t flags;
+    uint64_t disable_sids;
+    uint64_t privileges;
+    uint64_t restrict_sids;
+    uint64_t new_token;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI NtFilterToken(HANDLE token, ULONG flags, TOKEN_GROUPS *disable_sids, TOKEN_PRIVILEGES *privileges, TOKEN_GROUPS *restrict_sids, HANDLE *new_token)
+{
+    struct qemu_NtFilterToken call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTFILTERTOKEN);
+    call.token = (ULONG_PTR)token;
+    call.flags = flags;
+    call.disable_sids = (ULONG_PTR)disable_sids;
+    call.privileges = (ULONG_PTR)privileges;
+    call.restrict_sids = (ULONG_PTR)restrict_sids;
+    call.new_token = (ULONG_PTR)new_token;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_NtFilterToken(struct qemu_syscall *call)
+{
+    struct qemu_NtFilterToken *c = (struct qemu_NtFilterToken *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = NtFilterToken(QEMU_G2H(c->token), c->flags, QEMU_G2H(c->disable_sids), QEMU_G2H(c->privileges), QEMU_G2H(c->restrict_sids), QEMU_G2H(c->new_token));
+}
+
+#endif

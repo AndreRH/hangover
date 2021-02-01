@@ -132,6 +132,7 @@ enum ntdll_calls
     CALL_NTALLOCATELOCALLYUNIQUEID,
     CALL_NTALLOCATEUUIDS,
     CALL_NTALLOCATEVIRTUALMEMORY,
+    CALL_NTALLOCATEVIRTUALMEMORYEX,
     CALL_NTAREMAPPEDFILESTHESAME,
     CALL_NTASSIGNPROCESSTOJOBOBJECT,
     CALL_NTCANCELIOFILE,
@@ -160,6 +161,7 @@ enum ntdll_calls
     CALL_NTCREATESEMAPHORE,
     CALL_NTCREATESYMBOLICLINKOBJECT,
     CALL_NTCREATETIMER,
+    CALL_NTCREATEUSERPROCESS,
     CALL_NTDELAYEXECUTION,
     CALL_NTDELETEFILE,
     CALL_NTDELETEKEY,
@@ -178,6 +180,7 @@ enum ntdll_calls
     CALL_NTDUPLICATETOKEN,
     CALL_NTENUMERATEKEY,
     CALL_NTENUMERATEVALUEKEY,
+    CALL_NTFILTERTOKEN,
     CALL_NTFLUSHBUFFERSFILE,
     CALL_NTFLUSHINSTRUCTIONCACHE,
     CALL_NTFLUSHKEY,
@@ -384,6 +387,7 @@ enum ntdll_calls
     CALL_RTLCOMPUTECRC32,
     CALL_RTLCONVERTSIDTOUNICODESTRING,
     CALL_RTLCONVERTTOAUTOINHERITSECURITYOBJECT,
+    CALL_RTLCOPYEXTENDEDCONTEXT,
     CALL_RTLCOPYLUID,
     CALL_RTLCOPYLUIDANDATTRIBUTESARRAY,
     CALL_RTLCOPYMEMORY,
@@ -470,6 +474,10 @@ enum ntdll_calls
     CALL_RTLFINDSETRUNS,
     CALL_RTLFIRSTENTRYSLIST,
     CALL_RTLFIRSTFREEACE,
+    CALL_RTLFLSALLOC,
+    CALL_RTLFLSFREE,
+    CALL_RTLFLSGETVALUE,
+    CALL_RTLFLSSETVALUE,
     CALL_RTLFORMATCURRENTUSERKEYPATH,
     CALL_RTLFORMATMESSAGE,
     CALL_RTLFREEANSISTRING,
@@ -488,7 +496,10 @@ enum ntdll_calls
     CALL_RTLGETCURRENTPROCESSORNUMBEREX,
     CALL_RTLGETCURRENTTRANSACTION,
     CALL_RTLGETDACLSECURITYDESCRIPTOR,
+    CALL_RTLGETENABLEDEXTENDEDFEATURES,
     CALL_RTLGETEXEPATH,
+    CALL_RTLGETEXTENDEDCONTEXTLENGTH2,
+    CALL_RTLGETEXTENDEDFEATURESMASK,
     CALL_RTLGETFULLPATHNAME_U,
     CALL_RTLGETGROUPSECURITYDESCRIPTOR,
     CALL_RTLGETLASTNTSTATUS,
@@ -526,6 +537,7 @@ enum ntdll_calls
     CALL_RTLINITIALIZECRITICALSECTION,
     CALL_RTLINITIALIZECRITICALSECTIONANDSPINCOUNT,
     CALL_RTLINITIALIZECRITICALSECTIONEX,
+    CALL_RTLINITIALIZEEXTENDEDCONTEXT2,
     CALL_RTLINITIALIZEGENERICTABLE,
     CALL_RTLINITIALIZEGENERICTABLEAVL,
     CALL_RTLINITIALIZERESOURCE,
@@ -563,6 +575,8 @@ enum ntdll_calls
     CALL_RTLLENGTHSID,
     CALL_RTLLOCALENAMETOLCID,
     CALL_RTLLOCALTIMETOSYSTEMTIME,
+    CALL_RTLLOCATEEXTENDEDFEATURE,
+    CALL_RTLLOCATEEXTENDEDFEATURE2,
     CALL_RTLLOCKHEAP,
     CALL_RTLLOOKUPFUNCTIONENTRY,
     CALL_RTLMAKESELFRELATIVESD,
@@ -590,6 +604,7 @@ enum ntdll_calls
     CALL_RTLPNTSETVALUEKEY,
     CALL_RTLPREFIXSTRING,
     CALL_RTLPREFIXUNICODESTRING,
+    CALL_RTLPROCESSFLSDATA,
     CALL_RTLPUNWAITCRITICALSECTION,
     CALL_RTLPWAITFORCRITICALSECTION,
     CALL_RTLQUERYACTIVATIONCONTEXTAPPLICATIONSETTINGS,
@@ -635,6 +650,7 @@ enum ntdll_calls
     CALL_RTLSETCURRENTTRANSACTION,
     CALL_RTLSETDACLSECURITYDESCRIPTOR,
     CALL_RTLSETENVIRONMENTVARIABLE,
+    CALL_RTLSETEXTENDEDFEATURESMASK,
     CALL_RTLSETGROUPSECURITYDESCRIPTOR,
     CALL_RTLSETHEAPINFORMATION,
     CALL_RTLSETIOCOMPLETIONCALLBACK,
@@ -870,6 +886,7 @@ void qemu_NtAlertThread(struct qemu_syscall *call);
 void qemu_NtAllocateLocallyUniqueId(struct qemu_syscall *call);
 void qemu_NtAllocateUuids(struct qemu_syscall *call);
 void qemu_NtAllocateVirtualMemory(struct qemu_syscall *call);
+void qemu_NtAllocateVirtualMemoryEx(struct qemu_syscall *call);
 void qemu_NtAreMappedFilesTheSame(struct qemu_syscall *call);
 void qemu_NtAssignProcessToJobObject(struct qemu_syscall *call);
 void qemu_NtCancelIoFile(struct qemu_syscall *call);
@@ -898,6 +915,7 @@ void qemu_NtCreateSection(struct qemu_syscall *call);
 void qemu_NtCreateSemaphore(struct qemu_syscall *call);
 void qemu_NtCreateSymbolicLinkObject(struct qemu_syscall *call);
 void qemu_NtCreateTimer(struct qemu_syscall *call);
+void qemu_NtCreateUserProcess(struct qemu_syscall *call);
 void qemu_NtDelayExecution(struct qemu_syscall *call);
 void qemu_NtDeleteFile(struct qemu_syscall *call);
 void qemu_NtDeleteKey(struct qemu_syscall *call);
@@ -908,6 +926,7 @@ void qemu_NtDuplicateObject(struct qemu_syscall *call);
 void qemu_NtDuplicateToken(struct qemu_syscall *call);
 void qemu_NtEnumerateKey(struct qemu_syscall *call);
 void qemu_NtEnumerateValueKey(struct qemu_syscall *call);
+void qemu_NtFilterToken(struct qemu_syscall *call);
 void qemu_NtFlushBuffersFile(struct qemu_syscall *call);
 void qemu_NtFlushInstructionCache(struct qemu_syscall *call);
 void qemu_NtFlushKey(struct qemu_syscall *call);
@@ -1112,6 +1131,7 @@ void qemu_RtlCompressBuffer(struct qemu_syscall *call);
 void qemu_RtlComputeCrc32(struct qemu_syscall *call);
 void qemu_RtlConvertSidToUnicodeString(struct qemu_syscall *call);
 void qemu_RtlConvertToAutoInheritSecurityObject(struct qemu_syscall *call);
+void qemu_RtlCopyExtendedContext(struct qemu_syscall *call);
 void qemu_RtlCopyLuid(struct qemu_syscall *call);
 void qemu_RtlCopyLuidAndAttributesArray(struct qemu_syscall *call);
 void qemu_RtlCopyMemory(struct qemu_syscall *call);
@@ -1198,6 +1218,10 @@ void qemu_RtlFindSetBitsAndClear(struct qemu_syscall *call);
 void qemu_RtlFindSetRuns(struct qemu_syscall *call);
 void qemu_RtlFirstEntrySList(struct qemu_syscall *call);
 void qemu_RtlFirstFreeAce(struct qemu_syscall *call);
+void qemu_RtlFlsAlloc(struct qemu_syscall *call);
+void qemu_RtlFlsFree(struct qemu_syscall *call);
+void qemu_RtlFlsGetValue(struct qemu_syscall *call);
+void qemu_RtlFlsSetValue(struct qemu_syscall *call);
 void qemu_RtlFormatCurrentUserKeyPath(struct qemu_syscall *call);
 void qemu_RtlFormatMessage(struct qemu_syscall *call);
 void qemu_RtlFreeAnsiString(struct qemu_syscall *call);
@@ -1217,7 +1241,10 @@ void qemu_RtlGetCurrentPeb(struct qemu_syscall *call);
 void qemu_RtlGetCurrentProcessorNumberEx(struct qemu_syscall *call);
 void qemu_RtlGetCurrentTransaction(struct qemu_syscall *call);
 void qemu_RtlGetDaclSecurityDescriptor(struct qemu_syscall *call);
+void qemu_RtlGetEnabledExtendedFeatures(struct qemu_syscall *call);
 void qemu_RtlGetExePath(struct qemu_syscall *call);
+void qemu_RtlGetExtendedContextLength2(struct qemu_syscall *call);
+void qemu_RtlGetExtendedFeaturesMask(struct qemu_syscall *call);
 void qemu_RtlGetFullPathName_U(struct qemu_syscall *call);
 void qemu_RtlGetGroupSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlGetLastNtStatus(struct qemu_syscall *call);
@@ -1258,6 +1285,7 @@ void qemu_RtlInitializeConditionVariable(struct qemu_syscall *call);
 void qemu_RtlInitializeCriticalSection(struct qemu_syscall *call);
 void qemu_RtlInitializeCriticalSectionAndSpinCount(struct qemu_syscall *call);
 void qemu_RtlInitializeCriticalSectionEx(struct qemu_syscall *call);
+void qemu_RtlInitializeExtendedContext2(struct qemu_syscall *call);
 void qemu_RtlInitializeGenericTable(struct qemu_syscall *call);
 void qemu_RtlInitializeGenericTableAvl(struct qemu_syscall *call);
 void qemu_RtlInitializeResource(struct qemu_syscall *call);
@@ -1290,7 +1318,9 @@ void qemu_RtlLengthRequiredSid(struct qemu_syscall *call);
 void qemu_RtlLengthSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlLengthSid(struct qemu_syscall *call);
 void qemu_RtlLocalTimeToSystemTime(struct qemu_syscall *call);
+void qemu_RtlLocateExtendedFeature(struct qemu_syscall *call);
 void qemu_RtlLocaleNameToLcid(struct qemu_syscall *call);
+void qemu_RtlLocateExtendedFeature2(struct qemu_syscall *call);
 void qemu_RtlLockHeap(struct qemu_syscall *call);
 void qemu_RtlLookupFunctionEntry(struct qemu_syscall *call);
 void qemu_RtlMakeSelfRelativeSD(struct qemu_syscall *call);
@@ -1312,6 +1342,7 @@ void qemu_RtlOpenCurrentUser(struct qemu_syscall *call);
 void qemu_RtlPcToFileHeader(struct qemu_syscall *call);
 void qemu_RtlPrefixString(struct qemu_syscall *call);
 void qemu_RtlPrefixUnicodeString(struct qemu_syscall *call);
+void qemu_RtlProcessFlsData(struct qemu_syscall *call);
 void qemu_RtlQueryActivationContextApplicationSettings(struct qemu_syscall *call);
 void qemu_RtlQueryDepthSList(struct qemu_syscall *call);
 void qemu_RtlQueryDynamicTimeZoneInformation(struct qemu_syscall *call);
@@ -1355,6 +1386,7 @@ void qemu_RtlSetCurrentEnvironment(struct qemu_syscall *call);
 void qemu_RtlSetCurrentTransaction(struct qemu_syscall *call);
 void qemu_RtlSetDaclSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlSetEnvironmentVariable(struct qemu_syscall *call);
+void qemu_RtlSetExtendedFeaturesMask(struct qemu_syscall *call);
 void qemu_RtlSetGroupSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlSetHeapInformation(struct qemu_syscall *call);
 void qemu_RtlSetIoCompletionCallback(struct qemu_syscall *call);

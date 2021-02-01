@@ -125,6 +125,7 @@
 # @ stub NtAllocateUserPhysicalPages
 @ stdcall NtAllocateUuids(ptr ptr ptr ptr)
 @ stdcall NtAllocateVirtualMemory(long ptr long ptr long long)
+@ stdcall NtAllocateVirtualMemoryEx(long ptr ptr long long ptr long)
 @ stdcall NtAreMappedFilesTheSame(ptr ptr)
 @ stdcall NtAssignProcessToJobObject(long long)
 @ stub NtCallbackReturn
@@ -168,6 +169,7 @@
 @ stub NtCreateThread
 @ stdcall NtCreateTimer(ptr long ptr long)
 @ stub NtCreateToken
+@ stdcall NtCreateUserProcess(ptr ptr long long ptr ptr long long ptr ptr ptr)
 # @ stub NtCreateWaitablePort
 # @ stdcall -arch=win32,arm64 NtCurrentTeb()
 # @ stub NtDebugActiveProcess
@@ -188,7 +190,7 @@
 # @ stub NtEnumerateSystemEnvironmentValuesEx
 @ stdcall NtEnumerateValueKey(long long long ptr long ptr)
 @ stub NtExtendSection
-# @ stub NtFilterToken
+@ stdcall NtFilterToken(long long ptr ptr ptr ptr)
 @ stdcall NtFlushBuffersFile(long ptr)
 @ stdcall NtFlushInstructionCache(long ptr long)
 @ stdcall NtFlushKey(long)
@@ -502,6 +504,7 @@
 @ stub RtlConvertUiListToApiList
 # @ stdcall -arch=win32 -ret64 RtlConvertUlongToLargeInteger(long)
 # @ stub RtlConvertVariantToProperty
+@ stdcall RtlCopyExtendedContext(ptr long ptr)
 @ stdcall RtlCopyLuid(ptr ptr)
 @ stdcall RtlCopyLuidAndAttributesArray(long ptr ptr)
 @ stdcall -arch=x86_64 RtlCopyMemory(ptr ptr long) ntdll_RtlCopyMemory
@@ -639,6 +642,10 @@
 @ stdcall RtlFindSetRuns(ptr ptr long long)
 @ stdcall RtlFirstEntrySList(ptr)
 @ stdcall RtlFirstFreeAce(ptr ptr)
+@ stdcall RtlFlsAlloc(ptr ptr)
+@ stdcall RtlFlsFree(long)
+@ stdcall RtlFlsGetValue(long ptr)
+@ stdcall RtlFlsSetValue(long ptr)
 @ stub RtlFlushPropertySet
 # @ stub RtlFlushSecureMemoryCache
 @ stdcall RtlFormatCurrentUserKeyPath(ptr)
@@ -667,7 +674,10 @@
 @ stdcall RtlGetDaclSecurityDescriptor(ptr ptr ptr ptr)
 @ stub RtlGetElementGenericTable
 # @ stub RtlGetElementGenericTableAvl
+@ stdcall RtlGetEnabledExtendedFeatures(int64)
 @ stdcall RtlGetExePath(wstr ptr)
+@ stdcall RtlGetExtendedContextLength2(long ptr int64)
+@ stdcall -ret64 RtlGetExtendedFeaturesMask(ptr)
 # @ stub RtlGetFirstRange
 # @ stub RtlGetFrame
 @ stdcall RtlGetFullPathName_U(wstr long ptr ptr)
@@ -727,6 +737,7 @@
 @ stdcall RtlInitializeCriticalSection(ptr)
 @ stdcall RtlInitializeCriticalSectionAndSpinCount(ptr long)
 @ stdcall RtlInitializeCriticalSectionEx(ptr long long)
+@ stdcall RtlInitializeExtendedContext2(ptr long ptr int64)
 @ stdcall RtlInitializeGenericTable(ptr ptr ptr ptr ptr)
 @ stdcall RtlInitializeGenericTableAvl(ptr ptr ptr ptr ptr)
 # @ stdcall RtlInitializeHandleTable(long long ptr)
@@ -794,6 +805,8 @@
 @ stdcall RtlLengthSid(ptr)
 @ stdcall RtlLocalTimeToSystemTime(ptr ptr)
 @ stdcall RtlLocaleNameToLcid(wstr ptr long)
+@ stdcall RtlLocateExtendedFeature(ptr long ptr)
+@ stdcall RtlLocateExtendedFeature2(ptr long ptr ptr)
 # @ stub RtlLockBootStatusData
 @ stdcall RtlLockHeap(long)
 # @ stub RtlLockMemoryStreamRegion
@@ -833,6 +846,7 @@
 # @ stub RtlPopFrame
 @ stdcall RtlPrefixString(ptr ptr long)
 @ stdcall RtlPrefixUnicodeString(ptr ptr long)
+@ stdcall RtlProcessFlsData(ptr long)
 @ stub RtlPropertySetNameToGuid
 @ stub RtlProtectHeap
 # @ stub RtlPushFrame
@@ -908,6 +922,7 @@
 @ stdcall RtlSetCurrentTransaction(ptr)
 @ stdcall RtlSetDaclSecurityDescriptor(ptr long ptr long)
 @ stdcall RtlSetEnvironmentVariable(ptr ptr ptr)
+@ stdcall RtlSetExtendedFeaturesMask(ptr int64)
 @ stdcall RtlSetGroupSecurityDescriptor(ptr ptr long)
 @ stdcall RtlSetHeapInformation(long long ptr long)
 @ stub RtlSetInformationAcl
@@ -1091,6 +1106,7 @@
 # @ stub ZwAllocateUserPhysicalPages
 @ stdcall -private ZwAllocateUuids(ptr ptr ptr ptr) NtAllocateUuids
 @ stdcall -private ZwAllocateVirtualMemory(long ptr long ptr long long) NtAllocateVirtualMemory
+@ stdcall -private ZwAllocateVirtualMemoryEx(long ptr ptr long long ptr long) NtAllocateVirtualMemoryEx
 @ stdcall -private ZwAreMappedFilesTheSame(ptr ptr) NtAreMappedFilesTheSame
 @ stdcall -private ZwAssignProcessToJobObject(long long) NtAssignProcessToJobObject
 @ stub ZwCallbackReturn

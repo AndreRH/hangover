@@ -33,6 +33,8 @@
 
 /* I can't make mingw's ddk headers work :-( . */
 typedef void RTL_USER_PROCESS_INFORMATION;
+typedef void PS_CREATE_INFO;
+typedef void PS_ATTRIBUTE_LIST;
 
 #else
 
@@ -492,6 +494,56 @@ void qemu_RtlCreateUserProcess(struct qemu_syscall *call)
     struct qemu_RtlCreateUserProcess *c = (struct qemu_RtlCreateUserProcess *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = RtlCreateUserProcess(QEMU_G2H(c->path), c->attributes, QEMU_G2H(c->params), QEMU_G2H(c->process_descr), QEMU_G2H(c->thread_descr), QEMU_G2H(c->parent), c->inherit, QEMU_G2H(c->debug), QEMU_G2H(c->exception), QEMU_G2H(c->info));
+}
+
+#endif
+
+struct qemu_NtCreateUserProcess
+{
+    struct qemu_syscall super;
+    uint64_t process_handle_ptr;
+    uint64_t thread_handle_ptr;
+    uint64_t process_access;
+    uint64_t thread_access;
+    uint64_t process_attr;
+    uint64_t thread_attr;
+    uint64_t process_flags;
+    uint64_t thread_flags;
+    uint64_t params;
+    uint64_t info;
+    uint64_t attr;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI NtCreateUserProcess(HANDLE *process_handle_ptr, HANDLE *thread_handle_ptr, ACCESS_MASK process_access, ACCESS_MASK thread_access, OBJECT_ATTRIBUTES *process_attr, OBJECT_ATTRIBUTES *thread_attr, ULONG process_flags, ULONG thread_flags, RTL_USER_PROCESS_PARAMETERS *params, PS_CREATE_INFO *info, PS_ATTRIBUTE_LIST *attr)
+{
+    struct qemu_NtCreateUserProcess call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTCREATEUSERPROCESS);
+    call.process_handle_ptr = (ULONG_PTR)process_handle_ptr;
+    call.thread_handle_ptr = (ULONG_PTR)thread_handle_ptr;
+    call.process_access = process_access;
+    call.thread_access = thread_access;
+    call.process_attr = (ULONG_PTR)process_attr;
+    call.thread_attr = (ULONG_PTR)thread_attr;
+    call.process_flags = process_flags;
+    call.thread_flags = thread_flags;
+    call.params = (ULONG_PTR)params;
+    call.info = (ULONG_PTR)info;
+    call.attr = (ULONG_PTR)attr;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_NtCreateUserProcess(struct qemu_syscall *call)
+{
+    struct qemu_NtCreateUserProcess *c = (struct qemu_NtCreateUserProcess *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = NtCreateUserProcess(QEMU_G2H(c->process_handle_ptr), QEMU_G2H(c->thread_handle_ptr), c->process_access, c->thread_access, QEMU_G2H(c->process_attr), QEMU_G2H(c->thread_attr), c->process_flags, c->thread_flags, QEMU_G2H(c->params), QEMU_G2H(c->info), QEMU_G2H(c->attr));
 }
 
 #endif

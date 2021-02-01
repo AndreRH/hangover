@@ -480,3 +480,159 @@ void qemu_RtlExitUserThread(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_RtlFlsAlloc
+{
+    struct qemu_syscall super;
+    uint64_t callback;
+    uint64_t ret_index;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlFlsAlloc(PFLS_CALLBACK_FUNCTION callback, ULONG *ret_index)
+{
+    struct qemu_RtlFlsAlloc call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLFLSALLOC);
+    call.callback = (ULONG_PTR)callback;
+    call.ret_index = (ULONG_PTR)ret_index;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlFlsAlloc(struct qemu_syscall *call)
+{
+    struct qemu_RtlFlsAlloc *c = (struct qemu_RtlFlsAlloc *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlFlsAlloc(QEMU_G2H(c->callback), QEMU_G2H(c->ret_index));
+}
+
+#endif
+
+struct qemu_RtlFlsFree
+{
+    struct qemu_syscall super;
+    uint64_t index;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlFlsFree(ULONG index)
+{
+    struct qemu_RtlFlsFree call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLFLSFREE);
+    call.index = index;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlFlsFree(struct qemu_syscall *call)
+{
+    struct qemu_RtlFlsFree *c = (struct qemu_RtlFlsFree *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlFlsFree(c->index);
+}
+
+#endif
+
+struct qemu_RtlFlsGetValue
+{
+    struct qemu_syscall super;
+    uint64_t index;
+    uint64_t data;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlFlsGetValue(ULONG index, void **data)
+{
+    struct qemu_RtlFlsGetValue call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLFLSGETVALUE);
+    call.index = index;
+    call.data = (ULONG_PTR)data;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlFlsGetValue(struct qemu_syscall *call)
+{
+    struct qemu_RtlFlsGetValue *c = (struct qemu_RtlFlsGetValue *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlFlsGetValue(c->index, QEMU_G2H(c->data));
+}
+
+#endif
+
+struct qemu_RtlProcessFlsData
+{
+    struct qemu_syscall super;
+    uint64_t teb_fls_data;
+    uint64_t flags;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI void WINAPI RtlProcessFlsData(void *teb_fls_data, ULONG flags)
+{
+    struct qemu_RtlProcessFlsData call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLPROCESSFLSDATA);
+    call.teb_fls_data = (ULONG_PTR)teb_fls_data;
+    call.flags = flags;
+
+    qemu_syscall(&call.super);
+}
+
+#else
+
+void qemu_RtlProcessFlsData(struct qemu_syscall *call)
+{
+    struct qemu_RtlProcessFlsData *c = (struct qemu_RtlProcessFlsData *)call;
+    WINE_FIXME("Unverified!\n");
+    RtlProcessFlsData(QEMU_G2H(c->teb_fls_data), c->flags);
+}
+
+#endif
+
+struct qemu_RtlFlsSetValue
+{
+    struct qemu_syscall super;
+    uint64_t index;
+    uint64_t data;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlFlsSetValue(ULONG index, void *data)
+{
+    struct qemu_RtlFlsSetValue call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLFLSSETVALUE);
+    call.index = index;
+    call.data = (ULONG_PTR)data;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_RtlFlsSetValue(struct qemu_syscall *call)
+{
+    struct qemu_RtlFlsSetValue *c = (struct qemu_RtlFlsSetValue *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlFlsSetValue(c->index, QEMU_G2H(c->data));
+}
+
+#endif

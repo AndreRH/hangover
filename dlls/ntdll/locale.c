@@ -878,7 +878,7 @@ WINBASEAPI WCHAR WINAPI RtlDowncaseUnicodeChar(WCHAR wch)
 void qemu_RtlDowncaseUnicodeChar(struct qemu_syscall *call)
 {
     struct qemu_RtlDowncaseUnicodeChar *c = (struct qemu_RtlDowncaseUnicodeChar *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = RtlDowncaseUnicodeChar(c->wch);
 }
 

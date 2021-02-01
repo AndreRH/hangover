@@ -809,3 +809,44 @@ void qemu_NtAreMappedFilesTheSame(struct qemu_syscall *call)
 
 #endif
 
+struct qemu_NtAllocateVirtualMemoryEx
+{
+    struct qemu_syscall super;
+    uint64_t process;
+    uint64_t ret;
+    uint64_t size_ptr;
+    uint64_t type;
+    uint64_t protect;
+    uint64_t parameters;
+    uint64_t count;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI NtAllocateVirtualMemoryEx(HANDLE process, PVOID *ret, SIZE_T *size_ptr, ULONG type, ULONG protect, MEM_EXTENDED_PARAMETER *parameters, ULONG count)
+{
+    struct qemu_NtAllocateVirtualMemoryEx call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_NTALLOCATEVIRTUALMEMORYEX);
+    call.process = (ULONG_PTR)process;
+    call.ret = (ULONG_PTR)ret;
+    call.size_ptr = (ULONG_PTR)size_ptr;
+    call.type = type;
+    call.protect = protect;
+    call.parameters = (ULONG_PTR)parameters;
+    call.count = count;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_NtAllocateVirtualMemoryEx(struct qemu_syscall *call)
+{
+    struct qemu_NtAllocateVirtualMemoryEx *c = (struct qemu_NtAllocateVirtualMemoryEx *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = NtAllocateVirtualMemoryEx(QEMU_G2H(c->process), QEMU_G2H(c->ret), QEMU_G2H(c->size_ptr), c->type, c->protect, QEMU_G2H(c->parameters), c->count);
+}
+
+#endif
