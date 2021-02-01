@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <usp10.h>
 
 #include "thunk/qemu_windows.h"
 

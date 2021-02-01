@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <usp10.h>
 
 #include "windows-user-services.h"
 #include "dll_list.h"
