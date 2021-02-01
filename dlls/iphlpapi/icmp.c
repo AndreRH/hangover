@@ -118,8 +118,6 @@ DWORD WINAPI iphlpapi_Icmp6SendEcho2(HANDLE IcmpHandle,HANDLE Event,FARPROC ApcR
 
 #else
 
-/* TODO: Add Icmp6SendEcho2 to Wine headers? */
-extern DWORD WINAPI Icmp6SendEcho2(HANDLE IcmpHandle, HANDLE Event, PIO_APC_ROUTINE ApcRoutine, PVOID ApcContext, struct WS_sockaddr_in6* SourceAddress, struct WS_sockaddr_in6* DestinationAddress, LPVOID RequestData, WORD RequestSize, PIP_OPTION_INFORMATION RequestOptions, LPVOID ReplyBuffer, DWORD ReplySize, DWORD Timeout);
 void qemu_Icmp6SendEcho2(struct qemu_syscall *call)
 {
     struct qemu_Icmp6SendEcho2 *c = (struct qemu_Icmp6SendEcho2 *)call;
