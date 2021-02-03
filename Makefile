@@ -177,7 +177,7 @@ build/wine-guest32/.built: build/wine-guest32/Makefile
 # Build qemu
 build/qemu/Makefile: build/wine-host/.built qemu/configure
 	@mkdir -p $(@D)
-	cd build/qemu ; CFLAGS="-fPIC $(CFLAGS)" LIBS="-lwine -lpthread $(LIBS)" CC="$(WINE_TOOLS)/tools/winegcc/winegcc $(CROSS_TRIPLE_B) --winebuild $(WINE_TOOLS)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI -Wno-pragma-pack" CXX="$(WINE_TOOLS)/tools/winegcc/wineg++ $(CROSS_TRIPLE_B) --winebuild $(WINE_TOOLS)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI -Wno-pragma-pack" ../../qemu/configure --python=/usr/bin/python3 --enable-windows-user --target-list=x86_64-windows-user $(QEMU_DISABLES); cd ../.. ; touch $@
+	cd build/qemu ; CFLAGS="-fPIC $(CFLAGS)" LIBS="-lpthread $(LIBS)" CC="$(WINE_TOOLS)/tools/winegcc/winegcc $(CROSS_TRIPLE_B) --winebuild $(WINE_TOOLS)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI -Wno-pragma-pack" CXX="$(WINE_TOOLS)/tools/winegcc/wineg++ $(CROSS_TRIPLE_B) --winebuild $(WINE_TOOLS)/tools/winebuild/winebuild -I$(WINE_HOST)/include -I$(WINE_SRC)/include --wine-objdir $(WINE_HOST) -DWINE_NOWINSOCK -U_WIN32 -UWIN64 -UWIN32 -DNOGDI -Wno-pragma-pack" ../../qemu/configure --python=/usr/bin/python3 --enable-windows-user --target-list=x86_64-windows-user $(QEMU_DISABLES); cd ../.. ; touch $@
 
 build/qemu/x86_64-windows-user/qemu-x86_64.exe.so: build/qemu/Makefile
 	+$(MAKE) -C build/qemu
