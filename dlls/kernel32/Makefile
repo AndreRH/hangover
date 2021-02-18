@@ -12,7 +12,7 @@ kernel32.dll: actctx_g.o atom_g.o change_g.o comm_g.o computername_g.o console_g
 	$(WINEGCC) --wine-objdir $(DESTDIR)/build/$(WINE_DIR) -shared -b $(GUEST_CC) $(SRCDIR)/kernel32.spec *_g.o $(DESTDIR)/build/$(WINE_DIR)/dlls/kernel32/locale_rc.res -lwinecrt0 -o kernel32.dll -lntdll -lkernelbase -lgcc -nodefaultlibs -nostdlib -Wl,--image-base,0x20000000
 
 qemu_kernel32.dll.so: actctx_h.o atom_h.o change_h.o comm_h.o computername_h.o console_h.o cpu_h.o debugger_h.o environ_h.o except_h.o fiber_h.o file_h.o format_msg_h.o heap_h.o lcformat_h.o locale_h.o lzexpand_h.o main_h.o module_h.o path_h.o powermgnt_h.o process_h.o profile_h.o qemu_kernel32.spec resource_h.o special_h.o string_h.o sync_h.o tape_h.o thread_h.o time_h.o toolhelp_h.o version_h.o virtual_h.o volume_h.o wer_h.o
-	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_kernel32.spec *_h.o -lwine ../../libffi/installed/lib/libffi.a -o qemu_kernel32.dll.so
+	$(WINEGCC) --wine-objdir $(DESTDIR)/build/wine-host -shared $(HOST_CC) $(SRCDIR)/qemu_kernel32.spec *_h.o ../../libffi/installed/lib/libffi.a -o qemu_kernel32.dll.so
 
 %_g.o: %.c qemu_kernel32.h Makefile $(SRCDIR)/Makefile
 	$(GUEST_CC)-gcc $< -c -o $@ $(CFLAGS) -DQEMU_DLL_GUEST
