@@ -149,6 +149,7 @@ build/wine-host/Makefile: wine/configure build/wine-tools/.built
 	cd build/wine-host ; CC=$(HANGOVER_WINE_CC) CXX=$(HANGOVER_WINE_CXX) ../../wine/configure --with-wine-tools=../wine-tools --without-mingw $(ARCHFLAG_HOST) $(TESTS) $(CROSS_TRIPLE_H)
 
 wine-host build/wine-host/.built: build/wine-host/Makefile
+	+$(MAKE) -C build/wine-host dlls/wsock32/libwsock32.def # workaround for dlls/wsock32/Makefile
 	+$(MAKE) -C build/wine-host
 	@touch build/wine-host/.built
 
