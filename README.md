@@ -63,8 +63,8 @@ Not supported anymore, please use [Hangover 0.4.0](https://github.com/AndreRH/ha
 /path/to/hangover/build/wine-host/loader/wine64 /path/to/hangover/build/qemu/x86_64-windows-user/qemu-x86_64.exe.so foo.exe
 ```
 
-Wine's programs can be found in `build/wine-guest/programs/*` and `build/wine-guest32/programs/*`.
-`build/wine-[guest|guest32]/` also contain PE builds of Wine's tests.
+Wine's programs can be found in `build/wine-guest64/programs/*` and `build/wine-guest32/programs/*`.
+`build/wine-[guest64|guest32]/` also contain PE builds of Wine's tests.
 
 ### 6) Performance
 Don't expect this to be fast. The main bottleneck at the moment is the speed of the code qemu
