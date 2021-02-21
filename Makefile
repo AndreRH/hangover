@@ -256,28 +256,28 @@ build/dlls32/%/Makefile: build/libffi/installed/lib/libffi.a
 	echo "include ../../../dlls/$(DLL)/Makefile" >> $@
 
 define DLLS32_RULE_G
-build/dlls32/$(1)/$(1).dll: build/dlls32/$(1)/Makefile build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+build/dlls32/$(1)/$(1).dll: build/dlls32/$(1)/Makefile build/wine-guest32/.built build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	ln -sf ../../../dlls32/$(1)/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll32/
 	+$(MAKE) -C build/dlls32/$(1) $(1).dll
 endef
 $(foreach mod,$(DLLS),$(eval $(call DLLS32_RULE_G,$(mod))))
 
 define DLLS64_RULE_G
-build/dlls64/$(1)/$(1).dll: build/dlls64/$(1)/Makefile build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+build/dlls64/$(1)/$(1).dll: build/dlls64/$(1)/Makefile build/wine-guest64/.built build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	ln -sf ../../../dlls64/$(1)/$(1).dll build/qemu/x86_64-windows-user/qemu_guest_dll64/
 	+$(MAKE) -C build/dlls64/$(1) $(1).dll
 endef
 $(foreach mod,$(DLLS),$(eval $(call DLLS64_RULE_G,$(mod))))
 
 define DRVS32_RULE_G
-build/dlls32/$(1)/$(1): build/dlls32/$(1)/Makefile build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+build/dlls32/$(1)/$(1): build/dlls32/$(1)/Makefile build/wine-guest32/.built build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	ln -sf ../../../dlls32/$(1)/$(1) build/qemu/x86_64-windows-user/qemu_guest_dll32/
 	+$(MAKE) -C build/dlls32/$(1) $(1)
 endef
 $(foreach mod,$(DRVS),$(eval $(call DRVS32_RULE_G,$(mod))))
 
 define DRVS64_RULE_G
-build/dlls64/$(1)/$(1): build/dlls64/$(1)/Makefile build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+build/dlls64/$(1)/$(1): build/dlls64/$(1)/Makefile build/wine-guest64/.built build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
 	ln -sf ../../../dlls64/$(1)/$(1) build/qemu/x86_64-windows-user/qemu_guest_dll64/
 	+$(MAKE) -C build/dlls64/$(1) $(1)
 endef
