@@ -823,7 +823,8 @@ struct qemu_NtAllocateVirtualMemoryEx
 
 #ifdef QEMU_DLL_GUEST
 
-WINBASEAPI NTSTATUS WINAPI NtAllocateVirtualMemoryEx(HANDLE process, PVOID *ret, SIZE_T *size_ptr, ULONG type, ULONG protect, MEM_EXTENDED_PARAMETER *parameters, ULONG count)
+/* Old mingw versions don't have MEM_EXTENDED_PARAMETER but newer ones have it. */
+WINBASEAPI NTSTATUS WINAPI NtAllocateVirtualMemoryEx(HANDLE process, PVOID *ret, SIZE_T *size_ptr, ULONG type, ULONG protect, void /*MEM_EXTENDED_PARAMETER*/ *parameters, ULONG count)
 {
     struct qemu_NtAllocateVirtualMemoryEx call;
     call.super.id = QEMU_SYSCALL_ID(CALL_NTALLOCATEVIRTUALMEMORYEX);
