@@ -146,10 +146,19 @@ build/wine-tools/.built: build/wine-tools/Makefile
 # happy. Is there a nicer way?
 build/wine-host/Makefile: wine/configure build/wine-tools/.built
 	@mkdir -p $(@D)
-	cd build/wine-host ; CC=$(HANGOVER_WINE_CC) CXX=$(HANGOVER_WINE_CXX) ../../wine/configure --with-wine-tools=../wine-tools --without-mingw $(ARCHFLAG_HOST) $(TESTS) $(CROSS_TRIPLE_H)
+	cd build/wine-host ; CC=$(HANGOVER_WINE_CC) CXX=$(HANGOVER_WINE_CXX) ../../wine/configure --with-wine-tools=../wine-tools $(ARCHFLAG_HOST) $(TESTS) $(CROSS_TRIPLE_H)
 
 wine-host build/wine-host/.built: build/wine-host/Makefile
-	+$(MAKE) -C build/wine-host dlls/wsock32/libwsock32.def # workaround for dlls/wsock32/Makefile
+	# Some host libs don't link with -lxxx, preventing the host side of our
+	# thunks from being built. Force creation of the .def files as a workaround.
+	# The presumably nicer way is to load the host DLLs at load time with LoadLibrary.
+	+$(MAKE) -C build/wine-host dlls/wsock32/libwsock32.def
+	+$(MAKE) -C build/wine-host dlls/advpack/libadvpack.def
+	+$(MAKE) -C build/wine-host dlls/secur32/libsecur32.def
+	+$(MAKE) -C build/wine-host dlls/bcrypt/libbcrypt.def
+	+$(MAKE) -C build/wine-host dlls/ddraw/libddraw.def
+	+$(MAKE) -C build/wine-host dlls/dsound/libdsound.def
+	+$(MAKE) -C build/wine-host dlls/d3d9/libd3d9.def
 	+$(MAKE) -C build/wine-host
 	@touch build/wine-host/.built
 
