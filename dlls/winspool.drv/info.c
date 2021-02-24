@@ -68,7 +68,7 @@ void qemu_DeviceCapabilitiesA(struct qemu_syscall *call)
     /* Juding by wineps.drv/driver.c, PSDRV_DeviceCapabilities, all data passed in pOutput an array of WORD, char
      * or LONG, so we should be fine. */
     WINE_TRACE("\n");
-    c->super.iret = DeviceCapabilitiesA(QEMU_G2H(c->pDevice), QEMU_G2H(c->pPort), c->cap, QEMU_G2H(c->pOutput), QEMU_G2H(c->lpdm));
+    c->super.iret = pDeviceCapabilitiesA(QEMU_G2H(c->pDevice), QEMU_G2H(c->pPort), c->cap, QEMU_G2H(c->pOutput), QEMU_G2H(c->lpdm));
 }
 
 #endif
@@ -108,7 +108,7 @@ void qemu_DeviceCapabilitiesW(struct qemu_syscall *call)
     /* Juding by wineps.drv/driver.c, PSDRV_DeviceCapabilities, all data passed in pOutput an array of WORD, char
      * or LONG, so we should be fine. */
     WINE_TRACE("\n");
-    c->super.iret = DeviceCapabilitiesW(QEMU_G2H(c->pDevice), QEMU_G2H(c->pPort), c->fwCapability, QEMU_G2H(c->pOutput), QEMU_G2H(c->pDevMode));
+    c->super.iret = pDeviceCapabilitiesW(QEMU_G2H(c->pDevice), QEMU_G2H(c->pPort), c->fwCapability, QEMU_G2H(c->pOutput), QEMU_G2H(c->pDevMode));
 }
 
 #endif
@@ -150,7 +150,7 @@ void qemu_DocumentPropertiesA(struct qemu_syscall *call)
     struct qemu_DocumentPropertiesA *c = (struct qemu_DocumentPropertiesA *)call;
     WINE_TRACE("\n");
     /* DEVMODEA has the same size in 32 and 64 bit. */
-    c->super.iret = DocumentPropertiesA(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDeviceName),
+    c->super.iret = pDocumentPropertiesA(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDeviceName),
             QEMU_G2H(c->pDevModeOutput), QEMU_G2H(c->pDevModeInput), c->fMode);
 }
 
@@ -193,7 +193,7 @@ void qemu_DocumentPropertiesW(struct qemu_syscall *call)
     struct qemu_DocumentPropertiesW *c = (struct qemu_DocumentPropertiesW *)call;
     WINE_TRACE("\n");
     /* DEVMODEW has the same size in 32 and 64 bit. */
-    c->super.iret = DocumentPropertiesW(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDeviceName),
+    c->super.iret = pDocumentPropertiesW(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDeviceName),
             QEMU_G2H(c->pDevModeOutput), QEMU_G2H(c->pDevModeInput), c->fMode);
 }
 
@@ -228,7 +228,7 @@ void qemu_IsValidDevmodeA(struct qemu_syscall *call)
     struct qemu_IsValidDevmodeA *c = (struct qemu_IsValidDevmodeA *)call;
     WINE_TRACE("\n");
     /* DEVMODEA has the same size in 32 and 64 bit. */
-    c->super.iret = IsValidDevmodeA(QEMU_G2H(c->pDevMode), c->size);
+    c->super.iret = pIsValidDevmodeA(QEMU_G2H(c->pDevMode), c->size);
 }
 
 #endif
@@ -262,7 +262,7 @@ void qemu_IsValidDevmodeW(struct qemu_syscall *call)
     struct qemu_IsValidDevmodeW *c = (struct qemu_IsValidDevmodeW *)call;
     WINE_TRACE("\n");
     /* DEVMODEW has the same size in 32 and 64 bit. */
-    c->super.iret = IsValidDevmodeW(QEMU_G2H(c->pDevMode), c->size);
+    c->super.iret = pIsValidDevmodeW(QEMU_G2H(c->pDevMode), c->size);
 }
 
 #endif
@@ -327,12 +327,12 @@ void qemu_OpenPrinter(struct qemu_syscall *call)
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_OPENPRINTERA))
     {
-        c->super.iret = OpenPrinterA(QEMU_G2H(c->lpPrinterName), c->phPrinter ? &printer : NULL,
+        c->super.iret = pOpenPrinterA(QEMU_G2H(c->lpPrinterName), c->phPrinter ? &printer : NULL,
                 (PRINTER_DEFAULTSA *)def);
     }
     else
     {
-        c->super.iret = OpenPrinterW(QEMU_G2H(c->lpPrinterName), c->phPrinter ? &printer : NULL, def);
+        c->super.iret = pOpenPrinterW(QEMU_G2H(c->lpPrinterName), c->phPrinter ? &printer : NULL, def);
     }
 
     c->phPrinter = QEMU_H2G(printer);
@@ -394,9 +394,9 @@ void qemu_AddMonitor(struct qemu_syscall *call)
 #endif
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_ADDMONITORA))
-        c->super.iret = AddMonitorA(QEMU_G2H(c->pName), c->Level, (BYTE *)monitor);
+        c->super.iret = pAddMonitorA(QEMU_G2H(c->pName), c->Level, (BYTE *)monitor);
     else
-        c->super.iret = AddMonitorW(QEMU_G2H(c->pName), c->Level, (BYTE *)monitor);
+        c->super.iret = pAddMonitorW(QEMU_G2H(c->pName), c->Level, (BYTE *)monitor);
 }
 
 #endif
@@ -430,7 +430,7 @@ void qemu_DeletePrinterDriverA(struct qemu_syscall *call)
 {
     struct qemu_DeletePrinterDriverA *c = (struct qemu_DeletePrinterDriverA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrinterDriverA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pDriverName));
+    c->super.iret = pDeletePrinterDriverA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pDriverName));
 }
 
 #endif
@@ -464,7 +464,7 @@ void qemu_DeletePrinterDriverW(struct qemu_syscall *call)
 {
     struct qemu_DeletePrinterDriverW *c = (struct qemu_DeletePrinterDriverW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrinterDriverW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pDriverName));
+    c->super.iret = pDeletePrinterDriverW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pDriverName));
 }
 
 #endif
@@ -498,7 +498,7 @@ void qemu_DeleteMonitorA(struct qemu_syscall *call)
 {
     struct qemu_DeleteMonitorA *c = (struct qemu_DeleteMonitorA *)call;
     WINE_TRACE("\n");
-    c->super.iret = DeleteMonitorA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pMonitorName));
+    c->super.iret = pDeleteMonitorA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pMonitorName));
 }
 
 #endif
@@ -532,7 +532,7 @@ void qemu_DeleteMonitorW(struct qemu_syscall *call)
 {
     struct qemu_DeleteMonitorW *c = (struct qemu_DeleteMonitorW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeleteMonitorW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pMonitorName));
+    c->super.iret = pDeleteMonitorW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pMonitorName));
 }
 
 #endif
@@ -566,7 +566,7 @@ void qemu_DeletePortA(struct qemu_syscall *call)
 {
     struct qemu_DeletePortA *c = (struct qemu_DeletePortA *)call;
     WINE_TRACE("\n");
-    c->super.iret = DeletePortA(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pPortName));
+    c->super.iret = pDeletePortA(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pPortName));
 }
 
 #endif
@@ -600,7 +600,7 @@ void qemu_DeletePortW(struct qemu_syscall *call)
 {
     struct qemu_DeletePortW *c = (struct qemu_DeletePortW *)call;
     WINE_TRACE("\n");
-    c->super.iret = DeletePortW(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pPortName));
+    c->super.iret = pDeletePortW(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pPortName));
 }
 
 #endif
@@ -636,7 +636,7 @@ void qemu_WritePrinter(struct qemu_syscall *call)
 {
     struct qemu_WritePrinter *c = (struct qemu_WritePrinter *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = WritePrinter(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pBuf), c->cbBuf, QEMU_G2H(c->pcWritten));
+    c->super.iret = pWritePrinter(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pBuf), c->cbBuf, QEMU_G2H(c->pcWritten));
 }
 
 #endif
@@ -670,7 +670,7 @@ void qemu_AddFormA(struct qemu_syscall *call)
 {
     struct qemu_AddFormA *c = (struct qemu_AddFormA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddFormA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pForm));
+    c->super.iret = pAddFormA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pForm));
 }
 
 #endif
@@ -704,7 +704,7 @@ void qemu_AddFormW(struct qemu_syscall *call)
 {
     struct qemu_AddFormW *c = (struct qemu_AddFormW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddFormW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pForm));
+    c->super.iret = pAddFormW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pForm));
 }
 
 #endif
@@ -761,9 +761,9 @@ void qemu_AddJob(struct qemu_syscall *call)
     /* FIXME: The tests suggest that there's a maximum size of sizeof(ADDJOB_INFO_1W) + sizeof(WCHAR) * MAX_PATH.
      * So it may be necessary to pass our own struct to Wine and calculate proper sizes for the guest. */
     if (c->super.id == QEMU_SYSCALL_ID(CALL_ADDJOBA))
-        c->super.iret = AddJobA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pData), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+        c->super.iret = pAddJobA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pData), c->cbBuf, QEMU_G2H(c->pcbNeeded));
     else
-        c->super.iret = AddJobW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pData), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+        c->super.iret = pAddJobW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pData), c->cbBuf, QEMU_G2H(c->pcbNeeded));
 
 #if GUEST_BIT == HOST_BIT
     return;
@@ -813,7 +813,7 @@ void qemu_GetPrintProcessorDirectoryA(struct qemu_syscall *call)
     struct qemu_GetPrintProcessorDirectoryA *c = (struct qemu_GetPrintProcessorDirectoryA *)call;
     WINE_TRACE("\n");
     /* pDriverDirectory is just a char * */
-    c->super.iret = GetPrintProcessorDirectoryA(QEMU_G2H(c->server), QEMU_G2H(c->env), c->level,
+    c->super.iret = pGetPrintProcessorDirectoryA(QEMU_G2H(c->server), QEMU_G2H(c->env), c->level,
             QEMU_G2H(c->Info), c->cbBuf, QEMU_G2H(c->pcbNeeded));
 }
 
@@ -857,7 +857,7 @@ void qemu_GetPrintProcessorDirectoryW(struct qemu_syscall *call)
     WINE_FIXME("Unverified!\n");
     WINE_TRACE("\n");
     /* pDriverDirectory is just a WCHAR * */
-    c->super.iret = GetPrintProcessorDirectoryW(QEMU_G2H(c->server), QEMU_G2H(c->env), c->level,
+    c->super.iret = pGetPrintProcessorDirectoryW(QEMU_G2H(c->server), QEMU_G2H(c->env), c->level,
             QEMU_G2H(c->Info), c->cbBuf, QEMU_G2H(c->pcbNeeded));
 }
 
@@ -893,7 +893,7 @@ void qemu_AddPrinterW(struct qemu_syscall *call)
 {
     struct qemu_AddPrinterW *c = (struct qemu_AddPrinterW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)AddPrinterW(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pPrinter));
+    c->super.iret = (uint64_t)pAddPrinterW(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pPrinter));
 }
 
 #endif
@@ -928,7 +928,7 @@ void qemu_AddPrinterA(struct qemu_syscall *call)
 {
     struct qemu_AddPrinterA *c = (struct qemu_AddPrinterA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)AddPrinterA(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pPrinter));
+    c->super.iret = (uint64_t)pAddPrinterA(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pPrinter));
 }
 
 #endif
@@ -958,7 +958,7 @@ void qemu_ClosePrinter(struct qemu_syscall *call)
 {
     struct qemu_ClosePrinter *c = (struct qemu_ClosePrinter *)call;
     WINE_TRACE("\n");
-    c->super.iret = ClosePrinter(QEMU_G2H(c->hPrinter));
+    c->super.iret = pClosePrinter(QEMU_G2H(c->hPrinter));
 }
 
 #endif
@@ -990,7 +990,7 @@ void qemu_DeleteFormA(struct qemu_syscall *call)
 {
     struct qemu_DeleteFormA *c = (struct qemu_DeleteFormA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeleteFormA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pFormName));
+    c->super.iret = pDeleteFormA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pFormName));
 }
 
 #endif
@@ -1022,7 +1022,7 @@ void qemu_DeleteFormW(struct qemu_syscall *call)
 {
     struct qemu_DeleteFormW *c = (struct qemu_DeleteFormW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeleteFormW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pFormName));
+    c->super.iret = pDeleteFormW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pFormName));
 }
 
 #endif
@@ -1052,7 +1052,7 @@ void qemu_DeletePrinter(struct qemu_syscall *call)
 {
     struct qemu_DeletePrinter *c = (struct qemu_DeletePrinter *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrinter(QEMU_G2H(c->hPrinter));
+    c->super.iret = pDeletePrinter(QEMU_G2H(c->hPrinter));
 }
 
 #endif
@@ -1088,7 +1088,7 @@ void qemu_SetPrinterA(struct qemu_syscall *call)
 {
     struct qemu_SetPrinterA *c = (struct qemu_SetPrinterA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetPrinterA(QEMU_G2H(c->printer), c->level, QEMU_G2H(c->data), c->command);
+    c->super.iret = pSetPrinterA(QEMU_G2H(c->printer), c->level, QEMU_G2H(c->data), c->command);
 }
 
 #endif
@@ -1124,7 +1124,7 @@ void qemu_SetPrinterW(struct qemu_syscall *call)
 {
     struct qemu_SetPrinterW *c = (struct qemu_SetPrinterW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetPrinterW(QEMU_G2H(c->printer), c->level, QEMU_G2H(c->data), c->command);
+    c->super.iret = pSetPrinterW(QEMU_G2H(c->printer), c->level, QEMU_G2H(c->data), c->command);
 }
 
 #endif
@@ -1162,7 +1162,7 @@ void qemu_SetJobA(struct qemu_syscall *call)
 {
     struct qemu_SetJobA *c = (struct qemu_SetJobA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetJobA(QEMU_G2H(c->hPrinter), c->JobId, c->Level, QEMU_G2H(c->pJob), c->Command);
+    c->super.iret = pSetJobA(QEMU_G2H(c->hPrinter), c->JobId, c->Level, QEMU_G2H(c->pJob), c->Command);
 }
 
 #endif
@@ -1200,7 +1200,7 @@ void qemu_SetJobW(struct qemu_syscall *call)
 {
     struct qemu_SetJobW *c = (struct qemu_SetJobW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetJobW(QEMU_G2H(c->hPrinter), c->JobId, c->Level, QEMU_G2H(c->pJob), c->Command);
+    c->super.iret = pSetJobW(QEMU_G2H(c->hPrinter), c->JobId, c->Level, QEMU_G2H(c->pJob), c->Command);
 }
 
 #endif
@@ -1230,7 +1230,7 @@ void qemu_EndDocPrinter(struct qemu_syscall *call)
 {
     struct qemu_EndDocPrinter *c = (struct qemu_EndDocPrinter *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EndDocPrinter(QEMU_G2H(c->hPrinter));
+    c->super.iret = pEndDocPrinter(QEMU_G2H(c->hPrinter));
 }
 
 #endif
@@ -1260,7 +1260,7 @@ void qemu_EndPagePrinter(struct qemu_syscall *call)
 {
     struct qemu_EndPagePrinter *c = (struct qemu_EndPagePrinter *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EndPagePrinter(QEMU_G2H(c->hPrinter));
+    c->super.iret = pEndPagePrinter(QEMU_G2H(c->hPrinter));
 }
 
 #endif
@@ -1294,7 +1294,7 @@ void qemu_StartDocPrinterA(struct qemu_syscall *call)
 {
     struct qemu_StartDocPrinterA *c = (struct qemu_StartDocPrinterA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StartDocPrinterA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pDocInfo));
+    c->super.iret = pStartDocPrinterA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pDocInfo));
 }
 
 #endif
@@ -1328,7 +1328,7 @@ void qemu_StartDocPrinterW(struct qemu_syscall *call)
 {
     struct qemu_StartDocPrinterW *c = (struct qemu_StartDocPrinterW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StartDocPrinterW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pDocInfo));
+    c->super.iret = pStartDocPrinterW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pDocInfo));
 }
 
 #endif
@@ -1358,7 +1358,7 @@ void qemu_StartPagePrinter(struct qemu_syscall *call)
 {
     struct qemu_StartPagePrinter *c = (struct qemu_StartPagePrinter *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = StartPagePrinter(QEMU_G2H(c->hPrinter));
+    c->super.iret = pStartPagePrinter(QEMU_G2H(c->hPrinter));
 }
 
 #endif
@@ -1398,7 +1398,7 @@ void qemu_GetFormA(struct qemu_syscall *call)
 {
     struct qemu_GetFormA *c = (struct qemu_GetFormA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetFormA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pFormName), c->Level, QEMU_G2H(c->pForm), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+    c->super.iret = pGetFormA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pFormName), c->Level, QEMU_G2H(c->pForm), c->cbBuf, QEMU_G2H(c->pcbNeeded));
 }
 
 #endif
@@ -1438,7 +1438,7 @@ void qemu_GetFormW(struct qemu_syscall *call)
 {
     struct qemu_GetFormW *c = (struct qemu_GetFormW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetFormW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pFormName), c->Level, QEMU_G2H(c->pForm), c->cbBuf, QEMU_G2H(c->pcbNeeded));
+    c->super.iret = pGetFormW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pFormName), c->Level, QEMU_G2H(c->pForm), c->cbBuf, QEMU_G2H(c->pcbNeeded));
 }
 
 #endif
@@ -1474,7 +1474,7 @@ void qemu_SetFormA(struct qemu_syscall *call)
 {
     struct qemu_SetFormA *c = (struct qemu_SetFormA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetFormA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pFormName), c->Level, QEMU_G2H(c->pForm));
+    c->super.iret = pSetFormA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pFormName), c->Level, QEMU_G2H(c->pForm));
 }
 
 #endif
@@ -1510,7 +1510,7 @@ void qemu_SetFormW(struct qemu_syscall *call)
 {
     struct qemu_SetFormW *c = (struct qemu_SetFormW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetFormW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pFormName), c->Level, QEMU_G2H(c->pForm));
+    c->super.iret = pSetFormW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pFormName), c->Level, QEMU_G2H(c->pForm));
 }
 
 #endif
@@ -1546,7 +1546,7 @@ void qemu_ReadPrinter(struct qemu_syscall *call)
 {
     struct qemu_ReadPrinter *c = (struct qemu_ReadPrinter *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ReadPrinter(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pBuf), c->cbBuf, QEMU_G2H(c->pNoBytesRead));
+    c->super.iret = pReadPrinter(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pBuf), c->cbBuf, QEMU_G2H(c->pNoBytesRead));
 }
 
 #endif
@@ -1578,7 +1578,7 @@ void qemu_ResetPrinterA(struct qemu_syscall *call)
 {
     struct qemu_ResetPrinterA *c = (struct qemu_ResetPrinterA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ResetPrinterA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDefault));
+    c->super.iret = pResetPrinterA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDefault));
 }
 
 #endif
@@ -1610,7 +1610,7 @@ void qemu_ResetPrinterW(struct qemu_syscall *call)
 {
     struct qemu_ResetPrinterW *c = (struct qemu_ResetPrinterW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ResetPrinterW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDefault));
+    c->super.iret = pResetPrinterW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDefault));
 }
 
 #endif
@@ -1669,12 +1669,12 @@ void qemu_GetPrinter(struct qemu_syscall *call)
      * the 32 vs 64 bit struct headers and the gap between the 32 bit struct header and first string. */
     if (c->super.id == QEMU_SYSCALL_ID(CALL_GETPRINTERW))
     {
-        c->super.iret = GetPrinterW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pPrinter),
+        c->super.iret = pGetPrinterW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pPrinter),
                 c->cbBuf, QEMU_G2H(c->pcbNeeded));
     }
     else
     {
-        c->super.iret = GetPrinterA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pPrinter),
+        c->super.iret = pGetPrinterA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pPrinter),
                 c->cbBuf, QEMU_G2H(c->pcbNeeded));
     }
 
@@ -1792,12 +1792,12 @@ void qemu_EnumPrinters(struct qemu_syscall *call)
     WINE_TRACE("\n");
     if (c->super.id == QEMU_SYSCALL_ID(CALL_ENUMPRINTERSW))
     {
-        c->super.iret = EnumPrintersW(c->dwType, QEMU_G2H(c->lpszName), c->dwLevel, data,
+        c->super.iret = pEnumPrintersW(c->dwType, QEMU_G2H(c->lpszName), c->dwLevel, data,
                 c->cbBuf, QEMU_G2H(c->lpdwNeeded), &returned);
     }
     else
     {
-        c->super.iret = EnumPrintersA(c->dwType, QEMU_G2H(c->lpszName), c->dwLevel, data,
+        c->super.iret = pEnumPrintersA(c->dwType, QEMU_G2H(c->lpszName), c->dwLevel, data,
                 c->cbBuf, QEMU_G2H(c->lpdwNeeded), &returned);
     }
 
@@ -1921,12 +1921,12 @@ void qemu_GetPrinterDriver(struct qemu_syscall *call)
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_GETPRINTERDRIVERW))
     {
-        c->super.iret = GetPrinterDriverW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pEnvironment), level,
+        c->super.iret = pGetPrinterDriverW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pEnvironment), level,
                 QEMU_G2H(c->pDriverInfo), c->cbBuf, QEMU_G2H(c->pcbNeeded));
     }
     else
     {
-        c->super.iret = GetPrinterDriverA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pEnvironment), level,
+        c->super.iret = pGetPrinterDriverA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pEnvironment), level,
                 QEMU_G2H(c->pDriverInfo), c->cbBuf, QEMU_G2H(c->pcbNeeded));
     }
 
@@ -2011,7 +2011,7 @@ void qemu_GetPrinterDriverDirectoryW(struct qemu_syscall *call)
     struct qemu_GetPrinterDriverDirectoryW *c = (struct qemu_GetPrinterDriverDirectoryW *)call;
     WINE_TRACE("\n");
     /* pDriverDirectory is just a WCHAR * */
-    c->super.iret = GetPrinterDriverDirectoryW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level,
+    c->super.iret = pGetPrinterDriverDirectoryW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level,
             QEMU_G2H(c->pDriverDirectory), c->cbBuf, QEMU_G2H(c->pcbNeeded));
 }
 
@@ -2054,7 +2054,7 @@ void qemu_GetPrinterDriverDirectoryA(struct qemu_syscall *call)
     struct qemu_GetPrinterDriverDirectoryA *c = (struct qemu_GetPrinterDriverDirectoryA *)call;
     WINE_TRACE("\n");
     /* pDriverDirectory is just a char * */
-    c->super.iret = GetPrinterDriverDirectoryA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level,
+    c->super.iret = pGetPrinterDriverDirectoryA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level,
             QEMU_G2H(c->pDriverDirectory), c->cbBuf, QEMU_G2H(c->pcbNeeded));
 }
 
@@ -2089,7 +2089,7 @@ void qemu_AddPrinterDriverA(struct qemu_syscall *call)
 {
     struct qemu_AddPrinterDriverA *c = (struct qemu_AddPrinterDriverA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddPrinterDriverA(QEMU_G2H(c->pName), c->level, QEMU_G2H(c->pDriverInfo));
+    c->super.iret = pAddPrinterDriverA(QEMU_G2H(c->pName), c->level, QEMU_G2H(c->pDriverInfo));
 }
 
 #endif
@@ -2123,7 +2123,7 @@ void qemu_AddPrinterDriverW(struct qemu_syscall *call)
 {
     struct qemu_AddPrinterDriverW *c = (struct qemu_AddPrinterDriverW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddPrinterDriverW(QEMU_G2H(c->pName), c->level, QEMU_G2H(c->pDriverInfo));
+    c->super.iret = pAddPrinterDriverW(QEMU_G2H(c->pName), c->level, QEMU_G2H(c->pDriverInfo));
 }
 
 #endif
@@ -2159,7 +2159,7 @@ void qemu_AddPrintProcessorA(struct qemu_syscall *call)
 {
     struct qemu_AddPrintProcessorA *c = (struct qemu_AddPrintProcessorA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddPrintProcessorA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pPathName), QEMU_G2H(c->pPrintProcessorName));
+    c->super.iret = pAddPrintProcessorA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pPathName), QEMU_G2H(c->pPrintProcessorName));
 }
 
 #endif
@@ -2195,7 +2195,7 @@ void qemu_AddPrintProcessorW(struct qemu_syscall *call)
 {
     struct qemu_AddPrintProcessorW *c = (struct qemu_AddPrintProcessorW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddPrintProcessorW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pPathName), QEMU_G2H(c->pPrintProcessorName));
+    c->super.iret = pAddPrintProcessorW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pPathName), QEMU_G2H(c->pPrintProcessorName));
 }
 
 #endif
@@ -2229,7 +2229,7 @@ void qemu_AddPrintProvidorA(struct qemu_syscall *call)
 {
     struct qemu_AddPrintProvidorA *c = (struct qemu_AddPrintProvidorA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddPrintProvidorA(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pProviderInfo));
+    c->super.iret = pAddPrintProvidorA(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pProviderInfo));
 }
 
 #endif
@@ -2263,7 +2263,7 @@ void qemu_AddPrintProvidorW(struct qemu_syscall *call)
 {
     struct qemu_AddPrintProvidorW *c = (struct qemu_AddPrintProvidorW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddPrintProvidorW(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pProviderInfo));
+    c->super.iret = pAddPrintProvidorW(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pProviderInfo));
 }
 
 #endif
@@ -2301,7 +2301,7 @@ void qemu_AdvancedDocumentPropertiesA(struct qemu_syscall *call)
 {
     struct qemu_AdvancedDocumentPropertiesA *c = (struct qemu_AdvancedDocumentPropertiesA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AdvancedDocumentPropertiesA(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDeviceName), QEMU_G2H(c->pDevModeOutput), QEMU_G2H(c->pDevModeInput));
+    c->super.iret = pAdvancedDocumentPropertiesA(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDeviceName), QEMU_G2H(c->pDevModeOutput), QEMU_G2H(c->pDevModeInput));
 }
 
 #endif
@@ -2339,7 +2339,7 @@ void qemu_AdvancedDocumentPropertiesW(struct qemu_syscall *call)
 {
     struct qemu_AdvancedDocumentPropertiesW *c = (struct qemu_AdvancedDocumentPropertiesW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AdvancedDocumentPropertiesW(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDeviceName), QEMU_G2H(c->pDevModeOutput), QEMU_G2H(c->pDevModeInput));
+    c->super.iret = pAdvancedDocumentPropertiesW(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter), QEMU_G2H(c->pDeviceName), QEMU_G2H(c->pDevModeOutput), QEMU_G2H(c->pDevModeInput));
 }
 
 #endif
@@ -2371,7 +2371,7 @@ void qemu_PrinterProperties(struct qemu_syscall *call)
 {
     struct qemu_PrinterProperties *c = (struct qemu_PrinterProperties *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = PrinterProperties(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter));
+    c->super.iret = pPrinterProperties(QEMU_G2H(c->hWnd), QEMU_G2H(c->hPrinter));
 }
 
 #endif
@@ -2415,7 +2415,7 @@ void qemu_EnumJobsA(struct qemu_syscall *call)
 {
     struct qemu_EnumJobsA *c = (struct qemu_EnumJobsA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumJobsA(QEMU_G2H(c->hPrinter), c->FirstJob, c->NoJobs, c->Level, QEMU_G2H(c->pJob), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    c->super.iret = pEnumJobsA(QEMU_G2H(c->hPrinter), c->FirstJob, c->NoJobs, c->Level, QEMU_G2H(c->pJob), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
 }
 
 #endif
@@ -2459,7 +2459,7 @@ void qemu_EnumJobsW(struct qemu_syscall *call)
 {
     struct qemu_EnumJobsW *c = (struct qemu_EnumJobsW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumJobsW(QEMU_G2H(c->hPrinter), c->FirstJob, c->NoJobs, c->Level, QEMU_G2H(c->pJob), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    c->super.iret = pEnumJobsW(QEMU_G2H(c->hPrinter), c->FirstJob, c->NoJobs, c->Level, QEMU_G2H(c->pJob), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
 }
 
 #endif
@@ -2527,12 +2527,12 @@ void qemu_EnumPrinterDrivers(struct qemu_syscall *call)
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_ENUMPRINTERDRIVERSA))
     {
-        c->super.iret = EnumPrinterDriversA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), level,
+        c->super.iret = pEnumPrinterDriversA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), level,
                 QEMU_G2H(c->pDriverInfo), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
     }
     else
     {
-        c->super.iret = EnumPrinterDriversW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), level,
+        c->super.iret = pEnumPrinterDriversW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), level,
                 QEMU_G2H(c->pDriverInfo), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
     }
 
@@ -2628,7 +2628,7 @@ void qemu_EnumPortsA(struct qemu_syscall *call)
 {
     struct qemu_EnumPortsA *c = (struct qemu_EnumPortsA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPortsA(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pPorts), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    c->super.iret = pEnumPortsA(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pPorts), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
 }
 
 #endif
@@ -2668,7 +2668,7 @@ void qemu_EnumPortsW(struct qemu_syscall *call)
 {
     struct qemu_EnumPortsW *c = (struct qemu_EnumPortsW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPortsW(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pPorts), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    c->super.iret = pEnumPortsW(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pPorts), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
 }
 
 #endif
@@ -2700,7 +2700,7 @@ void qemu_GetDefaultPrinterW(struct qemu_syscall *call)
 {
     struct qemu_GetDefaultPrinterW *c = (struct qemu_GetDefaultPrinterW *)call;
     WINE_TRACE("\n");
-    c->super.iret = GetDefaultPrinterW(QEMU_G2H(c->name), QEMU_G2H(c->namesize));
+    c->super.iret = pGetDefaultPrinterW(QEMU_G2H(c->name), QEMU_G2H(c->namesize));
 }
 
 #endif
@@ -2732,7 +2732,7 @@ void qemu_GetDefaultPrinterA(struct qemu_syscall *call)
 {
     struct qemu_GetDefaultPrinterA *c = (struct qemu_GetDefaultPrinterA *)call;
     WINE_TRACE("\n");
-    c->super.iret = GetDefaultPrinterA(QEMU_G2H(c->name), QEMU_G2H(c->namesize));
+    c->super.iret = pGetDefaultPrinterA(QEMU_G2H(c->name), QEMU_G2H(c->namesize));
 }
 
 #endif
@@ -2762,7 +2762,7 @@ void qemu_SetDefaultPrinterW(struct qemu_syscall *call)
 {
     struct qemu_SetDefaultPrinterW *c = (struct qemu_SetDefaultPrinterW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetDefaultPrinterW(QEMU_G2H(c->pszPrinter));
+    c->super.iret = pSetDefaultPrinterW(QEMU_G2H(c->pszPrinter));
 }
 
 #endif
@@ -2792,7 +2792,7 @@ void qemu_SetDefaultPrinterA(struct qemu_syscall *call)
 {
     struct qemu_SetDefaultPrinterA *c = (struct qemu_SetDefaultPrinterA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetDefaultPrinterA(QEMU_G2H(c->pszPrinter));
+    c->super.iret = pSetDefaultPrinterA(QEMU_G2H(c->pszPrinter));
 }
 
 #endif
@@ -2832,7 +2832,7 @@ void qemu_SetPrinterDataExA(struct qemu_syscall *call)
 {
     struct qemu_SetPrinterDataExA *c = (struct qemu_SetPrinterDataExA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetPrinterDataExA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pValueName), c->Type, QEMU_G2H(c->pData), c->cbData);
+    c->super.iret = pSetPrinterDataExA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pValueName), c->Type, QEMU_G2H(c->pData), c->cbData);
 }
 
 #endif
@@ -2872,7 +2872,7 @@ void qemu_SetPrinterDataExW(struct qemu_syscall *call)
 {
     struct qemu_SetPrinterDataExW *c = (struct qemu_SetPrinterDataExW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetPrinterDataExW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pValueName), c->Type, QEMU_G2H(c->pData), c->cbData);
+    c->super.iret = pSetPrinterDataExW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pValueName), c->Type, QEMU_G2H(c->pData), c->cbData);
 }
 
 #endif
@@ -2910,7 +2910,7 @@ void qemu_SetPrinterDataA(struct qemu_syscall *call)
 {
     struct qemu_SetPrinterDataA *c = (struct qemu_SetPrinterDataA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetPrinterDataA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pValueName), c->Type, QEMU_G2H(c->pData), c->cbData);
+    c->super.iret = pSetPrinterDataA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pValueName), c->Type, QEMU_G2H(c->pData), c->cbData);
 }
 
 #endif
@@ -2948,7 +2948,7 @@ void qemu_SetPrinterDataW(struct qemu_syscall *call)
 {
     struct qemu_SetPrinterDataW *c = (struct qemu_SetPrinterDataW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SetPrinterDataW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pValueName), c->Type, QEMU_G2H(c->pData), c->cbData);
+    c->super.iret = pSetPrinterDataW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pValueName), c->Type, QEMU_G2H(c->pData), c->cbData);
 }
 
 #endif
@@ -2990,7 +2990,7 @@ void qemu_GetPrinterDataExA(struct qemu_syscall *call)
 {
     struct qemu_GetPrinterDataExA *c = (struct qemu_GetPrinterDataExA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetPrinterDataExA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pValueName), QEMU_G2H(c->pType), QEMU_G2H(c->pData), c->nSize, QEMU_G2H(c->pcbNeeded));
+    c->super.iret = pGetPrinterDataExA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pValueName), QEMU_G2H(c->pType), QEMU_G2H(c->pData), c->nSize, QEMU_G2H(c->pcbNeeded));
 }
 
 #endif
@@ -3032,7 +3032,7 @@ void qemu_GetPrinterDataExW(struct qemu_syscall *call)
 {
     struct qemu_GetPrinterDataExW *c = (struct qemu_GetPrinterDataExW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetPrinterDataExW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pValueName), QEMU_G2H(c->pType), QEMU_G2H(c->pData), c->nSize, QEMU_G2H(c->pcbNeeded));
+    c->super.iret = pGetPrinterDataExW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pValueName), QEMU_G2H(c->pType), QEMU_G2H(c->pData), c->nSize, QEMU_G2H(c->pcbNeeded));
 }
 
 #endif
@@ -3072,7 +3072,7 @@ void qemu_GetPrinterDataA(struct qemu_syscall *call)
 {
     struct qemu_GetPrinterDataA *c = (struct qemu_GetPrinterDataA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetPrinterDataA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pValueName), QEMU_G2H(c->pType), QEMU_G2H(c->pData), c->nSize, QEMU_G2H(c->pcbNeeded));
+    c->super.iret = pGetPrinterDataA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pValueName), QEMU_G2H(c->pType), QEMU_G2H(c->pData), c->nSize, QEMU_G2H(c->pcbNeeded));
 }
 
 #endif
@@ -3112,7 +3112,7 @@ void qemu_GetPrinterDataW(struct qemu_syscall *call)
 {
     struct qemu_GetPrinterDataW *c = (struct qemu_GetPrinterDataW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = GetPrinterDataW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pValueName), QEMU_G2H(c->pType), QEMU_G2H(c->pData), c->nSize, QEMU_G2H(c->pcbNeeded));
+    c->super.iret = pGetPrinterDataW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pValueName), QEMU_G2H(c->pType), QEMU_G2H(c->pData), c->nSize, QEMU_G2H(c->pcbNeeded));
 }
 
 #endif
@@ -3152,7 +3152,7 @@ void qemu_EnumPrinterDataExW(struct qemu_syscall *call)
 {
     struct qemu_EnumPrinterDataExW *c = (struct qemu_EnumPrinterDataExW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrinterDataExW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pEnumValues), c->cbEnumValues, QEMU_G2H(c->pcbEnumValues), QEMU_G2H(c->pnEnumValues));
+    c->super.iret = pEnumPrinterDataExW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pEnumValues), c->cbEnumValues, QEMU_G2H(c->pcbEnumValues), QEMU_G2H(c->pnEnumValues));
 }
 
 #endif
@@ -3192,7 +3192,7 @@ void qemu_EnumPrinterDataExA(struct qemu_syscall *call)
 {
     struct qemu_EnumPrinterDataExA *c = (struct qemu_EnumPrinterDataExA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrinterDataExA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pEnumValues), c->cbEnumValues, QEMU_G2H(c->pcbEnumValues), QEMU_G2H(c->pnEnumValues));
+    c->super.iret = pEnumPrinterDataExA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pEnumValues), c->cbEnumValues, QEMU_G2H(c->pcbEnumValues), QEMU_G2H(c->pnEnumValues));
 }
 
 #endif
@@ -3222,7 +3222,7 @@ void qemu_AbortPrinter(struct qemu_syscall *call)
 {
     struct qemu_AbortPrinter *c = (struct qemu_AbortPrinter *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AbortPrinter(QEMU_G2H(c->hPrinter));
+    c->super.iret = pAbortPrinter(QEMU_G2H(c->hPrinter));
 }
 
 #endif
@@ -3256,7 +3256,7 @@ void qemu_AddPortA(struct qemu_syscall *call)
 {
     struct qemu_AddPortA *c = (struct qemu_AddPortA *)call;
     WINE_TRACE("\n");
-    c->super.iret = AddPortA(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pMonitorName));
+    c->super.iret = pAddPortA(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pMonitorName));
 }
 
 #endif
@@ -3290,7 +3290,7 @@ void qemu_AddPortW(struct qemu_syscall *call)
 {
     struct qemu_AddPortW *c = (struct qemu_AddPortW *)call;
     WINE_TRACE("\n");
-    c->super.iret = AddPortW(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pMonitorName));
+    c->super.iret = pAddPortW(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pMonitorName));
 }
 
 #endif
@@ -3352,9 +3352,9 @@ void qemu_AddPortEx(struct qemu_syscall *call)
 #endif
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_ADDPORTEXA))
-        c->super.iret = AddPortExA(QEMU_G2H(c->pName), c->level, (BYTE *)port, QEMU_G2H(c->pMonitorName));
+        c->super.iret = pAddPortExA(QEMU_G2H(c->pName), c->level, (BYTE *)port, QEMU_G2H(c->pMonitorName));
     else
-        c->super.iret = AddPortExW(QEMU_G2H(c->pName), c->level, (BYTE *)port, QEMU_G2H(c->pMonitorName));
+        c->super.iret = pAddPortExW(QEMU_G2H(c->pName), c->level, (BYTE *)port, QEMU_G2H(c->pMonitorName));
 }
 
 #endif
@@ -3384,7 +3384,7 @@ void qemu_AddPrinterConnectionA(struct qemu_syscall *call)
 {
     struct qemu_AddPrinterConnectionA *c = (struct qemu_AddPrinterConnectionA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddPrinterConnectionA(QEMU_G2H(c->pName));
+    c->super.iret = pAddPrinterConnectionA(QEMU_G2H(c->pName));
 }
 
 #endif
@@ -3414,7 +3414,7 @@ void qemu_AddPrinterConnectionW(struct qemu_syscall *call)
 {
     struct qemu_AddPrinterConnectionW *c = (struct qemu_AddPrinterConnectionW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddPrinterConnectionW(QEMU_G2H(c->pName));
+    c->super.iret = pAddPrinterConnectionW(QEMU_G2H(c->pName));
 }
 
 #endif
@@ -3450,7 +3450,7 @@ void qemu_AddPrinterDriverExW(struct qemu_syscall *call)
 {
     struct qemu_AddPrinterDriverExW *c = (struct qemu_AddPrinterDriverExW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddPrinterDriverExW(QEMU_G2H(c->pName), c->level, QEMU_G2H(c->pDriverInfo), c->dwFileCopyFlags);
+    c->super.iret = pAddPrinterDriverExW(QEMU_G2H(c->pName), c->level, QEMU_G2H(c->pDriverInfo), c->dwFileCopyFlags);
 }
 
 #endif
@@ -3486,7 +3486,7 @@ void qemu_AddPrinterDriverExA(struct qemu_syscall *call)
 {
     struct qemu_AddPrinterDriverExA *c = (struct qemu_AddPrinterDriverExA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = AddPrinterDriverExA(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pDriverInfo), c->dwFileCopyFlags);
+    c->super.iret = pAddPrinterDriverExA(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pDriverInfo), c->dwFileCopyFlags);
 }
 
 #endif
@@ -3520,7 +3520,7 @@ void qemu_ConfigurePortA(struct qemu_syscall *call)
 {
     struct qemu_ConfigurePortA *c = (struct qemu_ConfigurePortA *)call;
     WINE_TRACE("\n");
-    c->super.iret = ConfigurePortA(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pPortName));
+    c->super.iret = pConfigurePortA(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pPortName));
 }
 
 #endif
@@ -3554,7 +3554,7 @@ void qemu_ConfigurePortW(struct qemu_syscall *call)
 {
     struct qemu_ConfigurePortW *c = (struct qemu_ConfigurePortW *)call;
     WINE_TRACE("\n");
-    c->super.iret = ConfigurePortW(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pPortName));
+    c->super.iret = pConfigurePortW(QEMU_G2H(c->pName), QEMU_G2H(c->hWnd), QEMU_G2H(c->pPortName));
 }
 
 #endif
@@ -3587,7 +3587,7 @@ void qemu_ConnectToPrinterDlg(struct qemu_syscall *call)
 {
     struct qemu_ConnectToPrinterDlg *c = (struct qemu_ConnectToPrinterDlg *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)ConnectToPrinterDlg(QEMU_G2H(c->hWnd), c->Flags);
+    c->super.iret = (uint64_t)pConnectToPrinterDlg(QEMU_G2H(c->hWnd), c->Flags);
 }
 
 #endif
@@ -3617,7 +3617,7 @@ void qemu_DeletePrinterConnectionA(struct qemu_syscall *call)
 {
     struct qemu_DeletePrinterConnectionA *c = (struct qemu_DeletePrinterConnectionA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrinterConnectionA(QEMU_G2H(c->pName));
+    c->super.iret = pDeletePrinterConnectionA(QEMU_G2H(c->pName));
 }
 
 #endif
@@ -3647,7 +3647,7 @@ void qemu_DeletePrinterConnectionW(struct qemu_syscall *call)
 {
     struct qemu_DeletePrinterConnectionW *c = (struct qemu_DeletePrinterConnectionW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrinterConnectionW(QEMU_G2H(c->pName));
+    c->super.iret = pDeletePrinterConnectionW(QEMU_G2H(c->pName));
 }
 
 #endif
@@ -3685,7 +3685,7 @@ void qemu_DeletePrinterDriverExW(struct qemu_syscall *call)
 {
     struct qemu_DeletePrinterDriverExW *c = (struct qemu_DeletePrinterDriverExW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrinterDriverExW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pDriverName), c->dwDeleteFlag, c->dwVersionFlag);
+    c->super.iret = pDeletePrinterDriverExW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pDriverName), c->dwDeleteFlag, c->dwVersionFlag);
 }
 
 #endif
@@ -3723,7 +3723,7 @@ void qemu_DeletePrinterDriverExA(struct qemu_syscall *call)
 {
     struct qemu_DeletePrinterDriverExA *c = (struct qemu_DeletePrinterDriverExA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrinterDriverExA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pDriverName), c->dwDeleteFlag, c->dwVersionFlag);
+    c->super.iret = pDeletePrinterDriverExA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pDriverName), c->dwDeleteFlag, c->dwVersionFlag);
 }
 
 #endif
@@ -3757,7 +3757,7 @@ void qemu_DeletePrinterDataExW(struct qemu_syscall *call)
 {
     struct qemu_DeletePrinterDataExW *c = (struct qemu_DeletePrinterDataExW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrinterDataExW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pValueName));
+    c->super.iret = pDeletePrinterDataExW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pValueName));
 }
 
 #endif
@@ -3791,7 +3791,7 @@ void qemu_DeletePrinterDataExA(struct qemu_syscall *call)
 {
     struct qemu_DeletePrinterDataExA *c = (struct qemu_DeletePrinterDataExA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrinterDataExA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pValueName));
+    c->super.iret = pDeletePrinterDataExA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->pKeyName), QEMU_G2H(c->pValueName));
 }
 
 #endif
@@ -3825,7 +3825,7 @@ void qemu_DeletePrintProcessorA(struct qemu_syscall *call)
 {
     struct qemu_DeletePrintProcessorA *c = (struct qemu_DeletePrintProcessorA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrintProcessorA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pPrintProcessorName));
+    c->super.iret = pDeletePrintProcessorA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pPrintProcessorName));
 }
 
 #endif
@@ -3859,7 +3859,7 @@ void qemu_DeletePrintProcessorW(struct qemu_syscall *call)
 {
     struct qemu_DeletePrintProcessorW *c = (struct qemu_DeletePrintProcessorW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrintProcessorW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pPrintProcessorName));
+    c->super.iret = pDeletePrintProcessorW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pPrintProcessorName));
 }
 
 #endif
@@ -3893,7 +3893,7 @@ void qemu_DeletePrintProvidorA(struct qemu_syscall *call)
 {
     struct qemu_DeletePrintProvidorA *c = (struct qemu_DeletePrintProvidorA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrintProvidorA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pPrintProviderName));
+    c->super.iret = pDeletePrintProvidorA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pPrintProviderName));
 }
 
 #endif
@@ -3927,7 +3927,7 @@ void qemu_DeletePrintProvidorW(struct qemu_syscall *call)
 {
     struct qemu_DeletePrintProvidorW *c = (struct qemu_DeletePrintProvidorW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = DeletePrintProvidorW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pPrintProviderName));
+    c->super.iret = pDeletePrintProvidorW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), QEMU_G2H(c->pPrintProviderName));
 }
 
 #endif
@@ -3968,7 +3968,7 @@ void qemu_EnumFormsA(struct qemu_syscall *call)
     struct qemu_EnumFormsA *c = (struct qemu_EnumFormsA *)call;
     WINE_WARN("Not handling because not implemented in Wine.\n");
     /* This function is not implemented in Wine. */
-    c->super.iret = EnumFormsA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pForm), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    c->super.iret = pEnumFormsA(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pForm), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
     if (c->super.iret)
         WINE_FIXME("EnumFormsA succeeded, implement a proper wrapper.\n");
 }
@@ -4011,7 +4011,7 @@ void qemu_EnumFormsW(struct qemu_syscall *call)
     struct qemu_EnumFormsW *c = (struct qemu_EnumFormsW *)call;
     WINE_WARN("Not handling because not implemented in Wine.\n");
     /* This function is not implemented in Wine. */
-    c->super.iret = EnumFormsW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pForm), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    c->super.iret = pEnumFormsW(QEMU_G2H(c->hPrinter), c->Level, QEMU_G2H(c->pForm), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
     if (c->super.iret)
         WINE_FIXME("EnumFormsA succeeded, implement a proper wrapper.\n");
 }
@@ -4053,7 +4053,7 @@ void qemu_EnumMonitorsA(struct qemu_syscall *call)
 {
     struct qemu_EnumMonitorsA *c = (struct qemu_EnumMonitorsA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumMonitorsA(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pMonitors), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    c->super.iret = pEnumMonitorsA(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pMonitors), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
 }
 
 #endif
@@ -4093,7 +4093,7 @@ void qemu_EnumMonitorsW(struct qemu_syscall *call)
 {
     struct qemu_EnumMonitorsW *c = (struct qemu_EnumMonitorsW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumMonitorsW(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pMonitors), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    c->super.iret = pEnumMonitorsW(QEMU_G2H(c->pName), c->Level, QEMU_G2H(c->pMonitors), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
 }
 
 #endif
@@ -4122,7 +4122,7 @@ void qemu_SpoolerInit(struct qemu_syscall *call)
 {
     struct qemu_SpoolerInit *c = (struct qemu_SpoolerInit *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = SpoolerInit();
+    c->super.iret = pSpoolerInit();
 }
 
 #endif
@@ -4166,7 +4166,7 @@ void qemu_XcvDataW(struct qemu_syscall *call)
 {
     struct qemu_XcvDataW *c = (struct qemu_XcvDataW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = XcvDataW(QEMU_G2H(c->hXcv), QEMU_G2H(c->pszDataName), QEMU_G2H(c->pInputData), c->cbInputData, QEMU_G2H(c->pOutputData), c->cbOutputData, QEMU_G2H(c->pcbOutputNeeded), QEMU_G2H(c->pdwStatus));
+    c->super.iret = pXcvDataW(QEMU_G2H(c->hXcv), QEMU_G2H(c->pszDataName), QEMU_G2H(c->pInputData), c->cbInputData, QEMU_G2H(c->pOutputData), c->cbOutputData, QEMU_G2H(c->pcbOutputNeeded), QEMU_G2H(c->pdwStatus));
 }
 
 #endif
@@ -4212,7 +4212,7 @@ void qemu_EnumPrinterDataA(struct qemu_syscall *call)
 {
     struct qemu_EnumPrinterDataA *c = (struct qemu_EnumPrinterDataA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrinterDataA(QEMU_G2H(c->hPrinter), c->dwIndex, QEMU_G2H(c->pValueName), c->cbValueName, QEMU_G2H(c->pcbValueName), QEMU_G2H(c->pType), QEMU_G2H(c->pData), c->cbData, QEMU_G2H(c->pcbData));
+    c->super.iret = pEnumPrinterDataA(QEMU_G2H(c->hPrinter), c->dwIndex, QEMU_G2H(c->pValueName), c->cbValueName, QEMU_G2H(c->pcbValueName), QEMU_G2H(c->pType), QEMU_G2H(c->pData), c->cbData, QEMU_G2H(c->pcbData));
 }
 
 #endif
@@ -4258,7 +4258,7 @@ void qemu_EnumPrinterDataW(struct qemu_syscall *call)
 {
     struct qemu_EnumPrinterDataW *c = (struct qemu_EnumPrinterDataW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrinterDataW(QEMU_G2H(c->hPrinter), c->dwIndex, QEMU_G2H(c->pValueName), c->cbValueName, QEMU_G2H(c->pcbValueName), QEMU_G2H(c->pType), QEMU_G2H(c->pData), c->cbData, QEMU_G2H(c->pcbData));
+    c->super.iret = pEnumPrinterDataW(QEMU_G2H(c->hPrinter), c->dwIndex, QEMU_G2H(c->pValueName), c->cbValueName, QEMU_G2H(c->pcbValueName), QEMU_G2H(c->pType), QEMU_G2H(c->pData), c->cbData, QEMU_G2H(c->pcbData));
 }
 
 #endif
@@ -4296,7 +4296,7 @@ void qemu_EnumPrinterKeyA(struct qemu_syscall *call)
 {
     struct qemu_EnumPrinterKeyA *c = (struct qemu_EnumPrinterKeyA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrinterKeyA(QEMU_G2H(c->printer), QEMU_G2H(c->key), QEMU_G2H(c->subkey), c->size, QEMU_G2H(c->needed));
+    c->super.iret = pEnumPrinterKeyA(QEMU_G2H(c->printer), QEMU_G2H(c->key), QEMU_G2H(c->subkey), c->size, QEMU_G2H(c->needed));
 }
 
 #endif
@@ -4334,7 +4334,7 @@ void qemu_EnumPrinterKeyW(struct qemu_syscall *call)
 {
     struct qemu_EnumPrinterKeyW *c = (struct qemu_EnumPrinterKeyW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrinterKeyW(QEMU_G2H(c->printer), QEMU_G2H(c->key), QEMU_G2H(c->subkey), c->size, QEMU_G2H(c->needed));
+    c->super.iret = pEnumPrinterKeyW(QEMU_G2H(c->printer), QEMU_G2H(c->key), QEMU_G2H(c->subkey), c->size, QEMU_G2H(c->needed));
 }
 
 #endif
@@ -4376,7 +4376,7 @@ void qemu_EnumPrintProcessorDatatypesA(struct qemu_syscall *call)
 {
     struct qemu_EnumPrintProcessorDatatypesA *c = (struct qemu_EnumPrintProcessorDatatypesA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrintProcessorDatatypesA(QEMU_G2H(c->pName), QEMU_G2H(c->pPrintProcessorName), c->Level, QEMU_G2H(c->pDatatypes), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    c->super.iret = pEnumPrintProcessorDatatypesA(QEMU_G2H(c->pName), QEMU_G2H(c->pPrintProcessorName), c->Level, QEMU_G2H(c->pDatatypes), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
 }
 
 #endif
@@ -4418,7 +4418,7 @@ void qemu_EnumPrintProcessorDatatypesW(struct qemu_syscall *call)
 {
     struct qemu_EnumPrintProcessorDatatypesW *c = (struct qemu_EnumPrintProcessorDatatypesW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrintProcessorDatatypesW(QEMU_G2H(c->pName), QEMU_G2H(c->pPrintProcessorName), c->Level, QEMU_G2H(c->pDatatypes), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    c->super.iret = pEnumPrintProcessorDatatypesW(QEMU_G2H(c->pName), QEMU_G2H(c->pPrintProcessorName), c->Level, QEMU_G2H(c->pDatatypes), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
 }
 
 #endif
@@ -4460,7 +4460,7 @@ void qemu_EnumPrintProcessorsA(struct qemu_syscall *call)
 {
     struct qemu_EnumPrintProcessorsA *c = (struct qemu_EnumPrintProcessorsA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrintProcessorsA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level, QEMU_G2H(c->pPPInfo), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    c->super.iret = pEnumPrintProcessorsA(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level, QEMU_G2H(c->pPPInfo), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
 }
 
 #endif
@@ -4502,7 +4502,7 @@ void qemu_EnumPrintProcessorsW(struct qemu_syscall *call)
 {
     struct qemu_EnumPrintProcessorsW *c = (struct qemu_EnumPrintProcessorsW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = EnumPrintProcessorsW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level, QEMU_G2H(c->pPPInfo), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
+    c->super.iret = pEnumPrintProcessorsW(QEMU_G2H(c->pName), QEMU_G2H(c->pEnvironment), c->Level, QEMU_G2H(c->pPPInfo), c->cbBuf, QEMU_G2H(c->pcbNeeded), QEMU_G2H(c->pcReturned));
 }
 
 #endif
@@ -4547,7 +4547,7 @@ void qemu_ExtDeviceMode(struct qemu_syscall *call)
 {
     struct qemu_ExtDeviceMode *c = (struct qemu_ExtDeviceMode *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ExtDeviceMode(QEMU_G2H(c->hWnd), QEMU_G2H(c->hInst), QEMU_G2H(c->pDevModeOutput), QEMU_G2H(c->pDeviceName), QEMU_G2H(c->pPort), QEMU_G2H(c->pDevModeInput), QEMU_G2H(c->pProfile), c->fMode);
+    c->super.iret = pExtDeviceMode(QEMU_G2H(c->hWnd), QEMU_G2H(c->hInst), QEMU_G2H(c->pDevModeOutput), QEMU_G2H(c->pDeviceName), QEMU_G2H(c->pPort), QEMU_G2H(c->pDevModeInput), QEMU_G2H(c->pProfile), c->fMode);
 }
 
 #endif
@@ -4577,7 +4577,7 @@ void qemu_FindClosePrinterChangeNotification(struct qemu_syscall *call)
 {
     struct qemu_FindClosePrinterChangeNotification *c = (struct qemu_FindClosePrinterChangeNotification *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FindClosePrinterChangeNotification(QEMU_G2H(c->hChange));
+    c->super.iret = pFindClosePrinterChangeNotification(QEMU_G2H(c->hChange));
 }
 
 #endif
@@ -4614,7 +4614,7 @@ void qemu_FindFirstPrinterChangeNotification(struct qemu_syscall *call)
 {
     struct qemu_FindFirstPrinterChangeNotification *c = (struct qemu_FindFirstPrinterChangeNotification *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)FindFirstPrinterChangeNotification(QEMU_G2H(c->hPrinter), c->fdwFlags, c->fdwOptions, QEMU_G2H(c->pPrinterNotifyOptions));
+    c->super.iret = (uint64_t)pFindFirstPrinterChangeNotification(QEMU_G2H(c->hPrinter), c->fdwFlags, c->fdwOptions, QEMU_G2H(c->pPrinterNotifyOptions));
 }
 
 #endif
@@ -4650,7 +4650,7 @@ void qemu_FindNextPrinterChangeNotification(struct qemu_syscall *call)
 {
     struct qemu_FindNextPrinterChangeNotification *c = (struct qemu_FindNextPrinterChangeNotification *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FindNextPrinterChangeNotification(QEMU_G2H(c->hChange), QEMU_G2H(c->pdwChange), QEMU_G2H(c->pPrinterNotifyOptions), QEMU_G2H(c->ppPrinterNotifyInfo));
+    c->super.iret = pFindNextPrinterChangeNotification(QEMU_G2H(c->hChange), QEMU_G2H(c->pdwChange), QEMU_G2H(c->pPrinterNotifyOptions), QEMU_G2H(c->ppPrinterNotifyInfo));
 }
 
 #endif
@@ -4680,7 +4680,7 @@ void qemu_FreePrinterNotifyInfo(struct qemu_syscall *call)
 {
     struct qemu_FreePrinterNotifyInfo *c = (struct qemu_FreePrinterNotifyInfo *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = FreePrinterNotifyInfo(QEMU_G2H(c->pPrinterNotifyInfo));
+    c->super.iret = pFreePrinterNotifyInfo(QEMU_G2H(c->pPrinterNotifyInfo));
 }
 
 #endif
@@ -4739,12 +4739,12 @@ void qemu_GetJob(struct qemu_syscall *call)
 
     if (c->super.id == QEMU_SYSCALL_ID(CALL_GETJOBW))
     {
-        c->super.iret = GetJobW(QEMU_G2H(c->hPrinter), c->JobId, c->Level, QEMU_G2H(c->pJob), c->cbBuf,
+        c->super.iret = pGetJobW(QEMU_G2H(c->hPrinter), c->JobId, c->Level, QEMU_G2H(c->pJob), c->cbBuf,
                 QEMU_G2H(c->pcbNeeded));
     }
     else
     {
-        c->super.iret = GetJobA(QEMU_G2H(c->hPrinter), c->JobId, c->Level, QEMU_G2H(c->pJob), c->cbBuf,
+        c->super.iret = pGetJobA(QEMU_G2H(c->hPrinter), c->JobId, c->Level, QEMU_G2H(c->pJob), c->cbBuf,
                 QEMU_G2H(c->pcbNeeded));
     }
 
@@ -4797,7 +4797,7 @@ void qemu_ScheduleJob(struct qemu_syscall *call)
 {
     struct qemu_ScheduleJob *c = (struct qemu_ScheduleJob *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = ScheduleJob(QEMU_G2H(c->hPrinter), c->dwJobID);
+    c->super.iret = pScheduleJob(QEMU_G2H(c->hPrinter), c->dwJobID);
 }
 
 #endif
@@ -4829,7 +4829,7 @@ void qemu_StartDocDlgA(struct qemu_syscall *call)
 {
     struct qemu_StartDocDlgA *c = (struct qemu_StartDocDlgA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StartDocDlgA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->doc));
+    c->super.iret = (uint64_t)pStartDocDlgA(QEMU_G2H(c->hPrinter), QEMU_G2H(c->doc));
 }
 
 #endif
@@ -4861,7 +4861,7 @@ void qemu_StartDocDlgW(struct qemu_syscall *call)
 {
     struct qemu_StartDocDlgW *c = (struct qemu_StartDocDlgW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = (uint64_t)StartDocDlgW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->doc));
+    c->super.iret = (uint64_t)pStartDocDlgW(QEMU_G2H(c->hPrinter), QEMU_G2H(c->doc));
 }
 
 #endif
@@ -4903,7 +4903,7 @@ void qemu_UploadPrinterDriverPackageA(struct qemu_syscall *call)
 {
     struct qemu_UploadPrinterDriverPackageA *c = (struct qemu_UploadPrinterDriverPackageA *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = UploadPrinterDriverPackageA(QEMU_G2H(c->server), QEMU_G2H(c->path), QEMU_G2H(c->env), c->flags, QEMU_G2H(c->hwnd), QEMU_G2H(c->dst), QEMU_G2H(c->dstlen));
+    c->super.iret = pUploadPrinterDriverPackageA(QEMU_G2H(c->server), QEMU_G2H(c->path), QEMU_G2H(c->env), c->flags, QEMU_G2H(c->hwnd), QEMU_G2H(c->dst), QEMU_G2H(c->dstlen));
 }
 
 #endif
@@ -4945,7 +4945,7 @@ void qemu_UploadPrinterDriverPackageW(struct qemu_syscall *call)
 {
     struct qemu_UploadPrinterDriverPackageW *c = (struct qemu_UploadPrinterDriverPackageW *)call;
     WINE_FIXME("Unverified!\n");
-    c->super.iret = UploadPrinterDriverPackageW(QEMU_G2H(c->server), QEMU_G2H(c->path), QEMU_G2H(c->env), c->flags, QEMU_G2H(c->hwnd), QEMU_G2H(c->dst), QEMU_G2H(c->dstlen));
+    c->super.iret = pUploadPrinterDriverPackageW(QEMU_G2H(c->server), QEMU_G2H(c->path), QEMU_G2H(c->env), c->flags, QEMU_G2H(c->hwnd), QEMU_G2H(c->dst), QEMU_G2H(c->dstlen));
 }
 
 #endif
