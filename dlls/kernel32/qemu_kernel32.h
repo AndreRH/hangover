@@ -240,10 +240,6 @@ enum kernel32_calls
     CALL_FINDRESOURCEW,
     CALL_FINDVOLUMECLOSE,
     CALL_FINDVOLUMEMOUNTPOINTCLOSE,
-    CALL_FLSALLOC,
-    CALL_FLSFREE,
-    CALL_FLSGETVALUE,
-    CALL_FLSSETVALUE,
     CALL_FLUSHCONSOLEINPUTBUFFER,
     CALL_FLUSHFILEBUFFERS,
     CALL_FLUSHINSTRUCTIONCACHE,
@@ -1244,10 +1240,6 @@ void qemu_FindResourceExW(struct qemu_syscall *call);
 void qemu_FindResourceW(struct qemu_syscall *call);
 void qemu_FindVolumeClose(struct qemu_syscall *call);
 void qemu_FindVolumeMountPointClose(struct qemu_syscall *call);
-void qemu_FlsAlloc(struct qemu_syscall *call);
-void qemu_FlsFree(struct qemu_syscall *call);
-void qemu_FlsGetValue(struct qemu_syscall *call);
-void qemu_FlsSetValue(struct qemu_syscall *call);
 void qemu_FlushConsoleInputBuffer(struct qemu_syscall *call);
 void qemu_FlushFileBuffers(struct qemu_syscall *call);
 void qemu_FlushInstructionCache(struct qemu_syscall *call);
