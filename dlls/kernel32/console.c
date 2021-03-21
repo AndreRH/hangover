@@ -2063,7 +2063,7 @@ WINBASEAPI BOOL WINAPI WriteConsoleW(HANDLE hConsoleOutput, LPCVOID lpBuffer, DW
 void qemu_WriteConsoleW(struct qemu_syscall *call)
 {
     struct qemu_WriteConsoleW *c = (struct qemu_WriteConsoleW *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = WriteConsoleW(QEMU_G2H(c->hConsoleOutput), QEMU_G2H(c->lpBuffer), c->nNumberOfCharsToWrite, QEMU_G2H(c->lpNumberOfCharsWritten), QEMU_G2H(c->lpReserved));
 }
 
