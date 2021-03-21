@@ -34,7 +34,7 @@ jobs:
     - name: build image
       run: docker build -f Dockerfile.cross_arm64 -t hangover-debian-arm64-build .
     - name: get buildfolder
-      run: docker run --rm hangover-debian-arm64-build tar -C /root/hangover/ -czf - build > buildfolder_build_arm64.tar.gz.tar.gz
+      run: docker run --rm hangover-debian-arm64-build tar -C /root/hangover/ -czf - build > buildfolder_build_arm64.tar.gz
     - uses: actions/upload-artifact@v1
       with:
         name: buildfolder_build_arm64
@@ -98,8 +98,22 @@ jobs:
         path: ./artifacts/
 
     - name: Display structure of downloaded files
-      run: ls -R
+      run: |
+        cd ./artifacts/
+        ls
 
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+        tag_name: 1.0.${{needs.generate_version_number.outputs.build_number}}
+        release_name: 1.0.${{needs.generate_version_number.outputs.build_number}}
+        body: |
+          ${{ github.event.head_commit.message }}
+        draft: false
+        prerelease: false
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
