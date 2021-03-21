@@ -75,7 +75,6 @@ static const syscall_handler dll_functions[] =
     qemu___wine_dbg_header,
     qemu___wine_dbg_output,
     qemu___wine_dbg_strdup,
-    qemu___wine_get_unix_codepage,
     qemu__atoi64,
     qemu__i64toa,
     qemu__i64tow,

@@ -1396,35 +1396,6 @@ void qemu_RtlIdnToUnicode(struct qemu_syscall *call)
 
 #endif
 
-struct qemu___wine_get_unix_codepage
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-UINT CDECL __wine_get_unix_codepage(void)
-{
-    struct qemu___wine_get_unix_codepage call;
-    call.super.id = QEMU_SYSCALL_ID(CALL___WINE_GET_UNIX_CODEPAGE);
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-extern UINT CDECL __wine_get_unix_codepage(void);
-void qemu___wine_get_unix_codepage(struct qemu_syscall *call)
-{
-    struct qemu___wine_get_unix_codepage *c = (struct qemu___wine_get_unix_codepage *)call;
-    WINE_TRACE("\n");
-    c->super.iret = __wine_get_unix_codepage();
-}
-
-#endif
-
 struct qemu_RtlGetProcessPreferredUILanguages
 {
     struct qemu_syscall super;

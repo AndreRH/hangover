@@ -12,7 +12,6 @@ enum ntdll_calls
     CALL___WINE_DBG_HEADER,
     CALL___WINE_DBG_OUTPUT,
     CALL___WINE_DBG_STRDUP,
-    CALL___WINE_GET_UNIX_CODEPAGE,
     CALL__ATOI64,
     CALL__I64TOA,
     CALL__I64TOW,
@@ -1510,7 +1509,6 @@ void qemu___wine_dbg_get_channel_flags(struct qemu_syscall *call);
 void qemu___wine_dbg_header(struct qemu_syscall *call);
 void qemu___wine_dbg_output(struct qemu_syscall *call);
 void qemu___wine_dbg_strdup(struct qemu_syscall *call);
-void qemu___wine_get_unix_codepage(struct qemu_syscall *call);
 void qemu__atoi64(struct qemu_syscall *call);
 void qemu__i64toa(struct qemu_syscall *call);
 void qemu__i64tow(struct qemu_syscall *call);
