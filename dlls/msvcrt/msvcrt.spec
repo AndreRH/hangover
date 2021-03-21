@@ -252,7 +252,7 @@
 @ cdecl __p___argv() MSVCRT___p___argv
 @ cdecl __p___initenv()
 @ cdecl __p___mb_cur_max()
-# @ cdecl __p___wargv() MSVCRT___p___wargv
+@ cdecl __p___wargv() MSVCRT___p___wargv
 @ cdecl __p___winitenv()
 @ cdecl __p__acmdln() MSVCRT___p__acmdln
 @ cdecl __p__amblksiz()
@@ -292,7 +292,7 @@
 @ cdecl __unDName(ptr str long ptr ptr long)
 @ cdecl __unDNameEx(ptr str long ptr ptr ptr long)
 # @ extern __unguarded_readlc_active MSVCRT___unguarded_readlc_active
-# @ extern __wargv MSVCRT___wargv
+@ extern __wargv MSVCRT___wargv
 @ cdecl __wcserror(wstr) MSVCRT___wcserror
 @ cdecl __wcserror_s(ptr long wstr) MSVCRT___wcserror_s
 # stub __wcsncnt(wstr long)

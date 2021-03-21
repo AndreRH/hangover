@@ -43,7 +43,7 @@ struct qemu_init_dll
     uint64_t iob;
     uint64_t FILE_size;
     uint64_t iob_size;
-    uint64_t argc, argv;
+    uint64_t argc, argv, wargv;
     uint64_t new_environ;
     uint64_t mb_cur_max;
     double HUGE;
@@ -102,7 +102,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 #endif
             call.FILE_size = sizeof(FILE);
             qemu_syscall(&call.super);
-            msvcrt_data_init(call.HUGE, call.argc, (char **)(ULONG_PTR)call.argv);
+            msvcrt_data_init(call.HUGE, call.argc, (char **)(ULONG_PTR)call.argv, (wchar_t **)(ULONG_PTR)call.wargv);
 
             MSVCRT__acmdln = MSVCRT__strdup(GetCommandLineA());
             MSVCRT__wcmdln = msvcrt_wstrdupa(MSVCRT__acmdln);
@@ -127,6 +127,7 @@ const struct qemu_ops *qemu_ops;
 static void qemu_init_dll(struct qemu_syscall *call)
 {
     qemu_ptr *argv;
+    qemu_ptr *wargv;
     unsigned int i;
     static HMODULE msvcrt;
     const char *dll_name;
@@ -256,6 +257,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p___acrt_iob_func = (void *)GetProcAddress(msvcrt, "p___acrt_iob_func");
         p___argc = (int *)GetProcAddress(msvcrt, "__argc");
         p___argv = (char ***)GetProcAddress(msvcrt, "__argv");
+        p___wargv = (wchar_t ***)GetProcAddress(msvcrt, "__wargv");
         p___clean_type_info_names_internal = (void *)GetProcAddress(msvcrt, "__clean_type_info_names_internal");
         p___control87_2 = (void *)GetProcAddress(msvcrt, "__control87_2");
         p___crt_debugger_hook = (void *)GetProcAddress(msvcrt, "__crt_debugger_hook");
@@ -1308,9 +1310,17 @@ static void qemu_init_dll(struct qemu_syscall *call)
             WINE_ERR("I have neither __argv nor __p___argv\n");
         p___argv = p___p___argv();
     }
+    if (!p___wargv)
+    {
+        wchar_t*** (* CDECL p___p___wargv)(void) = (void *)GetProcAddress(msvcrt, "__p___wargv");
+        if (!p___p___wargv)
+            WINE_ERR("I have neither __argv nor __p___wargv\n");
+        p___wargv = p___p___wargv();
+    }
 
     c->argc = *p___argc;
 
+    /* FIXME: I guess this needs to be a block of memory. */
     argv = HeapAlloc(GetProcessHeap(), 0, sizeof(qemu_ptr) * c->argc);
     for (i = 0; i < c->argc; ++i)
     {
@@ -1326,8 +1336,25 @@ static void qemu_init_dll(struct qemu_syscall *call)
 
         argv[i] = QEMU_H2G(copy);
     }
+    
+    wargv = HeapAlloc(GetProcessHeap(), 0, sizeof(qemu_ptr) * c->argc);
+    for (i = 0; i < c->argc; ++i)
+    {
+        const wchar_t *orig = (*p___wargv)[i];
+        wchar_t *copy = NULL;
+
+        if (orig)
+        {
+            size_t len = p_wcslen(orig) + 1;
+            copy = HeapAlloc(GetProcessHeap(), 0, sizeof(*copy) * len);
+            memcpy(copy, orig, sizeof(*copy) * len);
+        }
+
+        wargv[i] = QEMU_H2G(copy);
+    }
 
     c->argv = QEMU_H2G(argv);
+    c->wargv = QEMU_H2G(wargv);
 #endif
 
     /* FIXME: I need to convert this like argv. */

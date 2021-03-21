@@ -631,7 +631,7 @@
 @ cdecl __p___argv() MSVCRT___p___argv
 #@ cdecl __p___initenv()
 @ cdecl __p___mb_cur_max()
-#@ cdecl __p___wargv() MSVCRT___p___wargv
+@ cdecl __p___wargv() MSVCRT___p___wargv
 #@ cdecl __p___winitenv()
 #@ cdecl __p__acmdln()
 @ cdecl __p__commode()
@@ -673,7 +673,7 @@
 @ stub __unDNameHelper
 #@ extern __unguarded_readlc_active MSVCRT___unguarded_readlc_active
 #@ cdecl __vswprintf_l(ptr wstr ptr ptr) MSVCRT_vswprintf_l
-#@ extern __wargv MSVCRT___wargv
+@ extern __wargv MSVCRT___wargv
 @ cdecl __wcserror(wstr) MSVCRT___wcserror
 @ cdecl __wcserror_s(ptr long wstr) MSVCRT___wcserror_s
 @ stub __wcsncnt

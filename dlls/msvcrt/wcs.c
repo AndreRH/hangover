@@ -114,7 +114,7 @@ WINBASEAPI WCHAR* CDECL MSVCRT__wcsdup(const WCHAR* str)
 void qemu__wcsdup(struct qemu_syscall *call)
 {
     struct qemu__wcsdup *c = (struct qemu__wcsdup *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = QEMU_H2G(p__wcsdup(QEMU_G2H(c->str)));
 }
 

@@ -43,13 +43,15 @@ unsigned int MSVCRT__fmode = 0;
 double MSVCRT__HUGE = 0.0;
 int MSVCRT___argc = 0;
 char **MSVCRT___argv = NULL;
+wchar_t **MSVCRT___wargv = NULL;
 WCHAR **MSVCRT___winitenv = NULL;
 
-void msvcrt_data_init(double huge, int argc, char **argv)
+void msvcrt_data_init(double huge, int argc, char **argv, wchar_t **wargv)
 {
     MSVCRT__HUGE = huge;
     MSVCRT___argc = argc;
     MSVCRT___argv = argv;
+    MSVCRT___wargv = wargv;
 }
 
 unsigned int* CDECL __p__commode(void)
@@ -85,6 +87,11 @@ int* CDECL MSVCRT___p___argc(void)
 char*** CDECL MSVCRT___p___argv(void)
 {
     return &MSVCRT___argv;
+}
+
+wchar_t*** CDECL MSVCRT___p___wargv(void)
+{
+    return &MSVCRT___wargv;
 }
 
 /*********************************************************************
@@ -747,7 +754,7 @@ WINBASEAPI int CDECL _configure_wide_argv(int mode)
 void qemu__configure_wide_argv(struct qemu_syscall *call)
 {
     struct qemu__configure_wide_argv *c = (struct qemu__configure_wide_argv *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__configure_wide_argv(c->mode);
 }
 
@@ -775,7 +782,7 @@ WINBASEAPI int CDECL _initialize_wide_environment(void)
 void qemu__initialize_wide_environment(struct qemu_syscall *call)
 {
     struct qemu__initialize_wide_environment *c = (struct qemu__initialize_wide_environment *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p__initialize_wide_environment();
 }
 
