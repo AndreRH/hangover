@@ -1,0 +1,110 @@
+name: GitHubActionsBuilds
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  generate_version_number:
+    runs-on: ubuntu-latest
+    outputs:
+      build_number: ${{ steps.buildnumber.outputs.build_number }}
+    steps:
+    - name: Generate build number
+      id: buildnumber
+      uses: einaregilsson/build-number@v3 
+      with:
+        token: ${{secrets.github_token}}
+
+  build_arm64:
+    needs: generate_version_number
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+    - name: build image
+      run: docker build -f Dockerfile.cross_arm64 -t hangover-debian-arm64-build .
+    - name: get buildfolder
+      run: docker run --rm hangover-debian-arm64-build tar -C /root/hangover/ -czf - build > build.tar.gz
+    - uses: actions/upload-artifact@v1
+      with:
+        name: buildfolder_build_arm64
+        path: buildfolder_build_arm64.tar.gz
+
+  build_ppc64le:
+    needs: generate_version_number
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+    - name: build image
+      run: docker build -f Dockerfile.cross_ppc64le -t hangover-debian-ppc64le-build .
+    - name: get buildfolder
+      run: docker run --rm hangover-debian-ppc64le-build tar -C /root/hangover/ -czf - build > build.tar.gz
+    - uses: actions/upload-artifact@v1
+      with:
+        name: buildfolder_build_ppc64le
+        path: buildfolder_build_ppc64le.tar.gz
+
+  build_x86_64:
+    needs: generate_version_number
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+    - name: build image
+      run: docker build -f Dockerfile -t hangover-ubuntu-x86_64-build .
+    - name: get buildfolder
+      run: docker run --rm hangover-ubuntu-x86_64-build tar -C /root/hangover/ -czf - build > build.tar.gz
+    - uses: actions/upload-artifact@v1
+      with:
+        name: buildfolder_build_x86_64
+        path: buildfolder_build_x86_64.tar.gz
+
+  create_release:
+    needs: build_arm64,build_ppc64le,build_x86_64,generate_version_number
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v2
+      with:
+        path: ./artifacts/
+
+    - name: Display structure of downloaded files
+      run: ls -R
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: 1.0.${{needs.generate_version_number.outputs.build_number}}
+        files: |
+          ./artifacts/*.tar.gz
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
