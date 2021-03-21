@@ -89,7 +89,7 @@ jobs:
         path: buildfolder_build_x86_64.tar.gz
 
   create_release:
-    needs: build_arm64,build_ppc64le,build_x86_64,generate_version_number
+    needs: [build_arm64,build_ppc64le,build_x86_64,generate_version_number]
     runs-on: ubuntu-latest
     steps:
     - name: Download all artifacts
