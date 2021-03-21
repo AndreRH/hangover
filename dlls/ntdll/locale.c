@@ -99,7 +99,7 @@ WINBASEAPI NTSTATUS WINAPI NtSetDefaultLocale(BOOLEAN user, LCID lcid)
 void qemu_NtSetDefaultLocale(struct qemu_syscall *call)
 {
     struct qemu_NtSetDefaultLocale *c = (struct qemu_NtSetDefaultLocale *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NtSetDefaultLocale(c->user, c->lcid);
 }
 
@@ -159,7 +159,7 @@ WINBASEAPI NTSTATUS WINAPI NtSetDefaultUILanguage(LANGID lang)
 void qemu_NtSetDefaultUILanguage(struct qemu_syscall *call)
 {
     struct qemu_NtSetDefaultUILanguage *c = (struct qemu_NtSetDefaultUILanguage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NtSetDefaultUILanguage(c->lang);
 }
 
