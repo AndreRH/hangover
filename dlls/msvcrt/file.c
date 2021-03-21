@@ -1161,6 +1161,7 @@ struct qemu___acrt_iob_func
 
 FILE * CDECL MSVCRT___acrt_iob_func(unsigned idx)
 {
+#ifdef __x86_64__
     struct qemu___acrt_iob_func call;
     call.super.id = QEMU_SYSCALL_ID(CALL___ACRT_IOB_FUNC);
     call.idx = (ULONG_PTR)idx;
@@ -1168,6 +1169,9 @@ FILE * CDECL MSVCRT___acrt_iob_func(unsigned idx)
     qemu_syscall(&call.super);
 
     return (FILE *)(ULONG_PTR)call.super.iret;
+#else
+    return &guest_iob[idx];
+#endif
 }
 
 #else
@@ -1175,7 +1179,7 @@ FILE * CDECL MSVCRT___acrt_iob_func(unsigned idx)
 void qemu___acrt_iob_func(struct qemu_syscall *call)
 {
     struct qemu___acrt_iob_func *c = (struct qemu___acrt_iob_func *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = FILE_h2g(p___acrt_iob_func(c->idx));
 }
 

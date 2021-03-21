@@ -254,7 +254,7 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p____mb_cur_max_l_func = (void *)GetProcAddress(msvcrt, "___mb_cur_max_l_func");
         p____setlc_active_func = (void *)GetProcAddress(msvcrt, "___setlc_active_func");
         p____unguarded_readlc_active_add_func = (void *)GetProcAddress(msvcrt, "___unguarded_readlc_active_add_func");
-        p___acrt_iob_func = (void *)GetProcAddress(msvcrt, "p___acrt_iob_func");
+        p___acrt_iob_func = (void *)GetProcAddress(msvcrt, "__acrt_iob_func");
         p___argc = (int *)GetProcAddress(msvcrt, "__argc");
         p___argv = (char ***)GetProcAddress(msvcrt, "__argv");
         p___wargv = (wchar_t ***)GetProcAddress(msvcrt, "__wargv");
