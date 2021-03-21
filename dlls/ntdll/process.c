@@ -547,3 +547,91 @@ void qemu_NtCreateUserProcess(struct qemu_syscall *call)
 }
 
 #endif
+
+struct qemu_DbgUiDebugActiveProcess
+{
+    struct qemu_syscall super;
+    uint64_t process;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI DbgUiDebugActiveProcess(HANDLE process)
+{
+    struct qemu_DbgUiDebugActiveProcess call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DBGUIDEBUGACTIVEPROCESS);
+    call.process = (ULONG_PTR)process;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_DbgUiDebugActiveProcess(struct qemu_syscall *call)
+{
+    struct qemu_DbgUiDebugActiveProcess *c = (struct qemu_DbgUiDebugActiveProcess *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = DbgUiDebugActiveProcess(QEMU_G2H(c->process));
+}
+
+#endif
+
+struct qemu_DbgUiStopDebugging
+{
+    struct qemu_syscall super;
+    uint64_t process;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI DbgUiStopDebugging(HANDLE process)
+{
+    struct qemu_DbgUiStopDebugging call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DBGUISTOPDEBUGGING);
+    call.process = (ULONG_PTR)process;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+void qemu_DbgUiStopDebugging(struct qemu_syscall *call)
+{
+    struct qemu_DbgUiStopDebugging *c = (struct qemu_DbgUiStopDebugging *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = DbgUiStopDebugging(QEMU_G2H(c->process));
+}
+
+#endif
+
+struct qemu_DbgUiGetThreadDebugObject
+{
+    struct qemu_syscall super;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI HANDLE WINAPI DbgUiGetThreadDebugObject(void)
+{
+    struct qemu_DbgUiGetThreadDebugObject call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_DBGUIGETTHREADDEBUGOBJECT);
+
+    qemu_syscall(&call.super);
+
+    return (HANDLE)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+void qemu_DbgUiGetThreadDebugObject(struct qemu_syscall *call)
+{
+    struct qemu_DbgUiGetThreadDebugObject *c = (struct qemu_DbgUiGetThreadDebugObject *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = (uint64_t)DbgUiGetThreadDebugObject();
+}
+
+#endif

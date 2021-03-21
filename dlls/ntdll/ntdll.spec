@@ -32,13 +32,12 @@
 @ stub DbgUiConnectToDbg
 @ stub DbgUiContinue
 @ stub DbgUiConvertStateChangeStructure
-# @ stub DbgUiDebugActiveProcess
-# @ stub DbgUiGetThreadDebugObject
+@ stdcall DbgUiDebugActiveProcess(long)
+@ stdcall DbgUiGetThreadDebugObject()
 @ stdcall DbgUiIssueRemoteBreakin(long)
 @ stdcall DbgUiRemoteBreakin(ptr)
-# @ stub DbgUiRemoteBreakin
 # @ stub DbgUiSetThreadDebugObject
-# @ stub DbgUiStopDebugging
+@ stdcall DbgUiStopDebugging(long)
 @ stub DbgUiWaitStateChange
 @ stdcall EtwEventActivityIdControl(long ptr)
 @ stdcall EtwEventEnabled(int64 ptr)
