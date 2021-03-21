@@ -100,7 +100,7 @@ jobs:
     - name: Display structure of downloaded files
       run: |
         cd ./artifacts/
-        ls
+        ls -R
 
     - name: Create Release
       id: create_release
@@ -119,6 +119,6 @@ jobs:
       with:
         tag_name: 1.0.${{needs.generate_version_number.outputs.build_number}}
         files: |
-          ./artifacts/*.tar.gz
+          ./artifacts/**/*.tar.gz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
