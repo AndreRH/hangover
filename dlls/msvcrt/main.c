@@ -123,14 +123,14 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 const struct qemu_ops *qemu_ops;
+static const char *dll_name;
+static HMODULE msvcrt;
 
 static void qemu_init_dll(struct qemu_syscall *call)
 {
     qemu_ptr *argv;
     qemu_ptr *wargv;
     unsigned int i;
-    static HMODULE msvcrt;
-    const char *dll_name;
     struct qemu_init_dll *c = (struct qemu_init_dll *)call;
 
     /* Don't bother loading it twice. Msvcrt can't be unloaded and reloaded due to file handle wrapping. */
@@ -2435,7 +2435,6 @@ static const syscall_handler dll_functions[] =
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     HMODULE msvcrt;
-    const char *dll_name;
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
@@ -2458,13 +2457,23 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (msvcrt_tls == TLS_OUT_OF_INDEXES)
         WINE_ERR("Out of TLS indices\n");
 
-    /* Delay loading the host DLL until the guest's DllMain is called and the
-     * memory firewall is in place. Some functions pass pointers to static data
-     * in msvcr*.dll or the TLS data.
+    /* Delay loading the host DLL for 32 bit guests until the guest's DllMain
+     * is called and the memory firewall is in place. Some functions pass
+     * pointers to static data in msvcr*.dll or the TLS data.
      *
      * This is not good enough for msvcrt.dll because it is loaded by Wine DLLs,
      * see qemu_init_dll. But for later versions it is good because Wine libs will
-     * never depend on e.g. msvcr80.dll. */
+     * never depend on e.g. msvcr80.dll.
+     *
+     * For 64 bit guests, load it right away. We don't have any issue with passing
+     * pointers into 64 bit locations and we do so via __qemu_native_data__ in the
+     * spec file. When ntdll resolves exports from the guest lib the host lib needs
+     * to be loaded for this to work. */
+
+#if GUEST_BIT == HOST_BIT
+    struct qemu_init_dll dummy = {0};
+    qemu_init_dll(&dummy.super);
+#endif
 
     return dll_functions;
 }

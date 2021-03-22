@@ -5099,7 +5099,7 @@ int CDECL MSVCRT_fputs(const char *s, FILE* file)
 void qemu_fputs(struct qemu_syscall *call)
 {
     struct qemu_fputs *c = (struct qemu_fputs *)(ULONG_PTR)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = p_fputs(QEMU_G2H(c->s), FILE_g2h(c->file));
 }
 
