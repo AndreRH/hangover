@@ -99,7 +99,7 @@ WINBASEAPI NTSTATUS WINAPI NtSetDefaultLocale(BOOLEAN user, LCID lcid)
 void qemu_NtSetDefaultLocale(struct qemu_syscall *call)
 {
     struct qemu_NtSetDefaultLocale *c = (struct qemu_NtSetDefaultLocale *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NtSetDefaultLocale(c->user, c->lcid);
 }
 
@@ -159,7 +159,7 @@ WINBASEAPI NTSTATUS WINAPI NtSetDefaultUILanguage(LANGID lang)
 void qemu_NtSetDefaultUILanguage(struct qemu_syscall *call)
 {
     struct qemu_NtSetDefaultUILanguage *c = (struct qemu_NtSetDefaultUILanguage *)call;
-    WINE_FIXME("Unverified!\n");
+    WINE_TRACE("\n");
     c->super.iret = NtSetDefaultUILanguage(c->lang);
 }
 
@@ -1392,35 +1392,6 @@ void qemu_RtlIdnToUnicode(struct qemu_syscall *call)
     struct qemu_RtlIdnToUnicode *c = (struct qemu_RtlIdnToUnicode *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = RtlIdnToUnicode(c->flags, QEMU_G2H(c->src), c->srclen, QEMU_G2H(c->dst), QEMU_G2H(c->dstlen));
-}
-
-#endif
-
-struct qemu___wine_get_unix_codepage
-{
-    struct qemu_syscall super;
-};
-
-#ifdef QEMU_DLL_GUEST
-
-UINT CDECL __wine_get_unix_codepage(void)
-{
-    struct qemu___wine_get_unix_codepage call;
-    call.super.id = QEMU_SYSCALL_ID(CALL___WINE_GET_UNIX_CODEPAGE);
-
-    qemu_syscall(&call.super);
-
-    return call.super.iret;
-}
-
-#else
-
-extern UINT CDECL __wine_get_unix_codepage(void);
-void qemu___wine_get_unix_codepage(struct qemu_syscall *call)
-{
-    struct qemu___wine_get_unix_codepage *c = (struct qemu___wine_get_unix_codepage *)call;
-    WINE_TRACE("\n");
-    c->super.iret = __wine_get_unix_codepage();
 }
 
 #endif

@@ -43,7 +43,7 @@ struct qemu_init_dll
     uint64_t iob;
     uint64_t FILE_size;
     uint64_t iob_size;
-    uint64_t argc, argv;
+    uint64_t argc, argv, wargv;
     uint64_t new_environ;
     uint64_t mb_cur_max;
     double HUGE;
@@ -102,7 +102,7 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 #endif
             call.FILE_size = sizeof(FILE);
             qemu_syscall(&call.super);
-            msvcrt_data_init(call.HUGE, call.argc, (char **)(ULONG_PTR)call.argv);
+            msvcrt_data_init(call.HUGE, call.argc, (char **)(ULONG_PTR)call.argv, (wchar_t **)(ULONG_PTR)call.wargv);
 
             MSVCRT__acmdln = MSVCRT__strdup(GetCommandLineA());
             MSVCRT__wcmdln = msvcrt_wstrdupa(MSVCRT__acmdln);
@@ -123,13 +123,14 @@ BOOL WINAPI DllMain(HMODULE mod, DWORD reason, void *reserved)
 WINE_DEFAULT_DEBUG_CHANNEL(qemu_msvcrt);
 
 const struct qemu_ops *qemu_ops;
+static const char *dll_name;
+static HMODULE msvcrt;
 
 static void qemu_init_dll(struct qemu_syscall *call)
 {
     qemu_ptr *argv;
+    qemu_ptr *wargv;
     unsigned int i;
-    static HMODULE msvcrt;
-    const char *dll_name;
     struct qemu_init_dll *c = (struct qemu_init_dll *)call;
 
     /* Don't bother loading it twice. Msvcrt can't be unloaded and reloaded due to file handle wrapping. */
@@ -253,9 +254,10 @@ static void qemu_init_dll(struct qemu_syscall *call)
         p____mb_cur_max_l_func = (void *)GetProcAddress(msvcrt, "___mb_cur_max_l_func");
         p____setlc_active_func = (void *)GetProcAddress(msvcrt, "___setlc_active_func");
         p____unguarded_readlc_active_add_func = (void *)GetProcAddress(msvcrt, "___unguarded_readlc_active_add_func");
-        p___acrt_iob_func = (void *)GetProcAddress(msvcrt, "p___acrt_iob_func");
+        p___acrt_iob_func = (void *)GetProcAddress(msvcrt, "__acrt_iob_func");
         p___argc = (int *)GetProcAddress(msvcrt, "__argc");
         p___argv = (char ***)GetProcAddress(msvcrt, "__argv");
+        p___wargv = (wchar_t ***)GetProcAddress(msvcrt, "__wargv");
         p___clean_type_info_names_internal = (void *)GetProcAddress(msvcrt, "__clean_type_info_names_internal");
         p___control87_2 = (void *)GetProcAddress(msvcrt, "__control87_2");
         p___crt_debugger_hook = (void *)GetProcAddress(msvcrt, "__crt_debugger_hook");
@@ -1308,9 +1310,17 @@ static void qemu_init_dll(struct qemu_syscall *call)
             WINE_ERR("I have neither __argv nor __p___argv\n");
         p___argv = p___p___argv();
     }
+    if (!p___wargv)
+    {
+        wchar_t*** (* CDECL p___p___wargv)(void) = (void *)GetProcAddress(msvcrt, "__p___wargv");
+        if (!p___p___wargv)
+            WINE_ERR("I have neither __argv nor __p___wargv\n");
+        p___wargv = p___p___wargv();
+    }
 
     c->argc = *p___argc;
 
+    /* FIXME: I guess this needs to be a block of memory. */
     argv = HeapAlloc(GetProcessHeap(), 0, sizeof(qemu_ptr) * c->argc);
     for (i = 0; i < c->argc; ++i)
     {
@@ -1326,8 +1336,25 @@ static void qemu_init_dll(struct qemu_syscall *call)
 
         argv[i] = QEMU_H2G(copy);
     }
+    
+    wargv = HeapAlloc(GetProcessHeap(), 0, sizeof(qemu_ptr) * c->argc);
+    for (i = 0; i < c->argc; ++i)
+    {
+        const wchar_t *orig = (*p___wargv)[i];
+        wchar_t *copy = NULL;
+
+        if (orig)
+        {
+            size_t len = p_wcslen(orig) + 1;
+            copy = HeapAlloc(GetProcessHeap(), 0, sizeof(*copy) * len);
+            memcpy(copy, orig, sizeof(*copy) * len);
+        }
+
+        wargv[i] = QEMU_H2G(copy);
+    }
 
     c->argv = QEMU_H2G(argv);
+    c->wargv = QEMU_H2G(wargv);
 #endif
 
     /* FIXME: I need to convert this like argv. */
@@ -2408,7 +2435,6 @@ static const syscall_handler dll_functions[] =
 const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint32_t *dll_num)
 {
     HMODULE msvcrt;
-    const char *dll_name;
 
     qemu_ops = ops;
     *dll_num = QEMU_CURRENT_DLL;
@@ -2431,13 +2457,23 @@ const WINAPI syscall_handler *qemu_dll_register(const struct qemu_ops *ops, uint
     if (msvcrt_tls == TLS_OUT_OF_INDEXES)
         WINE_ERR("Out of TLS indices\n");
 
-    /* Delay loading the host DLL until the guest's DllMain is called and the
-     * memory firewall is in place. Some functions pass pointers to static data
-     * in msvcr*.dll or the TLS data.
+    /* Delay loading the host DLL for 32 bit guests until the guest's DllMain
+     * is called and the memory firewall is in place. Some functions pass
+     * pointers to static data in msvcr*.dll or the TLS data.
      *
      * This is not good enough for msvcrt.dll because it is loaded by Wine DLLs,
      * see qemu_init_dll. But for later versions it is good because Wine libs will
-     * never depend on e.g. msvcr80.dll. */
+     * never depend on e.g. msvcr80.dll.
+     *
+     * For 64 bit guests, load it right away. We don't have any issue with passing
+     * pointers into 64 bit locations and we do so via __qemu_native_data__ in the
+     * spec file. When ntdll resolves exports from the guest lib the host lib needs
+     * to be loaded for this to work. */
+
+#if GUEST_BIT == HOST_BIT
+    struct qemu_init_dll dummy = {0};
+    qemu_init_dll(&dummy.super);
+#endif
 
     return dll_functions;
 }

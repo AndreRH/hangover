@@ -32,13 +32,12 @@
 @ stub DbgUiConnectToDbg
 @ stub DbgUiContinue
 @ stub DbgUiConvertStateChangeStructure
-# @ stub DbgUiDebugActiveProcess
-# @ stub DbgUiGetThreadDebugObject
+@ stdcall DbgUiDebugActiveProcess(long)
+@ stdcall DbgUiGetThreadDebugObject()
 @ stdcall DbgUiIssueRemoteBreakin(long)
 @ stdcall DbgUiRemoteBreakin(ptr)
-# @ stub DbgUiRemoteBreakin
 # @ stub DbgUiSetThreadDebugObject
-# @ stub DbgUiStopDebugging
+@ stdcall DbgUiStopDebugging(long)
 @ stub DbgUiWaitStateChange
 @ stdcall EtwEventActivityIdControl(long ptr)
 @ stdcall EtwEventEnabled(int64 ptr)
@@ -1541,6 +1540,3 @@
 
 # Server interface
 @ cdecl -norelay wine_server_call(ptr)
-
-# Codepages
-@ cdecl __wine_get_unix_codepage()

@@ -12,7 +12,6 @@ enum ntdll_calls
     CALL___WINE_DBG_HEADER,
     CALL___WINE_DBG_OUTPUT,
     CALL___WINE_DBG_STRDUP,
-    CALL___WINE_GET_UNIX_CODEPAGE,
     CALL__ATOI64,
     CALL__I64TOA,
     CALL__I64TOW,
@@ -48,8 +47,11 @@ enum ntdll_calls
     CALL_ATOL,
     CALL_CEIL,
     CALL_COS,
+    CALL_DBGUIDEBUGACTIVEPROCESS,
+    CALL_DBGUIGETTHREADDEBUGOBJECT,
     CALL_DBGUIISSUEREMOTEBREAKIN,
     CALL_DBGUIREMOTEBREAKIN,
+    CALL_DBGUISTOPDEBUGGING,
     CALL_ETWEVENTACTIVITYIDCONTROL,
     CALL_ETWEVENTENABLED,
     CALL_ETWEVENTPROVIDERENABLED,
@@ -824,8 +826,11 @@ void __fastcall qemu_exception_handler(EXCEPTION_POINTERS *except);
 
 extern const struct qemu_ops *qemu_ops;
 
+void qemu_DbgUiDebugActiveProcess(struct qemu_syscall *call);
+void qemu_DbgUiGetThreadDebugObject(struct qemu_syscall *call);
 void qemu_DbgUiIssueRemoteBreakin(struct qemu_syscall *call);
 void qemu_DbgUiRemoteBreakin(struct qemu_syscall *call);
+void qemu_DbgUiStopDebugging(struct qemu_syscall *call);
 void qemu_EtwEventActivityIdControl(struct qemu_syscall *call);
 void qemu_EtwEventEnabled(struct qemu_syscall *call);
 void qemu_EtwEventProviderEnabled(struct qemu_syscall *call);
@@ -1318,8 +1323,8 @@ void qemu_RtlLengthRequiredSid(struct qemu_syscall *call);
 void qemu_RtlLengthSecurityDescriptor(struct qemu_syscall *call);
 void qemu_RtlLengthSid(struct qemu_syscall *call);
 void qemu_RtlLocalTimeToSystemTime(struct qemu_syscall *call);
-void qemu_RtlLocateExtendedFeature(struct qemu_syscall *call);
 void qemu_RtlLocaleNameToLcid(struct qemu_syscall *call);
+void qemu_RtlLocateExtendedFeature(struct qemu_syscall *call);
 void qemu_RtlLocateExtendedFeature2(struct qemu_syscall *call);
 void qemu_RtlLockHeap(struct qemu_syscall *call);
 void qemu_RtlLookupFunctionEntry(struct qemu_syscall *call);
@@ -1510,7 +1515,6 @@ void qemu___wine_dbg_get_channel_flags(struct qemu_syscall *call);
 void qemu___wine_dbg_header(struct qemu_syscall *call);
 void qemu___wine_dbg_output(struct qemu_syscall *call);
 void qemu___wine_dbg_strdup(struct qemu_syscall *call);
-void qemu___wine_get_unix_codepage(struct qemu_syscall *call);
 void qemu__atoi64(struct qemu_syscall *call);
 void qemu__i64toa(struct qemu_syscall *call);
 void qemu__i64tow(struct qemu_syscall *call);

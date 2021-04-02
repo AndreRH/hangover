@@ -629,9 +629,9 @@
 @ cdecl -arch=i386 -norelay __libm_sse2_tanf() MSVCRT___libm_sse2_tanf
 @ cdecl __p___argc() MSVCRT___p___argc
 @ cdecl __p___argv() MSVCRT___p___argv
+@ cdecl __p___wargv() MSVCRT___p___wargv
 #@ cdecl __p___initenv()
 @ cdecl __p___mb_cur_max()
-#@ cdecl __p___wargv() MSVCRT___p___wargv
 #@ cdecl __p___winitenv()
 #@ cdecl __p__acmdln()
 @ cdecl __p__commode()
@@ -942,6 +942,7 @@
 @ cdecl _i64tow(int64 ptr long) ntdll._i64tow
 @ cdecl _i64tow_s(int64 ptr long long) MSVCRT__i64tow_s
 @ cdecl _initialize_narrow_environment()
+@ cdecl _initialize_wide_environment()
 @ stub _initptd
 @ cdecl _initterm(ptr ptr)
 @ cdecl _initterm_e(ptr ptr)

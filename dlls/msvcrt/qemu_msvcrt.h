@@ -1180,7 +1180,7 @@ extern char *MSVCRT__acmdln;
 extern WCHAR *MSVCRT__wcmdln;
 extern char **MSVCRT__environ;
 extern int MSVCRT___mb_cur_max;
-void msvcrt_data_init(double huge, int argc, char **argv);
+void msvcrt_data_init(double huge, int argc, char **argv, wchar_t **wargv);
 
 CDECL void _amsg_exit(int errnum);
 char * CDECL MSVCRT__strdup(const char *str);
@@ -3370,6 +3370,7 @@ BOOL (* CDECL p___uncaught_exception)(void);
 double *p__HUGE;
 int *p___argc;
 char ***p___argv;
+wchar_t ***p___wargv;
 int (* CDECL p___stdio_common_vsprintf)( unsigned __int64 options, char *str, size_t len, const char *format,
     MSVCRT__locale_t locale, __ms_va_list valist);
 int (* CDECL p___stdio_common_vswprintf)( unsigned __int64 options, wchar_t *str, size_t len, const wchar_t *format,
