@@ -163,7 +163,7 @@ wine-host build/wine-host/.built: build/wine-host/Makefile
 	@touch build/wine-host/.built
 
 # Cross-Compile Wine for the guest platform to copy higher level DLLs from.
-build/wine-guest64/Makefile: build/wine-host/.built wine/configure build/x86_64-w64-mingw32/bin/libxml2-2.dll build/x86_64-w64-mingw32/bin/libxslt-1.dll
+build/wine-guest64/Makefile: build/wine-tools/.built wine/configure build/x86_64-w64-mingw32/bin/libxml2-2.dll build/x86_64-w64-mingw32/bin/libxslt-1.dll
 	@mkdir -p $(@D)
 	cd build/wine-guest64 ; ../../wine/configure --host=x86_64-w64-mingw32 --without-mingw --with-wine-tools=../wine-tools --without-freetype $(TESTS) --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/x86_64-w64-mingw32/include/libxml2) -I$(abspath build/x86_64-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/x86_64-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
 
@@ -174,7 +174,7 @@ build/wine-guest64/.built: build/wine-guest64/Makefile
 	@touch build/wine-guest64/.built
 
 # Cross-Compile Wine for the guest32 platform to copy higher level DLLs from.
-build/wine-guest32/Makefile: build/wine-host/.built wine/configure build/i686-w64-mingw32/bin/libxml2-2.dll build/i686-w64-mingw32/bin/libxslt-1.dll
+build/wine-guest32/Makefile: build/wine-tools/.built wine/configure build/i686-w64-mingw32/bin/libxml2-2.dll build/i686-w64-mingw32/bin/libxslt-1.dll
 	@mkdir -p $(@D)
 	cd build/wine-guest32 ; ../../wine/configure --host=i686-w64-mingw32 --without-mingw --with-wine-tools=../wine-tools --without-freetype $(TESTS) --with-xml --with-xslt  XML2_CFLAGS="-I$(abspath build/i686-w64-mingw32/include/libxml2) -I$(abspath build/i686-w64-mingw32/include)" XML2_LIBS="-L$(abspath build/i686-w64-mingw32/lib) -lxml2 -liconv"  XSLT_CFLAGS="-I$(abspath build/i686-w64-mingw32/include/libxml2) -I$(abspath build/i686-w64-mingw32/include)" XSLT_LIBS="-L$(abspath build/i686-w64-mingw32/lib) -lxslt -lxml2 -liconv" ac_cv_lib_soname_xslt="libxslt-1.dll"
 
