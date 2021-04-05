@@ -1,4 +1,4 @@
-FROM debian:10
+FROM debian:10.9-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -54,4 +54,4 @@ ENV HANGOVER_WINE_CXX aarch64-linux-gnu-clang++
 
 RUN mkdir -p /root/hangover
 COPY . /root/hangover/
-RUN make -C /root/hangover -f Makefile
+RUN make -j `nproc` -C /root/hangover -f Makefile

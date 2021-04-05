@@ -33,4 +33,4 @@ ENV NOTESTS 1
 
 RUN mkdir -p /root/hangover
 COPY . /root/hangover/
-RUN make -C /root/hangover -f Makefile
+RUN make -j `nproc` -C /root/hangover -f Makefile
