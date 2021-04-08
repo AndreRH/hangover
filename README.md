@@ -60,7 +60,13 @@ Not supported anymore, please use [Hangover 0.4.0](https://github.com/AndreRH/ha
 ### 5) How to run
 
 ```bash
-/path/to/hangover/build/wine-host/loader/wine64 /path/to/hangover/build/qemu/x86_64-windows-user/qemu-x86_64.exe.so foo.exe
+export HOQEMU=/path/to/hangover/build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+/path/to/hangover/build/wine-host/loader/wine64 foo.exe
+```
+or in case wine64 is not built as on most supported platforms:
+```bash
+export HOQEMU=/path/to/hangover/build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
+/path/to/hangover/build/wine-host/loader/wine foo.exe
 ```
 
 Wine's programs can be found in `build/wine-guest64/programs/*` and `build/wine-guest32/programs/*`.
