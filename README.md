@@ -3,7 +3,7 @@
 [![ubuntu-x86_64](https://github.com/AndreRH/hangover/workflows/ubuntu-x86_64/badge.svg)](https://github.com/AndreRH/hangover/actions?query=workflow%3Aubuntu-x86_64)
 
 ## Hangover
-This is Hangover, a project started by Stefan Dösinger and André Hentschel to run
+This is Hangover, a project started by Stefan Dösinger and André Zwing to run
 x86_64/x86_32 Windows applications on aarch64/ppc64le/x86_64 Wine.
 
 ### 1) How it works
