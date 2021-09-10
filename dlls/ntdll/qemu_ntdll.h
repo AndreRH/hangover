@@ -563,6 +563,11 @@ enum ntdll_calls
     CALL_RTLIPV4ADDRESSTOSTRINGEXW,
     CALL_RTLIPV4ADDRESSTOSTRINGW,
     CALL_RTLIPV4STRINGTOADDRESSEXW,
+    CALL_RTLIPV6ADDRESSTOSTRINGA,
+    CALL_RTLIPV6ADDRESSTOSTRINGEXA,
+    CALL_RTLIPV6ADDRESSTOSTRINGEXW,
+    CALL_RTLIPV6ADDRESSTOSTRINGW,
+    CALL_RTLIPV6STRINGTOADDRESSW,
     CALL_RTLISACTIVATIONCONTEXTACTIVE,
     CALL_RTLISCRITICALSECTIONLOCKED,
     CALL_RTLISCRITICALSECTIONLOCKEDBYTHREAD,
@@ -1310,6 +1315,11 @@ void qemu_RtlIpv4AddressToStringExA(struct qemu_syscall *call);
 void qemu_RtlIpv4AddressToStringExW(struct qemu_syscall *call);
 void qemu_RtlIpv4AddressToStringW(struct qemu_syscall *call);
 void qemu_RtlIpv4StringToAddressExW(struct qemu_syscall *call);
+void qemu_RtlIpv6AddressToStringA(struct qemu_syscall *call);
+void qemu_RtlIpv6AddressToStringExA(struct qemu_syscall *call);
+void qemu_RtlIpv6AddressToStringExW(struct qemu_syscall *call);
+void qemu_RtlIpv6AddressToStringW(struct qemu_syscall *call);
+void qemu_RtlIpv6StringToAddressW(struct qemu_syscall *call);
 void qemu_RtlIsActivationContextActive(struct qemu_syscall *call);
 void qemu_RtlIsCriticalSectionLocked(struct qemu_syscall *call);
 void qemu_RtlIsCriticalSectionLockedByThread(struct qemu_syscall *call);

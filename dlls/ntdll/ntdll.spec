@@ -768,14 +768,14 @@
 # @ stub RtlIpv4StringToAddressExA
 @ stdcall RtlIpv4StringToAddressExW(wstr long ptr ptr)
 # @ stdcall RtlIpv4StringToAddressW(wstr long ptr ptr)
-# @ stub RtlIpv6AddressToStringA
-# @ stub RtlIpv6AddressToStringExA
-# @ stub RtlIpv6AddressToStringExW
-# @ stub RtlIpv6AddressToStringW
+@ stdcall RtlIpv6AddressToStringA(ptr ptr)
+@ stdcall RtlIpv6AddressToStringExA(ptr long long ptr ptr)
+@ stdcall RtlIpv6AddressToStringExW(ptr long long ptr ptr)
+@ stdcall RtlIpv6AddressToStringW(ptr ptr)
 # @ stub RtlIpv6StringToAddressA
 # @ stub RtlIpv6StringToAddressExA
 # @ stub RtlIpv6StringToAddressExW
-# @ stub RtlIpv6StringToAddressW
+@ stdcall RtlIpv6StringToAddressW(ptr ptr ptr)
 @ stdcall RtlIsActivationContextActive(ptr)
 @ stdcall RtlIsCriticalSectionLocked(ptr)
 @ stdcall RtlIsCriticalSectionLockedByThread(ptr)

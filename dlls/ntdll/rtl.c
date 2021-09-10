@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <winternl.h>
 #include <ntdef.h>
+#include <in6addr.h>
 
 #include "thunk/qemu_winternl.h"
 
@@ -1190,6 +1191,190 @@ void qemu_RtlIpv4AddressToStringA(struct qemu_syscall *call)
     struct qemu_RtlIpv4AddressToStringA *c = (struct qemu_RtlIpv4AddressToStringA *)call;
     WINE_FIXME("Unverified!\n");
     c->super.iret = QEMU_H2G(RtlIpv4AddressToStringA(QEMU_G2H(c->pin), QEMU_G2H(c->buffer)));
+}
+
+#endif
+
+struct qemu_RtlIpv6AddressToStringExW
+{
+    struct qemu_syscall super;
+    uint64_t pin;
+    uint64_t scope;
+    uint64_t port;
+    uint64_t buffer;
+    uint64_t psize;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlIpv6AddressToStringExW(const IN6_ADDR *pin, LONG scope, USHORT port, LPWSTR buffer, PULONG psize)
+{
+    struct qemu_RtlIpv6AddressToStringExW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLIPV6ADDRESSTOSTRINGEXW);
+    call.pin = (ULONG_PTR)pin;
+    call.scope = (ULONG_PTR)scope;
+    call.port = (ULONG_PTR)port;
+    call.buffer = (ULONG_PTR)buffer;
+    call.psize = (ULONG_PTR)psize;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add RtlIpv6AddressToStringExW to Wine headers? */
+extern NTSTATUS WINAPI RtlIpv6AddressToStringExW(const IN6_ADDR *pin, LONG scope, USHORT port, LPWSTR buffer, PULONG psize);
+void qemu_RtlIpv6AddressToStringExW(struct qemu_syscall *call)
+{
+    struct qemu_RtlIpv6AddressToStringExW *c = (struct qemu_RtlIpv6AddressToStringExW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlIpv6AddressToStringExW(QEMU_G2H(c->pin), c->scope, c->port, QEMU_G2H(c->buffer), QEMU_G2H(c->psize));
+}
+
+#endif
+
+struct qemu_RtlIpv6AddressToStringExA
+{
+    struct qemu_syscall super;
+    uint64_t pin;
+    uint64_t scope;
+    uint64_t port;
+    uint64_t buffer;
+    uint64_t psize;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlIpv6AddressToStringExA(const IN6_ADDR *pin, LONG scope, USHORT port, LPSTR buffer, PULONG psize)
+{
+    struct qemu_RtlIpv6AddressToStringExA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLIPV6ADDRESSTOSTRINGEXA);
+    call.pin = (ULONG_PTR)pin;
+    call.scope = (ULONG_PTR)scope;
+    call.port = (ULONG_PTR)port;
+    call.buffer = (ULONG_PTR)buffer;
+    call.psize = (ULONG_PTR)psize;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add RtlIpv6AddressToStringExA to Wine headers? */
+extern NTSTATUS WINAPI RtlIpv6AddressToStringExA(const IN6_ADDR *pin, LONG scope, USHORT port, LPSTR buffer, PULONG psize);
+void qemu_RtlIpv6AddressToStringExA(struct qemu_syscall *call)
+{
+    struct qemu_RtlIpv6AddressToStringExA *c = (struct qemu_RtlIpv6AddressToStringExA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlIpv6AddressToStringExA(QEMU_G2H(c->pin), c->scope, c->port, QEMU_G2H(c->buffer), QEMU_G2H(c->psize));
+}
+
+#endif
+
+struct qemu_RtlIpv6AddressToStringW
+{
+    struct qemu_syscall super;
+    uint64_t pin;
+    uint64_t buffer;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI WCHAR * WINAPI RtlIpv6AddressToStringW(const IN6_ADDR *pin, LPWSTR buffer)
+{
+    struct qemu_RtlIpv6AddressToStringW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLIPV6ADDRESSTOSTRINGW);
+    call.pin = (ULONG_PTR)pin;
+    call.buffer = (ULONG_PTR)buffer;
+
+    qemu_syscall(&call.super);
+
+    return (WCHAR *)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+/* TODO: Add RtlIpv6AddressToStringW to Wine headers? */
+extern WCHAR * WINAPI RtlIpv6AddressToStringW(const IN6_ADDR *pin, LPWSTR buffer);
+void qemu_RtlIpv6AddressToStringW(struct qemu_syscall *call)
+{
+    struct qemu_RtlIpv6AddressToStringW *c = (struct qemu_RtlIpv6AddressToStringW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(RtlIpv6AddressToStringW(QEMU_G2H(c->pin), QEMU_G2H(c->buffer)));
+}
+
+#endif
+
+struct qemu_RtlIpv6AddressToStringA
+{
+    struct qemu_syscall super;
+    uint64_t pin;
+    uint64_t buffer;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI CHAR * WINAPI RtlIpv6AddressToStringA(const IN6_ADDR *pin, LPSTR buffer)
+{
+    struct qemu_RtlIpv6AddressToStringA call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLIPV6ADDRESSTOSTRINGA);
+    call.pin = (ULONG_PTR)pin;
+    call.buffer = (ULONG_PTR)buffer;
+
+    qemu_syscall(&call.super);
+
+    return (CHAR *)(ULONG_PTR)call.super.iret;
+}
+
+#else
+
+/* TODO: Add RtlIpv6AddressToStringA to Wine headers? */
+extern CHAR * WINAPI RtlIpv6AddressToStringA(const IN6_ADDR *pin, LPSTR buffer);
+void qemu_RtlIpv6AddressToStringA(struct qemu_syscall *call)
+{
+    struct qemu_RtlIpv6AddressToStringA *c = (struct qemu_RtlIpv6AddressToStringA *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = QEMU_H2G(RtlIpv6AddressToStringA(QEMU_G2H(c->pin), QEMU_G2H(c->buffer)));
+}
+
+#endif
+
+struct qemu_RtlIpv6StringToAddressW
+{
+    struct qemu_syscall super;
+    uint64_t str;
+    uint64_t terminator;
+    uint64_t address;
+};
+
+#ifdef QEMU_DLL_GUEST
+
+WINBASEAPI NTSTATUS WINAPI RtlIpv6StringToAddressW(LPCWSTR str, LPCWSTR *terminator, IN6_ADDR *address)
+{
+    struct qemu_RtlIpv6StringToAddressW call;
+    call.super.id = QEMU_SYSCALL_ID(CALL_RTLIPV6STRINGTOADDRESSW);
+    call.str = (ULONG_PTR)str;
+    call.terminator = (ULONG_PTR)terminator;
+    call.address = (ULONG_PTR)address;
+
+    qemu_syscall(&call.super);
+
+    return call.super.iret;
+}
+
+#else
+
+/* TODO: Add RtlIpv6StringToAddressW to Wine headers? */
+extern NTSTATUS WINAPI RtlIpv6StringToAddressW(LPCWSTR str, LPCWSTR *terminator, IN6_ADDR *address);
+void qemu_RtlIpv6StringToAddressW(struct qemu_syscall *call)
+{
+    struct qemu_RtlIpv6StringToAddressW *c = (struct qemu_RtlIpv6StringToAddressW *)call;
+    WINE_FIXME("Unverified!\n");
+    c->super.iret = RtlIpv6StringToAddressW(QEMU_G2H(c->str), QEMU_G2H(c->terminator), QEMU_G2H(c->address));
 }
 
 #endif
