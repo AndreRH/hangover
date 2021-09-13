@@ -1,0 +1,11 @@
+under test,application,result,unit
+box64+dynarec,Dhrystone1_64,13599477,dhrystones per second
+box64,Dhrystone1_64,435388,dhrystones per second
+box64+dynarec,Dhrystone2_64,5982706,dhrystones per second
+box64,Dhrystone2_64,192082,dhrystones per second
+box64+dynarec+wine,dhry164int64.exe,6550135,dhrystones per second
+box64+dynarec+wine,dhry264int64.exe,4013874,dhrystones per second
+box64+dynarec+wine,linpack64.exe,402.95,Mflops
+hangover-0.6.5+git,dhry164int64.exe,3368862,dhrystones per second
+hangover-0.6.5+git,dhry264int64.exe,1366013,dhrystones per second
+hangover-0.6.5+git,linpack64.exe,61.98,Mflops
