@@ -1,1 +1,0 @@
-../msvcrt/wcs.c

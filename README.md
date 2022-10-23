@@ -1,148 +1,19 @@
-[![debian-arm64](https://github.com/AndreRH/hangover/workflows/debian-arm64/badge.svg)](https://github.com/AndreRH/hangover/actions?query=workflow%3Adebian-arm64)
-[![debian-ppc64le](https://github.com/AndreRH/hangover/workflows/debian-ppc64le/badge.svg)](https://github.com/AndreRH/hangover/actions?query=workflow%3Adebian-ppc64le)
-[![ubuntu-x86_64](https://github.com/AndreRH/hangover/workflows/ubuntu-x86_64/badge.svg)](https://github.com/AndreRH/hangover/actions?query=workflow%3Aubuntu-x86_64)
+This branch is work in progress
 
-## Hangover
-This is Hangover, a project started by Stefan Dösinger and André Zwing to run
-x86_64/x86_32 Windows applications on aarch64/ppc64le/x86_64 Wine.
+In fact it will use upcoming WOW64 support in Wine + an emulator to run e.g. ARM32 on x86_64 or i386 on ARM64.
 
-### 1) How it works
-We have one Wine on the host in 64-bit only mode and two on the guest side for 64-bit and 32-bit.
-Inbetween sits a modified version of Qemu that runs the x86(_64) code.
-To glue it all together there are thunks, lots of them handwritten to understand in which situation
-a pointer is valid and in which situation it could point to a random address and should be ignored,
-and how to handle writes to resulting structures in case of errors etc.
+## Hangover-next
+This is branch will be merged as soon as enough parts are ready.
 
-### 2) Status
-Hangover currently runs a small number of 32 bit and 64 bit Windows applications.
-A list of applications the authors have tested is listed below. Other applications may work,
-but don't expect too much. Direct3D is working if you have a host OpenGL implementation that
-supports regular desktop GL. Wine's d3d implementation currently does not support OpenGL:ES well
-enough to be usable. Once this changes, Hangover will support it without any changes.
+### 1) Todo
 
-Debugger support is nonexistent and exception handling has known bugs.
-Due to these reasons copy protection and anti-cheat systems are likely
-to be in worse shape than in reguar Wine.
+* Get i386 on ARM64 working. (partly depends on [Wine Bug 53682](https://bugs.winehq.org/show_bug.cgi?id=53682) )
+* Figure out 64on64 (for e.g. x86_64 on ARM64)
+* Get all requirements into one place
+* Add some kind of a build system?
+* Integrate other emulators than Qemu, like Box32, FEX/AEX
 
-You can generally expect 64 bit applications to be in better shape than 32 bit
-applications because no data structure thunking is necessary.
-
-### 3) Host system requirements
-Hangover is tested on aarch64 Linux, ppc64le Linux, x86_64 Linux and x86_64 MacOS.
-No Intel x86 libraries are needed on the host system. No 32 bit multilib is required.
-
-### 4) How to build
-
-To build this project you need:
-- The dependencies to build a 64 bit Wine (./configure --enable-win64)
-- The dependencies to build qemu (in particular glib)
-- x86_64-w64-mingw32-gcc (exactly this name)
-- i686-w64-mingw32-gcc (exactly this name)
-- About 5gb of disk space
-
-Also make sure you have the submodules set up:
-
-```bash
-$ git submodule init
-$ git submodule update
-```
-
-#### 4.a) Linux / MacOS build:
-In theory everything should be built by running `make`. In practise you'll probably run into some
-bugs in our build system. Parallel builds should work, but if they fail try a non-parallel one first.
-
-Some 32 bit programs and DLLs built with mingw depend on `libgcc_s_sjlj-1.dll`.
-You can symlink the DLL from your mingw installation to `build/qemu/x86_64-windows-user/qemu_guest_dll32`.
-
-#### 4.b) Android build:
-Not supported anymore, please use [Hangover 0.4.0](https://github.com/AndreRH/hangover/releases/tag/hangover-0.4.0) on Android.
-
-### 5) How to run
-
-```bash
-export HOQEMU=/path/to/hangover/build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-/path/to/hangover/build/wine-host/loader/wine64 foo.exe
-```
-or in case wine64 is not built as on most supported platforms:
-```bash
-export HOQEMU=/path/to/hangover/build/qemu/x86_64-windows-user/qemu-x86_64.exe.so
-/path/to/hangover/build/wine-host/loader/wine foo.exe
-```
-
-Wine's programs can be found in `build/wine-guest64/programs/*` and `build/wine-guest32/programs/*`.
-`build/wine-[guest64|guest32]/` also contain PE builds of Wine's tests.
-
-### 6) Performance
-Don't expect this to be fast. The main bottleneck at the moment is the speed of the code qemu
-generates from the input x86 code. To provide a rough comparison, my Nvidia Shield Android TV
-device (running a regular desktop Linux, not Android) runs games from the late 1990s to early
-2000s at playable speed. The DirectX 9 SDK samples run fairly well because they contain little
-logic of their own and just call out of the VM into d3d, so all the heavy lifting is done natively.
-Warhammer 40k: Dawn of War starts a fresh game at around 30 fps but slows to a crawl as soon as
-a few units are built.
-
-### 7) 32 bit guest support
-The host Wine is always built as a 64 bit application. Hangover handles 32 bit applications by
-translating structures passed between the application and Wine. The LLP64 model of Windows keeps
-most structures compatible between 32 and 64 bit, but translating is still a big effort.
-
-The address space is limited to 4 GB by reserving every address below 4 GB, then calling mmap to
-reserve remaining space until we run out of free address space and then freeing up the bottom 4 GB
-again. Most host Wine libraries are loaded earlier above 4 GB to keep the previous space below 4 GB
-as free as possible. The drawback of this is that starting a new process takes about 2 seconds.
-
-Wine sees every process as a 64 bit process, so its WoW64 layer is not active. This will work OK for
-pure 32 bit or pure 64 bit applications, but it will cause problems for mixed applications that
-expect a distinction between e.g. C:\windows\system32 and C:\windows\syswow64.
-
-### 8) 16 bit guest support
-Support for Win16 does not yet exist, but should be possible by using Wine's regular Win16->Win32
-thunks and taking it from there. Some changes to the way Wine sets up 16 bit protected mode
-segments will be needed.
-
-For vm86 (DOS) support install `dosbox` on your host. Wine will call it for you.
-
-### 9) 32 bit host support
-Support for 32 bit host systems is not implemented. It should not be hard to do, but you will
-probably have to put some effort into making sure the address space layout works OK and the load
-address of the main .exe file remains free until qemu loads it. There's initial work for arm32
-already.
-
-### 10) Porting to other host architectures
-Porting to little endian host architectures should be fairly simple. You will have to replace a
-few bits of host specific assembler code. The compiler will make you aware of those places through
-#error statements in ifdef guards.
-
-If you want this to work on big endian platforms forget about it. It would require converting
-*every* Win32 structure, not just those with pointers or pointer sized integers in it.
-It will not happen.
-
-### 11) Tested applications
-
-This is a list of applications the authors tested. There is hope that they will work for you as well.
-If an application is marked as "installer: no" that means that the installer doesn't work for some
-reason. You'll have to install it elsewhere and copy the directory and registry keys.
-
-- **Notepad++:** Works, Installer untested
-- **ANNO 1602:** Runs with good performance, installer does not work. Videos may cause crashes
-- **Age of Wonders:** Installer works, but 1.36 update does not install. Game version 1.36 works
-- **Warhammer 40k: Dawn of War:** Game works, installer intested. Too slow to be playable
-- **The Settlers II 10th Anniversary:** Installer works, updater works, game runs but is too slow to be playable. Needs native d3dx9 and d3dcompiler libs.
-- **Prince of Persia 3D:** Installer and update work, game is playable.
-- **Worms 2:** Installer fails because it needs Win16, game is playable. Game needs Audio CD support, otherwise it will complain that it doesn't find the CD.
-- **Worms Armageddon:** Works with the right Wine settings. Despite having the same graphics as Worms 2 it is noticeably slower but borderline playable.
-
-#### Known not to work:
-- **StarCraft:** Breaks because 2GB address space limit is not respected.
-- **Age of Empires 2:** Extended exception information missing.
-
-### 12) Running "make test" in Wine
-To run Wine's tests inside Hangover you can use scripts/hangover-test.sh as $WINETEST_WRAPPER. You
-also have to create an empty file server/wineserver (just touch it, it doesn't need anything special)
-to make Wine's tools/runtest happy. See comments in scripts/hangover-test.sh for more details
-
-
-### 13) Donations
+### 2) Donations
 
 For anyone interested, ways to support at least André can be found here:
 

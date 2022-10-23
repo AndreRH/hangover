@@ -1,1 +1,0 @@
-../msvcrt/main.c
