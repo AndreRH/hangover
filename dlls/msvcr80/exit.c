@@ -1,1 +1,0 @@
-../msvcrt/exit.c

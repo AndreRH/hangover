@@ -1,0 +1,30 @@
+diff --git a/meson.build b/meson.build
+index e3386196ba..12fd1963ea 100644
+--- a/meson.build
++++ b/meson.build
+@@ -1,6 +1,6 @@
+ project('qemu', ['c'], meson_version: '>=0.55.0',
+         default_options: ['warning_level=1', 'c_std=gnu99', 'cpp_std=gnu++11', 'b_colorout=auto'] +
+-                         (meson.version().version_compare('>=0.56.0') ? [ 'b_staticpic=false' ] : []),
++                         (meson.version().version_compare('>=0.56.0') ? [ 'b_staticpic=true' ] : []),
+         version: run_command('head', meson.source_root() / 'VERSION').stdout().strip())
+ 
+ not_found = dependency('', required: false)
+@@ -1844,15 +1844,14 @@ foreach target : target_dirs
+   endif
+   foreach exe: execs
+     emulators += {exe['name']:
+-         executable(exe['name'], exe['sources'],
++         library(exe['name'], exe['sources'],
+                install: true,
+                c_args: c_args,
+                dependencies: arch_deps + deps + exe['dependencies'],
+                objects: lib.extract_all_objects(recursive: true),
+                link_language: link_language,
+                link_depends: [block_syms, qemu_syms] + exe.get('link_depends', []),
+-               link_args: link_args,
+-               gui_app: exe['gui'])
++               link_args: link_args)
+     }
+ 
+     if 'CONFIG_TRACE_SYSTEMTAP' in config_host

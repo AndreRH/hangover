@@ -1,1 +1,0 @@
-../msvcrt/qemu_msvcrt.spec

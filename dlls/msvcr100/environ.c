@@ -1,1 +1,0 @@
-../msvcrt/environ.c

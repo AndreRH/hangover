@@ -1,10 +1,7 @@
 build
-*_h.o
-*_g.o
 *.dll
 *.exe
 *.o
 *.rc
 *.res
 *.bin
-qemu_*.dll.so
