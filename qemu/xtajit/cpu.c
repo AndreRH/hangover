@@ -127,22 +127,23 @@ void WINAPI BTCpuSimulate(void)
 
         if (ULongToPtr(wow_context->Eip) == &unxcode)
         {
-            // unix call!
+            /* unix call */
             handle_unix_call(wow_context);
         }
         else if (ULongToPtr(wow_context->Eip) == &bopcode)
         {
-            // sys call!
+            /* sys call */
             handle_syscall(wow_context);
         }
         else
         {
-            DWORD arg[] = {0, 0};
+            DWORD arg[] = {0xffffffff, 0};
 
             ERR("Client crashed\n");
 
-            //NtDelayExecution
-            Wow64SystemServiceEx(50, (UINT*)&arg);
+            /* NtTerminateProcess */
+            Wow64SystemServiceEx(209, (UINT*)&arg);
+            return;
         }
     }
 }
