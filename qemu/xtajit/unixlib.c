@@ -144,9 +144,8 @@ static inline void *get_wow_teb( TEB *teb )
     return teb->WowTebOffset ? (void *)((char *)teb + teb->WowTebOffset) : NULL;
 }
 
-static void ctx_to_qemu(I386_CONTEXT *c, CPUX86State *env)
+static void ctx_to_qemu(I386_CONTEXT *c, CPUX86State *env, int first_time)
 {
-    static int first_time = 1;
     TEB *teb = NtCurrentTeb();
     void *wowteb = get_wow_teb(teb);
     int i;
@@ -361,8 +360,7 @@ static NTSTATUS emu_run( void *args )
     int trapnr;
     uint64_t *gdt_table;
 
-    static uint64_t ldt[256];
-    uint64_t *ldt_table = ldt;
+    uint64_t *ldt_table = params->ldt;
     TEB *teb = NtCurrentTeb();
     void *wowteb = get_wow_teb(teb);
 
@@ -379,11 +377,12 @@ static NTSTATUS emu_run( void *args )
         ptcg_register_thread();
         init_thread_cpu();
         ppage_set_flags(4096, 0x80000000, 8|4|2|1);
+        first_time = 1;
     }
     cs = thread_cpu;
     env = cs->env_ptr;
 
-    ctx_to_qemu(params->c, env);
+    ctx_to_qemu(params->c, env, first_time);
 
     if (first_time)
     {

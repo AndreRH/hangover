@@ -34,10 +34,11 @@ static unixlib_handle_t emuapi_handle;
 
 #define EMUAPI_CALL( func, params ) __wine_unix_call( emuapi_handle, unix_ ## func, params )
 
+static char *gdt, *idt, *ldt;
+
 void WINAPI emu_run(I386_CONTEXT *c)
 {
-    static char gdt[1024*9], idt[255*8];
-    struct emu_run_params params = { c, gdt, idt };
+    struct emu_run_params params = { c, gdt, idt, ldt };
     EMUAPI_CALL( emu_run, &params );
 }
 
@@ -162,6 +163,17 @@ NTSTATUS WINAPI BTCpuProcessInit(void)
     return STATUS_SUCCESS;
 }
 
+/**********************************************************************
+ *           BTCpuThreadInit  (xtajit.@)
+ */
+NTSTATUS WINAPI BTCpuThreadInit(void)
+{
+    gdt = RtlAllocateHeap( GetProcessHeap(), HEAP_ZERO_MEMORY, 1024*9 );
+    idt = RtlAllocateHeap( GetProcessHeap(), HEAP_ZERO_MEMORY, 255*8 );
+    ldt = RtlAllocateHeap( GetProcessHeap(), HEAP_ZERO_MEMORY, 256*8 );
+
+    return STATUS_SUCCESS;
+}
 
 /**********************************************************************
  *           BTCpuGetBopCode  (xtajit.@)

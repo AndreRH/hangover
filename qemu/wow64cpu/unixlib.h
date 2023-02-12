@@ -130,6 +130,7 @@ struct emu_run_params
     I386_CONTEXT *c;
     void *gdt;
     void *idt;
+    void *ldt;
 };
 
 enum ctapi_funcs
