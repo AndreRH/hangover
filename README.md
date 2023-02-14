@@ -19,7 +19,7 @@ to build this will follow. It's by far not as hard as it used to be with classic
 * Get more applications running
 * Get all requirements into one place
 * Add some kind of a build system or at least build instructions
-* Integrate other emulators than Qemu, like Box32, FEX/AEX
+* Integrate other emulators than Qemu, like Box32, FEX/hex-emu
 
 ### 5) Donations
 
