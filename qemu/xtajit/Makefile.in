@@ -1,9 +1,0 @@
-MODULE    = xtajit.dll
-UNIXLIB   = xtajit.so
-IMPORTS   = wow64 ntdll winecrt0
-
-EXTRADLLFLAGS = -nodefaultlibs -Wl,--image-base,0x6f100000
-
-C_SRCS = \
-	cpu.c \
-	unixlib.c
