@@ -1,13 +1,16 @@
+Make sure to leave a :star:, we are getting close to 1000 :blush:
+
 ## Hangover
 This is Hangover, a project started by André Zwing and Stefan Dösinger in 2016 to run
 x86_64/x86_32 Windows applications on aarch64/(ppc64le)/x86_64 Wine.
 
 ### 1) How it works
-In fact it uses the WoW64 support in Wine + an emulator to run e.g. ARM32 on x86_64 or i386 on ARM64.
-This is completely different from earlier versions of Hangover.
+In fact it now uses the WoW64 support in Wine + an emulator to run e.g. ARM32 on x86_64 or
+i386 on ARM64. This is completely different from earlier versions of Hangover, which broke out of
+emulation at the win32 API level.
 
 ### 2) Status
-Putty runs smoothly, most applications run worse on ARM64 than on x86-64 with Hangover.
+While the overall stability was improved, expect crashes.
 
 ### 3) How to build
 Currently Qemu is built as a library which is used in Wine. This is a license conflict, so there'll be no binaries for download. This will change with other emulators.
@@ -35,14 +38,14 @@ $ make
 
 In case the compiler complains about something in linux-user/ioctls.h remove the corresponding line and run make again.
 
-Place resulting libraries in /opt (currently hardcoded in xtajit.dll)
+Place resulting libraries in /opt (default) or set HOLIB to the full path of the resulting library.
 
 #### 3.2) Wine
 To build Hangover Wine you need:
 
 - The dependencies to build a 64 bit Wine
-- clang/llvm-dlltool/lld or llvm-mingw for PE cross-compilation
-- About 3GB of disk space
+- [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation
+- About 5GB of disk space
 
 Also make sure you have the submodule set up:
 ```bash
@@ -53,23 +56,37 @@ on x86-64:
 ```bash
 $ mkdir -p wine/build
 $ cd wine/build
-$ ../configure --enable-win64 --disable-tests --with-mingw --enable-archs=i386,x86_64
+$ ../configure --enable-win64 --disable-tests --with-mingw --enable-archs=i386,x86_64,arm
 $ make
-$ ./wine64 notepad++.exe
 ```
 
 on ARM64:
 ```bash
 $ mkdir -p wine/build
 $ cd wine/build
-$ ../configure --disable-tests --with-mingw --enable-archs=i386,aarch64
+$ ../configure --disable-tests --with-mingw --enable-archs=i386,aarch64,arm
 $ make
-$ ./wine notepad++.exe
 ```
 
-### 4) Environment variables
+### 4) Running
+Until the critical section issue is solved it is highly recomended to limit execution to 1 core with
+"taskset -c 1":
 
-* HODLL to run applications with other dlls than xtajit. e.g. HODLL=wow64cpu.dll to run it without emulation on x86-64
+on x86-64:
+```bash
+$ taskset -c 1 ./wine64 yourapplication.exe
+```
+
+on ARM64:
+```bash
+$ taskset -c 1 ./wine yourapplication.exe
+```
+
+You can add the following environment variables:
+
+* HODLL to run applications with other dlls than xtajit or wowarmhw. e.g. HODLL=wow64cpu.dll to run it without emulation on x86-64:<br>
+  xtajit.dll for i386 emulation, wowarmhw.dll for ARM emulation and wow64cpu.dll for "native" i386 mode on x86_64
+* HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
 * QEMU_LOG to set Qemu log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/hangover/util/log.c#L297)
 
 ### 5) Todo
