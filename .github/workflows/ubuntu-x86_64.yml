@@ -1,0 +1,42 @@
+name: ubuntu-x86_64
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build_x86_64:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+    - name: get shallow submodule
+      run: git submodule update --init --depth 1
+    - name: build wine
+      run: |
+        uname -a
+        wget https://github.com/mstorsjo/llvm-mingw/releases/download/20220906/llvm-mingw-20220906-ucrt-ubuntu-18.04-x86_64.tar.xz
+        tar -xJf llvm-mingw-20220906-ucrt-ubuntu-18.04-x86_64.tar.xz
+        rm llvm-mingw-20220906-ucrt-ubuntu-18.04-x86_64.tar.xz
+        export PATH=$PWD/llvm-mingw-20220906-ucrt-ubuntu-18.04-x86_64/bin:$PATH
+        mkdir -p wine/build
+        cd wine/build
+        ../configure --enable-win64 --with-mingw --enable-archs=i386,x86_64,arm --without-x --without-fontconfig
+        make -j$(nproc) -C dlls/gdi32
+        make -j$(nproc) -C dlls/msacm32
+        make -j$(nproc) -C dlls/ntdll
+        make -j$(nproc) -C dlls/win32u
+        make -j$(nproc) -C dlls/wow64
+        make -j$(nproc) -C dlls/wow64win
+        make -j$(nproc) -C dlls/wowarmhw
+        make -j$(nproc) -C dlls/xtajit
+        make -j$(nproc) -C programs/wineboot
+        make -j$(nproc) -C server
+

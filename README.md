@@ -1,5 +1,7 @@
 Make sure to leave a :star:, we are getting close to 1000 :blush:
 
+[![ubuntu-x86_64](https://github.com/AndreRH/hangover/workflows/ubuntu-x86_64/badge.svg)](https://github.com/AndreRH/hangover/actions?query=workflow%3Aubuntu-x86_64)
+
 ## Hangover
 This is Hangover, a project started by André Zwing and Stefan Dösinger in 2016 to run
 (x86_64)/x86_32 Windows applications on aarch64/(ppc64le)/x86_64 Wine. (Architectures in brackets
