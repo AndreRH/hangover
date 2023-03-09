@@ -2,7 +2,8 @@ Make sure to leave a :star:, we are getting close to 1000 :blush:
 
 ## Hangover
 This is Hangover, a project started by André Zwing and Stefan Dösinger in 2016 to run
-x86_64/x86_32 Windows applications on aarch64/(ppc64le)/x86_64 Wine.
+(x86_64)/x86_32 Windows applications on aarch64/(ppc64le)/x86_64 Wine. (Architectures in brackets
+are currently not supported)
 
 ### 1) How it works
 In fact it now uses the WoW64 support in Wine + an emulator to run e.g. ARM32 on x86_64 or
@@ -87,17 +88,18 @@ You can add the following environment variables:
 * HODLL to run applications with other dlls than xtajit or wowarmhw. e.g. HODLL=wow64cpu.dll to run it without emulation on x86-64:<br>
   xtajit.dll for i386 emulation, wowarmhw.dll for ARM emulation and wow64cpu.dll for "native" i386 mode on x86_64
 * HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
-* QEMU_LOG to set Qemu log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/hangover/util/log.c#L297)
+* QEMU_LOG to set Qemu log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/v5.2.0/util/log.c#L297)
 
 ### 5) Todo
 
 * Get more applications running
 * Investigate CriticalSection issues (just timing?)
-* Integrate other emulators than Qemu, like Box32, FEX/hex-emu
+* Integrate other emulators than Qemu, like [Box32](https://news.itsfoss.com/box86-creator-ptitseb/),
+[FEX](https://github.com/FEX-Emu/FEX)/[hex-emu](https://gitlab.com/hex-emu/hex-emu)
 
 ### 6) Donations
 
-For anyone interested, ways to support André can be found here:
+For anyone interested, ways to support me can be found here:
 
 https://www.patreon.com/andre_opensource
 
