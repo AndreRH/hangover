@@ -1,6 +1,9 @@
 Make sure to leave a :star:, we are getting close to 1000 :blush:
 
 [![ubuntu-x86_64](https://github.com/AndreRH/hangover/workflows/ubuntu-x86_64/badge.svg)](https://github.com/AndreRH/hangover/actions?query=workflow%3Aubuntu-x86_64)
+![stars](https://img.shields.io/github/stars/AndreRH/hangover)
+![forks](https://img.shields.io/github/forks/AndreRH/hangover)
+![Release](https://img.shields.io/github/v/release/AndreRH/hangover?color=green&include_prereleases)
 
 ## Hangover
 This is Hangover, a project started by André Zwing and Stefan Dösinger in 2016 to run
