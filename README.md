@@ -1,4 +1,4 @@
-Make sure to leave a :star:, we are getting close to 1000 :blush:
+Make sure to leave a :star:, onto 2048 :blush:
 
 [![ubuntu-x86_64](https://github.com/AndreRH/hangover/workflows/ubuntu-x86_64/badge.svg)](https://github.com/AndreRH/hangover/actions?query=workflow%3Aubuntu-x86_64)
 ![stars](https://img.shields.io/github/stars/AndreRH/hangover)
@@ -99,7 +99,7 @@ You can add the following environment variables:
 
 * Get more applications running
 * Investigate CriticalSection issues (just timing?)
-* Integrate other emulators than Qemu, like [Box32](https://news.itsfoss.com/box86-creator-ptitseb/),
+* Integrate other emulators than Qemu, like [Blink](https://github.com/jart/blink) (started), [Box32](https://news.itsfoss.com/box86-creator-ptitseb/),
 [FEX](https://github.com/FEX-Emu/FEX)/[hex-emu](https://gitlab.com/hex-emu/hex-emu)
 
 ### 6) Donations
