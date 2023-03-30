@@ -99,8 +99,8 @@ You can add the following environment variables:
 
 * Get more applications running
 * Investigate CriticalSection issues (just timing?)
-* Integrate other emulators than Qemu, like [Blink](https://github.com/jart/blink) (started), [Box32](https://news.itsfoss.com/box86-creator-ptitseb/),
-[FEX](https://github.com/FEX-Emu/FEX)/[hex-emu](https://gitlab.com/hex-emu/hex-emu)
+* Integrate other emulators than Qemu, like [Blink](https://github.com/jart/blink) (started), [FEX](https://github.com/FEX-Emu/FEX) (started),
+[hex-emu](https://gitlab.com/hex-emu/hex-emu), [Box32](https://news.itsfoss.com/box86-creator-ptitseb/)
 
 ### 6) Donations
 
