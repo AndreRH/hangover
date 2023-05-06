@@ -1,5 +1,3 @@
-Make sure to leave a :star:, onto 2048 :blush:
-
 [![ubuntu-x86_64](https://github.com/AndreRH/hangover/workflows/ubuntu-x86_64/badge.svg)](https://github.com/AndreRH/hangover/actions?query=workflow%3Aubuntu-x86_64)
 ![stars](https://img.shields.io/github/stars/AndreRH/hangover)
 ![forks](https://img.shields.io/github/forks/AndreRH/hangover)
@@ -21,7 +19,7 @@ While the overall stability was improved, expect crashes.
 Emulator integrations:
 
 - [QEMU](https://gitlab.com/qemu-project/qemu): Mostly done, though needs fixes for stability and CriticalSection
-- [FEX](https://github.com/FEX-Emu/FEX): WIP 60%, not part of this repository yet
+- [FEX](https://github.com/FEX-Emu/FEX): WIP 80%, not part of this repository yet, but available as [preview](https://www.patreon.com/posts/previews-82611984) :point_left:
 - [Blink](https://github.com/jart/blink): started, not part of this repository yet
 - [hex-emu](https://gitlab.com/hex-emu/hex-emu): not started yet
 - [Box32](https://news.itsfoss.com/box86-creator-ptitseb/): doesn't exist yet
@@ -57,8 +55,8 @@ Place resulting libraries (build/libqemu-arm.so and/or build/libqemu-i386.so) in
 #### 3.2) Wine
 To build Hangover Wine you need:
 
-- The dependencies to build a 64 bit Wine
-- [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation (downlaod & unpack a release)
+- The dependencies to [build](https://wiki.winehq.org/Building_Wine#Satisfying_Build_Dependencies) a 64 bit Wine
+- [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation (downlaod & unpack a release, but don't use the .zip files, they are for Windows)
 - About 5GB of disk space
 
 Also make sure you have the submodule set up:
