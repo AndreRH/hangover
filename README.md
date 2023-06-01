@@ -109,12 +109,14 @@ You can add the following environment variables:
 * Investigate CriticalSection issues (just timing?)
 * Integrate other emulators than QEMU
 
-### 6) Donations
+### 6) Financial Contributors
 
-For anyone interested, ways to support me can be found here:
+Become a financial contributor and help me sustain this project:
 
 https://www.patreon.com/andre_opensource
 
 https://liberapay.com/andre_opensource
+
+https://ko-fi.com/andre_opensource
 
 https://flattr.com/@andre_opensource
