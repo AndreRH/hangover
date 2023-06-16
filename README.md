@@ -24,6 +24,8 @@ Emulator integrations:
 - [hex-emu](https://gitlab.com/hex-emu/hex-emu): not started yet
 - [Box32](https://news.itsfoss.com/box86-creator-ptitseb/): doesn't exist yet
 
+(Box32 will translate i386 to ARM64. It's what we'll need, because with WoW64 we only can emulate 32-bit architectures, but require the emulator in our 64-bit address space)
+
 ### 3) How to build
 Currently QEMU is built as a library which is used in Wine. This is a license conflict, so there'll be no binaries for download. This will change with other emulators.
 
@@ -84,14 +86,8 @@ $ make -j$(nproc)
 
 ### 4) Running
 Until the critical section issue is solved it is highly recomended to limit execution to 1 core with
-"taskset -c 1":
+"taskset -c 1" for Qemu emulation:
 
-on x86-64:
-```bash
-$ taskset -c 1 ./wine64 yourapplication.exe
-```
-
-on ARM64:
 ```bash
 $ taskset -c 1 ./wine yourapplication.exe
 ```
@@ -118,5 +114,3 @@ https://www.patreon.com/andre_opensource
 https://liberapay.com/andre_opensource
 
 https://ko-fi.com/andre_opensource
-
-https://flattr.com/@andre_opensource
