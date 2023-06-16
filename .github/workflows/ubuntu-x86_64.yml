@@ -22,10 +22,10 @@ jobs:
     - name: build wine
       run: |
         uname -a
-        wget https://github.com/mstorsjo/llvm-mingw/releases/download/20220906/llvm-mingw-20220906-ucrt-ubuntu-18.04-x86_64.tar.xz
-        tar -xJf llvm-mingw-20220906-ucrt-ubuntu-18.04-x86_64.tar.xz
-        rm llvm-mingw-20220906-ucrt-ubuntu-18.04-x86_64.tar.xz
-        export PATH=$PWD/llvm-mingw-20220906-ucrt-ubuntu-18.04-x86_64/bin:$PATH
+        wget https://github.com/mstorsjo/llvm-mingw/releases/download/20230614/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64.tar.xz
+        tar -xJf llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64.tar.xz
+        rm llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64.tar.xz
+        export PATH=$PWD/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64/bin:$PATH
         mkdir -p wine/build
         cd wine/build
         ../configure --enable-win64 --with-mingw --enable-archs=i386,x86_64,arm --without-x --without-fontconfig
