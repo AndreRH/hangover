@@ -1,6 +1,7 @@
 [submodule "wine"]
 	path = wine
 	url = https://github.com/AndreRH/wine.git
+	branch = wow
 [submodule "qemu"]
 	path = qemu
 	url = https://github.com/AndreRH/qemu.git

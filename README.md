@@ -76,24 +76,29 @@ $ make -j$(nproc)
 ```
 
 ### 4) Running
+You can add the following environment variables:
+
+* HODLL to select the emulator dll:
+    * wow64cpu.dll for "native" i386 mode on x86_64
+    * wowarmhw.dll for ARM emulation (Qemu)
+    * xtajit.dll for i386 emulation (Qemu)
+    * fexcore.dll for i386 emulation (FEX)
+* HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
+* QEMU_LOG to set QEMU log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/v5.2.0/util/log.c#L297)
+
+#### 4.1) QEMU
 Until the critical section issue is solved it is highly recomended to limit execution to 1 core with
 "taskset -c 1" for Qemu emulation:
 
 ```bash
-$ taskset -c 1 ./wine yourapplication.exe
+$ HODLL=xtajit.dll   taskset -c 1 ./wine your_x86_application.exe
+$ HODLL=wowarmhw.dll taskset -c 1 ./wine your_arm_application.exe
 ```
-
-You can add the following environment variables:
-
-* HODLL to run applications with other dlls than xtajit or wowarmhw. e.g. HODLL=wow64cpu.dll to run it without emulation on x86-64:<br>
-  xtajit.dll for i386 emulation, wowarmhw.dll for ARM emulation and wow64cpu.dll for "native" i386 mode on x86_64
-* HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
-* QEMU_LOG to set QEMU log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/v5.2.0/util/log.c#L297)
 
 ### 5) Todo
 
 * Get more applications running
-* Investigate CriticalSection issues (just timing?)
+* QMEU: Investigate CriticalSection issues (just timing?)
 * Integrate other emulators than QEMU
 
 ### 6) Financial Contributors
