@@ -27,20 +27,16 @@ Emulator integrations:
 (Box32 will translate i386 to ARM64. It's what we'll need, because with WoW64 we only can emulate 32-bit architectures, but require the emulator in our 64-bit address space)
 
 ### 3) How to build
-Currently QEMU is built as a library which is used in Wine. This is a license conflict, so there'll be no binaries for download. This will change with other emulators.
+First make sure you have the submodules set up:
+```bash
+$ git submodule update --init
+```
 
 #### 3.1) QEMU
 To build QEMU as a library you need:
 
 - The dependencies to build QEMU (in particular glib)
 - About 1GB of disk space
-
-Download and extract version 5.2.0 from [here.](https://download.qemu.org/)
-
-Apply the patch provided in this repo under qemu/ with:
-```bash
-$ patch -p1 < /path/to/hangover/qemu/qemu-5.2-as-lib.patch
-```
 
 Build it like:
 ```bash
@@ -60,11 +56,6 @@ To build Hangover Wine you need:
 - The dependencies to [build](https://wiki.winehq.org/Building_Wine#Satisfying_Build_Dependencies) a 64 bit Wine
 - [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation (downlaod & unpack a release, but don't use the .zip files, they are for Windows)
 - About 5GB of disk space
-
-Also make sure you have the submodule set up:
-```bash
-$ git submodule update --init
-```
 
 on x86-64:
 ```bash
