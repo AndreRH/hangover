@@ -6,3 +6,7 @@
 	path = qemu
 	url = https://github.com/AndreRH/qemu.git
 	branch = wow
+[submodule "fex"]
+	path = fex
+	url = https://github.com/AndreRH/FEX.git
+	branch = wow
