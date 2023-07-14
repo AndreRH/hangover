@@ -27,18 +27,23 @@ Emulator integrations:
 (Box32 will translate i386 to ARM64. It's what we'll need, because with WoW64 we only can emulate 32-bit architectures, but require the emulator in our 64-bit address space)
 
 ### 3) Preview
-A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with following features coming soon:
+A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with currently the following features:
 
 - Wine 8.12 based
 - Updated FEX
 
-### 4) How to build
+### 4) Discord
+A Discord Server is available for contributors and financial supporters (see point 8 below).
+It provides advanced user support, development discussions and more.
+
+### 5) How to build
 First make sure you have the submodules set up:
 ```bash
-$ git submodule update --init
+$ git submodule update --init --recursive
 ```
+And note that you can build all emulators (currently QEMU and FEX), but you don't need to, one is enough depending on your use-case.
 
-#### 4.1) QEMU
+#### 5.1) QEMU
 To build QEMU as a library you need:
 
 - The dependencies to build QEMU (in particular glib)
@@ -48,7 +53,7 @@ Build it like (from the Hangover repository):
 ```bash
 $ mkdir -p qemu/build
 $ cd qemu/build
-$ ../configure --target-list=arm-linux-user,i386-linux-user
+$ ../configure --disable-werror --target-list=arm-linux-user,i386-linux-user
 $ make -j$(nproc)
 ```
 
@@ -56,7 +61,7 @@ In case the compiler complains about something in linux-user/ioctls.h remove the
 
 Place resulting libraries (build/libqemu-arm.so and/or build/libqemu-i386.so) in /opt (default) or set HOLIB to the full path of the resulting library.
 
-#### 4.2) FEX
+#### 5.2) FEX
 To build FEXCore from FEX you need:
 
 - The dependencies to [build](https://wiki.fex-emu.com/index.php/Development:Setting_up_FEX) FEX
@@ -74,7 +79,7 @@ On x86-64 you might need to add "-DENABLE_X86_HOST_DEBUG=True" to the cmake call
 
 Place resulting library (Build/External/FEXCore/Source/libFEXCore.so) in /opt (default) or set HOLIB to the full path of the resulting library.
 
-#### 4.3) Wine
+#### 5.3) Wine
 To build Hangover Wine you need:
 
 - The dependencies to [build](https://wiki.winehq.org/Building_Wine#Satisfying_Build_Dependencies) a 64 bit Wine
@@ -101,7 +106,7 @@ $ make -j$(nproc)
 $ sudo make install
 ```
 
-### 5) Running
+### 6) Running
 You can add the following environment variables:
 
 * HODLL to select the emulator dll:
@@ -112,7 +117,7 @@ You can add the following environment variables:
 * HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
 * QEMU_LOG to set QEMU log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/v5.2.0/util/log.c#L297)
 
-#### 5.1) QEMU
+#### 6.1) QEMU
 Until the critical section issue is solved it is highly recomended to limit execution to 1 core with
 "taskset -c 1" for Qemu emulation:
 
@@ -121,20 +126,20 @@ $ HODLL=xtajit.dll   taskset -c 1 wine your_x86_application.exe
 $ HODLL=wowarmhw.dll taskset -c 1 wine your_arm_application.exe
 ```
 
-#### 5.2) FEX
+#### 6.2) FEX
 fexcore.dll currently is the default for i386 emulation, so it's simply:
 
 ```bash
 $ wine your_x86_application.exe
 ```
 
-### 6) Todo
+### 7) Todo
 
 * Get more applications running
 * QMEU: Investigate CriticalSection issues (just timing?)
 * FEX: Fix invalidation and exceptions (maybe as PE module)
 
-### 7) Financial Contributors
+### 8) Financial Contributors
 
 Become a financial contributor and help me sustain this project:
 
