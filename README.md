@@ -19,18 +19,22 @@ While the overall stability was improved, expect crashes.
 Emulator integrations:
 
 - [QEMU](https://gitlab.com/qemu-project/qemu): Mostly done, though needs fixes for stability and CriticalSection
-- [FEX](https://github.com/FEX-Emu/FEX): Mostly done, though needs fixes for invalidation and exceptions
+- [FEX](https://github.com/FEX-Emu/FEX): Mostly done, though needs fixes for exceptions
+- [Box64](https://github.com/ptitSeb/box64/): started, not part of this repository yet
 - [Blink](https://github.com/jart/blink): started, not part of this repository yet
-- [hex-emu](https://gitlab.com/hex-emu/hex-emu): not started yet
 - [Box32](https://news.itsfoss.com/box86-creator-ptitseb/): doesn't exist yet
 
-(Box32 will translate i386 to ARM64. It's what we'll need, because with WoW64 we only can emulate 32-bit architectures, but require the emulator in our 64-bit address space)
+(Box32 will translate i386 to ARM64. It's what we'll need,
+because with WoW64 we only can emulate 32-bit architectures,
+but require the emulator in our 64-bit address space.
+It also will handle x86 faster than Box64 I assume.)
 
 ### 3) Preview
-A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with currently the following features:
+A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with currently the following features coming soon:
 
-- Wine 8.12 based
+- Updated Wine
 - Updated FEX
+- Initial Box64 work
 
 ### 4) Discord
 A Discord Server is available for contributors and financial supporters (see point 8 below).
@@ -64,7 +68,7 @@ Place resulting libraries (build/libqemu-arm.so and/or build/libqemu-i386.so) in
 #### 5.2) FEX
 To build FEXCore from FEX you need:
 
-- The dependencies to [build](https://wiki.fex-emu.com/index.php/Development:Setting_up_FEX) FEX
+- The dependencies to [build](https://wiki.fex-emu.com/index.php/Development:Setting_up_FEX) FEX (in particular libepoxy and libsdl2)
 - About 1.5GB of disk space
 
 Build it like (from the Hangover repository):
@@ -77,7 +81,7 @@ $ make -j$(nproc) FEXCore_shared
 
 On x86-64 you might need to add "-DENABLE_X86_HOST_DEBUG=True" to the cmake call.
 
-Place resulting library (Build/External/FEXCore/Source/libFEXCore.so) in /opt (default) or set HOLIB to the full path of the resulting library.
+Place resulting library (build/External/FEXCore/Source/libFEXCore.so) in /opt (default) or set HOLIB to the full path of the resulting library.
 
 #### 5.3) Wine
 To build Hangover Wine you need:
@@ -136,8 +140,8 @@ $ wine your_x86_application.exe
 ### 7) Todo
 
 * Get more applications running
-* QMEU: Investigate CriticalSection issues (just timing?)
-* FEX: Fix invalidation and exceptions (maybe as PE module)
+* QEMU: Investigate CriticalSection issues (just timing?)
+* FEX: Fix exceptions (maybe as PE module)
 
 ### 8) Financial Contributors
 
