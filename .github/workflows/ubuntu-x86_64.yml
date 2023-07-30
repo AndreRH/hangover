@@ -17,14 +17,31 @@ jobs:
         sudo apt clean
         docker rmi $(docker image ls -aq)
         df -h
+    - name: install dependencies
+      run: sudo apt install libepoxy-dev libglib2.0-dev libsdl2-dev ninja-build
     - name: get shallow submodule
-      run: git submodule update --init --depth 1
-    - name: build wine
+      run: git submodule update --init --recursive --depth 1
+    - name: get llvm-mingw
       run: |
         uname -a
         wget https://github.com/mstorsjo/llvm-mingw/releases/download/20230614/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64.tar.xz
         tar -xJf llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64.tar.xz
         rm llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64.tar.xz
+    - name: build qemu
+      run: |
+        mkdir -p qemu/build
+        cd qemu/build
+        ../configure --disable-werror --target-list=arm-linux-user,i386-linux-user
+        make -j$(nproc)
+    - name: build fex
+      run: |
+        export PATH=$PWD/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64/bin:$PATH
+        mkdir -p fex/build
+        cd fex/build
+        CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_LTO=True -DENABLE_LLD=True -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False -DENABLE_X86_HOST_DEBUG=True ..
+        make -j$(nproc) FEXCore_shared
+    - name: build wine
+      run: |
         export PATH=$PWD/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64/bin:$PATH
         mkdir -p wine/build
         cd wine/build
@@ -35,6 +52,4 @@ jobs:
         make -j$(nproc) -C dlls/wow64
         make -j$(nproc) -C dlls/wowarmhw
         make -j$(nproc) -C dlls/xtajit
-        make -j$(nproc) -C programs/wineboot
         make -j$(nproc) -C server
-
