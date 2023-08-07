@@ -16,11 +16,14 @@ broke out of emulation at the win32 API level.
 ### 2) Status
 While the overall stability was improved, expect crashes.
 
+Running x86_64 applications isn't supported anymore and won't be added back in the near future.
+Same for running on PPC64le. If you need those features, have a look at older releases before 0.8.x.
+
 Emulator integrations:
 
 - [QEMU](https://gitlab.com/qemu-project/qemu): Mostly done, though needs fixes for stability and CriticalSection
 - [FEX](https://github.com/FEX-Emu/FEX): Mostly done, though needs fixes for exceptions
-- [Box64](https://github.com/ptitSeb/box64/): started, not part of this repository yet
+- [Box64](https://github.com/ptitSeb/box64/): started, not part of this repository yet, but available as [preview](https://www.patreon.com/posts/previews-82611984) (see below) :point_left:
 - [Blink](https://github.com/jart/blink): started, not part of this repository yet
 - [Box32](https://news.itsfoss.com/box86-creator-ptitseb/): doesn't exist yet
 
@@ -30,10 +33,10 @@ but require the emulator in our 64-bit address space.
 It also will handle x86 faster than Box64 I assume.)
 
 ### 3) Preview
-A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with currently the following features coming soon:
+A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with currently the following features:
 
-- Updated Wine
-- Updated FEX
+- Wine 8.13 + Git
+- FEX-2308
 - Initial Box64 work
 
 ### 4) Discord
