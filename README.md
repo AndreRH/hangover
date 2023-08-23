@@ -35,9 +35,9 @@ It also will handle x86 faster than Box64 I assume.)
 ### 3) Preview
 A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with currently the following features:
 
-- Wine 8.13 + Git
+- Wine 8.14
 - FEX-2308
-- Initial Box64 work
+- Box64 0.2.4
 
 ### 4) Discord
 A Discord Server is available for contributors and financial supporters (see point 8 below).
