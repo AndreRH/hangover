@@ -45,7 +45,6 @@ jobs:
         mkdir -p wine/build
         cd wine/build
         ../configure --enable-win64 --with-mingw --enable-archs=i386,x86_64,arm --without-x --without-fontconfig
-        make -j$(nproc) -C dlls/box64cpu
         make -j$(nproc) -C dlls/fexcore
         make -j$(nproc) -C dlls/msacm32
         make -j$(nproc) -C dlls/ntdll
