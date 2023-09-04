@@ -18,7 +18,7 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
     - name: install dependencies
-      run: sudo apt install libepoxy-dev libglib2.0-dev libsdl2-dev ninja-build
+      run: sudo apt install libepoxy-dev libglib2.0-dev libsdl2-dev ninja-build clang
     - name: get shallow submodule
       run: git submodule update --init --recursive --depth 1
     - name: get llvm-mingw
@@ -35,7 +35,6 @@ jobs:
         make -j$(nproc)
     - name: build fex
       run: |
-        export PATH=$PWD/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64/bin:$PATH
         mkdir -p fex/build
         cd fex/build
         CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_LTO=True -DENABLE_LLD=True -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False -DENABLE_X86_HOST_DEBUG=True ..
@@ -46,6 +45,7 @@ jobs:
         mkdir -p wine/build
         cd wine/build
         ../configure --enable-win64 --with-mingw --enable-archs=i386,x86_64,arm --without-x --without-fontconfig
+        make -j$(nproc) -C dlls/box64cpu
         make -j$(nproc) -C dlls/fexcore
         make -j$(nproc) -C dlls/msacm32
         make -j$(nproc) -C dlls/ntdll
