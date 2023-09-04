@@ -11,19 +11,20 @@ are currently not supported)
 ### 1) How it works
 In fact it now uses the WoW64 support in Wine + an emulator to run e.g. ARM32 on x86_64 or
 i386 on ARM64. This is completely different from earlier versions of Hangover, which used QEMU and
-broke out of emulation at the win32 API level.
+broke out of emulation at the win32 API level. Instead we now break out at the win32 syscall level.
 
 ### 2) Status
 While the overall stability was improved, expect crashes.
 
-Running x86_64 applications isn't supported anymore and won't be added back in the near future.
-Same for running on PPC64le. If you need those features, have a look at older releases before 0.8.x.
+PPC64le isn't supported anymore and won't be added back in the near future.
+Same for running x86_64 applications, though it might be added back as soon as the ARM64EC support in Wine is ready.
+If you need those features, have a look at older releases before 0.8.x.
 
 Emulator integrations:
 
 - [QEMU](https://gitlab.com/qemu-project/qemu): Mostly done, though needs fixes for stability and CriticalSection
 - [FEX](https://github.com/FEX-Emu/FEX): Mostly done, though needs fixes for exceptions
-- [Box64](https://github.com/ptitSeb/box64/): started, not part of this repository yet, but available as [preview](https://www.patreon.com/posts/previews-82611984) (see below) :point_left:
+- [Box64](https://github.com/ptitSeb/box64/): Mostly done, but depends on the early 32-bit emulation of Box64
 - [Blink](https://github.com/jart/blink): started, not part of this repository yet
 - [Box32](https://news.itsfoss.com/box86-creator-ptitseb/): doesn't exist yet
 
@@ -33,11 +34,11 @@ but require the emulator in our 64-bit address space.
 It also will handle x86 faster than Box64 I assume.)
 
 ### 3) Preview
-A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with currently the following features:
+A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with currently the following features coming soon:
 
-- Wine 8.14
-- FEX-2308
-- Box64 0.2.4
+- Updated Wine
+- FEX-2309
+- Updated Box64
 
 ### 4) Discord
 A Discord Server is available for contributors and financial supporters (see point 8 below).
@@ -48,9 +49,9 @@ First make sure you have the submodules set up:
 ```bash
 $ git submodule update --init --recursive
 ```
-And note that you can build all emulators (currently QEMU and FEX), but you don't need to, one is enough depending on your use-case.
+And note while Box64 is integrated, you can build other emulators (currently QEMU and FEX), but you don't need to, one is enough depending on your use-case.
 
-#### 5.1) QEMU
+#### 5.1) QEMU (optional)
 To build QEMU as a library you need:
 
 - The dependencies to build QEMU (in particular glib)
@@ -68,7 +69,7 @@ In case the compiler complains about something in linux-user/ioctls.h remove the
 
 Place resulting libraries (build/libqemu-arm.so and/or build/libqemu-i386.so) in /opt (default) or set HOLIB to the full path of the resulting library.
 
-#### 5.2) FEX
+#### 5.2) FEX (optional)
 To build FEXCore from FEX you need:
 
 - The dependencies to [build](https://wiki.fex-emu.com/index.php/Development:Setting_up_FEX) FEX (in particular libepoxy and libsdl2)
@@ -121,10 +122,20 @@ You can add the following environment variables:
     * wowarmhw.dll for ARM emulation (Qemu)
     * xtajit.dll for i386 emulation (Qemu)
     * fexcore.dll for i386 emulation (FEX)
+    * box64cpu.dll for i386 emulation (Box64)
 * HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
 * QEMU_LOG to set QEMU log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/v5.2.0/util/log.c#L297)
 
-#### 6.1) QEMU
+#### 6.1) Box64
+box64cpu.dll currently is the default for i386 emulation, so it's simply:
+
+```bash
+$ wine your_x86_application.exe
+```
+
+You might have better results with FEX for the moment.
+
+#### 6.2) QEMU
 Until the critical section issue is solved it is highly recomended to limit execution to 1 core with
 "taskset -c 1" for Qemu emulation:
 
@@ -133,11 +144,9 @@ $ HODLL=xtajit.dll   taskset -c 1 wine your_x86_application.exe
 $ HODLL=wowarmhw.dll taskset -c 1 wine your_arm_application.exe
 ```
 
-#### 6.2) FEX
-fexcore.dll currently is the default for i386 emulation, so it's simply:
-
+#### 6.3) FEX
 ```bash
-$ wine your_x86_application.exe
+$ HODLL=fexcore.dll wine your_x86_application.exe
 ```
 
 ### 7) Todo
