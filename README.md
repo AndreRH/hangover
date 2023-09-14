@@ -4,9 +4,8 @@
 ![Release](https://img.shields.io/github/v/release/AndreRH/hangover?color=green&include_prereleases)
 
 ## Hangover
-This is Hangover, a project started by André Zwing and Stefan Dösinger in 2016 to run
-(x86_64)/x86_32 Windows applications on aarch64/(ppc64le)/x86_64 Wine. (Architectures in brackets
-are currently not supported)
+This is Hangover, a project started by André Zwing and Stefan Dösinger in 2016 that currently can
+run x86_32 Windows applications on aarch64 Wine.
 
 ### 1) How it works
 In fact it now uses the WoW64 support in Wine + an emulator to run e.g. ARM32 on x86_64 or
