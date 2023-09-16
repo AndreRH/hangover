@@ -35,7 +35,7 @@ It also will handle x86 faster than Box64 I assume.)
 ### 3) Preview
 A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with currently the following features coming soon:
 
-- Updated Wine
+- Wine 8.16
 - FEX-2309
 - Updated Box64
 
@@ -163,3 +163,9 @@ https://www.patreon.com/andre_opensource
 https://liberapay.com/andre_opensource
 
 https://ko-fi.com/andre_opensource
+
+### 9) Hardware Contributors
+
+Become a hardware contributor and help me sustain this project:
+
+https://throne.com/andrerh
