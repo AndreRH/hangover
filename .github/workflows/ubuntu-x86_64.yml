@@ -18,7 +18,9 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
     - name: install dependencies
-      run: sudo apt install libepoxy-dev libglib2.0-dev libsdl2-dev ninja-build clang
+      run: |
+        sudo apt update
+        sudo apt install libepoxy-dev libglib2.0-dev libsdl2-dev ninja-build clang
     - name: get shallow submodule
       run: git submodule update --init --recursive --depth 1
     - name: get llvm-mingw
