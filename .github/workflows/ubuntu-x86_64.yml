@@ -35,12 +35,19 @@ jobs:
         cd qemu/build
         ../configure --disable-werror --target-list=arm-linux-user,i386-linux-user
         make -j$(nproc)
-    - name: build fex
+    - name: build fex_unix
       run: |
-        mkdir -p fex/build
-        cd fex/build
-        CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_LTO=True -DENABLE_LLD=True -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False -DENABLE_X86_HOST_DEBUG=True ..
+        mkdir -p fex/build_unix
+        cd fex/build_unix
+        CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_LTO=True -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False ..
         make -j$(nproc) FEXCore_shared
+    - name: build fex_pe
+      run: |
+        export PATH=$PWD/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64/bin:$PATH
+        mkdir -p fex/build_pe
+        cd fex/build_pe
+        cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain_mingw.cmake -DENABLE_JEMALLOC=0 -DENABLE_JEMALLOC_GLIBC_ALLOC=0 -DMINGW_TRIPLE=aarch64-w64-mingw32 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False ..
+        make -j$(nproc) wow64fex
     - name: build wine
       run: |
         export PATH=$PWD/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64/bin:$PATH
