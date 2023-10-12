@@ -1,0 +1,5 @@
+under test,application,result,unit
+xtajit.dll (Qemu),04-P4P.exe,2122,Total Computation Time in seconds
+fexcore.dll,04-P4P.exe,161,Total Computation Time in seconds
+box64cpu.dll,04-P4P.exe,140,Total Computation Time in seconds
+box64+wine,04-P4P.exe,139,Total Computation Time in seconds

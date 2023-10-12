@@ -1,0 +1,7 @@
+under test,application,result,unit
+old box64+wine,dhry164int64.exe,6550135,dhrystones per second
+old box64+wine,dhry264int64.exe,4013874,dhrystones per second
+old box64+wine,linpack64.exe,402.95,Mflops
+new box64+wine,dhry164int64.exe,6896605,dhrystones per second
+new box64+wine,dhry264int64.exe,3938448,dhrystones per second
+new box64+wine,linpack64.exe,551,Mflops

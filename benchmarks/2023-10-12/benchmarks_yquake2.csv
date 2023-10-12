@@ -1,0 +1,4 @@
+under test,application,result,unit
+fexcore.dll,yquake2.exe,26.73,Frames per second
+box64cpu.dll,yquake2.exe,31,Frames per second
+box64+wine,yquake2.exe,22.53,Frames per second
