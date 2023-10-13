@@ -17,6 +17,8 @@ y-cruncher v0.8.1.9317 settings:
 - 0 "Single-Threaded"
 - 1 "25,000,000" (Decimal Digits)
 
+Note: "box64+wine" means Wine 8.17 running under Box64
+
 ![y-cruncher benchmark][2023-10-12-p4p1]
 ![y-cruncher benchmark zoomed][2023-10-12-p4p2]
 
@@ -34,10 +36,13 @@ Yamagi Quake II 8.20 settings:
 - Multisampling: Off
 - Native Fullscreen
 
+Note: "box64+wine" means Wine 8.17 running under Box64
+
 ![yquake2 benchmark][2023-10-12-yquake2]
 
 [2023-10-12-yquake2]: 2023-10-12/yquake2.exe.png
 
+This result is special, it proofs that only emulating the application is faster than emulating wine+application.
 
 ### System changed!
 
