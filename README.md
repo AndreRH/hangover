@@ -57,6 +57,8 @@ To build Hangover Wine you need:
 - [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation (downlaod & unpack a release, but don't use the .zip files, they are for Windows)
 - About 5GB of disk space
 
+If you don't want to run 32-Bit ARM applications, you can drop ",arm" from the configure line.
+
 on x86-64 (from the Hangover repository):
 ```bash
 $ mkdir -p wine/build
@@ -64,7 +66,7 @@ $ cd wine/build
 $ export PATH=/path/to/llvm-mingw/bin:$PATH
 $ ../configure --enable-win64 --disable-tests --with-mingw --enable-archs=i386,x86_64,arm
 $ make -j$(nproc)
-$ sudo make install
+$ sudo env PATH="$PATH" make install
 ```
 
 on ARM64 (from the Hangover repository):
@@ -74,7 +76,7 @@ $ cd wine/build
 $ export PATH=/path/to/llvm-mingw/bin:$PATH
 $ ../configure --disable-tests --with-mingw --enable-archs=i386,aarch64,arm
 $ make -j$(nproc)
-$ sudo make install
+$ sudo env PATH="$PATH" make install
 ```
 
 #### 5.2) QEMU (optional)
