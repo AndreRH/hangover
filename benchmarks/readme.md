@@ -11,7 +11,7 @@ Setup:
 - Box64: b9ea4983f93b93c5b72d6cbb14269cecc54eb8aa
 - FEXCore: FEX-2310 + Hangover modifications (same as Hangover 8.17)
 
-y-cruncher settings:
+y-cruncher v0.8.1.9317 settings:
 
 - 0 "Benchmark Pi  (all in ram)"
 - 0 "Single-Threaded"
@@ -25,7 +25,7 @@ y-cruncher settings:
 
 The y-cruncher benchmark is calculating a lot but doesn't touch the win32 API so much. To show the benefit of combining an emulator with Wine the Hangover way I used yquake2 with timedemo. Here box64cpu.dll performed best, likely because Wine is native and only the application needs to be emulated. The diagram is in FPS, so more is better.
 
-Yamagi Quake II settings:
+Yamagi Quake II 8.20 settings:
 
 - Map: q2demo1.dm2
 - Resolution: 1920x1080
