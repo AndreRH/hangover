@@ -20,15 +20,15 @@ jobs:
     - name: install dependencies
       run: |
         sudo apt update
-        sudo apt install libepoxy-dev libglib2.0-dev libsdl2-dev ninja-build clang
+        sudo apt install libepoxy-dev libglib2.0-dev libsdl2-dev ninja-build clang-15
     - name: get shallow submodule
       run: git submodule update --init --recursive --depth 1
     - name: get llvm-mingw
       run: |
         uname -a
-        wget https://github.com/mstorsjo/llvm-mingw/releases/download/20230614/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64.tar.xz
-        tar -xJf llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64.tar.xz
-        rm llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64.tar.xz
+        wget https://github.com/mstorsjo/llvm-mingw/releases/download/20231017/llvm-mingw-20231017-ucrt-ubuntu-20.04-x86_64.tar.xz
+        tar -xJf llvm-mingw-20231017-ucrt-ubuntu-20.04-x86_64.tar.xz
+        rm llvm-mingw-20231017-ucrt-ubuntu-20.04-x86_64.tar.xz
     - name: build qemu
       run: |
         mkdir -p qemu/build
@@ -39,18 +39,18 @@ jobs:
       run: |
         mkdir -p fex/build_unix
         cd fex/build_unix
-        CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_LTO=True -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False ..
+        CC=clang-15 CXX=clang++-15 cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_LTO=True -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False ..
         make -j$(nproc) FEXCore_shared
     - name: build fex_pe
       run: |
-        export PATH=$PWD/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64/bin:$PATH
+        export PATH=$PWD/llvm-mingw-20231017-ucrt-ubuntu-20.04-x86_64/bin:$PATH
         mkdir -p fex/build_pe
         cd fex/build_pe
         cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain_mingw.cmake -DENABLE_JEMALLOC=0 -DENABLE_JEMALLOC_GLIBC_ALLOC=0 -DMINGW_TRIPLE=aarch64-w64-mingw32 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False ..
         make -j$(nproc) wow64fex
     - name: build wine
       run: |
-        export PATH=$PWD/llvm-mingw-20230614-ucrt-ubuntu-20.04-x86_64/bin:$PATH
+        export PATH=$PWD/llvm-mingw-20231017-ucrt-ubuntu-20.04-x86_64/bin:$PATH
         mkdir -p wine/build
         cd wine/build
         ../configure --enable-win64 --with-mingw --enable-archs=i386,x86_64,arm --without-x --without-fontconfig
