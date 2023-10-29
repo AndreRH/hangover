@@ -21,7 +21,7 @@ If you need those features, have a look at older releases before 0.8.x.
 
 Emulator integrations:
 
-- [QEMU](https://gitlab.com/qemu-project/qemu): Mostly done, though needs fixes for stability and CriticalSection
+- [QEMU](https://gitlab.com/qemu-project/qemu): Has the most issues and is by far the [slowest](https://github.com/AndreRH/hangover/tree/master/benchmarks) option
 - [FEX](https://github.com/FEX-Emu/FEX): Available as Unix and PE
 - [Box64](https://github.com/ptitSeb/box64/): Mostly done, but depends on the early 32-bit emulation of Box64
 - [Blink](https://github.com/jart/blink): started, not part of this repository yet
@@ -35,22 +35,26 @@ It also will handle x86 faster than Box64 I assume.)
 ### 3) Preview
 A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with currently the following features coming soon:
 
-- Wine 8.18
+- Updated Wine
 - Updated FEX
 - Updated Box64
+- Updated Packages
 
 ### 4) Discord
 A Discord Server is available for contributors and financial supporters (see point 8 below).
 It provides advanced user support, development discussions and more.
 
-### 5) How to build
+### 5) Packages
+For now Debian 12 (also for Raspbian) packages are available [here](https://www.patreon.com/andre_opensource/shop) to gain a limited user testing.
+
+### 6) How to build
 First make sure you have the submodules set up:
 ```bash
 $ git submodule update --init --recursive
 ```
 And note while Box64 is integrated, you can build other emulators (currently FEX and QEMU), but you don't need to, one is enough depending on your use-case.
 
-#### 5.1) Wine (including Box64)
+#### 6.1) Wine (including Box64)
 To build Hangover Wine you need:
 
 - The dependencies to [build](https://wiki.winehq.org/Building_Wine#Satisfying_Build_Dependencies) a 64 bit Wine
@@ -79,7 +83,7 @@ $ make -j$(nproc)
 $ sudo env PATH="$PATH" make install
 ```
 
-#### 5.2) QEMU (optional)
+#### 6.2) QEMU (optional)
 To build QEMU as a library you need:
 
 - The dependencies to build QEMU (in particular glib)
@@ -95,9 +99,11 @@ $ make -j$(nproc)
 
 In case the compiler complains about something in linux-user/ioctls.h remove the corresponding line and run make again.
 
-Place resulting libraries (build/libqemu-arm.so and/or build/libqemu-i386.so) in /opt (default) or set HOLIB to the full path of the resulting library.
+Place resulting libraries (build/libqemu-arm.so and/or build/libqemu-i386.so) in your library path (e.g /usr/lib) or set HOLIB to the full path of the resulting library.
 
-#### 5.3) FEX, Unix (optional)
+Depreciation note: Placing the libraries under /opt will still work, but is deprecated. Until it is removed the load order is HOLIB, library path, /opt.
+
+#### 6.3) FEX, Unix (optional)
 To build FEXCore from FEX you need:
 
 - The dependencies to [build](https://wiki.fex-emu.com/index.php/Development:Setting_up_FEX) FEX (in particular clang, libepoxy and libsdl2)
@@ -111,9 +117,11 @@ $ CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_LTO=True
 $ make -j$(nproc) FEXCore_shared
 ```
 
-Place resulting library (build_unix/FEXCore/Source/libFEXCore.so) in /opt (default) or set HOLIB to the full path of the resulting library.
+Place resulting library (build_unix/FEXCore/Source/libFEXCore.so) in your library path (e.g /usr/lib) or set HOLIB to the full path of the resulting library.
 
-#### 5.4) FEX, PE (optional)
+Depreciation note: Placing the libraries under /opt will still work, but is deprecated. Until it is removed the load order is HOLIB, library path, /opt.
+
+#### 6.4) FEX, PE (optional)
 To build wow64fex from FEX you need:
 
 - [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation (downlaod & unpack a release, but don't use the .zip files, they are for Windows)
@@ -131,7 +139,7 @@ $ make -j$(nproc) wow64fex
 
 Place resulting library (build_pe/Bin/libwow64fex.dll) in your wine prefix under drive_c/windows/system32/.
 
-### 6) Running
+### 7) Running
 You can add the following environment variables:
 
 * HODLL to select the emulator dll:
@@ -144,7 +152,7 @@ You can add the following environment variables:
 * HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
 * QEMU_LOG to set QEMU log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/v5.2.0/util/log.c#L297)
 
-#### 6.1) Box64
+#### 7.1) Box64
 box64cpu.dll currently is the default for i386 emulation, so it's simply:
 
 ```bash
@@ -153,7 +161,7 @@ $ wine your_x86_application.exe
 
 You might have better results with FEX for the moment.
 
-#### 6.2) QEMU
+#### 7.2) QEMU
 Until the critical section issue is solved it is highly recomended to limit execution to 1 core with
 "taskset -c 1" for Qemu emulation:
 
@@ -162,22 +170,22 @@ $ HODLL=xtajit.dll   taskset -c 1 wine your_x86_application.exe
 $ HODLL=wowarmhw.dll taskset -c 1 wine your_arm_application.exe
 ```
 
-#### 6.3) FEX, Unix
+#### 7.3) FEX, Unix
 ```bash
 $ HODLL=fexcore.dll wine your_x86_application.exe
 ```
 
-#### 6.4) FEX, PE
+#### 7.4) FEX, PE
 ```bash
 $ HODLL=libwow64fex.dll wine your_x86_application.exe
 ```
 
-### 7) Todo
+### 8) Todo
 
 * Get more applications running
 * QEMU: Investigate CriticalSection issues (just timing?)
 
-### 8) Financial Contributors
+### 9) Financial Contributors
 
 Become a financial contributor and help me sustain this project:
 
@@ -187,7 +195,7 @@ https://liberapay.com/andre_opensource
 
 https://ko-fi.com/andre_opensource
 
-### 9) Hardware Contributors
+### 10) Hardware Contributors
 
 Become a hardware contributor and help me sustain this project:
 
