@@ -8,12 +8,18 @@ This is Hangover, a project started by André Zwing and Stefan Dösinger in 2016
 run x86_32 Windows applications on aarch64 Wine.
 
 ### 1) How it works
-In fact it now uses the WoW64 support in Wine + an emulator to run e.g. ARM32 on x86_64 or
-i386 on ARM64. This is completely different from earlier versions of Hangover, which used QEMU and
-broke out of emulation at the win32 API level. Instead we now break out at the win32 syscall level.
+Hangover uses various emulators as DLLs (pick one that suits your needs, e.g. works for you) to only emulate the application you want to run instead of emulating a complete Wine installation.
+
+As soon as the application does a Windows/Wine system call, say NtUserCreateWindowEx, it's executed outside the emulator (read non-emulated, fast, native). Even better, everything Unix related is never emulated.
+
+In short, we break out of emulation at the win32 syscall or wine unix call level for performance reasons, which is enabled by the WoW64 support in Wine.
 
 ### 2) Status
-While the overall stability was improved, expect crashes.
+While the overall stability was improved, expect issues.
+
+For Benchmarks see [here](benchmarks/readme.md). They show that the Hangover approach works as expected, as only emulating the application instead of a complete Wine installation has benefits. It's especially visible with box64cpu vs. Wine running under Box64.
+
+Current main focus is to run i386 Windows applications on ARM64 Linux, but it's also possible to run ARM32 Windows applications on x86_64 Linux. I also started working on RISC-V Linux [support](https://www.patreon.com/posts/risc-v-91365090).
 
 PPC64le isn't supported anymore and won't be added back in the near future.
 Same for running x86_64 applications, though it might be added back as soon as the ARM64EC support in Wine is ready.
