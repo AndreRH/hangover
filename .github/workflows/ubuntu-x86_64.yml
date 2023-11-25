@@ -26,9 +26,9 @@ jobs:
     - name: get llvm-mingw
       run: |
         uname -a
-        wget https://github.com/mstorsjo/llvm-mingw/releases/download/20231017/llvm-mingw-20231017-ucrt-ubuntu-20.04-x86_64.tar.xz
-        tar -xJf llvm-mingw-20231017-ucrt-ubuntu-20.04-x86_64.tar.xz
-        rm llvm-mingw-20231017-ucrt-ubuntu-20.04-x86_64.tar.xz
+        wget https://github.com/mstorsjo/llvm-mingw/releases/download/20231114/llvm-mingw-20231114-ucrt-ubuntu-20.04-x86_64.tar.xz
+        tar -xJf llvm-mingw-20231114-ucrt-ubuntu-20.04-x86_64.tar.xz
+        rm llvm-mingw-20231114-ucrt-ubuntu-20.04-x86_64.tar.xz
     - name: build qemu
       run: |
         mkdir -p qemu/build
@@ -43,14 +43,14 @@ jobs:
         make -j$(nproc) FEXCore_shared
     - name: build fex_pe
       run: |
-        export PATH=$PWD/llvm-mingw-20231017-ucrt-ubuntu-20.04-x86_64/bin:$PATH
+        export PATH=$PWD/llvm-mingw-20231114-ucrt-ubuntu-20.04-x86_64/bin:$PATH
         mkdir -p fex/build_pe
         cd fex/build_pe
         cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain_mingw.cmake -DENABLE_JEMALLOC=0 -DENABLE_JEMALLOC_GLIBC_ALLOC=0 -DMINGW_TRIPLE=aarch64-w64-mingw32 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False ..
         make -j$(nproc) wow64fex
     - name: build wine
       run: |
-        export PATH=$PWD/llvm-mingw-20231017-ucrt-ubuntu-20.04-x86_64/bin:$PATH
+        export PATH=$PWD/llvm-mingw-20231114-ucrt-ubuntu-20.04-x86_64/bin:$PATH
         mkdir -p wine/build
         cd wine/build
         ../configure --enable-win64 --with-mingw --enable-archs=i386,x86_64,arm --without-x --without-fontconfig
