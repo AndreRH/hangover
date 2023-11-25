@@ -51,7 +51,7 @@ A Discord Server is available for contributors and financial supporters (see poi
 It provides advanced user support, development discussions and more.
 
 ### 5) Packages
-For now Debian 12 (also for Raspbian) packages are available [here](https://www.patreon.com/andre_opensource/shop) to gain a limited user testing.
+For now Debian 11 and Debian 12 (also usable for Raspbian, Armbian, Ubuntu, ...) packages are available [here](https://www.patreon.com/andre_opensource/shop) to gain a limited user testing.
 
 ### 6) How to build
 For build instructions see [here](docs/COMPILE.md).
