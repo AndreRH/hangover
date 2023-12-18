@@ -1,0 +1,43 @@
+#!/usr/bin/make -f
+
+export DEB_CFLAGS_MAINT_STRIP = -fstack-protector-strong -fcf-protection=full
+export DEB_BUILD_MAINT_OPTIONS = optimize=-lto
+export DEB_BUILD_MAINT_OPTIONS = hardening=-relro
+export PATH = /opt/llvm-mingw-20231017-ucrt-ubuntu-20.04-x86_64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+export CC = gcc
+
+%:
+	dh $@ --parallel
+
+override_dh_auto_configure:
+	# Run configure
+	./configure --prefix=/usr \
+				--enable-win64 \
+				--with-mingw \
+				--enable-archs=i386,aarch64 \
+				--disable-tests \
+				--host=aarch64-linux-gnu \
+				host_alias=aarch64-linux-gnu \
+				build_alias=x86_64-linux-gnu \
+				--with-wine-tools=../wine64/amd64 \
+				CC=aarch64-linux-gnu-gcc \
+
+				$(CONFFLAGS)
+
+
+override_dh_auto_test:
+	# Wine's test suite does not pass on build daemons, skip it for now
+
+
+override_dh_installdocs:
+	dh_installdocs --link-doc=hangover-wine
+
+
+override_dh_strip:
+	dh_strip -Xwine-pthread -Xwine-kthread -Xi386-windows -Xaarch64-windows
+
+
+override_dh_shlibdeps:
+	dh_shlibdeps -l $(CURDIR)/debian/tmp/usr/lib/
+
