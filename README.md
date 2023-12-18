@@ -1,7 +1,8 @@
-[![ubuntu-x86_64](https://github.com/AndreRH/hangover/workflows/ubuntu-x86_64/badge.svg)](https://github.com/AndreRH/hangover/actions?query=workflow%3Aubuntu-x86_64)
 ![stars](https://img.shields.io/github/stars/AndreRH/hangover)
 ![forks](https://img.shields.io/github/forks/AndreRH/hangover)
 ![Release](https://img.shields.io/github/v/release/AndreRH/hangover?color=green&include_prereleases)
+
+Make sure to leave a :star: :)
 
 ## Hangover
 This is Hangover, a project started by André Zwing and Stefan Dösinger in 2016 that currently can
@@ -51,7 +52,9 @@ A Discord Server is available for contributors and financial supporters (see poi
 It provides advanced user support, development discussions and more.
 
 ### 5) Packages
-For now Debian 11 and Debian 12 (also usable for Raspbian, Armbian, Ubuntu, ...) packages are available [here](https://www.patreon.com/andre_opensource/shop) to gain a limited user testing.
+Debian 11 and Debian 12 (also usable for Raspbian, Armbian, Ubuntu, ...) can now be built with Github Actions and Gitlab CI.
+Due to testing, my Github usage limit was reached for this month, so I can't build packages now. But you could fork this repository and
+use your free minutes/storage to build your own.
 
 ### 6) How to build
 For build instructions see [here](docs/COMPILE.md).
