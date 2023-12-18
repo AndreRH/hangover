@@ -1,0 +1,265 @@
+debian11_foundation:
+  image: docker:20.10.16
+  stage: build
+  services:
+    - docker:20.10.16-dind
+  script:
+    - cp .packaging/debian11/Dockerfile .
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/andrerh/hangover/foundationdeb11:latest .
+    - docker push $CI_REGISTRY/andrerh/hangover/foundationdeb11:latest
+  only:
+    changes:
+      - .packaging/debian11/Dockerfile
+
+debian11_fex_unix:
+  image: docker:20.10.16
+  stage: build
+  services:
+    - docker:20.10.16-dind
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_DEPTH: 1
+    GIT_SUBMODULE_PATHS: fex
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $CI_REGISTRY/andrerh/hangover/foundationdeb11:latest
+    - apk add git
+    - export HOVERSION=$(git describe --tags | sed "s/hangover-//")
+    - echo $HOVERSION
+    - cp -r .packaging/debian11/fex/* fex
+    - cp fex/LICENSE fex/DEBIAN/copyright
+    - sed -i "s/HOVERSION/${HOVERSION}/g" fex/Dockerfile
+    - sed -i "s/HOVERSION/${HOVERSION}/g" fex/DEBIAN/control
+    - cat fex/DEBIAN/copyright
+    - cat fex/Dockerfile
+    - cat fex/DEBIAN/control
+    - nproc
+    - docker tag $CI_REGISTRY/andrerh/hangover/foundationdeb11 foundationdeb11
+    - rm -rf fex/External/fex-gcc-target-tests-bins
+    - rm -rf fex/External/fex-gvisor-tests-bins
+    - rm -rf fex/External/fex-posixtest-bins
+    - cd fex; docker build -t fexdeb11 .; cd ..
+    - docker run --rm fexdeb11 cat /opt/deb/hangover-libfexcore_${HOVERSION}~bullseye_arm64.deb > hangover-libfexcore_${HOVERSION}~bullseye_arm64.deb
+  artifacts:
+    paths:
+      - hangover-libfexcore_*.deb
+  dependencies: []
+
+debian11_fex_pe:
+  image: docker:20.10.16
+  stage: build
+  services:
+    - docker:20.10.16-dind
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_DEPTH: 1
+    GIT_SUBMODULE_PATHS: fex
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $CI_REGISTRY/andrerh/hangover/foundationdeb11:latest
+    - apk add git
+    - export HOVERSION=$(git describe --tags | sed "s/hangover-//")
+    - echo $HOVERSION
+    - cp -r .packaging/debian11/fexpe/* fex
+    - cp fex/LICENSE fex/DEBIAN/copyright
+    - sed -i "s/HOVERSION/${HOVERSION}/g" fex/Dockerfile
+    - sed -i "s/HOVERSION/${HOVERSION}/g" fex/DEBIAN/control
+    - cat fex/DEBIAN/copyright
+    - cat fex/Dockerfile
+    - cat fex/DEBIAN/control
+    - nproc
+    - docker tag $CI_REGISTRY/andrerh/hangover/foundationdeb11 foundationdeb11
+    - rm -rf fex/External/fex-gcc-target-tests-bins
+    - rm -rf fex/External/fex-gvisor-tests-bins
+    - rm -rf fex/External/fex-posixtest-bins
+    - cd fex; docker build -t fexpedeb11 .; cd ..
+    - docker run --rm fexpedeb11 cat /opt/deb/hangover-libwow64fex_${HOVERSION}~bullseye_arm64.deb > hangover-libwow64fex_${HOVERSION}~bullseye_arm64.deb
+    - pwd
+  artifacts:
+    paths:
+      - hangover-libwow64fex_*.deb
+  dependencies: []
+
+debian11_qemu:
+  image: docker:20.10.16
+  stage: build
+  services:
+    - docker:20.10.16-dind
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_DEPTH: 1
+    GIT_SUBMODULE_PATHS: qemu
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $CI_REGISTRY/andrerh/hangover/foundationdeb11:latest
+    - apk add git
+    - export HOVERSION=$(git describe --tags | sed "s/hangover-//")
+    - echo $HOVERSION
+    - cp -r .packaging/debian11/qemu/* qemu
+    - sed -i "s/HOVERSION/${HOVERSION}/g" qemu/Dockerfile
+    - sed -i "s/HOVERSION/${HOVERSION}/g" qemu/DEBIAN/control
+    - cat qemu/Dockerfile
+    - cat qemu/DEBIAN/control
+    - nproc
+    - docker tag $CI_REGISTRY/andrerh/hangover/foundationdeb11 foundationdeb11
+    - cd qemu; docker build -t qemudeb11 .; cd ..
+    - docker run --rm qemudeb11 cat /opt/deb/hangover-libqemu_${HOVERSION}~bullseye_arm64.deb > hangover-libqemu_${HOVERSION}~bullseye_arm64.deb
+    - pwd
+  artifacts:
+    paths:
+      - hangover-libqemu_*.deb
+  dependencies: []
+
+debian11_wine:
+  image: docker:20.10.16
+  stage: build
+  services:
+    - docker:20.10.16-dind
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_DEPTH: 1
+    GIT_SUBMODULE_PATHS: wine
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $CI_REGISTRY/andrerh/hangover/foundationdeb11:latest
+    - apk add git
+    - export HOVERSION=$(git describe --tags | sed "s/hangover-//")
+    - echo $HOVERSION
+    - cp -r .packaging/debian11/wine/* wine
+    - sed -i "s/HOVERSION/${HOVERSION}/g" wine/Dockerfile
+    - cat wine/Dockerfile
+    - cat wine/debian/changelog
+    - nproc
+    - cp wine/debian/changelog wine/debian/changelog.old
+    - echo "hangover-wine (${HOVERSION}~bullseye) UNRELEASED; urgency=low" > wine/debian/changelog.entry
+    - echo "" >> wine/debian/changelog.entry
+    - echo "  * Build ${HOVERSION}~bullseye" >> wine/debian/changelog.entry
+    - echo "" >> wine/debian/changelog.entry
+    - echo -n " -- André Zwing <nerv@dawncrow.de>  " >> wine/debian/changelog.entry
+    - LC_TIME=en_US.UTF-8 date "+%a, %d %b %Y %H:%M:%S %z" >> wine/debian/changelog.entry
+    - echo "" >> wine/debian/changelog.entry
+    - cat wine/debian/changelog.entry wine/debian/changelog.old > wine/debian/changelog
+    - rm wine/debian/changelog.entry wine/debian/changelog.old
+    - cat wine/debian/changelog
+    - docker tag $CI_REGISTRY/andrerh/hangover/foundationdeb11 foundationdeb11
+    - cd wine; docker build -t winedeb11 .; cd ..
+    - docker run --rm winedeb11 cat /opt/deb/hangover-wine_${HOVERSION}~bullseye_arm64.deb > hangover-wine_${HOVERSION}~bullseye_arm64.deb
+    - pwd
+  artifacts:
+    paths:
+      - hangover-wine_*.deb
+  dependencies: []
+
+debian12_foundation:
+  image: docker:20.10.16
+  stage: build
+  services:
+    - docker:20.10.16-dind
+  script:
+    - cp .packaging/debian12/Dockerfile .
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/andrerh/hangover/foundationdeb12:latest .
+    - docker push $CI_REGISTRY/andrerh/hangover/foundationdeb12:latest
+  only:
+    changes:
+      - .packaging/debian12/Dockerfile
+
+debian12_fex_unix:
+  image: docker:20.10.16
+  stage: build
+  services:
+    - docker:20.10.16-dind
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_DEPTH: 1
+    GIT_SUBMODULE_PATHS: fex
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $CI_REGISTRY/andrerh/hangover/foundationdeb12:latest
+    - apk add git
+    - export HOVERSION=$(git describe --tags | sed "s/hangover-//")
+    - echo $HOVERSION
+    - cp -r .packaging/debian12/fex/* fex
+    - cp fex/LICENSE fex/DEBIAN/copyright
+    - sed -i "s/HOVERSION/${HOVERSION}/g" fex/Dockerfile
+    - sed -i "s/HOVERSION/${HOVERSION}/g" fex/DEBIAN/control
+    - cat fex/DEBIAN/copyright
+    - cat fex/Dockerfile
+    - cat fex/DEBIAN/control
+    - nproc
+    - docker tag $CI_REGISTRY/andrerh/hangover/foundationdeb12 foundationdeb12
+    - rm -rf fex/External/fex-gcc-target-tests-bins
+    - rm -rf fex/External/fex-gvisor-tests-bins
+    - rm -rf fex/External/fex-posixtest-bins
+    - cd fex; docker build -t fexdeb12 .; cd ..
+    - docker run --rm fexdeb12 cat /opt/deb/hangover-libfexcore_${HOVERSION}~bookworm_arm64.deb > hangover-libfexcore_${HOVERSION}~bookworm_arm64.deb
+  artifacts:
+    paths:
+      - hangover-libfexcore_*.deb
+  dependencies: []
+
+debian12_fex_pe:
+  image: docker:20.10.16
+  stage: build
+  services:
+    - docker:20.10.16-dind
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_DEPTH: 1
+    GIT_SUBMODULE_PATHS: fex
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $CI_REGISTRY/andrerh/hangover/foundationdeb12:latest
+    - apk add git
+    - export HOVERSION=$(git describe --tags | sed "s/hangover-//")
+    - echo $HOVERSION
+    - cp -r .packaging/debian12/fexpe/* fex
+    - cp fex/LICENSE fex/DEBIAN/copyright
+    - sed -i "s/HOVERSION/${HOVERSION}/g" fex/Dockerfile
+    - sed -i "s/HOVERSION/${HOVERSION}/g" fex/DEBIAN/control
+    - cat fex/DEBIAN/copyright
+    - cat fex/Dockerfile
+    - cat fex/DEBIAN/control
+    - nproc
+    - docker tag $CI_REGISTRY/andrerh/hangover/foundationdeb12 foundationdeb12
+    - rm -rf fex/External/fex-gcc-target-tests-bins
+    - rm -rf fex/External/fex-gvisor-tests-bins
+    - rm -rf fex/External/fex-posixtest-bins
+    - cd fex; docker build -t fexpedeb12 .; cd ..
+    - docker run --rm fexpedeb12 cat /opt/deb/hangover-libwow64fex_${HOVERSION}~bookworm_arm64.deb > hangover-libwow64fex_${HOVERSION}~bookworm_arm64.deb
+    - pwd
+  artifacts:
+    paths:
+      - hangover-libwow64fex_*.deb
+  dependencies: []
+
+debian12_qemu:
+  image: docker:20.10.16
+  stage: build
+  services:
+    - docker:20.10.16-dind
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    GIT_SUBMODULE_DEPTH: 1
+    GIT_SUBMODULE_PATHS: qemu
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $CI_REGISTRY/andrerh/hangover/foundationdeb12:latest
+    - apk add git
+    - export HOVERSION=$(git describe --tags | sed "s/hangover-//")
+    - echo $HOVERSION
+    - cp -r .packaging/debian12/qemu/* qemu
+    - sed -i "s/HOVERSION/${HOVERSION}/g" qemu/Dockerfile
+    - sed -i "s/HOVERSION/${HOVERSION}/g" qemu/DEBIAN/control
+    - cat qemu/Dockerfile
+    - cat qemu/DEBIAN/control
+    - nproc
+    - docker tag $CI_REGISTRY/andrerh/hangover/foundationdeb12 foundationdeb12
+    - cd qemu; docker build -t qemudeb12 .; cd ..
+    - docker run --rm qemudeb12 cat /opt/deb/hangover-libqemu_${HOVERSION}~bookworm_arm64.deb > hangover-libqemu_${HOVERSION}~bookworm_arm64.deb
+    - pwd
+  artifacts:
+    paths:
+      - hangover-libqemu_*.deb
+  dependencies: []
