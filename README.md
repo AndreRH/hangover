@@ -32,12 +32,6 @@ Emulator integrations:
 - [FEX](https://github.com/FEX-Emu/FEX): Available as Unix and PE
 - [Box64](https://github.com/ptitSeb/box64/): Mostly done, but depends on the early 32-bit emulation of Box64
 - [Blink](https://github.com/jart/blink): started, not part of this repository yet
-- [Box32](https://news.itsfoss.com/box86-creator-ptitseb/): doesn't exist yet
-
-(Box32 will translate i386 to ARM64. It's what we'll need,
-because with WoW64 we only can emulate 32-bit architectures,
-but require the emulator in our 64-bit address space.
-It also will handle x86 faster than Box64 I assume.)
 
 ### 3) Preview
 A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with currently the following features coming soon:
@@ -54,7 +48,7 @@ It provides advanced user support, development discussions and more.
 ### 5) Packages
 Debian 11 and Debian 12 (also usable for Raspbian, Armbian, Ubuntu, ...) can now be built with Github Actions and Gitlab CI.
 Due to testing, my Github usage limit was reached for this month, so I can't build packages now. But you could fork this repository and
-use your free minutes/storage to build your own.
+use your free CI minutes/storage to build your own.
 
 ### 6) How to build
 For build instructions see [here](docs/COMPILE.md).
