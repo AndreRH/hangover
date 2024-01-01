@@ -47,8 +47,6 @@ It provides advanced user support, development discussions and more.
 
 ### 5) Packages
 Debian 11 and Debian 12 (also usable for Raspbian, Armbian, Ubuntu, ...) can now be built with Github Actions and Gitlab CI.
-Due to testing, my Github usage limit was reached for this month, so I can't build packages now. But you could fork this repository and
-use your free CI minutes/storage to build your own.
 
 ### 6) How to build
 For build instructions see [here](docs/COMPILE.md).
