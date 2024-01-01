@@ -1,6 +1,6 @@
-![stars](https://img.shields.io/github/stars/AndreRH/hangover)
-![forks](https://img.shields.io/github/forks/AndreRH/hangover)
-![Release](https://img.shields.io/github/v/release/AndreRH/hangover?color=green&include_prereleases)
+![stars](https://img.shields.io/github/stars/AndreRH/hangover?style=flat-square)
+![forks](https://img.shields.io/github/forks/AndreRH/hangover?style=flat-square)
+![Release](https://img.shields.io/github/v/release/AndreRH/hangover?style=flat-square)
 
 Make sure to leave a :star: :)
 
