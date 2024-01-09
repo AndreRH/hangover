@@ -1,0 +1,331 @@
+name: ubuntu2310
+
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - 'benchmarks/**'
+      - 'docs/**'
+      - 'README.md'
+  release:
+    types: [published]
+
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+
+    - name: Cache docker image
+      id: cache-foundation
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-foundation
+      with:
+        path: foundationmantic.tgz
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/ubuntu2310/Dockerfile') }}
+
+    - name: Setup packaging
+      if: ${{ steps.cache-foundation.outputs.cache-hit != 'true' }}
+      run: |
+        cp .packaging/ubuntu2310/Dockerfile .
+
+    - name: Build package
+      if: ${{ steps.cache-foundation.outputs.cache-hit != 'true' }}
+      run: docker build -t foundationmantic .
+
+    - name: Export docker image
+      if: ${{ steps.cache-foundation.outputs.cache-hit != 'true' }}
+      run: docker image save foundationmantic | gzip -c > foundationmantic.tgz
+
+  fex-unix:
+    needs: foundation
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+
+    - name: Cache docker image
+      id: cache-foundation
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-foundation
+      with:
+        path: foundationmantic.tgz
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/ubuntu2310/Dockerfile') }}
+
+    - name: Import docker image
+      run: docker image load -i foundationmantic.tgz
+
+    - name: get version
+      run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
+
+    - name: get shallow submodule
+      run: git submodule update --init --recursive --depth 1 fex
+
+    - name: Setup packaging
+      run: |
+        cp -r .packaging/ubuntu2310/fex/* fex
+        cp fex/LICENSE fex/DEBIAN/copyright
+        sed -i "s/HOVERSION/${HOVERSION}/g" fex/Dockerfile
+        sed -i "s/HOVERSION/${HOVERSION}/g" fex/DEBIAN/control
+        cat fex/DEBIAN/copyright
+        cat fex/Dockerfile
+        cat fex/DEBIAN/control
+        nproc
+
+    - name: Build package
+      run: cd fex; docker build -t fexmantic .
+
+    - name: Extract package
+      run: docker run --rm fexmantic cat /opt/deb/hangover-libfexcore_${{ env.HOVERSION }}~mantic_arm64.deb > hangover-libfexcore_${{ env.HOVERSION }}~mantic_arm64.deb
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: hangover-libfexcore_${{ env.HOVERSION }}~mantic_arm64.deb
+        path: hangover-libfexcore_${{ env.HOVERSION }}~mantic_arm64.deb
+
+    - name: Upload Artifact as Release Asset
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: hangover-libfexcore_${{ env.HOVERSION }}~mantic_arm64.deb
+        asset_name: hangover-libfexcore_${{ env.HOVERSION }}~mantic_arm64.deb
+        asset_content_type: application/vnd.debian.binary-package
+
+  fex-pe:
+    needs: foundation
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+
+    - name: Cache docker image
+      id: cache-foundation
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-foundation
+      with:
+        path: foundationmantic.tgz
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/ubuntu2310/Dockerfile') }}
+
+    - name: Import docker image
+      run: docker image load -i foundationmantic.tgz
+
+    - name: get version
+      run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
+
+    - name: get shallow submodule
+      run: git submodule update --init --recursive --depth 1 fex
+
+    - name: Setup packaging
+      run: |
+        cp -r .packaging/ubuntu2310/fexpe/* fex
+        cp fex/LICENSE fex/DEBIAN/copyright
+        sed -i "s/HOVERSION/${HOVERSION}/g" fex/Dockerfile
+        sed -i "s/HOVERSION/${HOVERSION}/g" fex/DEBIAN/control
+        cat fex/DEBIAN/copyright
+        cat fex/Dockerfile
+        cat fex/DEBIAN/control
+        nproc
+
+    - name: Build package
+      run: cd fex; docker build -t fexpemantic .
+
+    - name: Extract package
+      run: docker run --rm fexpemantic cat /opt/deb/hangover-libwow64fex_${{ env.HOVERSION }}~mantic_arm64.deb > hangover-libwow64fex_${{ env.HOVERSION }}~mantic_arm64.deb
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: hangover-libwow64fex_${{ env.HOVERSION }}~mantic_arm64.deb
+        path: hangover-libwow64fex_${{ env.HOVERSION }}~mantic_arm64.deb
+
+    - name: Upload Artifact as Release Asset
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: hangover-libwow64fex_${{ env.HOVERSION }}~mantic_arm64.deb
+        asset_name: hangover-libwow64fex_${{ env.HOVERSION }}~mantic_arm64.deb
+        asset_content_type: application/vnd.debian.binary-package
+
+  qemu:
+    needs: foundation
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+
+    - name: Cache docker image
+      id: cache-foundation
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-foundation
+      with:
+        path: foundationmantic.tgz
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/ubuntu2310/Dockerfile') }}
+
+    - name: Import docker image
+      run: docker image load -i foundationmantic.tgz
+
+    - name: get version
+      run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
+
+    - name: get shallow submodule
+      run: git submodule update --init --recursive --depth 1 qemu
+
+    - name: Setup packaging
+      run: |
+        cp -r .packaging/ubuntu2310/qemu/* qemu
+        sed -i "s/HOVERSION/${HOVERSION}/g" qemu/Dockerfile
+        sed -i "s/HOVERSION/${HOVERSION}/g" qemu/DEBIAN/control
+        cat qemu/Dockerfile
+        cat qemu/DEBIAN/control
+        nproc
+
+    - name: Build package
+      run: cd qemu; docker build -t qemumantic .
+
+    - name: Extract package
+      run: docker run --rm qemumantic cat /opt/deb/hangover-libqemu_${{ env.HOVERSION }}~mantic_arm64.deb > hangover-libqemu_${{ env.HOVERSION }}~mantic_arm64.deb
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: hangover-libqemu_${{ env.HOVERSION }}~mantic_arm64.deb
+        path: hangover-libqemu_${{ env.HOVERSION }}~mantic_arm64.deb
+
+    - name: Upload Artifact as Release Asset
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: hangover-libqemu_${{ env.HOVERSION }}~mantic_arm64.deb
+        asset_name: hangover-libqemu_${{ env.HOVERSION }}~mantic_arm64.deb
+        asset_content_type: application/vnd.debian.binary-package
+
+  wine:
+    needs: foundation
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+
+    - name: Cache docker image
+      id: cache-foundation
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-foundation
+      with:
+        path: foundationmantic.tgz
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/ubuntu2310/Dockerfile') }}
+
+    - name: Import docker image
+      run: docker image load -i foundationmantic.tgz
+
+    - name: get version
+      run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
+
+    - name: get shallow submodule
+      run: git submodule update --init --recursive --depth 1 wine
+
+    - name: Setup packaging
+      run: |
+        cp -r .packaging/ubuntu2310/wine/* wine
+        sed -i "s/HOVERSION/${HOVERSION}/g" wine/Dockerfile
+        cat wine/Dockerfile
+        cat wine/debian/changelog
+        nproc
+
+    - name: Adjust changelog for intermediate
+      if: github.event_name != 'release'
+      run: |
+        cp wine/debian/changelog wine/debian/changelog.old
+        echo "hangover-wine (${HOVERSION}~mantic) UNRELEASED; urgency=low" > wine/debian/changelog.entry
+        echo "" >> wine/debian/changelog.entry
+        echo "  * Intermediate build ${HOVERSION}~mantic" >> wine/debian/changelog.entry
+        echo "" >> wine/debian/changelog.entry
+        echo -n " -- André Zwing <nerv@dawncrow.de>  " >> wine/debian/changelog.entry
+        LC_TIME=en_US.UTF-8 date "+%a, %d %b %Y %H:%M:%S %z" >> wine/debian/changelog.entry
+        echo "" >> wine/debian/changelog.entry
+        cat wine/debian/changelog.entry wine/debian/changelog.old > wine/debian/changelog
+        rm wine/debian/changelog.entry wine/debian/changelog.old
+        cat wine/debian/changelog
+
+    - name: Adjust changelog for release
+      if: github.event_name == 'release'
+      run: |
+        cp wine/debian/changelog wine/debian/changelog.old
+        echo "hangover-wine (${HOVERSION}~mantic) UNRELEASED; urgency=low" > wine/debian/changelog.entry
+        echo "" >> wine/debian/changelog.entry
+        echo "  * Release ${HOVERSION}~mantic" >> wine/debian/changelog.entry
+        echo "" >> wine/debian/changelog.entry
+        echo -n " -- André Zwing <nerv@dawncrow.de>  " >> wine/debian/changelog.entry
+        LC_TIME=en_US.UTF-8 date "+%a, %d %b %Y %H:%M:%S %z" >> wine/debian/changelog.entry
+        echo "" >> wine/debian/changelog.entry
+        cat wine/debian/changelog.entry wine/debian/changelog.old > wine/debian/changelog
+        rm wine/debian/changelog.entry wine/debian/changelog.old
+        cat wine/debian/changelog
+
+    - name: Build package
+      run: cd wine; docker build -t winemantic .
+
+    - name: Extract package
+      run: docker run --rm winemantic cat /opt/hangover-wine_${{ env.HOVERSION }}~mantic_arm64.deb > hangover-wine_${{ env.HOVERSION }}~mantic_arm64.deb
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: hangover-wine_${{ env.HOVERSION }}~mantic_arm64.deb
+        path: hangover-wine_${{ env.HOVERSION }}~mantic_arm64.deb
+
+    - name: Upload Artifact as Release Asset
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: hangover-wine_${{ env.HOVERSION }}~mantic_arm64.deb
+        asset_name: hangover-wine_${{ env.HOVERSION }}~mantic_arm64.deb
+        asset_content_type: application/vnd.debian.binary-package
