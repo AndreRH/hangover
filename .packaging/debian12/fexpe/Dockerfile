@@ -11,5 +11,5 @@ RUN mkdir -p /opt/deb/hangover-libwow64fex/DEBIAN /opt/deb/hangover-libwow64fex/
 COPY DEBIAN /opt/deb/hangover-libwow64fex/DEBIAN/
 RUN cp /opt/deb/hangover-libwow64fex/DEBIAN/copyright /opt/deb/hangover-libwow64fex/usr/share/doc/hangover-libwow64fex/; \
     cp /opt/fex/build/Bin/libwow64fex.dll /opt/deb/hangover-libwow64fex/usr/lib/wine/aarch64-windows/; \
-    cd /opt/deb; mv hangover-libwow64fex hangover-libwow64fex_HOVERSION~bookworm_arm64; \
-    dpkg-deb --build --root-owner-group hangover-libwow64fex_HOVERSION~bookworm_arm64
+    cd /opt/deb; mv hangover-libwow64fex hangover-libwow64fex_HOVERSION_arm64; \
+    dpkg-deb --build --root-owner-group  hangover-libwow64fex_HOVERSION_arm64

@@ -156,13 +156,13 @@ jobs:
       run: cd fex; docker build -t fexpedeb12 .
 
     - name: Extract package
-      run: docker run --rm fexpedeb12 cat /opt/deb/hangover-libwow64fex_${{ env.HOVERSION }}~bookworm_arm64.deb > hangover-libwow64fex_${{ env.HOVERSION }}~bookworm_arm64.deb
+      run: docker run --rm fexpedeb12 cat /opt/deb/hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb > hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: hangover-libwow64fex_${{ env.HOVERSION }}~bookworm_arm64.deb
-        path: hangover-libwow64fex_${{ env.HOVERSION }}~bookworm_arm64.deb
+        name: hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb
+        path: hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb
 
     - name: Upload Artifact as Release Asset
       if: github.event_name == 'release'
@@ -171,8 +171,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: hangover-libwow64fex_${{ env.HOVERSION }}~bookworm_arm64.deb
-        asset_name: hangover-libwow64fex_${{ env.HOVERSION }}~bookworm_arm64.deb
+        asset_path: hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb
+        asset_name: hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb
         asset_content_type: application/vnd.debian.binary-package
 
   qemu:
