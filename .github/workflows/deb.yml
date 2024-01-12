@@ -1,4 +1,4 @@
-name: debian12
+name: deb
 
 on:
   workflow_dispatch:
@@ -11,7 +11,263 @@ on:
     types: [published]
 
 jobs:
-  foundation:
+
+  foundationdeb11:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+
+    - name: Cache docker image
+      id: cache-foundation
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-foundation
+      with:
+        path: foundationdeb11.tgz
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/debian11/Dockerfile') }}
+
+    - name: Setup packaging
+      if: ${{ steps.cache-foundation.outputs.cache-hit != 'true' }}
+      run: |
+        cp .packaging/debian11/Dockerfile .
+
+    - name: Build package
+      if: ${{ steps.cache-foundation.outputs.cache-hit != 'true' }}
+      run: docker build -t foundationdeb11 .
+
+    - name: Export docker image
+      if: ${{ steps.cache-foundation.outputs.cache-hit != 'true' }}
+      run: docker image save foundationdeb11 | gzip -c > foundationdeb11.tgz
+
+  fex-unix-deb11:
+    needs: foundationdeb11
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+
+    - name: Cache docker image
+      id: cache-foundation
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-foundation
+      with:
+        path: foundationdeb11.tgz
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/debian11/Dockerfile') }}
+
+    - name: Import docker image
+      run: docker image load -i foundationdeb11.tgz
+
+    - name: get version
+      run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
+
+    - name: get shallow submodule
+      run: git submodule update --init --recursive --depth 1 fex
+
+    - name: Setup packaging
+      run: |
+        cp -r .packaging/debian11/fex/* fex
+        cp fex/LICENSE fex/DEBIAN/copyright
+        sed -i "s/HOVERSION/${HOVERSION}/g" fex/Dockerfile
+        sed -i "s/HOVERSION/${HOVERSION}/g" fex/DEBIAN/control
+        cat fex/DEBIAN/copyright
+        cat fex/Dockerfile
+        cat fex/DEBIAN/control
+        nproc
+
+    - name: Build package
+      run: cd fex; docker build -t fexdeb11 .
+
+    - name: Extract package
+      run: docker run --rm fexdeb11 cat /opt/deb/hangover-libfexcore_${{ env.HOVERSION }}~bullseye_arm64.deb > hangover-libfexcore_${{ env.HOVERSION }}~bullseye_arm64.deb
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: hangover-libfexcore_${{ env.HOVERSION }}~bullseye_arm64.deb
+        path: hangover-libfexcore_${{ env.HOVERSION }}~bullseye_arm64.deb
+
+    - name: Upload Artifact as Release Asset
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: hangover-libfexcore_${{ env.HOVERSION }}~bullseye_arm64.deb
+        asset_name: hangover-libfexcore_${{ env.HOVERSION }}~bullseye_arm64.deb
+        asset_content_type: application/vnd.debian.binary-package
+
+  qemu-deb11:
+    needs: foundationdeb11
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+
+    - name: Cache docker image
+      id: cache-foundation
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-foundation
+      with:
+        path: foundationdeb11.tgz
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/debian11/Dockerfile') }}
+
+    - name: Import docker image
+      run: docker image load -i foundationdeb11.tgz
+
+    - name: get version
+      run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
+
+    - name: get shallow submodule
+      run: git submodule update --init --recursive --depth 1 qemu
+
+    - name: Setup packaging
+      run: |
+        cp -r .packaging/debian11/qemu/* qemu
+        sed -i "s/HOVERSION/${HOVERSION}/g" qemu/Dockerfile
+        sed -i "s/HOVERSION/${HOVERSION}/g" qemu/DEBIAN/control
+        cat qemu/Dockerfile
+        cat qemu/DEBIAN/control
+        nproc
+
+    - name: Build package
+      run: cd qemu; docker build -t qemudeb11 .
+
+    - name: Extract package
+      run: docker run --rm qemudeb11 cat /opt/deb/hangover-libqemu_${{ env.HOVERSION }}~bullseye_arm64.deb > hangover-libqemu_${{ env.HOVERSION }}~bullseye_arm64.deb
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: hangover-libqemu_${{ env.HOVERSION }}~bullseye_arm64.deb
+        path: hangover-libqemu_${{ env.HOVERSION }}~bullseye_arm64.deb
+
+    - name: Upload Artifact as Release Asset
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: hangover-libqemu_${{ env.HOVERSION }}~bullseye_arm64.deb
+        asset_name: hangover-libqemu_${{ env.HOVERSION }}~bullseye_arm64.deb
+        asset_content_type: application/vnd.debian.binary-package
+
+  wine-deb11:
+    needs: foundationdeb11
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+
+    - name: Cache docker image
+      id: cache-foundation
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-foundation
+      with:
+        path: foundationdeb11.tgz
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/debian11/Dockerfile') }}
+
+    - name: Import docker image
+      run: docker image load -i foundationdeb11.tgz
+
+    - name: get version
+      run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
+
+    - name: get shallow submodule
+      run: git submodule update --init --recursive --depth 1 wine
+
+    - name: Setup packaging
+      run: |
+        cp -r .packaging/debian11/wine/* wine
+        sed -i "s/HOVERSION/${HOVERSION}/g" wine/Dockerfile
+        cat wine/Dockerfile
+        cat wine/debian/changelog
+        nproc
+
+    - name: Adjust changelog for intermediate
+      if: github.event_name != 'release'
+      run: |
+        cp wine/debian/changelog wine/debian/changelog.old
+        echo "hangover-wine (${HOVERSION}~bullseye) UNRELEASED; urgency=low" > wine/debian/changelog.entry
+        echo "" >> wine/debian/changelog.entry
+        echo "  * Intermediate build ${HOVERSION}~bullseye" >> wine/debian/changelog.entry
+        echo "" >> wine/debian/changelog.entry
+        echo -n " -- André Zwing <nerv@dawncrow.de>  " >> wine/debian/changelog.entry
+        LC_TIME=en_US.UTF-8 date "+%a, %d %b %Y %H:%M:%S %z" >> wine/debian/changelog.entry
+        echo "" >> wine/debian/changelog.entry
+        cat wine/debian/changelog.entry wine/debian/changelog.old > wine/debian/changelog
+        rm wine/debian/changelog.entry wine/debian/changelog.old
+        cat wine/debian/changelog
+
+    - name: Adjust changelog for release
+      if: github.event_name == 'release'
+      run: |
+        cp wine/debian/changelog wine/debian/changelog.old
+        echo "hangover-wine (${HOVERSION}~bullseye) UNRELEASED; urgency=low" > wine/debian/changelog.entry
+        echo "" >> wine/debian/changelog.entry
+        echo "  * Release ${HOVERSION}~bullseye" >> wine/debian/changelog.entry
+        echo "" >> wine/debian/changelog.entry
+        echo -n " -- André Zwing <nerv@dawncrow.de>  " >> wine/debian/changelog.entry
+        LC_TIME=en_US.UTF-8 date "+%a, %d %b %Y %H:%M:%S %z" >> wine/debian/changelog.entry
+        echo "" >> wine/debian/changelog.entry
+        cat wine/debian/changelog.entry wine/debian/changelog.old > wine/debian/changelog
+        rm wine/debian/changelog.entry wine/debian/changelog.old
+        cat wine/debian/changelog
+
+    - name: Build package
+      run: cd wine; docker build -t winedeb11 .
+
+    - name: Extract package
+      run: docker run --rm winedeb11 cat /opt/hangover-wine_${{ env.HOVERSION }}~bullseye_arm64.deb > hangover-wine_${{ env.HOVERSION }}~bullseye_arm64.deb
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: hangover-wine_${{ env.HOVERSION }}~bullseye_arm64.deb
+        path: hangover-wine_${{ env.HOVERSION }}~bullseye_arm64.deb
+
+    - name: Upload Artifact as Release Asset
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: hangover-wine_${{ env.HOVERSION }}~bullseye_arm64.deb
+        asset_name: hangover-wine_${{ env.HOVERSION }}~bullseye_arm64.deb
+        asset_content_type: application/vnd.debian.binary-package
+
+
+  foundationdeb12:
     runs-on: ubuntu-latest
 
     steps:
@@ -45,8 +301,8 @@ jobs:
       if: ${{ steps.cache-foundation.outputs.cache-hit != 'true' }}
       run: docker image save foundationdeb12 | gzip -c > foundationdeb12.tgz
 
-  fex-unix:
-    needs: foundation
+  fex-unix-deb12:
+    needs: foundationdeb12
     runs-on: ubuntu-latest
 
     steps:
@@ -111,7 +367,7 @@ jobs:
         asset_content_type: application/vnd.debian.binary-package
 
   fex-pe:
-    needs: foundation
+    needs: foundationdeb12
     runs-on: ubuntu-latest
 
     steps:
@@ -175,8 +431,8 @@ jobs:
         asset_name: hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb
         asset_content_type: application/vnd.debian.binary-package
 
-  qemu:
-    needs: foundation
+  qemu-deb12:
+    needs: foundationdeb12
     runs-on: ubuntu-latest
 
     steps:
@@ -238,8 +494,8 @@ jobs:
         asset_name: hangover-libqemu_${{ env.HOVERSION }}~bookworm_arm64.deb
         asset_content_type: application/vnd.debian.binary-package
 
-  wine:
-    needs: foundation
+  wine-deb12:
+    needs: foundationdeb12
     runs-on: ubuntu-latest
 
     steps:
