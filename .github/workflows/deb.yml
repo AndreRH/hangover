@@ -3,6 +3,8 @@ name: deb
 on:
   workflow_dispatch:
   push:
+    tags-ignore:
+      - '**'
     paths-ignore:
       - 'benchmarks/**'
       - 'docs/**'
