@@ -92,10 +92,11 @@ $ HODLL=fexcore.dll wine your_x86_application.exe
 $ HODLL=libwow64fex.dll wine your_x86_application.exe
 ```
 
-### 8) Todo
+### 8) Known issues
 
-* Get more applications running
-* QEMU: Investigate CriticalSection issues (just timing?)
+* QEMU: CriticalSection doesn't work reliably and other instabilities
+* FEX, PE: Doesn't support CLI applications, as it can't handle writing to the console
+* FEX, Unix: Performance/Stability issues compared to the PE variant
 
 ### 9) Financial Contributors
 

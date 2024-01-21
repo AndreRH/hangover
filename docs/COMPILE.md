@@ -6,7 +6,7 @@ $ git submodule update --init --recursive
 ```
 And note while Box64 is already integrated as DLL, you can build other emulators (currently FEX and QEMU), but you don't need to, one is enough depending on your use-case.
 
-#### Wine (including Box64)
+#### Wine (includes Box64)
 To build Hangover Wine you need:
 
 - The dependencies to [build](https://wiki.winehq.org/Building_Wine#Satisfying_Build_Dependencies) a 64 bit Wine
@@ -51,9 +51,7 @@ $ make -j$(nproc)
 
 In case the compiler complains about something in linux-user/ioctls.h remove the corresponding line and run make again.
 
-Place resulting libraries (build/libqemu-arm.so and/or build/libqemu-i386.so) in your library path (e.g /usr/lib) or set HOLIB to the full path of the resulting library.
-
-Depreciation note: Placing the libraries under /opt will still work, but is deprecated. Until it is removed the load order is HOLIB, library path, /opt.
+Place resulting libraries (build/libqemu-arm.so and/or build/libqemu-i386.so) in your library path (e.g /usr/lib) or set HOLIB to the full path of the resulting library. (HOLIB takes precedence)
 
 #### FEX, Unix (optional)
 To build FEXCore from FEX you need:
@@ -69,9 +67,7 @@ $ CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_LTO=True
 $ make -j$(nproc) FEXCore_shared
 ```
 
-Place resulting library (build_unix/FEXCore/Source/libFEXCore.so) in your library path (e.g /usr/lib) or set HOLIB to the full path of the resulting library.
-
-Depreciation note: Placing the libraries under /opt will still work, but is deprecated. Until it is removed the load order is HOLIB, library path, /opt.
+Place resulting library (build_unix/FEXCore/Source/libFEXCore.so) in your library path (e.g /usr/lib) or set HOLIB to the full path of the resulting library. (HOLIB takes precedence)
 
 #### FEX, PE (optional)
 To build wow64fex from FEX you need:
