@@ -1,5 +1,0 @@
-Package: hangover-libfexcore
-Version: HOVERSION~bullseye
-Architecture: arm64
-Maintainer: André Zwing <nerv@dawncrow.de>
-Description: x86 and x86-64 Linux emulator library for Hangover

@@ -83,113 +83,6 @@ jobs:
       if: ${{ steps.cache-foundation.outputs.cache-hit != 'true' }}
       run: docker image save foundationdeb12 | gzip -c > foundationdeb12.tgz
 
-  fex-unix-deb11:
-    needs: foundationdeb11
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v1
-    - name: free disk space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        df -h
-
-    - name: Cache docker image
-      id: cache-foundation
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-foundation
-      with:
-        path: foundationdeb11.tgz
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/debian11/Dockerfile') }}
-
-    - name: Import docker image
-      run: docker image load -i foundationdeb11.tgz
-
-    - name: get version
-      run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
-
-    - name: get shallow submodule
-      run: git submodule update --init --recursive --depth 1 fex
-
-    - name: Setup packaging
-      run: |
-        cp -r .packaging/debian11/fex/* fex
-        cp fex/LICENSE fex/DEBIAN/copyright
-        sed -i "s/HOVERSION/${HOVERSION}/g" fex/Dockerfile
-        sed -i "s/HOVERSION/${HOVERSION}/g" fex/DEBIAN/control
-        cat fex/DEBIAN/copyright
-        cat fex/Dockerfile
-        cat fex/DEBIAN/control
-        nproc
-
-    - name: Build package
-      run: cd fex; docker build -t fexdeb11 .
-
-    - name: Extract package
-      run: docker run --rm fexdeb11 cat /opt/deb/hangover-libfexcore_${{ env.HOVERSION }}~bullseye_arm64.deb > hangover-libfexcore_${{ env.HOVERSION }}~bullseye_arm64.deb
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: hangover-libfexcore_${{ env.HOVERSION }}~bullseye_arm64.deb
-        path: hangover-libfexcore_${{ env.HOVERSION }}~bullseye_arm64.deb
-
-  fex-unix-deb12:
-    needs: foundationdeb12
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v1
-    - name: free disk space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        df -h
-
-    - name: Cache docker image
-      id: cache-foundation
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-foundation
-      with:
-        path: foundationdeb12.tgz
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/debian12/Dockerfile') }}
-
-    - name: Import docker image
-      run: docker image load -i foundationdeb12.tgz
-
-    - name: get version
-      run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
-
-    - name: get shallow submodule
-      run: git submodule update --init --recursive --depth 1 fex
-
-    - name: Setup packaging
-      run: |
-        cp -r .packaging/debian12/fex/* fex
-        cp fex/LICENSE fex/DEBIAN/copyright
-        sed -i "s/HOVERSION/${HOVERSION}/g" fex/Dockerfile
-        sed -i "s/HOVERSION/${HOVERSION}/g" fex/DEBIAN/control
-        cat fex/DEBIAN/copyright
-        cat fex/Dockerfile
-        cat fex/DEBIAN/control
-        nproc
-
-    - name: Build package
-      run: cd fex; docker build -t fexdeb12 .
-
-    - name: Extract package
-      run: docker run --rm fexdeb12 cat /opt/deb/hangover-libfexcore_${{ env.HOVERSION }}~bookworm_arm64.deb > hangover-libfexcore_${{ env.HOVERSION }}~bookworm_arm64.deb
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: hangover-libfexcore_${{ env.HOVERSION }}~bookworm_arm64.deb
-        path: hangover-libfexcore_${{ env.HOVERSION }}~bookworm_arm64.deb
 
   fex-pe:
     needs: foundationdeb12
@@ -244,6 +137,7 @@ jobs:
       with:
         name: hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb
         path: hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb
+
 
   qemu-deb11:
     needs: foundationdeb11
@@ -348,6 +242,7 @@ jobs:
       with:
         name: hangover-libqemu_${{ env.HOVERSION }}~bookworm_arm64.deb
         path: hangover-libqemu_${{ env.HOVERSION }}~bookworm_arm64.deb
+
 
   wine-deb11:
     needs: foundationdeb11
@@ -511,8 +406,9 @@ jobs:
         name: hangover-wine_${{ env.HOVERSION }}~bookworm_arm64.deb
         path: hangover-wine_${{ env.HOVERSION }}~bookworm_arm64.deb
 
+
   bundle:
-    needs: [fex-unix-deb11, fex-pe, qemu-deb11, wine-deb11, fex-unix-deb12, qemu-deb12, wine-deb12]
+    needs: [fex-pe, qemu-deb11, wine-deb11, qemu-deb12, wine-deb12]
     runs-on: ubuntu-latest
 
     steps:
