@@ -46,7 +46,9 @@ A Discord Server is available for contributors and financial supporters (see poi
 It provides advanced user support, development discussions and more.
 
 ### 5) Packages
-Debian 11 and Debian 12 (also usable for Raspbian, Armbian, Ubuntu, ...) can now be built with Github Actions and Gitlab CI.
+__Debian__ 11 & 12 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 22.04 & 23.10 are attached to the Github Release.
+
+__Termux__ packages can be found in the [Termux User Repository](https://github.com/termux-user-repository/tur).
 
 ### 6) How to build
 For build instructions see [here](docs/COMPILE.md).
