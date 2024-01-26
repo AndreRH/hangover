@@ -1,4 +1,4 @@
-FROM foundationdeb12
+FROM foundationdebian12
 
 RUN rm -rf /opt/fex; mkdir -p /opt/fex/
 COPY ./ /opt/fex/

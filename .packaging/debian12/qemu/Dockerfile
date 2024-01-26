@@ -1,4 +1,4 @@
-FROM foundationdeb12
+FROM foundationdebian12
 
 RUN rm -rf /opt/qemu; mkdir -p /opt/qemu/
 COPY ./ /opt/qemu/

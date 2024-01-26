@@ -1,4 +1,4 @@
-FROM foundationdeb12
+FROM foundationdebian12
 
 RUN rm -rf /opt/wine; mkdir -p /opt/wine/
 COPY ./ /opt/wine/
