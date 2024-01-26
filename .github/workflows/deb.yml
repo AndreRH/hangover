@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [debian11, debian12, ubuntu2204]
+        os: [debian11, debian12, ubuntu2204, ubuntu2310]
 
     steps:
     - uses: actions/checkout@v1
@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [debian11, debian12, ubuntu2204]
+        os: [debian11, debian12, ubuntu2204, ubuntu2310]
         include:
           - os: debian11
             codename: bullseye
@@ -120,6 +120,8 @@ jobs:
             codename: bookworm
           - os: ubuntu2204
             codename: jammy
+          - os: ubuntu2310
+            codename: mantic
 
     steps:
     - uses: actions/checkout@v1
@@ -175,7 +177,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [debian11, debian12, ubuntu2204]
+        os: [debian11, debian12, ubuntu2204, ubuntu2310]
         include:
           - os: debian11
             codename: bullseye
@@ -183,6 +185,8 @@ jobs:
             codename: bookworm
           - os: ubuntu2204
             codename: jammy
+          - os: ubuntu2310
+            codename: mantic
 
     steps:
     - uses: actions/checkout@v1
@@ -267,7 +271,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [debian11, debian12, ubuntu2204]
+        os: [debian11, debian12, ubuntu2204, ubuntu2310]
         include:
           - os: debian11
             codename: bullseye
@@ -275,6 +279,8 @@ jobs:
             codename: bookworm
           - os: ubuntu2204
             codename: jammy
+          - os: ubuntu2310
+            codename: mantic
 
     steps:
     - uses: actions/checkout@v1
