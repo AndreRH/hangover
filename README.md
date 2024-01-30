@@ -39,7 +39,6 @@ A paid [preview](https://www.patreon.com/posts/previews-82611984) is available w
 - Updated Wine
 - Updated FEX
 - Updated Box64
-- Updated Packages
 
 ### 4) Discord
 A Discord Server is available for contributors and financial supporters (see point 8 below).
@@ -49,6 +48,9 @@ It provides advanced user support, development discussions and more.
 __Debian__ 11 & 12 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 22.04 & 23.10 are attached to the Github Release.
 
 __Termux__ packages can be found in the [Termux User Repository](https://github.com/termux-user-repository/tur).
+
+__Alpine__ package can be found in the [Alpine Testing Repository](https://gitlab.alpinelinux.org/alpine/aports/-/tree/master/testing/hangover-wine).
+It's only hangover-wine without box64cpu.dll for now, but you can copy over box64cpu.dll and/or libwow64fex.dll from extracted debian packages or compile them yourself.
 
 ### 6) How to build
 For build instructions see [here](docs/COMPILE.md).
@@ -73,7 +75,7 @@ box64cpu.dll currently is the default for i386 emulation, so it's simply:
 $ wine your_x86_application.exe
 ```
 
-You might have better results with FEX for the moment.
+If you have issues with the default, please try one of the other emulators below.
 
 #### 7.2) QEMU
 Until the critical section issue is solved it is highly recomended to limit execution to 1 core with
