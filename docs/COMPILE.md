@@ -53,22 +53,6 @@ In case the compiler complains about something in linux-user/ioctls.h remove the
 
 Place resulting libraries (build/libqemu-arm.so and/or build/libqemu-i386.so) in your library path (e.g /usr/lib) or set HOLIB to the full path of the resulting library. (HOLIB takes precedence)
 
-#### FEX, Unix (optional)
-To build FEXCore from FEX you need:
-
-- The dependencies to [build](https://wiki.fex-emu.com/index.php/Development:Setting_up_FEX) FEX (in particular clang, libepoxy and libsdl2)
-- About 1.4GB of disk space
-
-Build it like (from the Hangover repository):
-```bash
-$ mkdir -p fex/build_unix
-$ cd fex/build_unix
-$ CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_LTO=True -DBUILD_TESTS=False -DENABLE_ASSERTIONS=False ..
-$ make -j$(nproc) FEXCore_shared
-```
-
-Place resulting library (build_unix/FEXCore/Source/libFEXCore.so) in your library path (e.g /usr/lib) or set HOLIB to the full path of the resulting library. (HOLIB takes precedence)
-
 #### FEX, PE (optional)
 To build wow64fex from FEX you need:
 
