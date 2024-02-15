@@ -29,7 +29,7 @@ If you need those features, have a look at older releases before 0.8.x.
 Emulator integrations:
 
 - [QEMU](https://gitlab.com/qemu-project/qemu): Has the most issues and is by far the [slowest](https://github.com/AndreRH/hangover/tree/master/benchmarks) option
-- [FEX](https://github.com/FEX-Emu/FEX): Available as Unix and PE
+- [FEX](https://github.com/FEX-Emu/FEX): Upstream PE version plus some conveniences
 - [Box64](https://github.com/ptitSeb/box64/): Mostly done, but depends on the early 32-bit emulation of Box64
 - [Blink](https://github.com/jart/blink): started, not part of this repository yet
 
@@ -62,7 +62,6 @@ You can add the following environment variables:
     * wow64cpu.dll for "native" i386 mode on x86_64
     * wowarmhw.dll for ARM emulation (Qemu)
     * xtajit.dll for i386 emulation (Qemu)
-    * fexcore.dll for i386 emulation (FEX, Unix)
     * libwow64fex.dll for i386 emulation (FEX, PE)
     * box64cpu.dll for i386 emulation (Box64)
 * HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
@@ -86,11 +85,6 @@ $ HODLL=xtajit.dll   taskset -c 1 wine your_x86_application.exe
 $ HODLL=wowarmhw.dll taskset -c 1 wine your_arm_application.exe
 ```
 
-#### 7.3) FEX, Unix
-```bash
-$ HODLL=fexcore.dll wine your_x86_application.exe
-```
-
 #### 7.4) FEX, PE
 ```bash
 $ HODLL=libwow64fex.dll wine your_x86_application.exe
@@ -100,7 +94,6 @@ $ HODLL=libwow64fex.dll wine your_x86_application.exe
 
 * QEMU: CriticalSection doesn't work reliably and other instabilities
 * FEX, PE: Doesn't support CLI applications, as it can't handle writing to the console
-* FEX, Unix: Performance/Stability issues compared to the PE variant
 
 ### 9) Financial Contributors
 
