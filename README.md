@@ -20,7 +20,8 @@ While the overall stability was improved, expect issues.
 
 For Benchmarks see [here](benchmarks/readme.md). They show that the Hangover approach works as expected, as only emulating the application instead of a complete Wine installation has benefits. It's especially visible with box64cpu vs. Wine running under Box64.
 
-Current main focus is to run i386 Windows applications on ARM64 Linux, but it's also possible to run ARM32 Windows applications on x86_64 Linux. I also started working on RISC-V Linux [support](https://www.patreon.com/posts/risc-v-91365090).
+Current main focus is to run i386 Windows applications on ARM64 Linux, but it's also possible to run ARM32 Windows applications on x86_64 Linux.
+I also started working on a branch for [RISC-V 64-bit Linux](https://github.com/AndreRH/hangover/tree/riscv64).
 
 PPC64le isn't supported anymore and won't be added back in the near future.
 Same for running x86_64 applications, though it might be added back as soon as the ARM64EC support in Wine is ready.
