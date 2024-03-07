@@ -41,7 +41,7 @@ A paid [preview](https://www.patreon.com/posts/previews-82611984) is available w
 - Updated Box64
 
 ### 4) Discord
-A Discord Server is available for contributors and financial supporters (see point 8 below).
+A Discord Server is available for contributors and financial supporters (see point 9 below).
 It provides advanced user support, development discussions and more.
 
 ### 5) Packages
