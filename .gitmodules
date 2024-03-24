@@ -1,0 +1,4 @@
+[submodule "wine"]
+	path = wine
+	url = https://github.com/AndreRH/wine.git
+	branch = riscv64
