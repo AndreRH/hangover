@@ -101,13 +101,3 @@ $ HODLL=libwow64fex.dll wine your_x86_application.exe
 Become a financial contributor and help me sustain this project:
 
 https://www.patreon.com/andre_opensource
-
-https://liberapay.com/andre_opensource
-
-https://ko-fi.com/andre_opensource
-
-### 10) Hardware Contributors
-
-Become a hardware contributor and help me sustain this project:
-
-https://throne.com/andrerh
