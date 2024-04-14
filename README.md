@@ -34,18 +34,11 @@ Emulator integrations:
 - [Box64](https://github.com/ptitSeb/box64/): Mostly done, but depends on the early 32-bit emulation of Box64
 - [Blink](https://github.com/jart/blink): started, not part of this repository yet
 
-### 3) Preview
-A paid [preview](https://www.patreon.com/posts/previews-82611984) is available with currently the following features coming soon:
-
-- Updated Wine
-- Updated FEX
-- Updated Box64
-
-### 4) Discord
-A Discord Server is available for contributors and financial supporters (see point 9 below).
+### 3) Discord
+A Discord Server is available for contributors and financial supporters (see point 8 below).
 It provides advanced user support, development discussions and more.
 
-### 5) Packages
+### 4) Packages
 __Debian__ 11 & 12 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 22.04 & 23.10 & 24.04 are attached to the Github Release.
 
 __Termux__ packages can be found in the [Termux User Repository](https://github.com/termux-user-repository/tur).
@@ -53,10 +46,10 @@ __Termux__ packages can be found in the [Termux User Repository](https://github.
 __Alpine__ package can be found in the [Alpine Testing Repository](https://gitlab.alpinelinux.org/alpine/aports/-/tree/master/testing/hangover-wine).
 It's only hangover-wine without box64cpu.dll for now, but you can copy over box64cpu.dll and/or libwow64fex.dll from extracted debian packages or compile them yourself.
 
-### 6) How to build
+### 5) How to build
 For build instructions see [here](docs/COMPILE.md).
 
-### 7) Running
+### 6) Running
 You can add the following environment variables:
 
 * HODLL to select the emulator dll:
@@ -68,7 +61,7 @@ You can add the following environment variables:
 * HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
 * QEMU_LOG to set QEMU log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/v5.2.0/util/log.c#L297)
 
-#### 7.1) Box64
+#### 6.1) Box64
 box64cpu.dll currently is the default for i386 emulation, so it's simply:
 
 ```bash
@@ -77,7 +70,7 @@ $ wine your_x86_application.exe
 
 If you have issues with the default, please try one of the other emulators below.
 
-#### 7.2) QEMU
+#### 6.2) QEMU
 Until the critical section issue is solved it is highly recomended to limit execution to 1 core with
 "taskset -c 1" for Qemu emulation:
 
@@ -86,17 +79,17 @@ $ HODLL=xtajit.dll   taskset -c 1 wine your_x86_application.exe
 $ HODLL=wowarmhw.dll taskset -c 1 wine your_arm_application.exe
 ```
 
-#### 7.4) FEX, PE
+#### 6.3) FEX, PE
 ```bash
 $ HODLL=libwow64fex.dll wine your_x86_application.exe
 ```
 
-### 8) Known issues
+### 7) Known issues
 
 * QEMU: CriticalSection doesn't work reliably and other instabilities
 * FEX, PE: Doesn't support CLI applications, as it can't handle writing to the console
 
-### 9) Financial Contributors
+### 8) Financial Contributors
 
 Become a financial contributor and help me sustain this project:
 
