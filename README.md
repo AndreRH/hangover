@@ -35,7 +35,7 @@ Emulator integrations:
 - [Blink](https://github.com/jart/blink): started, not part of this repository yet
 
 ### Discord
-A Discord Server is available for contributors and financial supporters (see "Financial Contributiors" below).
+A Discord Server is available for contributors and previous financial supporters (see "Financial Contributiors" below).
 It provides advanced user support, development discussions and more.
 
 ### Packages
@@ -56,7 +56,7 @@ You can add the following environment variables:
     * wow64cpu.dll for "native" i386 mode on x86_64
     * wowarmhw.dll for ARM emulation (Qemu)
     * xtajit.dll for i386 emulation (Qemu)
-    * libwow64fex.dll for i386 emulation (FEX, PE)
+    * libwow64fex.dll for i386 emulation (FEX)
     * box64cpu.dll for i386 emulation (Box64)
 * HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
 * QEMU_LOG to set QEMU log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/v5.2.0/util/log.c#L297)
@@ -79,7 +79,7 @@ $ HODLL=xtajit.dll   taskset -c 1 wine your_x86_application.exe
 $ HODLL=wowarmhw.dll taskset -c 1 wine your_arm_application.exe
 ```
 
-#### FEX, PE
+#### FEX
 ```bash
 $ HODLL=libwow64fex.dll wine your_x86_application.exe
 ```
@@ -87,10 +87,11 @@ $ HODLL=libwow64fex.dll wine your_x86_application.exe
 ### Known issues
 
 * QEMU: CriticalSection doesn't work reliably and other instabilities
-* FEX, PE: Doesn't support CLI applications, as it can't handle writing to the console
+* FEX: Doesn't support CLI applications, as it can't handle writing to the console
 
 ### Financial Contributors
 
-Become a financial contributor and help me sustain this project:
-
-https://www.patreon.com/andre_opensource
+I have decided to end my activities on Patreon and other platforms.
+It won't be the end of the project, my plan is to keep working on it,
+delivering new releases and updates. However, I will probably invest less time,
+except for the RISC-V port.

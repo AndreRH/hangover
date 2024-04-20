@@ -53,7 +53,7 @@ In case the compiler complains about something in linux-user/ioctls.h remove the
 
 Place resulting libraries (build/libqemu-arm.so and/or build/libqemu-i386.so) in your library path (e.g /usr/lib) or set HOLIB to the full path of the resulting library. (HOLIB takes precedence)
 
-#### FEX, PE (optional)
+#### FEX (optional)
 To build wow64fex from FEX you need:
 
 - [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation (downlaod & unpack a release, but don't use the .zip files, they are for Windows)
