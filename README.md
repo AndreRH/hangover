@@ -31,7 +31,7 @@ Emulator integrations:
 
 - [QEMU](https://gitlab.com/qemu-project/qemu): Has the most issues and is by far the [slowest](https://github.com/AndreRH/hangover/tree/master/benchmarks) option
 - [FEX](https://github.com/FEX-Emu/FEX): Upstream PE version plus some conveniences
-- [Box64](https://github.com/ptitSeb/box64/): Mostly done, but depends on the early 32-bit emulation of Box64
+- [Box64](https://github.com/ptitSeb/box64/): Mostly done
 - [Blink](https://github.com/jart/blink): started, not part of this repository yet
 
 ### Discord
