@@ -1,0 +1,5 @@
+Package: hangover-libqemu
+Version: HOVERSION~oracular
+Architecture: arm64
+Maintainer: André Zwing <nerv@dawncrow.de>
+Description: x86 and x86-64 Linux emulator library for Hangover
