@@ -59,6 +59,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libvulkan-dev:arm64 \
     libgl-dev:arm64 \
     libgnutls28-dev:arm64 \
-    libcups2-dev:arm64
+    libcups2-dev:arm64 \
+    libxkbcommon-dev:arm64 \
+    libxkbregistry-dev:arm64 \
+    libwayland-dev:arm64
 
 RUN cd /opt; wget https://github.com/mstorsjo/llvm-mingw/releases/download/20240518/llvm-mingw-20240518-ucrt-ubuntu-20.04-x86_64.tar.xz; tar -xJf llvm-mingw-20240518-ucrt-ubuntu-20.04-x86_64.tar.xz; rm *.tar.xz
