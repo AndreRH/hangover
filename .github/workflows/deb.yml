@@ -71,11 +71,11 @@ jobs:
       env:
         cache-name: cache-foundation
       with:
-        path: foundationdebian12.tgz
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/debian12/Dockerfile') }}
+        path: foundationubuntu2204.tgz
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/ubuntu2204/Dockerfile') }}
 
     - name: Import docker image
-      run: docker image load -i foundationdebian12.tgz
+      run: docker image load -i foundationubuntu2204.tgz
 
     - name: get version
       run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
@@ -85,7 +85,7 @@ jobs:
 
     - name: Setup packaging
       run: |
-        cp -r .packaging/debian12/fexpe/* fex
+        cp -r .packaging/ubuntu2204/fexpe/* fex
         cp fex/LICENSE fex/DEBIAN/copyright
         sed -i "s/HOVERSION/${HOVERSION}/g" fex/Dockerfile
         sed -i "s/HOVERSION/${HOVERSION}/g" fex/DEBIAN/control
@@ -95,10 +95,10 @@ jobs:
         nproc
 
     - name: Build package
-      run: cd fex; docker build -t fexpedeb12 .
+      run: cd fex; docker build -t fexpe .
 
     - name: Extract package
-      run: docker run --rm fexpedeb12 cat /opt/deb/hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb > hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb
+      run: docker run --rm fexpe cat /opt/deb/hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb > hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
