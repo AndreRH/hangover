@@ -84,6 +84,13 @@ $ HODLL=wowarmhw.dll taskset -c 1 wine your_arm_application.exe
 $ HODLL=libwow64fex.dll wine your_x86_application.exe
 ```
 
+#### Enabling Wayland
+Wayland isn't used by default or automatically, but if you want to use it instead of X11 do:
+
+```bash
+$ wine reg.exe add HKCU\\Software\\Wine\\Drivers /v Graphics /d wayland,x11
+```
+
 ### Known issues
 
 * QEMU: CriticalSection doesn't work reliably and other instabilities
