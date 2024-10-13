@@ -89,6 +89,8 @@ jobs:
         cp fex/LICENSE fex/DEBIAN/copyright
         sed -i "s/HOVERSION/${HOVERSION}/g" fex/Dockerfile
         sed -i "s/HOVERSION/${HOVERSION}/g" fex/DEBIAN/control
+        sed -i "s/starting FEX based/starting FEX (Hangover ${HOVERSION}) based/g" fex/Source/Windows/ARM64EC/Module.cpp
+        sed -i "s/starting FEX based/starting FEX (Hangover ${HOVERSION}) based/g" fex/Source/Windows/WOW64/Module.cpp
         cat fex/DEBIAN/copyright
         cat fex/Dockerfile
         cat fex/DEBIAN/control
