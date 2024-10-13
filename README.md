@@ -96,7 +96,6 @@ $ wine reg.exe add HKCU\\Software\\Wine\\Drivers /v Graphics /d wayland,x11
 ### Known issues
 
 * QEMU: CriticalSection doesn't work reliably and other instabilities
-* FEX: Doesn't support CLI applications, as it can't handle writing to the console
 
 ### Financial Contributors
 
