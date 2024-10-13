@@ -1,0 +1,5 @@
+Package: hangover-libarm64ecfex
+Version: HOVERSION
+Architecture: arm64
+Maintainer: André Zwing <nerv@dawncrow.de>
+Description: FEX based x86-64 emulator library for Hangover

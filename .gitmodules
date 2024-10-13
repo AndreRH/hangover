@@ -9,4 +9,4 @@
 [submodule "fex"]
 	path = fex
 	url = https://github.com/AndreRH/FEX.git
-	branch = wow
+	branch = arm64ec
