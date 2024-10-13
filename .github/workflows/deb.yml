@@ -52,6 +52,59 @@ jobs:
       run: docker image save foundation${{ matrix.os }} | gzip -c > foundation${{ matrix.os }}.tgz
 
 
+  box-pe:
+    needs: foundations
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+
+    - name: Cache docker image
+      id: cache-foundation
+      uses: actions/cache@v4
+      env:
+        cache-name: cache-foundation
+      with:
+        path: foundationubuntu2204.tgz
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/ubuntu2204/Dockerfile') }}
+
+    - name: Import docker image
+      run: docker image load -i foundationubuntu2204.tgz
+
+    - name: get version
+      run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
+
+    - name: get shallow submodule
+      run: git submodule update --init --recursive --depth 1 wine
+
+    - name: Setup packaging
+      run: |
+        cp -r .packaging/ubuntu2204/boxpe/* wine
+        echo | cat wine/libs/box64/LICENSE - wine/LICENSE > wine/DEBIAN/copyright
+        sed -i "s/HOVERSION/${HOVERSION}/g" wine/Dockerfile
+        sed -i "s/HOVERSION/${HOVERSION}/g" wine/DEBIAN/control
+        sed -i "s/starting Box64 based/starting Box64 (Hangover ${HOVERSION}) based/g" wine/dlls/box64cpu/cpu.c
+        nproc
+
+    - name: Build package
+      run: cd wine; docker build -t boxpe .
+
+    - name: Extract package
+      run: docker run --rm boxpe cat /opt/deb/hangover-box64cpu_${{ env.HOVERSION }}_arm64.deb > hangover-box64cpu_${{ env.HOVERSION }}_arm64.deb
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: hangover-box64cpu_${{ env.HOVERSION }}_arm64.deb
+        path: hangover-box64cpu_${{ env.HOVERSION }}_arm64.deb
+
+
   fex-pe:
     needs: foundations
     runs-on: ubuntu-latest
@@ -91,9 +144,6 @@ jobs:
         sed -i "s/HOVERSION/${HOVERSION}/g" fex/DEBIAN/control
         sed -i "s/starting FEX based/starting FEX (Hangover ${HOVERSION}) based/g" fex/Source/Windows/ARM64EC/Module.cpp
         sed -i "s/starting FEX based/starting FEX (Hangover ${HOVERSION}) based/g" fex/Source/Windows/WOW64/Module.cpp
-        cat fex/DEBIAN/copyright
-        cat fex/Dockerfile
-        cat fex/DEBIAN/control
         nproc
 
     - name: Build package
@@ -159,8 +209,6 @@ jobs:
         cp -r .packaging/${{ matrix.os }}/qemu/* qemu
         sed -i "s/HOVERSION/${HOVERSION}/g" qemu/Dockerfile
         sed -i "s/HOVERSION/${HOVERSION}/g" qemu/DEBIAN/control
-        cat qemu/Dockerfile
-        cat qemu/DEBIAN/control
         nproc
 
     - name: Build package
@@ -225,8 +273,6 @@ jobs:
       run: |
         cp -r .packaging/${{ matrix.os }}/wine/* wine
         sed -i "s/HOVERSION/${HOVERSION}/g" wine/Dockerfile
-        cat wine/Dockerfile
-        cat wine/debian/changelog
         nproc
 
     - name: Adjust changelog for intermediate
