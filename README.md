@@ -15,17 +15,19 @@ As soon as the application does a Windows/Wine system call, say NtUserCreateWind
 
 In short, we break out of emulation at the win32 syscall or wine unix call level for performance reasons, which is enabled by the WoW64 support in Wine.
 
-### Status
-While the overall stability was improved, expect issues.
-
+### Benchmarks
 For Benchmarks see [here](benchmarks/readme.md). They show that the Hangover approach works as expected, as only emulating the application instead of a complete Wine installation has benefits. It's especially visible with box64cpu vs. Wine running under Box64.
 
+### Interesting Branches
+
+* [RISC-V 64-bit Linux support](https://github.com/AndreRH/hangover/tree/riscv64)
+* [x86_64 support on ARM64](https://github.com/AndreRH/hangover/tree/arm64ec)
+
+### Status
 Current main focus is to run i386 Windows applications on ARM64 Linux, but it's also possible to run ARM32 Windows applications on x86_64 Linux.
-I also started working on a branch for [RISC-V 64-bit Linux](https://github.com/AndreRH/hangover/tree/riscv64).
 
 PPC64le isn't supported anymore and won't be added back in the near future.
-Same for running x86_64 applications, though it might be added back as soon as the ARM64EC support in Wine is ready.
-If you need those features, have a look at older releases before 0.8.x.
+If you need that feature, have a look at older releases before 0.8.x.
 
 Emulator integrations:
 
@@ -39,7 +41,7 @@ A Discord Server is available for contributors and previous financial supporters
 It provides advanced user support, development discussions and more.
 
 ### Packages
-__Debian__ 11 & 12 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 22.04 & 24.04 are attached to the Github Release.
+__Debian__ 11 & 12 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 22.04 & 24.04 & 24.10 are attached to the Github Release.
 
 __Termux__ packages can be found in the [Termux User Repository](https://github.com/termux-user-repository/tur).
 
