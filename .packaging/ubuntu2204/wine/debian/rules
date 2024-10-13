@@ -2,7 +2,7 @@
 
 export DEB_CFLAGS_MAINT_STRIP = -fstack-protector-strong -fcf-protection=full
 export DEB_BUILD_MAINT_OPTIONS = optimize=-lto hardening=-relro
-export PATH = /opt/llvm-mingw-20241001-ucrt-ubuntu-20.04-x86_64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export PATH = /opt/bylaws-llvm-mingw-20240929-ucrt-ubuntu-20.04-x86_64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 %:
 	dh $@ --parallel
@@ -10,8 +10,8 @@ export PATH = /opt/llvm-mingw-20241001-ucrt-ubuntu-20.04-x86_64/bin:/usr/local/s
 override_dh_auto_configure:
 	# Run configure
 	./configure --prefix=/usr \
-				--with-mingw \
-				--enable-archs=i386,aarch64 \
+				--with-mingw=clang \
+				--enable-archs=arm64ec,aarch64,i386 \
 				--disable-tests \
 				--host=aarch64-linux-gnu \
 				host_alias=aarch64-linux-gnu \
