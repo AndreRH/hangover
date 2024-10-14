@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [debian11, debian12, ubuntu2204, ubuntu2404, ubuntu2410]
+        os: [debian11, debian12, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2410]
 
     steps:
     - uses: actions/checkout@v1
@@ -164,12 +164,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [debian11, debian12, ubuntu2204, ubuntu2404, ubuntu2410]
+        os: [debian11, debian12, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2410]
         include:
           - os: debian11
             codename: bullseye
           - os: debian12
             codename: bookworm
+          - os: ubuntu2004
+            codename: focal
           - os: ubuntu2204
             codename: jammy
           - os: ubuntu2404
@@ -229,12 +231,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [debian11, debian12, ubuntu2204, ubuntu2404, ubuntu2410]
+        os: [debian11, debian12, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2410]
         include:
           - os: debian11
             codename: bullseye
           - os: debian12
             codename: bookworm
+          - os: ubuntu2004
+            codename: focal
           - os: ubuntu2204
             codename: jammy
           - os: ubuntu2404
@@ -323,12 +327,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [debian11, debian12, ubuntu2204, ubuntu2404, ubuntu2410]
+        os: [debian11, debian12, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2410]
         include:
           - os: debian11
             codename: bullseye
           - os: debian12
             codename: bookworm
+          - os: ubuntu2004
+            codename: focal
           - os: ubuntu2204
             codename: jammy
           - os: ubuntu2404
