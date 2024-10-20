@@ -5,8 +5,8 @@
 Make sure to leave a :star: :)
 
 ## Hangover
-This is Hangover, a project started by André Zwing and Stefan Dösinger in 2016 that currently can
-run x86_32 Windows applications on aarch64 Wine.
+This is Hangover, a project started by André Zwing and Stefan Dösinger in 2016 that can
+run x86_64 and x86_32 Windows applications on aarch64 Wine.
 
 ### How it works
 Hangover uses various emulators as DLLs (pick one that suits your needs, e.g. works for you) to only emulate the application you want to run instead of emulating a complete Wine installation.
@@ -15,16 +15,19 @@ As soon as the application does a Windows/Wine system call, say NtUserCreateWind
 
 In short, we break out of emulation at the win32 syscall or wine unix call level for performance reasons, which is enabled by the WoW64 support in Wine.
 
+For 64-Bit we're using the ARM64EC ABI combined with an emulator (FEX).
+
 ### Benchmarks
 For Benchmarks see [here](benchmarks/readme.md). They show that the Hangover approach works as expected, as only emulating the application instead of a complete Wine installation has benefits. It's especially visible with box64cpu vs. Wine running under Box64.
 
 ### Interesting Branches
 
 * [RISC-V 64-bit Linux support](https://github.com/AndreRH/hangover/tree/riscv64)
-* [x86_64 support on ARM64](https://github.com/AndreRH/hangover/tree/arm64ec)
+* [Hangover-WOW64](https://github.com/AndreRH/hangover/tree/wow) (Hangover 0.8.1 - 9.19)
+* [Hangover-Classic](https://github.com/AndreRH/hangover/tree/hangover-classic) (Hangover 0.4.0 - 0.6.5)
 
 ### Status
-Current main focus is to run i386 Windows applications on ARM64 Linux, but it's also possible to run ARM32 Windows applications on x86_64 Linux.
+Current main focus is to run x86_64 and i386 Windows applications on ARM64 Linux, but it's also possible to run ARM32 Windows applications on x86_64 Linux.
 
 PPC64le isn't supported anymore and won't be added back in the near future.
 If you need that feature, have a look at older releases before 0.8.x.
@@ -41,7 +44,7 @@ A Discord Server is available for contributors and previous financial supporters
 It provides advanced user support, development discussions and more.
 
 ### Packages
-__Debian__ 11 & 12 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 22.04 & 24.04 & 24.10 are attached to the Github Release.
+__Debian__ 11 & 12 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 20.04 & 22.04 & 24.04 & 24.10 are attached to the Github Release.
 
 __Termux__ packages can be found in the [Termux User Repository](https://github.com/termux-user-repository/tur).
 
@@ -54,7 +57,9 @@ For build instructions see [here](docs/COMPILE.md).
 ### Running
 You can add the following environment variables:
 
-* HODLL to select the emulator dll:
+* HODLL64 to select the 64-bit emulator dll:
+    * libarm64ecfex.dll for x86_64 emulation (FEX)
+* HODLL to select the 32-bit emulator dll:
     * wow64cpu.dll for "native" i386 mode on x86_64
     * wowarmhw.dll for ARM emulation (Qemu)
     * xtajit.dll for i386 emulation (Qemu)
@@ -62,6 +67,19 @@ You can add the following environment variables:
     * box64cpu.dll for i386 emulation (Box64)
 * HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
 * QEMU_LOG to set QEMU log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/v5.2.0/util/log.c#L297)
+
+#### FEX
+libarm64ecfex.dll currently is the default for x86_64 emulation, so it's simply:
+
+```bash
+$ wine your_x86_64_application.exe
+```
+
+libwow64fex.dll is not the default for i386 emulation, so you need:
+
+```bash
+$ HODLL=libwow64fex.dll wine your_x86_application.exe
+```
 
 #### Box64
 box64cpu.dll currently is the default for i386 emulation, so it's simply:
@@ -79,11 +97,6 @@ Until the critical section issue is solved it is highly recomended to limit exec
 ```bash
 $ HODLL=xtajit.dll   taskset -c 1 wine your_x86_application.exe
 $ HODLL=wowarmhw.dll taskset -c 1 wine your_arm_application.exe
-```
-
-#### FEX
-```bash
-$ HODLL=libwow64fex.dll wine your_x86_application.exe
 ```
 
 #### Enabling Wayland
