@@ -62,6 +62,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcups2-dev:arm64 \
     libxkbcommon-dev:arm64 \
     libxkbregistry-dev:arm64 \
-    libwayland-dev:arm64
+    libwayland-dev:arm64 \
+    meson glslang-dev glslang-tools
 
 RUN cd /opt; wget https://github.com/bylaws/llvm-mingw/releases/download/20240929/llvm-mingw-20240929-ucrt-ubuntu-20.04-x86_64.tar.xz; tar -xJf llvm-mingw-20240929-ucrt-ubuntu-20.04-x86_64.tar.xz; rm *.tar.xz; mv llvm-mingw-20240929-ucrt-ubuntu-20.04-x86_64 bylaws-llvm-mingw-20240929-ucrt-ubuntu-20.04-x86_64
