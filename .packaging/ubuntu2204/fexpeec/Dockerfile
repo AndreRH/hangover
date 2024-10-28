@@ -12,4 +12,4 @@ COPY DEBIAN /opt/deb/hangover-libarm64ecfex/DEBIAN/
 RUN cp /opt/deb/hangover-libarm64ecfex/DEBIAN/copyright /opt/deb/hangover-libarm64ecfex/usr/share/doc/hangover-libarm64ecfex/; \
     cp /opt/fex/build/Bin/libarm64ecfex.dll /opt/deb/hangover-libarm64ecfex/usr/lib/wine/aarch64-windows/; \
     cd /opt/deb; mv hangover-libarm64ecfex hangover-libarm64ecfex_HOVERSION_arm64; \
-    dpkg-deb --build --root-owner-group  hangover-libarm64ecfex_HOVERSION_arm64
+    dpkg-deb -Zxz --build --root-owner-group  hangover-libarm64ecfex_HOVERSION_arm64
