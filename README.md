@@ -106,6 +106,15 @@ Wayland isn't used by default or automatically, but if you want to use it instea
 $ wine reg.exe add HKCU\\Software\\Wine\\Drivers /v Graphics /d wayland,x11
 ```
 
+#### DXVK
+Copy the x32 binaries to $WINEPREFIX/drive_c/windows/syswow64
+
+Copy the arm64ec, aarch64 or x64 binaries to $WINEPREFIX/drive_c/windows/system32, depending on your use case.
+For x86_64 applications first try arm64ec, it should perform best. In case it doesn't work, try x64. For aarch64 applications use aarch64.
+Then open `winecfg`, switch to the Libraries tab and add `native` DLL overrides for `d3d8`, `d3d9`, `d3d10core`, `d3d11` and `dxgi`.
+
+Note that DXVK requires a Vulkan 1.3 driver with certain features and that might not be the case for a lot of ARM64 hardware.
+
 ### Known issues
 
 * QEMU: CriticalSection doesn't work reliably and other instabilities
