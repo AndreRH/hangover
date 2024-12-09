@@ -1,12 +1,13 @@
-FROM debian:12
+# fixme: 13
+FROM debian:trixie
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN cat /etc/apt/sources.list | grep -v "^#"  | sed "s/^deb /deb [arch=amd64] /g" > /tmp/amd64.list && \
+RUN cat /etc/apt/sources.list.d/debian.sources | grep -v "^#"  | sed "s/^deb /deb [arch=amd64] /g" > /tmp/amd64.list && \
     cat /tmp/amd64.list | sed "s/\[arch=amd64\]/[arch=arm64]/g" > /tmp/arm64.list && \
-    cat /tmp/amd64.list /tmp/arm64.list > /etc/apt/sources.list && \
+    cat /tmp/amd64.list /tmp/arm64.list > /etc/apt/sources.list.d/debian.sources && \
     dpkg --add-architecture arm64
-RUN cat /etc/apt/sources.list
+RUN cat /etc/apt/sources.list.d/debian.sources
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu \
@@ -29,7 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libx11-dev libxinerama-dev libfreetype-dev libfontconfig-dev \
     cmake \
     libstdc++6-arm64-cross \
-    libstdc++-12-dev-arm64-cross \
+    libstdc++-13-dev-arm64-cross \
     libepoxy-dev:arm64 \
     libsdl2-dev:arm64 \
     ninja-build \

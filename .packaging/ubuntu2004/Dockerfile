@@ -10,7 +10,7 @@ RUN cat /etc/apt/sources.list
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu \
-    ca-certificates nano python3 clang screen llvm lld wget curl \
+    ca-certificates nano python3 python3-setuptools clang screen llvm lld wget curl \
     flex bison \
     libfreetype6-dev \
     libglib2.0-dev \
