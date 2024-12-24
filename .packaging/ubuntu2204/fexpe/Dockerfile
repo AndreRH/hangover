@@ -3,7 +3,7 @@ FROM foundationubuntu2204
 RUN rm -rf /opt/fex; mkdir -p /opt/fex/
 COPY ./ /opt/fex/
 RUN ls -la /opt/fex/
-ENV PATH="/opt/bylaws-llvm-mingw-20240929-ucrt-ubuntu-20.04-x86_64/bin:$PATH"
+ENV PATH="/opt/bylaws-llvm-mingw-20241218-ucrt-ubuntu-20.04-x86_64/bin:$PATH"
 RUN cd /opt/fex; mkdir build; cd build; cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../toolchain_mingw.cmake -DENABLE_LTO=False -DMINGW_TRIPLE=aarch64-w64-mingw32 -DBUILD_TESTS=False ..; make -j `nproc` wow64fex
 RUN ls -la /opt/fex/build/Bin
 RUN aarch64-w64-mingw32-strip --strip-unneeded /opt/fex/build/Bin/libwow64fex.dll
