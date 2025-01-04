@@ -44,7 +44,7 @@ A Discord Server is available for contributors and previous financial supporters
 It provides advanced user support, development discussions and more.
 
 ### Packages
-__Debian__ 11 & 12 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 20.04 & 22.04 & 24.04 & 24.10 are attached to the Github Release.
+__Debian__ 11 & 12 & 13 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 20.04 & 22.04 & 24.04 & 24.10 are attached to the Github Release.
 
 __Termux__ packages can be found in the [Termux User Repository](https://github.com/termux-user-repository/tur).
 
