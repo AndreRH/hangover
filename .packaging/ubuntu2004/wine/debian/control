@@ -62,7 +62,7 @@ Multi-Arch: foreign
 Pre-Depends: dpkg (>= 1.14.12ubuntu3), ${misc:Pre-Depends}
 Depends:    ${shlibs:Depends},
             libncurses6 | libncurses5 | libncurses,
-            hangover-libarm64ecfex
+            hangover-libarm64ecfex | fex-emu-wine
 Recommends: libasound2-plugins,
             libcap2-bin,
             libcups2,
