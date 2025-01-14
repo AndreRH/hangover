@@ -46,6 +46,8 @@ It provides advanced user support, development discussions and more.
 ### Packages
 __Debian__ 11 & 12 & 13 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 20.04 & 22.04 & 24.04 & 24.10 are attached to the Github Release.
 
+Or get it on [__Pi-Apps__](https://github.com/Botspot/pi-apps/)
+
 __Termux__ packages can be found in the [Termux User Repository](https://github.com/termux-user-repository/tur).
 
 __Alpine__ package can be found in the [Alpine Testing Repository](https://gitlab.alpinelinux.org/alpine/aports/-/tree/master/testing/hangover-wine).
