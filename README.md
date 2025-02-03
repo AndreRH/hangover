@@ -9,7 +9,7 @@ This is Hangover, a project started by André Zwing and Stefan Dösinger in 2016
 run x86_64 and x86_32 Windows applications on aarch64 Wine.
 
 ### How it works
-Hangover uses various emulators as DLLs (pick one that suits your needs, e.g. works for you) to only emulate the application you want to run instead of emulating a complete Wine installation.
+Hangover uses emulator DLLs to emulate only the application you want to run, rather than an entire Wine installation. It does not require 32-bit Unix libraries, and you can also run applications natively without emulation (like ARM64 7-Zip on ARM64).
 
 As soon as the application does a Windows/Wine system call, say NtUserCreateWindowEx, it's executed outside the emulator (read non-emulated, fast, native). Even better, everything Unix related is never emulated.
 
@@ -125,5 +125,5 @@ Note that DXVK requires a Vulkan 1.3 driver with certain features and that might
 
 I have decided to end my activities on Patreon and other platforms.
 It won't be the end of the project, my plan is to keep working on it,
-delivering new releases and updates. However, I will probably invest less time,
+delivering new releases and updates. However, I will invest less time,
 except for the RISC-V port.
