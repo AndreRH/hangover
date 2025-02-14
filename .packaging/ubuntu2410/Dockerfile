@@ -8,7 +8,7 @@ RUN echo "Types: deb" > /tmp/new.src; echo "URIs: http://archive.ubuntu.com/ubun
     cp /tmp/new.src /etc/apt/sources.list.d/ubuntu.sources && dpkg --add-architecture arm64
 RUN cat /etc/apt/sources.list.d/ubuntu.sources
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN rm -f /var/lib/man-db/auto-update; apt-get update && apt-get install -y --no-install-recommends \
     binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu \
     ca-certificates nano python3 python3-setuptools clang screen llvm lld wget curl \
     flex bison \
