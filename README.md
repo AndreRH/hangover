@@ -48,7 +48,7 @@ __Debian__ 11 & 12 & 13 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 
 
 Or get it on [__Pi-Apps__](https://github.com/Botspot/pi-apps/)
 
-__Termux__ packages can be found in the [Termux User Repository](https://github.com/termux-user-repository/tur).
+__Termux__ packages can be found in the [Termux User Repository](https://github.com/termux/termux-packages/tree/master/x11-packages/hangover-wine).
 
 __Alpine__ package can be found in the [Alpine Testing Repository](https://gitlab.alpinelinux.org/alpine/aports/-/tree/master/testing/hangover-wine).
 It's only hangover-wine without box64cpu.dll for now, but you can copy over box64cpu.dll and/or libwow64fex.dll from extracted debian packages or compile them yourself.
@@ -61,6 +61,7 @@ You can add the following environment variables:
 
 * HODLL64 to select the 64-bit emulator dll:
     * libarm64ecfex.dll for x86_64 emulation (FEX)
+    * xtajit64.dll (Wine stub dll)
 * HODLL to select the 32-bit emulator dll:
     * wow64cpu.dll for "native" i386 mode on x86_64
     * wowarmhw.dll for ARM emulation (Qemu)
