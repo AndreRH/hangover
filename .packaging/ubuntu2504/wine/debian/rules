@@ -12,6 +12,7 @@ override_dh_auto_configure:
 	./configure --prefix=/usr \
 				--with-mingw=clang \
 				--enable-archs=arm64ec,aarch64,i386 \
+				--enable-tools \
 				--disable-tests \
 				--host=aarch64-linux-gnu \
 				host_alias=aarch64-linux-gnu \
