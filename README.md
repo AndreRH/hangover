@@ -20,6 +20,9 @@ For 64-Bit we're using the ARM64EC ABI combined with an emulator (FEX).
 ### Benchmarks
 For Benchmarks see [here](benchmarks/readme.md). They show that the Hangover approach works as expected, as only emulating the application instead of a complete Wine installation has benefits. It's especially visible with box64cpu vs. Wine running under Box64.
 
+### Help wanted
+I'm quite short on time these days, so it would be great to have someone handle innovative projects like a ARM64EC-enabled Box64 integration. Any help with promotion in any form would also be appreciated.
+
 ### Interesting Branches
 
 * [RISC-V 64-bit Linux support](https://github.com/AndreRH/hangover/tree/riscv64)
@@ -49,9 +52,6 @@ __Debian__ 11 & 12 & 13 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 
 Or get it on [__Pi-Apps__](https://github.com/Botspot/pi-apps/)
 
 __Termux__ packages can be found in the [Termux User Repository](https://github.com/termux/termux-packages/tree/master/x11-packages/hangover-wine).
-
-__Alpine__ package can be found in the [Alpine Testing Repository](https://gitlab.alpinelinux.org/alpine/aports/-/tree/master/testing/hangover-wine).
-It's only hangover-wine without box64cpu.dll for now, but you can copy over box64cpu.dll and/or libwow64fex.dll from extracted debian packages or compile them yourself.
 
 ### How to build
 For build instructions see [here](docs/COMPILE.md).
