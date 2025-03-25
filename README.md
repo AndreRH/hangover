@@ -47,11 +47,11 @@ A Discord Server is available for contributors and previous financial supporters
 It provides advanced user support, development discussions and more.
 
 ### Packages
-__Debian__ 11 & 12 & 13 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 20.04 & 22.04 & 24.04 & 24.10 are attached to the Github Release.
+__Debian__ 11 & 12 & 13 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 20.04 & 22.04 & 24.04 & 24.10 & 25.04 are attached to the Github Release.
 
 Or get it on [__Pi-Apps__](https://github.com/Botspot/pi-apps/)
 
-__Termux__ packages can be found in the [Termux User Repository](https://github.com/termux/termux-packages/tree/master/x11-packages/hangover-wine).
+__Termux__ packages can be found in the [Termux Repository](https://github.com/termux/termux-packages/tree/master/x11-packages/hangover-wine).
 
 ### How to build
 For build instructions see [here](docs/COMPILE.md).
