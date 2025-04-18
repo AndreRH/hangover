@@ -1,3 +1,7 @@
+[español](https://github-com.translate.goog/AndreRH/hangover/blob/master/README.md?_x_tr_sl=en&_x_tr_tl=es) | [français](https://github-com.translate.goog/AndreRH/hangover/blob/master/README.md?_x_tr_sl=en&_x_tr_tl=fr) | [português](https://github-com.translate.goog/AndreRH/hangover/blob/master/README.md?_x_tr_sl=en&_x_tr_tl=pt) | [deutsch](https://github-com.translate.goog/AndreRH/hangover/blob/master/README.md?_x_tr_sl=en&_x_tr_tl=de)
+
+---
+
 ![stars](https://img.shields.io/github/stars/AndreRH/hangover?style=flat-square)
 ![forks](https://img.shields.io/github/forks/AndreRH/hangover?style=flat-square)
 ![Release](https://img.shields.io/github/v/release/AndreRH/hangover?style=flat-square)
@@ -48,6 +52,10 @@ It provides advanced user support, development discussions and more.
 
 ### Packages
 __Debian__ 11 & 12 & 13 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 20.04 & 22.04 & 24.04 & 24.10 & 25.04 are attached to the Github Release.
+Install them with
+```bash
+$ sudo apt install ./hangover.*deb
+```
 
 Or get it on [__Pi-Apps__](https://github.com/Botspot/pi-apps/)
 
