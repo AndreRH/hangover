@@ -1,5 +1,8 @@
 FROM ubuntu:25.04
 
+ARG LLVMMINGW_DATE=20250417
+ARG LLVMMINGW_NAME=llvm-mingw-$LLVMMINGW_DATE-ucrt-ubuntu-22.04-x86_64
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN echo "Types: deb" > /tmp/new.src; echo "URIs: http://archive.ubuntu.com/ubuntu/" >> /tmp/new.src; echo "Suites: plucky plucky-updates plucky-backports" >> /tmp/new.src; echo "Components: main universe restricted multiverse" >> /tmp/new.src; echo "Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg" >> /tmp/new.src; echo "Architectures: amd64" >> /tmp/new.src; \
@@ -62,4 +65,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxkbregistry-dev:arm64 \
     libwayland-dev:arm64
 
-RUN cd /opt; wget https://github.com/mstorsjo/llvm-mingw/releases/download/20250319/llvm-mingw-20250319-ucrt-ubuntu-20.04-x86_64.tar.xz; tar -xJf llvm-mingw-20250319-ucrt-ubuntu-20.04-x86_64.tar.xz; rm *.tar.xz
+RUN cd /opt; wget https://github.com/mstorsjo/llvm-mingw/releases/download/$LLVMMINGW_DATE/$LLVMMINGW_NAME.tar.xz; tar -xJf $LLVMMINGW_NAME.tar.xz; rm *.tar.xz

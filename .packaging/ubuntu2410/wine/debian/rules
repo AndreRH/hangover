@@ -2,7 +2,7 @@
 
 export DEB_CFLAGS_MAINT_STRIP = -fstack-protector-strong -fcf-protection=full
 export DEB_BUILD_MAINT_OPTIONS = optimize=-lto hardening=-relro
-export PATH = /opt/llvm-mingw-20250319-ucrt-ubuntu-20.04-x86_64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export PATH = /opt/llvm-mingw-20250417-ucrt-ubuntu-22.04-x86_64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 %:
 	dh $@ --parallel
