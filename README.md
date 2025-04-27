@@ -51,7 +51,7 @@ A Discord Server is available for contributors and previous financial supporters
 It provides advanced user support, development discussions and more.
 
 ### Packages
-__Debian__ 11 & 12 & 13 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 20.04 & 22.04 & 24.04 & 24.10 & 25.04 are attached to the Github Release.
+__Debian__ 11 & 12 & 13 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 20.04 & 22.04 & 24.04 & 25.04 are attached to the Github Release.
 Install them with
 ```bash
 $ sudo apt install ./hangover.*deb

@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [debian11, debian12, debian13, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2410, ubuntu2504]
+        os: [debian11, debian12, debian13, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2504]
 
     steps:
     - uses: actions/checkout@v1
@@ -212,7 +212,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [debian11, debian12, debian13, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2410, ubuntu2504]
+        os: [debian11, debian12, debian13, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2504]
         include:
           - os: debian11
             codename: bullseye
@@ -226,8 +226,6 @@ jobs:
             codename: jammy
           - os: ubuntu2404
             codename: noble
-          - os: ubuntu2410
-            codename: oracular
           - os: ubuntu2504
             codename: plucky
 
@@ -283,7 +281,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [debian11, debian12, debian13, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2410, ubuntu2504]
+        os: [debian11, debian12, debian13, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2504]
         include:
           - os: debian11
             codename: bullseye
@@ -297,8 +295,6 @@ jobs:
             codename: jammy
           - os: ubuntu2404
             codename: noble
-          - os: ubuntu2410
-            codename: oracular
           - os: ubuntu2504
             codename: plucky
 
@@ -383,7 +379,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        os: [debian11, debian12, debian13, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2410, ubuntu2504]
+        os: [debian11, debian12, debian13, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2504]
         include:
           - os: debian11
             codename: bullseye
@@ -397,8 +393,6 @@ jobs:
             codename: jammy
           - os: ubuntu2404
             codename: noble
-          - os: ubuntu2410
-            codename: oracular
           - os: ubuntu2504
             codename: plucky
 
