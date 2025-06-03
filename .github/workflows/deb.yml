@@ -159,6 +159,57 @@ jobs:
         name: hangover-libarm64ecfex_${{ env.HOVERSION }}_arm64.deb
         path: hangover-libarm64ecfex_${{ env.HOVERSION }}_arm64.deb
 
+  box-pe:
+    needs: foundations
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+
+    - name: Cache docker image
+      id: cache-foundation
+      uses: actions/cache@v4
+      env:
+        cache-name: cache-foundation
+      with:
+        path: foundationubuntu2204.tgz
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.packaging/ubuntu2204/Dockerfile') }}
+
+    - name: Import docker image
+      run: docker image load -i foundationubuntu2204.tgz
+
+    - name: get version
+      run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
+
+    - name: get shallow submodule
+      run: git submodule update --init --recursive --depth 1 box64
+
+    - name: Setup packaging
+      run: |
+        rm -rf box64/debian
+        cp -r .packaging/ubuntu2204/boxpe/* box64
+        cp box64/LICENSE box64/DEBIAN/copyright
+        sed -i "s/HOVERSION/${HOVERSION}/g" box64/Dockerfile
+        sed -i "s/HOVERSION/${HOVERSION}/g" box64/DEBIAN/control
+        nproc
+
+    - name: Build package
+      run: cd box64; docker build -t boxpe .
+
+    - name: Extract package
+      run: docker run --rm boxpe cat /opt/deb/hangover-wowbox64_${{ env.HOVERSION }}_arm64.deb > hangover-wowbox64_${{ env.HOVERSION }}_arm64.deb
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: hangover-wowbox64_${{ env.HOVERSION }}_arm64.deb
+        path: hangover-wowbox64_${{ env.HOVERSION }}_arm64.deb
 
   dxvk:
     needs: foundations
@@ -375,7 +426,7 @@ jobs:
 
 
   bundle:
-    needs: [dxvk, fex-pe, fex-pe-ec, qemu, wine]
+    needs: [dxvk, fex-pe, fex-pe-ec, box-pe, qemu, wine]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -408,32 +459,38 @@ jobs:
     - name: get version
       run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
 
-    - name: Download Artifacts 1/4
+    - name: Download Artifacts 1/5
       uses: actions/download-artifact@v4
       with:
         pattern: hangover*${{ matrix.codename }}_arm64.deb
         merge-multiple: true
 
-    - name: Download Artifacts 2/4
+    - name: Download Artifacts 2/5
       uses: actions/download-artifact@v4
       with:
         pattern: hangover-libwow64fex*_arm64.deb
         merge-multiple: true
 
-    - name: Download Artifacts 3/4
+    - name: Download Artifacts 3/5
       uses: actions/download-artifact@v4
       with:
         pattern: hangover-libarm64ecfex*_arm64.deb
         merge-multiple: true
 
-    - name: Download Artifacts 4/4
+    - name: Download Artifacts 4/5
       uses: actions/download-artifact@v4
       with:
         pattern: dxvk*.tar.gz
         merge-multiple: true
 
+    - name: Download Artifacts 5/5
+      uses: actions/download-artifact@v4
+      with:
+        pattern: hangover-wowbox64*_arm64.deb
+        merge-multiple: true
+
     - name: Bundle
-      run: tar -cf hangover_${{ env.HOVERSION }}_${{ matrix.os }}_${{ matrix.codename }}_arm64.tar hangover*${{ matrix.codename }}_arm64.deb hangover-libwow64fex*_arm64.deb hangover-libarm64ecfex*_arm64.deb dxvk*.tar.gz
+      run: tar -cf hangover_${{ env.HOVERSION }}_${{ matrix.os }}_${{ matrix.codename }}_arm64.tar hangover*${{ matrix.codename }}_arm64.deb hangover-libwow64fex*_arm64.deb hangover-libarm64ecfex*_arm64.deb dxvk*.tar.gz hangover-wowbox64*_arm64.deb
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4

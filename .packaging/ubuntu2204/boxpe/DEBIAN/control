@@ -1,0 +1,5 @@
+Package: hangover-wowbox64
+Version: HOVERSION
+Architecture: arm64
+Maintainer: André Zwing <nerv@dawncrow.de>
+Description: Box64 based x86 emulator library for Hangover

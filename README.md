@@ -76,6 +76,7 @@ You can add the following environment variables:
     * xtajit.dll for i386 emulation (Qemu)
     * libwow64fex.dll for i386 emulation (FEX)
     * box64cpu.dll for i386 emulation (Box64)
+    * wowbox64.dll for i386 emulation (Box64 upstream)
 * HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
 * QEMU_LOG to set QEMU log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/v5.2.0/util/log.c#L297)
 

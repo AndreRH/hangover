@@ -10,3 +10,7 @@
 	path = fex
 	url = https://github.com/AndreRH/FEX.git
 	branch = arm64ec
+[submodule "box64"]
+	path = box64
+	url = https://github.com/AndreRH/box64
+	branch = wow64

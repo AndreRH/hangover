@@ -73,6 +73,24 @@ $ make -j$(nproc) wow64fex
 
 Place resulting library (build_pe/Bin/libwow64fex.dll) in your wine prefix under drive_c/windows/system32/.
 
+#### Box64 (upstream) for 32-bit (optional)
+To build wowbox64 from Box64 you need:
+
+- [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation (downlaod & unpack a release, but don't use the .zip files, they are for Windows)
+- About 400MB of disk space
+
+Build it like (from the Hangover repository):
+```bash
+$ mkdir -p box64/build_pe
+$ cd box64/build_pe
+$ export PATH=/path/to/llvm-mingw/bin:$PATH
+$ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DWOW64=ON ..
+
+$ make -j$(nproc) wow64fex
+```
+
+Place resulting library (build_pe/wowbox64-prefix/src/wowbox64-build/wowbox64.dll) in your wine prefix under drive_c/windows/system32/.
+
 #### QEMU (optional)
 To build QEMU as a library you need:
 
