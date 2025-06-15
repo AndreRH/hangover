@@ -24,9 +24,6 @@ For 64-Bit we're using the ARM64EC ABI combined with an emulator (FEX).
 ### Benchmarks
 For Benchmarks see [here](benchmarks/readme.md). They show that the Hangover approach works as expected, as only emulating the application instead of a complete Wine installation has benefits. It's especially visible with box64cpu vs. Wine running under Box64.
 
-### Help wanted
-I'm quite short on time these days, so it would be great to have someone handle innovative projects like a ARM64EC-enabled Box64 integration. Any help with promotion in any form would also be appreciated.
-
 ### Interesting Branches
 
 * [RISC-V 64-bit Linux support](https://github.com/AndreRH/hangover/tree/riscv64)
@@ -43,7 +40,7 @@ Emulator integrations:
 
 - [QEMU](https://gitlab.com/qemu-project/qemu): Has the most issues and is by far the [slowest](https://github.com/AndreRH/hangover/tree/master/benchmarks) option
 - [FEX](https://github.com/FEX-Emu/FEX): Upstream PE version plus some conveniences
-- [Box64](https://github.com/ptitSeb/box64/): Mostly done
+- [Box64](https://github.com/ptitSeb/box64/): Upstream PE version
 - [Blink](https://github.com/jart/blink): started, not part of this repository yet
 
 ### Discord
@@ -56,8 +53,6 @@ Install them with
 ```bash
 $ sudo apt install ./hangover.*deb
 ```
-
-Or get it on [__Pi-Apps__](https://github.com/Botspot/pi-apps/)
 
 __Termux__ packages can be found in the [Termux Repository](https://github.com/termux/termux-packages/tree/master/x11-packages/hangover-wine).
 
@@ -75,8 +70,7 @@ You can add the following environment variables:
     * wowarmhw.dll for ARM emulation (Qemu)
     * xtajit.dll for i386 emulation (Qemu)
     * libwow64fex.dll for i386 emulation (FEX)
-    * box64cpu.dll for i386 emulation (Box64)
-    * wowbox64.dll for i386 emulation (Box64 upstream)
+    * wowbox64.dll for i386 emulation (Box64)
 * HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
 * QEMU_LOG to set QEMU log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/v5.2.0/util/log.c#L297)
 
@@ -94,7 +88,7 @@ $ HODLL=libwow64fex.dll wine your_x86_application.exe
 ```
 
 #### Box64
-box64cpu.dll currently is the default for i386 emulation, so it's simply:
+wowbox64.dll currently is the default for i386 emulation, so it's simply:
 
 ```bash
 $ wine your_x86_application.exe

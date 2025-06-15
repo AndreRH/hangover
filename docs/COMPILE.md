@@ -4,10 +4,10 @@ First make sure you have the submodules set up:
 ```bash
 $ git submodule update --init --recursive
 ```
-And note while Box64 is already integrated as DLL, you can build other emulators (currently FEX and QEMU), but you don't need to, one is enough depending on your use-case.
+You can build various emulators (currently Box64, FEX and QEMU), but you don't need to, one is enough depending on your use-case.
 Except for libarm64ecfex.dll, which is necessary for x86_64 emulation.
 
-#### Wine (includes Box64)
+#### Wine
 To build Hangover Wine you need:
 
 - The dependencies to [build](https://wiki.winehq.org/Building_Wine#Satisfying_Build_Dependencies) a 64 bit Wine
@@ -73,7 +73,7 @@ $ make -j$(nproc) wow64fex
 
 Place resulting library (build_pe/Bin/libwow64fex.dll) in your wine prefix under drive_c/windows/system32/.
 
-#### Box64 (upstream) for 32-bit (optional)
+#### Box64 for 32-bit
 To build wowbox64 from Box64 you need:
 
 - [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation (downlaod & unpack a release, but don't use the .zip files, they are for Windows)
