@@ -7,7 +7,7 @@ RUN rm -rf /opt/box64; mkdir -p /opt/box64/
 COPY ./ /opt/box64/
 RUN ls -la /opt/box64/
 ENV PATH="$LLVMMINGW_PATH:$PATH"
-RUN cd /opt/box64; mkdir build; cd build; cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DARM_DYNAREC=ON -DWOW64=ON -DNOGIT=ON ..; make -j `nproc` wowbox64
+RUN cd /opt/box64; mkdir build; cd build; cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DARM_DYNAREC=ON -DWOW64=ON ..; make -j `nproc` wowbox64
 RUN ls -la /opt/box64/build/wowbox64-prefix/src/wowbox64-build/
 RUN aarch64-w64-mingw32-strip --strip-unneeded /opt/box64/build/wowbox64-prefix/src/wowbox64-build/wowbox64.dll
 RUN mkdir -p /opt/deb/hangover-wowbox64/DEBIAN /opt/deb/hangover-wowbox64/usr/lib/wine/aarch64-windows /opt/deb/hangover-wowbox64/usr/share/doc/hangover-wowbox64
