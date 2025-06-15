@@ -215,6 +215,7 @@ jobs:
         cp box64/LICENSE box64/DEBIAN/copyright
         sed -i "s/HOVERSION/${HOVERSION}/g" box64/Dockerfile
         sed -i "s/HOVERSION/${HOVERSION}/g" box64/DEBIAN/control
+        sed -i "s/GITREV/\"(Hangover ${HOVERSION})\"/g" box64/src/build_info.h
         nproc
 
     - name: Build package
