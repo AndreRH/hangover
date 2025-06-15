@@ -86,7 +86,7 @@ $ cd box64/build_pe
 $ export PATH=/path/to/llvm-mingw/bin:$PATH
 $ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DWOW64=ON ..
 
-$ make -j$(nproc) wow64fex
+$ make -j$(nproc) wowbox64
 ```
 
 Place resulting library (build_pe/wowbox64-prefix/src/wowbox64-build/wowbox64.dll) in your wine prefix under drive_c/windows/system32/.
