@@ -1,6 +1,6 @@
 FROM foundationubuntu2204
 
-ARG LLVMMINGW_NAME=llvm-mingw-20250528-ucrt-ubuntu-22.04-x86_64
+ARG LLVMMINGW_NAME=llvm-mingw-20250613-ucrt-ubuntu-22.04-x86_64
 ENV LLVMMINGW_PATH="/opt/$LLVMMINGW_NAME/bin"
 
 RUN rm -rf /opt/box64; mkdir -p /opt/box64/
