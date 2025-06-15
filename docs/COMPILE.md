@@ -84,7 +84,7 @@ Build it like (from the Hangover repository):
 $ mkdir -p box64/build_pe
 $ cd box64/build_pe
 $ export PATH=/path/to/llvm-mingw/bin:$PATH
-$ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DWOW64=ON ..
+$ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DARM_DYNAREC=ON -DWOW64=ON ..
 
 $ make -j$(nproc) wowbox64
 ```
