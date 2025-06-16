@@ -45,7 +45,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxrender-dev:arm64 \
     libxfixes-dev:arm64 \
     libxcomposite-dev:arm64 \
-    libosmesa-dev:arm64 \
     libdbus-1-dev:arm64 \
     libsane-dev:arm64 \
     libusb-1.0-0-dev:arm64 \
