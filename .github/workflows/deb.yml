@@ -286,75 +286,6 @@ jobs:
         path: dxvk-${{ env.DXVKVERSION }}.tar.gz
 
 
-  qemu:
-    needs: foundations
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [debian11, debian12, debian13, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2504]
-        include:
-          - os: debian11
-            codename: bullseye
-          - os: debian12
-            codename: bookworm
-          - os: debian13
-            codename: trixie
-          - os: ubuntu2004
-            codename: focal
-          - os: ubuntu2204
-            codename: jammy
-          - os: ubuntu2404
-            codename: noble
-          - os: ubuntu2504
-            codename: plucky
-
-    steps:
-    - uses: actions/checkout@v1
-    - name: free disk space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        df -h
-
-    - name: Cache docker image
-      id: cache-foundation
-      uses: actions/cache@v4
-      env:
-        cache-name: cache-foundation
-      with:
-        path: foundation${{ matrix.os }}.tgz
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles(format('.packaging/{0}/Dockerfile', matrix.os)) }}
-
-    - name: Import docker image
-      run: docker image load -i foundation${{ matrix.os }}.tgz
-
-    - name: get version
-      run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
-
-    - name: get shallow submodule
-      run: git submodule update --init --recursive --depth 1 qemu
-
-    - name: Setup packaging
-      run: |
-        cp -r .packaging/${{ matrix.os }}/qemu/* qemu
-        sed -i "s/HOVERSION/${HOVERSION}/g" qemu/Dockerfile
-        sed -i "s/HOVERSION/${HOVERSION}/g" qemu/DEBIAN/control
-        nproc
-
-    - name: Build package
-      run: cd qemu; docker build -t qemu${{ matrix.os }} .
-
-    - name: Extract package
-      run: docker run --rm qemu${{ matrix.os }} cat /opt/deb/hangover-libqemu_${{ env.HOVERSION }}~${{ matrix.codename }}_arm64.deb > hangover-libqemu_${{ env.HOVERSION }}~${{ matrix.codename }}_arm64.deb
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: hangover-libqemu_${{ env.HOVERSION }}~${{ matrix.codename }}_arm64.deb
-        path: hangover-libqemu_${{ env.HOVERSION }}~${{ matrix.codename }}_arm64.deb
-
-
   wine:
     needs: foundations
     runs-on: ubuntu-latest
@@ -454,7 +385,7 @@ jobs:
 
 
   bundle:
-    needs: [dxvk, fex-pe, fex-pe-ec, box-pe, qemu, wine]
+    needs: [dxvk, fex-pe, fex-pe-ec, box-pe, wine]
     runs-on: ubuntu-latest
     strategy:
       matrix:

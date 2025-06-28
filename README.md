@@ -38,7 +38,7 @@ If you need that feature, have a look at older releases before 0.8.x.
 
 Emulator integrations:
 
-- [QEMU](https://gitlab.com/qemu-project/qemu): Has the most issues and is by far the [slowest](https://github.com/AndreRH/hangover/tree/master/benchmarks) option
+- [QEMU](https://gitlab.com/qemu-project/qemu): Removed
 - [FEX](https://github.com/FEX-Emu/FEX): Upstream PE version plus some conveniences
 - [Box64](https://github.com/ptitSeb/box64/): Upstream PE version
 - [Blink](https://github.com/jart/blink): started, not part of this repository yet
@@ -67,12 +67,8 @@ You can add the following environment variables:
     * xtajit64.dll (Wine stub dll)
 * HODLL to select the 32-bit emulator dll:
     * wow64cpu.dll for "native" i386 mode on x86_64
-    * wowarmhw.dll for ARM emulation (Qemu)
-    * xtajit.dll for i386 emulation (Qemu)
     * libwow64fex.dll for i386 emulation (FEX)
     * wowbox64.dll for i386 emulation (Box64)
-* HOLIB to set full path of the library, e.g. HOLIB=/path/to/libqemu-i386.so
-* QEMU_LOG to set QEMU log channels, find some options [here.](https://github.com/AndreRH/qemu/blob/v5.2.0/util/log.c#L297)
 
 #### FEX
 libarm64ecfex.dll currently is the default for x86_64 emulation, so it's simply:
@@ -96,15 +92,6 @@ $ wine your_x86_application.exe
 
 If you have issues with the default, please try one of the other emulators below.
 
-#### QEMU
-Until the critical section issue is solved it is highly recomended to limit execution to 1 core with
-"taskset -c 1" for Qemu emulation:
-
-```bash
-$ HODLL=xtajit.dll   taskset -c 1 wine your_x86_application.exe
-$ HODLL=wowarmhw.dll taskset -c 1 wine your_arm_application.exe
-```
-
 #### Enabling Wayland
 Wayland isn't used by default or automatically, but if you want to use it instead of X11 do:
 
@@ -120,10 +107,6 @@ For x86_64 applications first try arm64ec, it should perform best. In case it do
 Then open `winecfg`, switch to the Libraries tab and add `native` DLL overrides for `d3d8`, `d3d9`, `d3d10core`, `d3d11` and `dxgi`.
 
 Note that DXVK requires a Vulkan 1.3 driver with certain features and that might not be the case for a lot of ARM64 hardware.
-
-### Known issues
-
-* QEMU: CriticalSection doesn't work reliably and other instabilities
 
 ### Financial Contributors
 

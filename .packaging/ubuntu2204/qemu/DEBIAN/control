@@ -1,5 +1,0 @@
-Package: hangover-libqemu
-Version: HOVERSION~jammy
-Architecture: arm64
-Maintainer: André Zwing <nerv@dawncrow.de>
-Description: x86 Linux emulator library for Hangover

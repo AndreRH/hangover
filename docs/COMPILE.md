@@ -4,7 +4,7 @@ First make sure you have the submodules set up:
 ```bash
 $ git submodule update --init --recursive
 ```
-You can build various emulators (currently Box64, FEX and QEMU), but you don't need to, one is enough depending on your use-case.
+You can build various emulators (currently Box64 and FEX), but you don't need to, one is enough depending on your use-case.
 Except for libarm64ecfex.dll, which is necessary for x86_64 emulation.
 
 #### Wine
@@ -53,7 +53,7 @@ $ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../toolchain_mi
 $ make -j$(nproc) arm64ecfex
 ```
 
-Place resulting library (build_ec/Bin/libarm64ecfex.dll) in your wine prefix under drive_c/windows/system32/.
+Place resulting library (build_ec/Bin/libarm64ecfex.dll) in your wine prefix under drive_c/windows/system32/
 
 #### FEX for 32-bit (optional)
 To build wow64fex from FEX you need:
@@ -71,7 +71,7 @@ $ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../toolchain_mi
 $ make -j$(nproc) wow64fex
 ```
 
-Place resulting library (build_pe/Bin/libwow64fex.dll) in your wine prefix under drive_c/windows/system32/.
+Place resulting library (build_pe/Bin/libwow64fex.dll) in your wine prefix under drive_c/windows/system32/
 
 #### Box64 for 32-bit
 To build wowbox64 from Box64 you need:
@@ -89,22 +89,4 @@ $ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DAR
 $ make -j$(nproc) wowbox64
 ```
 
-Place resulting library (build_pe/wowbox64-prefix/src/wowbox64-build/wowbox64.dll) in your wine prefix under drive_c/windows/system32/.
-
-#### QEMU (optional)
-To build QEMU as a library you need:
-
-- The dependencies to build QEMU (in particular glib)
-- About 1GB of disk space
-
-Build it like (from the Hangover repository):
-```bash
-$ mkdir -p qemu/build
-$ cd qemu/build
-$ ../configure --disable-werror --target-list=arm-linux-user,i386-linux-user
-$ make -j$(nproc)
-```
-
-In case the compiler complains about something in linux-user/ioctls.h remove the corresponding line and run make again.
-
-Place resulting libraries (build/libqemu-arm.so and/or build/libqemu-i386.so) in your library path (e.g /usr/lib) or set HOLIB to the full path of the resulting library. (HOLIB takes precedence)
+Place resulting library (build_pe/wowbox64-prefix/src/wowbox64-build/wowbox64.dll) in your wine prefix under drive_c/windows/system32/
