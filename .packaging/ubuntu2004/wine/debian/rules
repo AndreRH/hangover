@@ -18,7 +18,7 @@ override_dh_auto_configure:
 				host_alias=aarch64-linux-gnu \
 				build_alias=x86_64-linux-gnu \
 				--with-wine-tools=../wine64/amd64 \
-				CC=aarch64-linux-gnu-gcc \
+				CC=clang \
 
 				$(CONFFLAGS)
 
