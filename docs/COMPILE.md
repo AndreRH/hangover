@@ -11,7 +11,7 @@ Except for libarm64ecfex.dll, which is necessary for x86_64 emulation.
 To build Hangover Wine you need:
 
 - The dependencies to [build](https://wiki.winehq.org/Building_Wine#Satisfying_Build_Dependencies) a 64 bit Wine
-- [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation (downlaod & unpack a release, but don't use the .zip files, they are for Windows)
+- [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation (download & unpack a release, but don't use the .zip files, they are for Windows)
 - About 5GB of disk space
 
 in the Hangover repository do:
@@ -29,7 +29,7 @@ For cross-compilation see [here](https://github.com/AndreRH/hangover/blob/master
 #### FEX for 64-bit
 To build arm64ecfex from FEX you need:
 
-- [bylaws-llvm-mingw](https://github.com/bylaws/llvm-mingw) for PE cross-compilation (downlaod & unpack a release, but don't use the .zip files, they are for Windows)
+- [bylaws-llvm-mingw](https://github.com/bylaws/llvm-mingw) for PE cross-compilation (download & unpack a release, but don't use the .zip files, they are for Windows)
 - About 1.5GB of disk space
 
 Build it like (from the Hangover repository):
@@ -47,7 +47,7 @@ Place resulting library (build_ec/Bin/libarm64ecfex.dll) in your wine prefix und
 #### FEX for 32-bit (optional)
 To build wow64fex from FEX you need:
 
-- [bylaws-llvm-mingw](https://github.com/bylaws/llvm-mingw) for PE cross-compilation (downlaod & unpack a release, but don't use the .zip files, they are for Windows)
+- [bylaws-llvm-mingw](https://github.com/bylaws/llvm-mingw) for PE cross-compilation (download & unpack a release, but don't use the .zip files, they are for Windows)
 - About 1.5GB of disk space
 
 Build it like (from the Hangover repository):
@@ -65,7 +65,7 @@ Place resulting library (build_pe/Bin/libwow64fex.dll) in your wine prefix under
 #### Box64 for 32-bit
 To build wowbox64 from Box64 you need:
 
-- [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation (downlaod & unpack a release, but don't use the .zip files, they are for Windows)
+- [llvm-mingw](https://github.com/mstorsjo/llvm-mingw) for PE cross-compilation (download & unpack a release, but don't use the .zip files, they are for Windows)
 - About 400MB of disk space
 
 Build it like (from the Hangover repository):
