@@ -24,6 +24,8 @@ $ make -j$(nproc)
 $ sudo env PATH="$PATH" make install
 ```
 
+For cross-compilation see [here](https://github.com/AndreRH/hangover/blob/master/.packaging/ubuntu2404/wine/Dockerfile).
+
 #### FEX for 64-bit
 To build arm64ecfex from FEX you need:
 
