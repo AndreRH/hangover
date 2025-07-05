@@ -37,7 +37,7 @@ $ sudo env PATH="$PATH" make install
 ```
 
 #### FEX for 64-bit
-To build wow64fex from FEX you need:
+To build arm64ecfex from FEX you need:
 
 - [bylaws-llvm-mingw](https://github.com/bylaws/llvm-mingw) for PE cross-compilation (downlaod & unpack a release, but don't use the .zip files, they are for Windows)
 - About 1.5GB of disk space
@@ -48,7 +48,6 @@ $ mkdir -p fex/build_ec
 $ cd fex/build_ec
 $ export PATH=/path/to/llvm-mingw/bin:$PATH
 $ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../toolchain_mingw.cmake -DENABLE_LTO=False -DMINGW_TRIPLE=arm64ec-w64-mingw32 -DBUILD_TESTS=False ..
-
 
 $ make -j$(nproc) arm64ecfex
 ```
