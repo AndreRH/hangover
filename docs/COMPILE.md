@@ -42,7 +42,7 @@ $ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../toolchain_mi
 $ make -j$(nproc) arm64ecfex
 ```
 
-Place resulting library (build_ec/Bin/libarm64ecfex.dll) in your wine prefix under drive_c/windows/system32/
+Place resulting library (build_ec/Bin/libarm64ecfex.dll) in /usr/local/lib/wine/aarch64-windows/
 
 #### FEX for 32-bit (optional)
 To build wow64fex from FEX you need:
@@ -60,7 +60,7 @@ $ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../toolchain_mi
 $ make -j$(nproc) wow64fex
 ```
 
-Place resulting library (build_pe/Bin/libwow64fex.dll) in your wine prefix under drive_c/windows/system32/
+Place resulting library (build_pe/Bin/libwow64fex.dll) in /usr/local/lib/wine/aarch64-windows/
 
 #### Box64 for 32-bit
 To build wowbox64 from Box64 you need:
@@ -78,4 +78,4 @@ $ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc -DAR
 $ make -j$(nproc) wowbox64
 ```
 
-Place resulting library (build_pe/wowbox64-prefix/src/wowbox64-build/wowbox64.dll) in your wine prefix under drive_c/windows/system32/
+Place resulting library (build_pe/wowbox64-prefix/src/wowbox64-build/wowbox64.dll) in /usr/local/lib/wine/aarch64-windows/
