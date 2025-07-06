@@ -8,6 +8,7 @@ on:
     paths-ignore:
       - 'benchmarks/**'
       - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
       - 'README.md'
   release:
     types: [published]
