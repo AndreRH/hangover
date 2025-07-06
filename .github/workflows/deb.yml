@@ -15,7 +15,7 @@ on:
 
 jobs:
   foundations:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     strategy:
       matrix:
         os: [debian11, debian12, debian13, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2504]
@@ -55,7 +55,7 @@ jobs:
 
   fex-pe:
     needs: foundations
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     steps:
     - uses: actions/checkout@v1
@@ -118,7 +118,7 @@ jobs:
 
   fex-pe-ec:
     needs: foundations
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     steps:
     - uses: actions/checkout@v1
@@ -180,7 +180,7 @@ jobs:
 
   box-pe:
     needs: foundations
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     steps:
     - uses: actions/checkout@v1
@@ -242,7 +242,7 @@ jobs:
 
   dxvk:
     needs: foundations
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     steps:
     - uses: actions/checkout@v1
@@ -289,7 +289,7 @@ jobs:
 
   wine:
     needs: foundations
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     strategy:
       matrix:
         os: [debian11, debian12, debian13, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2504]
@@ -387,7 +387,7 @@ jobs:
 
   bundle:
     needs: [dxvk, fex-pe, fex-pe-ec, box-pe, wine]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     strategy:
       matrix:
         os: [debian11, debian12, debian13, ubuntu2004, ubuntu2204, ubuntu2404, ubuntu2504]
@@ -472,7 +472,7 @@ jobs:
 
   dllbundle:
     needs: [dxvk, fex-pe, fex-pe-ec, box-pe]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     steps:
     - uses: actions/checkout@v1

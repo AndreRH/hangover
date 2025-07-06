@@ -1,18 +1,14 @@
 FROM ubuntu:24.04
 
 ARG LLVMMINGW_DATE=20250613
-ARG LLVMMINGW_NAME=llvm-mingw-$LLVMMINGW_DATE-ucrt-ubuntu-22.04-x86_64
+ARG LLVMMINGW_NAME=llvm-mingw-$LLVMMINGW_DATE-ucrt-ubuntu-22.04-aarch64
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN echo "Types: deb" > /tmp/new.src; echo "URIs: http://archive.ubuntu.com/ubuntu/" >> /tmp/new.src; echo "Suites: noble noble-updates noble-backports" >> /tmp/new.src; echo "Components: main universe restricted multiverse" >> /tmp/new.src; echo "Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg" >> /tmp/new.src; echo "Architectures: amd64" >> /tmp/new.src; \
-    echo "" >> /tmp/new.src; \
-    echo "Types: deb" >> /tmp/new.src; echo "URIs: http://ports.ubuntu.com/ubuntu-ports/" >> /tmp/new.src; echo "Suites: noble noble-updates noble-backports" >> /tmp/new.src; echo "Components: main universe restricted multiverse" >> /tmp/new.src; echo "Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg" >> /tmp/new.src; echo "Architectures: arm64" >> /tmp/new.src; \
-    cp /tmp/new.src /etc/apt/sources.list.d/ubuntu.sources && dpkg --add-architecture arm64
-RUN cat /etc/apt/sources.list.d/ubuntu.sources
+
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu \
+    binutils \
     ca-certificates nano python3 python3-setuptools clang screen llvm lld wget curl \
     flex bison \
     libglib2.0-dev \
@@ -22,46 +18,46 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     librsvg2-bin \
     git gettext make automake autoconf pkg-config libtool gtk-doc-tools clang \
     dpkg-dev \
-    libglib2.0-dev:arm64 \
-    libfreetype-dev:arm64 \
-    libltdl-dev:arm64 \
-    libxcb1-dev:arm64 \
-    libx11-dev:arm64 \
-    build-essential libc-dev-arm64-cross less libc-devtools libidn2-0:arm64 \
+    libglib2.0-dev \
+    libfreetype-dev \
+    libltdl-dev \
+    libxcb1-dev \
+    libx11-dev \
+    build-essential libc-dev less libc-devtools libidn2-0 \
     libx11-dev libxinerama-dev libfreetype-dev libfontconfig-dev \
     cmake \
-    libstdc++6-arm64-cross \
-    libstdc++-13-dev-arm64-cross \
-    libepoxy-dev:arm64 \
-    libsdl2-dev:arm64 \
+    libstdc++6 \
+    libstdc++-13-dev \
+    libepoxy-dev \
+    libsdl2-dev \
     ninja-build \
     dpkg-dev fakeroot debhelper dh-make \
-    libxcursor-dev:arm64 \
-    libxi-dev:arm64 \
-    libxshmfence-dev:arm64 \
-    libxxf86vm-dev:arm64 \
-    libxrandr-dev:arm64 \
-    libxrender-dev:arm64 \
-    libxfixes-dev:arm64 \
-    libxcomposite-dev:arm64 \
-    libdbus-1-dev:arm64 \
-    libsane-dev:arm64 \
-    libusb-1.0-0-dev:arm64 \
-    libv4l-dev:arm64 \
-    libpulse-dev:arm64 \
-    libgstreamer1.0-dev:arm64 \
-    libgstreamer-plugins-base1.0-dev:arm64 \
-    libudev-dev:arm64 \
-    libunwind-dev:arm64 \
-    libsdl2-dev:arm64 \
-    libfontconfig1-dev:arm64 \
-    libkrb5-dev:arm64 \
-    libvulkan-dev:arm64 \
-    libgl-dev:arm64 \
-    libgnutls28-dev:arm64 \
-    libcups2-dev:arm64 \
-    libxkbcommon-dev:arm64 \
-    libxkbregistry-dev:arm64 \
-    libwayland-dev:arm64
+    libxcursor-dev \
+    libxi-dev \
+    libxshmfence-dev \
+    libxxf86vm-dev \
+    libxrandr-dev \
+    libxrender-dev \
+    libxfixes-dev \
+    libxcomposite-dev \
+    libdbus-1-dev \
+    libsane-dev \
+    libusb-1.0-0-dev \
+    libv4l-dev \
+    libpulse-dev \
+    libgstreamer1.0-dev \
+    libgstreamer-plugins-base1.0-dev \
+    libudev-dev \
+    libunwind-dev \
+    libsdl2-dev \
+    libfontconfig1-dev \
+    libkrb5-dev \
+    libvulkan-dev \
+    libgl-dev \
+    libgnutls28-dev \
+    libcups2-dev \
+    libxkbcommon-dev \
+    libxkbregistry-dev \
+    libwayland-dev
 
 RUN cd /opt; wget https://github.com/mstorsjo/llvm-mingw/releases/download/$LLVMMINGW_DATE/$LLVMMINGW_NAME.tar.xz; tar -xJf $LLVMMINGW_NAME.tar.xz; rm *.tar.xz

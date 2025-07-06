@@ -2,18 +2,14 @@ FROM ubuntu:20.04
 
 # for Debian 11 stick to the last supported build (20.04)
 ARG LLVMMINGW_DATE=20250402
-ARG LLVMMINGW_NAME=llvm-mingw-20250402-ucrt-ubuntu-20.04-x86_64
+ARG LLVMMINGW_NAME=llvm-mingw-20250402-ucrt-ubuntu-20.04-aarch64
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN cat /etc/apt/sources.list | grep -v "^#"  | sed "s/^deb /deb [arch=amd64] /g" > /tmp/amd64.list && \
-    cat /tmp/amd64.list | sed "s/\[arch=amd64\]/[arch=arm64]/g" | sed "s/archive.ubuntu.com\/ubuntu\//ports.ubuntu.com\/ubuntu-ports\//g" | grep ports.ubuntu.com > /tmp/arm64.list && \
-    cat /tmp/amd64.list /tmp/arm64.list > /etc/apt/sources.list && \
-    dpkg --add-architecture arm64
-RUN cat /etc/apt/sources.list
+
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu \
+    binutils \
     ca-certificates nano python3 python3-setuptools clang screen llvm lld wget curl \
     flex bison \
     libfreetype6-dev \
@@ -24,45 +20,45 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     librsvg2-bin \
     git gettext make automake autoconf pkg-config libtool gtk-doc-tools clang \
     dpkg-dev \
-    libglib2.0-dev:arm64 \
-    libfreetype6-dev:arm64 \
-    libltdl-dev:arm64 \
-    libxcb1-dev:arm64 \
-    libx11-dev:arm64 \
-    build-essential libc-dev-arm64-cross less libc-dev-bin libidn2-0:arm64 \
+    libglib2.0-dev \
+    libfreetype6-dev \
+    libltdl-dev \
+    libxcb1-dev \
+    libx11-dev \
+    build-essential libc-dev less libc-dev-bin libidn2-0 \
     libx11-dev libxinerama-dev libfreetype-dev libfontconfig-dev \
     cmake \
-    libstdc++6-arm64-cross \
-    libstdc++-10-dev-arm64-cross \
-    libepoxy-dev:arm64 \
-    libsdl2-dev:arm64 \
+    libstdc++6 \
+    libstdc++-10-dev \
+    libepoxy-dev \
+    libsdl2-dev \
     ninja-build \
     dpkg-dev fakeroot debhelper dh-make \
-    libxcursor-dev:arm64 \
-    libxi-dev:arm64 \
-    libxshmfence-dev:arm64 \
-    libxxf86vm-dev:arm64 \
-    libxrandr-dev:arm64 \
-    libxrender-dev:arm64 \
-    libxfixes-dev:arm64 \
-    libxcomposite-dev:arm64 \
-    libdbus-1-dev:arm64 \
-    libsane-dev:arm64 \
-    libusb-1.0-0-dev:arm64 \
-    libv4l-dev:arm64 \
-    libpulse-dev:arm64 \
-    libgstreamer1.0-dev:arm64 \
-    libgstreamer-plugins-base1.0-dev:arm64 \
-    libudev-dev:arm64 \
-    libunwind-dev:arm64 \
-    libsdl2-dev:arm64 \
-    libfontconfig1-dev:arm64 \
-    libkrb5-dev:arm64 \
-    libvulkan-dev:arm64 \
-    libgl-dev:arm64 \
-    libgnutls28-dev:arm64 \
-    libcups2-dev:arm64 \
-    libxkbcommon-dev:arm64 \
-    libwayland-dev:arm64
+    libxcursor-dev \
+    libxi-dev \
+    libxshmfence-dev \
+    libxxf86vm-dev \
+    libxrandr-dev \
+    libxrender-dev \
+    libxfixes-dev \
+    libxcomposite-dev \
+    libdbus-1-dev \
+    libsane-dev \
+    libusb-1.0-0-dev \
+    libv4l-dev \
+    libpulse-dev \
+    libgstreamer1.0-dev \
+    libgstreamer-plugins-base1.0-dev \
+    libudev-dev \
+    libunwind-dev \
+    libsdl2-dev \
+    libfontconfig1-dev \
+    libkrb5-dev \
+    libvulkan-dev \
+    libgl-dev \
+    libgnutls28-dev \
+    libcups2-dev \
+    libxkbcommon-dev \
+    libwayland-dev
 
 RUN cd /opt; wget https://github.com/mstorsjo/llvm-mingw/releases/download/$LLVMMINGW_DATE/$LLVMMINGW_NAME.tar.xz; tar -xJf $LLVMMINGW_NAME.tar.xz; rm *.tar.xz
