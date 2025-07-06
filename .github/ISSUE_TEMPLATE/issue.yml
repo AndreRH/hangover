@@ -1,0 +1,17 @@
+name: Bug report
+description: Describe a bug
+body:
+  - type: textarea
+    id: system-details
+    attributes:
+      label: System Details
+      description: What platform are you running on? Which Hangover version? Which package are you using? Output of `getconf PAGESIZE`?
+    validations:
+      required: true
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Problem Description
+      description: What emulation dll did you use? What kind of application do you try to run (architecture)? What exactly did you do? What happened?
+    validations:
+      required: true
