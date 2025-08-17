@@ -37,7 +37,7 @@ Build it like (from the Hangover repository):
 $ mkdir -p fex/build_ec
 $ cd fex/build_ec
 $ export PATH=/path/to/llvm-mingw/bin:$PATH
-$ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../toolchain_mingw.cmake -DENABLE_LTO=False -DMINGW_TRIPLE=arm64ec-w64-mingw32 -DBUILD_TESTS=False ..
+$ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../Data/CMake/toolchain_mingw.cmake -DENABLE_LTO=False -DMINGW_TRIPLE=arm64ec-w64-mingw32 -DBUILD_TESTS=False ..
 
 $ make -j$(nproc) arm64ecfex
 ```
@@ -55,7 +55,7 @@ Build it like (from the Hangover repository):
 $ mkdir -p fex/build_pe
 $ cd fex/build_pe
 $ export PATH=/path/to/llvm-mingw/bin:$PATH
-$ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../toolchain_mingw.cmake -DENABLE_LTO=False -DMINGW_TRIPLE=aarch64-w64-mingw32 -DBUILD_TESTS=False ..
+$ cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_TOOLCHAIN_FILE=../Data/CMake/toolchain_mingw.cmake -DENABLE_LTO=False -DMINGW_TRIPLE=aarch64-w64-mingw32 -DBUILD_TESTS=False ..
 
 $ make -j$(nproc) wow64fex
 ```
