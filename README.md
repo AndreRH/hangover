@@ -51,7 +51,7 @@ It provides advanced user support, development discussions and more.
 __Debian__ 11 & 12 & 13 (also usable for Raspbian, Armbian, ...) and __Ubuntu__ 20.04 & 22.04 & 24.04 & 25.04 are attached to the Github Release.
 Install them with
 ```bash
-$ sudo apt install ./hangover.*deb
+$ sudo apt install ./hangover*.deb
 ```
 
 __Termux__ packages can be found in the [Termux Repository](https://github.com/termux/termux-packages/tree/master/x11-packages/hangover-wine).
