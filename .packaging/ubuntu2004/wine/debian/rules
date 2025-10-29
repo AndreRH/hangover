@@ -7,6 +7,14 @@ export PATH = /opt/llvm-mingw-20250402-ucrt-ubuntu-20.04-x86_64/bin:/usr/local/s
 %:
 	dh $@ --parallel
 
+override_dh_update_autotools_config:
+	# Skip updating install-sh
+	:
+
+override_dh_autoreconf:
+	# Skip autoreconf
+	:
+
 override_dh_auto_configure:
 	# Run configure
 	./configure --prefix=/usr \
