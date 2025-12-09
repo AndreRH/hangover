@@ -1,0 +1,43 @@
+#!/usr/bin/make -f
+
+export DEB_CFLAGS_MAINT_STRIP = -fstack-protector-strong -fcf-protection=full
+export DEB_BUILD_MAINT_OPTIONS = optimize=-lto hardening=-relro
+export PATH = /opt/llvm-mingw-20251202-ucrt-ubuntu-22.04-aarch64/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+%:
+	dh $@ --parallel
+
+override_dh_update_autotools_config:
+	# Skip updating install-sh
+	:
+
+override_dh_autoreconf:
+	# Skip autoreconf
+	:
+
+override_dh_auto_configure:
+	# Run configure
+	./configure --prefix=/usr \
+				--with-mingw=clang \
+				--enable-archs=arm64ec,aarch64,i386 \
+				--enable-tools \
+				--disable-tests \
+
+				$(CONFFLAGS)
+
+
+override_dh_auto_test:
+	# Wine's test suite does not pass on build daemons, skip it for now
+
+
+override_dh_installdocs:
+	dh_installdocs --link-doc=hangover-wine
+
+
+override_dh_strip:
+	dh_strip -Xwine-pthread -Xwine-kthread -Xi386-windows -Xaarch64-windows
+
+
+override_dh_shlibdeps:
+	dh_shlibdeps -l $(CURDIR)/debian/tmp/usr/lib/
+
