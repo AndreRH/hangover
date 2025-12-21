@@ -13,6 +13,10 @@ on:
   release:
     types: [published]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: false
+
 jobs:
   foundations:
     runs-on: ubuntu-latest
