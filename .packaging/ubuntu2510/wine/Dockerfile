@@ -1,6 +1,6 @@
 FROM foundationubuntu2510
 
-ARG LLVMMINGW_NAME=llvm-mingw-20251202-ucrt-ubuntu-22.04-aarch64
+ARG LLVMMINGW_NAME=llvm-mingw-20260311-ucrt-ubuntu-22.04-aarch64
 ENV LLVMMINGW_PATH="/opt/$LLVMMINGW_NAME/bin"
 
 RUN rm -rf /opt/wine; mkdir -p /opt/wine/
