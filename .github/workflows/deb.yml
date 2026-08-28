@@ -28,7 +28,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Cache docker image
       id: cache-foundation
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       env:
         cache-name: cache-foundation
       with:
@@ -60,7 +60,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Cache docker image
       id: cache-foundation
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       env:
         cache-name: ${{ matrix.os }}-foundation-arm
       with:
@@ -97,7 +97,7 @@ jobs:
 
     - name: Cache docker image
       id: cache-foundation
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       env:
         cache-name: cache-foundation
       with:
@@ -160,7 +160,7 @@ jobs:
 
     - name: Cache docker image
       id: cache-foundation
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       env:
         cache-name: cache-foundation
       with:
@@ -222,7 +222,7 @@ jobs:
 
     - name: Cache docker image
       id: cache-foundation
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       env:
         cache-name: cache-foundation
       with:
@@ -286,7 +286,7 @@ jobs:
 
     - name: Cache docker image
       id: cache-foundation
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       env:
         cache-name: cache-foundation
       with:
@@ -343,7 +343,7 @@ jobs:
 
     - name: Cache docker image
       id: cache-foundation
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       env:
         cache-name: cache-foundation
       with:
@@ -430,7 +430,7 @@ jobs:
 
     - name: Cache docker image
       id: cache-foundation
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       env:
         cache-name: ${{ matrix.os }}-foundation-arm
       with:
