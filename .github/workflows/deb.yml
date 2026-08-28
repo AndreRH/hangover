@@ -25,7 +25,10 @@ jobs:
         os: [debian12, debian13, ubuntu2204, ubuntu2404, ubuntu2604]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v7
+      with:
+        fetch-tags: true
+        fetch-depth: 32
     - name: Cache docker image
       id: cache-foundation
       uses: actions/cache@v6
@@ -57,7 +60,10 @@ jobs:
         os: [ubuntu2510, ubuntu2604]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v7
+      with:
+        fetch-tags: true
+        fetch-depth: 32
     - name: Cache docker image
       id: cache-foundation
       uses: actions/cache@v6
@@ -87,13 +93,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: free disk space
+    - uses: actions/checkout@v7
+      with:
+        fetch-tags: true
+        fetch-depth: 32
+
+    - name: get submodule
       run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        df -h
+        git submodule update --init --recursive -- fex
 
     - name: Cache docker image
       id: cache-foundation
@@ -150,13 +157,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: free disk space
+    - uses: actions/checkout@v7
+      with:
+        fetch-tags: true
+        fetch-depth: 32
+
+    - name: get submodule
       run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        df -h
+        git submodule update --init --recursive -- fex
 
     - name: Cache docker image
       id: cache-foundation
@@ -212,13 +220,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: free disk space
+    - uses: actions/checkout@v7
+      with:
+        fetch-tags: true
+        fetch-depth: 32
+
+    - name: get submodule
       run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        df -h
+        git submodule update --init --recursive -- box64
 
     - name: Cache docker image
       id: cache-foundation
@@ -274,9 +283,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v7
+      with:
+        fetch-tags: true
+        fetch-depth: 32
     - name: Checkout DXVK
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: AndreRH/dxvk
         fetch-tags: true
@@ -333,13 +345,14 @@ jobs:
             codename: noble
 
     steps:
-    - uses: actions/checkout@v1
-    - name: free disk space
+    - uses: actions/checkout@v7
+      with:
+        fetch-tags: true
+        fetch-depth: 32
+
+    - name: get submodule
       run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        df -h
+        git submodule update --init --recursive -- wine
 
     - name: Cache docker image
       id: cache-foundation
@@ -420,13 +433,14 @@ jobs:
             codename: resolute
 
     steps:
-    - uses: actions/checkout@v1
-    - name: free disk space
+    - uses: actions/checkout@v7
+      with:
+        fetch-tags: true
+        fetch-depth: 32
+
+    - name: get submodule
       run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        df -h
+        git submodule update --init --recursive -- wine
 
     - name: Cache docker image
       id: cache-foundation
@@ -516,13 +530,10 @@ jobs:
             codename: resolute
 
     steps:
-    - uses: actions/checkout@v1
-    - name: free disk space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        df -h
+    - uses: actions/checkout@v7
+      with:
+        fetch-tags: true
+        fetch-depth: 32
 
     - name: get version
       run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
@@ -583,13 +594,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: free disk space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        df -h
+    - uses: actions/checkout@v7
+      with:
+        fetch-tags: true
+        fetch-depth: 32
 
     - name: get version
       run: git describe --tags | sed "s/hangover-/HOVERSION=/" >> "$GITHUB_ENV"; git describe --tags | sed "s/hangover-/HOVERSION=/"
