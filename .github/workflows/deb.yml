@@ -133,13 +133,13 @@ jobs:
       run: docker run --rm fexpe cat /opt/fex/build/Bin/libwow64fex.dll > libwow64fex.dll
 
     - name: Upload deb as Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb
         path: hangover-libwow64fex_${{ env.HOVERSION }}_arm64.deb
 
     - name: Upload dll as Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: libwow64fex.dll
         path: libwow64fex.dll
@@ -196,13 +196,13 @@ jobs:
       run: docker run --rm fexpeec cat /opt/fex/build/Bin/libarm64ecfex.dll > libarm64ecfex.dll
 
     - name: Upload deb as Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: hangover-libarm64ecfex_${{ env.HOVERSION }}_arm64.deb
         path: hangover-libarm64ecfex_${{ env.HOVERSION }}_arm64.deb
 
     - name: Upload dll as Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: libarm64ecfex.dll
         path: libarm64ecfex.dll
@@ -258,13 +258,13 @@ jobs:
       run: docker run --rm boxpe cat /opt/box64/build/wowbox64-prefix/src/wowbox64-build/wowbox64.dll > wowbox64.dll
 
     - name: Upload deb as Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: hangover-wowbox64_${{ env.HOVERSION }}_arm64.deb
         path: hangover-wowbox64_${{ env.HOVERSION }}_arm64.deb
 
     - name: Upload dll as Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: wowbox64.dll
         path: wowbox64.dll
@@ -310,7 +310,7 @@ jobs:
       run: docker run --rm dxvk cat /opt/dxvk/output/dxvk-${{ env.DXVKVERSION }}.tar.gz > dxvk-${{ env.DXVKVERSION }}.tar.gz
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: dxvk-${{ env.DXVKVERSION }}.tar.gz
         path: dxvk-${{ env.DXVKVERSION }}.tar.gz
@@ -402,7 +402,7 @@ jobs:
       run: docker run --rm wine${{ matrix.os }} cat /opt/hangover-wine_${{ env.HOVERSION }}~${{ matrix.codename }}_arm64.deb > hangover-wine_${{ env.HOVERSION }}~${{ matrix.codename }}_arm64.deb
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: hangover-wine_${{ env.HOVERSION }}~${{ matrix.codename }}_arm64.deb
         path: hangover-wine_${{ env.HOVERSION }}~${{ matrix.codename }}_arm64.deb
@@ -489,7 +489,7 @@ jobs:
       run: docker run --rm wine${{ matrix.os }} cat /opt/hangover-wine_${{ env.HOVERSION }}~${{ matrix.codename }}_arm64.deb > hangover-wine_${{ env.HOVERSION }}~${{ matrix.codename }}_arm64.deb
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: hangover-wine_${{ env.HOVERSION }}~${{ matrix.codename }}_arm64.deb
         path: hangover-wine_${{ env.HOVERSION }}~${{ matrix.codename }}_arm64.deb
@@ -561,7 +561,7 @@ jobs:
       run: tar -cf hangover_${{ env.HOVERSION }}_${{ matrix.os }}_${{ matrix.codename }}_arm64.tar hangover*${{ matrix.codename }}_arm64.deb hangover-libwow64fex*_arm64.deb hangover-libarm64ecfex*_arm64.deb dxvk*.tar.gz hangover-wowbox64*_arm64.deb
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: hangover_${{ env.HOVERSION }}_${{ matrix.os }}_${{ matrix.codename }}_arm64.tar
         path: hangover_${{ env.HOVERSION }}_${{ matrix.os }}_${{ matrix.codename }}_arm64.tar
@@ -616,7 +616,7 @@ jobs:
       run: tar -cf hangover_${{ env.HOVERSION }}_dlls.tar dxvk*.tar.gz lib*.dll wow*.dll
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: hangover_${{ env.HOVERSION }}_dlls.tar
         path: hangover_${{ env.HOVERSION }}_dlls.tar
