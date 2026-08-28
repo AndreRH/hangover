@@ -580,14 +580,10 @@ jobs:
 
     - name: Upload Artifact as Release Asset
       if: github.event_name == 'release'
-      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: hangover_${{ env.HOVERSION }}_${{ matrix.os }}_${{ matrix.codename }}_arm64.tar
-        asset_name: hangover_${{ env.HOVERSION }}_${{ matrix.os }}_${{ matrix.codename }}_arm64.tar
-        asset_content_type: application/x-tar
+      run: |
+        gh release upload ${{ github.event.release.name }} hangover_${{ env.HOVERSION }}_${{ matrix.os }}_${{ matrix.codename }}_arm64.tar --clobber
 
   dllbundle:
     needs: [dxvk, fex-pe, fex-pe-ec, box-pe]
@@ -632,11 +628,7 @@ jobs:
 
     - name: Upload Artifact as Release Asset
       if: github.event_name == 'release'
-      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: hangover_${{ env.HOVERSION }}_dlls.tar
-        asset_name: hangover_${{ env.HOVERSION }}_dlls.tar
-        asset_content_type: application/x-tar
+      run: |
+        gh release upload ${{ github.event.release.name }} hangover_${{ env.HOVERSION }}_dlls.tar --clobber
